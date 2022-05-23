@@ -1,10 +1,11 @@
 /*=================================================================================================*\
 |Author(s) : Saani Rawat
 |Source    : Ohio Employment Project
-|Purpose   : Create individual datasets for each year using masterfile_2006q1_2020q4.sas7bdat
+|Purpose   : Create master dataset from individual files provided by Ohio JFS (via Dr. Michael Jones)
 |History   : Date       By Description
 			 18feb2022  SR Checked validity of masterfile_2006q1_2020q4 file. Found one merging issue (year 2020)
 			 07mar2022	SR Fixed 2020 merge issue. Added new 2021 data (upto Q2). Create master df file (2006-2021Q2)
+			 06apr2022  SR Added data with NAICS code. Fixed issue of MEEI == 2 as per Dr. Jones' suggestion
 \*=================================================================================================*/
 
 %let in_loc = C:\QCEW Data - Ohio\ES202;
@@ -16,26 +17,77 @@ libname out "&in_loc.\extracts";
 %include "C:\Users\rawatsa\OneDrive - University of Cincinnati\sas_utility_functions\util_load_macro_functions.sas";
 %util_load_macro_functions(C:\Users\rawatsa\OneDrive - University of Cincinnati\sas_utility_functions,subfolder=1);
 
-*create master df in sas7bdat;
+*Import macro;
+%macro import_df(in_loc = , df = , file_type = , out_df = , drop_list = , rename_list = );
+
+	proc import datafile="&in_loc.\&df." 
+		%if %sysfunc(findw(%upcase(&file_type.), CSV)) %then %do; dbms = csv %end;
+		%if %sysfunc(findw(%upcase(&file_type.), STATA)) %then %do; dbms = stata %end;
+		replace 
+		out = &out_df.
+	(
+				%if &drop_list. ^= %then %do;
+					drop = &drop_list.
+				%end;
+				%if &rename_list. ^= %then %do;
+					rename = (&rename_list.)
+				%end;
+			where=(strip(meei) ^= "2")  /*removing meei == 2*/
+	)
+	;
+	run;
+
+%mend import_df;
+
+*----------------------------------------------------------------------------------------
+*	Importing data
+*----------------------------------------------------------------------------------------;
+*2006-2018 will be used;
 proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace out=masterfile_2006q1_2020q4; run;
-proc import datafile="&in_loc.\UC_2020_1.dta" dbms=STATA replace out=df_2020q1 (drop = comment cipseaflag phone liabdate addsource eoldate reactdate auxnaics own); run;
-proc import datafile="&in_loc.\UC_2020_2.dta" dbms=STATA replace out=df_2020q2 (drop = comment cipseaflag phone liabdate addsource eoldate reactdate auxnaics own); run;
-proc import datafile="&in_loc.\UC_2020_3.dta" dbms=STATA replace out=df_2020q3 (drop = comment cipseaflag phone liabdate addsource eoldate reactdate auxnaics own); run;
-proc import datafile="&in_loc.\UC_2020_4.dta" dbms=STATA replace out=df_2020q4 (drop = comment cipseaflag phone liabdate addsource eoldate reactdate auxnaics own); run;
-proc import datafile="&in_loc.\2021\current_UCMA2021Q1.csv" dbms = csv replace out=df_2021q1 (drop = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own); run;
-proc import datafile="&in_loc.\2021\current_UCMA2021Q2.csv" dbms = csv replace out=df_2021q2 (drop = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own); run;
+*2019;
+%import_df(in_loc = &in_loc.,
+			df = current_UCMA191.csv, file_type = csv, out_df = df_2019q1, 
+			drop_list = comment cipseaflag phone auxnaics own add_source	liab_date	eol_date	react_date, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
+)
+%import_df(in_loc = &in_loc.,
+			df = current_UCMA192.csv, file_type = csv, out_df = df_2019q2, 
+			drop_list = comment cipseaflag phone auxnaics own add_source	liab_date	eol_date	react_date, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
+)
+%import_df(in_loc = &in_loc.,
+			df = current_UCMA193.csv, file_type = csv, out_df = df_2019q3, 
+			drop_list = comment cipseaflag phone auxnaics own add_source	liab_date	eol_date	react_date, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
+)
+%import_df(in_loc = &in_loc.,
+			df = current_UCMA194.csv, file_type = csv, out_df = df_2019q4, 
+			drop_list = comment cipseaflag phone auxnaics own add_source	liab_date	eol_date	react_date, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
+)
+* 2020;
+%import_df(in_loc = &in_loc., df = UC_2020_1.dta, file_type = stata, out_df = df_2020q1, drop_list = comment cipseaflag phone liabdate addsource eoldate reactdate auxnaics own)
+%import_df(in_loc = &in_loc., df = UC_2020_2.dta, file_type = stata, out_df = df_2020q2, drop_list = comment cipseaflag phone liabdate addsource eoldate reactdate auxnaics own)
+%import_df(in_loc = &in_loc., df = UC_2020_3.dta, file_type = stata, out_df = df_2020q3, drop_list = comment cipseaflag phone liabdate addsource eoldate reactdate auxnaics own)
+%import_df(in_loc = &in_loc., df = UC_2020_4.dta, file_type = stata, out_df = df_2020q4, drop_list = comment cipseaflag phone liabdate addsource eoldate reactdate auxnaics own)
+*2021;
+%import_df(in_loc = &in_loc.\2021,
+			df = current_UCMA2021Q1.csv, file_type = csv, out_df = df_2021q1, 
+			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+)
+%import_df(in_loc = &in_loc.\2021,
+			df = current_UCMA2021Q2.csv, file_type = csv, out_df = df_2021q2, 
+			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+)
 
-* cleaning 2021 data files as they have different variable names (compared to previous years);
-proc datasets lib=work nolist;
-	modify df_2021q1;
-		rename rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county;
+*----------------------------------------------------------------------------------------
+*	Cleaning data
+*----------------------------------------------------------------------------------------;
 
-	modify df_2021q2;
-		rename rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county;
-
-quit;
-
-%macro loop(qtr_list = 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2);
+* converting data type for each variable;
+%macro loop(qtr_list = 2019q1 2019q2 2019q3 2019q4 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2);
 	%do i = 1 %to %sysfunc(countw(&qtr_list.));
 		data df_%scan(&qtr_list.,&i.," ") (drop= naics2 year2 quarter2 county2 m1_ m2_ m3_ wage_);
 			retain year quarter ;
@@ -55,8 +107,9 @@ quit;
 
 *removing illegible entries using EINs (see ohio_data_checks.sas for more details);
 *removing duplicate columns created due to incorrect merge for 2020;
+* for 2006-2018;
 proc sql;
-	create table out.MasterFile_2006Q1_2019Q4 as 
+	create table  MasterFile_2006Q1_2018Q4 as 
 		select 	  Year
 				, Quarter
 				, Pad
@@ -87,46 +140,35 @@ proc sql;
 				where strip(EIN) ^= "043583679" and 
 					  strip(EIN) ^= "201731623" and 
 					  strip(EIN) ^= "462603341" and
-					  year <= 2019
+					  year <= 2018
 
 ;
 quit;
 
-*mostly ohio, some obs from outside. But how come we have so many observations from outside OH?;
+*----------------------------------------------------------------------------------------
+*	Exporting Master Data
+*----------------------------------------------------------------------------------------;
+
+*append all years together (2006 onwards) and exporting as sas dataset;
 proc sql;
-	create table temp as 
-		select state, count(*)
-			from out.MasterFile_2006Q1_2019Q4
-				group by state;
-quit;
-
-*checking if variable names match before appending;
-%util_aux_colnames( lib = out
-                  , df    = MasterFile_2006Q1_2019Q4
-                  , out_m_colnames = master_cols
-);
-%util_aux_colnames( lib = work
-                  , df    = df_2020q1
-                  , out_m_colnames = df_2020q1_cols
-);
-%util_aux_colnames( lib = work
-                  , df    = df_2021q1
-                  , out_m_colnames = df_2021q1_cols
-);
-%put &=master_cols;
-%put &=df_2020q1_cols;
-%put &=df_2021q1_cols;
-
-*if dataset already exists, then delete it. Necessary before appending;
-%if %sysfunc(exist(out.masterfile_2006q1_2021q2)) %then %do;
-	%util_dat_delete_df(df = out.masterfile_2006q1_2021q2);
-%end;
-
-*append all years together (2006 onwards);
-proc sql;
-	create table out.masterfile_2006q1_2021q2 as 
+	create table out.masterfile_2006q1_2021q2	(where = (strip(EIN) ^= "043583679" and 
+														  strip(EIN) ^= "201731623" and 
+														  strip(EIN) ^= "462603341")) 
+				as 
 	   select *
-	   	  from out.masterfile_2006q1_2019q4
+	   	  from masterfile_2006q1_2018q4
+		   outer union corr
+	   select *
+	      from df_2019q1	
+		   outer union corr
+	   select *
+	      from df_2019q2	
+		   outer union corr
+	   select *
+	      from df_2019q3	
+		   outer union corr
+	   select *
+	      from df_2019q4	
 		   outer union corr
 	   select *
 	      from df_2020q1	
@@ -148,25 +190,6 @@ proc sql;
 	;
 quit;
 
-*dividing master dataset into subsets by year;
-%macro separate_master_DF();
-	proc sql noprint;
-			select distinct year into :year_list separated by " "
-				from out.masterfile_2006q1_2021q2
-					where year is not missing
-	;
-	quit;
-	%do i = 1 %to %sysfunc(countw(&year_list.));
-		proc sql;
-			create table out.df_employment_oh_%scan(&year_list.,&i.,' ') as 
-				select *
-					from out.masterfile_2006q1_2021q2
-						where year = %scan(&year_list.,&i.,' ');
-		quit;
-	%end;
-
-%mend separate_master_DF;
-%separate_master_DF();
 
 
 
