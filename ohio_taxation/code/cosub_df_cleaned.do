@@ -1,6 +1,6 @@
 * Purpose: identify balanced panel data, remove duplicates and prepare data for analysis;
 
-global root "/Users/saannidhyarawat/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
+global root "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
 
 global code "${root}/code"
 global data "${root}/data"
@@ -19,8 +19,8 @@ use "${data}/cosub_place_county_votes_property2" , clear
 // drop if inlist(TENDIGIT_FIPS, $mac_fips_list)
 
 * removing leads and lags and saving this dataset
-drop *_lag*
-drop *_lead*
+// drop *_lag*
+// drop *_lead*
 
 * drop anything before 1990 or after 2015
 drop if year < 1990
