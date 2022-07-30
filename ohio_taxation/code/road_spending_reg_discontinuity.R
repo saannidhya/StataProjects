@@ -6,52 +6,13 @@
 #           07/16/2022: separated aggregate section. this code contains non-aggregate only.
 #==========================================================================================================#
 
-# loading packages
-packages <- c("Rbearcat", "tidyverse", "lubridate", "haven", "stringr", "here", "knitr", "janitor", "scales","data.table","rdrobust")
-for (pkg in packages){
-  library(pkg, character.only = TRUE)
-}
-
-# global vars
-cutoff <- 50
-
 # specify the set up location
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
 data <- paste0(root,"/data")
 code <- paste0(root,"/code")
-shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
 
-#============================================#
-#  Importing Housing datasets as a list ----
-#============================================#
-
-
-# storing all housing dfs as a list
-dataset_names <- stringr::str_remove(list.files(shared,
-                                                pattern = "matches",
-                                                recursive = TRUE),
-                                     paste0(".", "dta")) 
-# import data
-housing_dfs <- purrr::map(list.files(shared,
-                                  pattern = "matches",
-                                  recursive = TRUE,
-                                  full.names = TRUE),
-                      haven::read_dta)
-# assign names to housing dfs
-housing_dfs <- stats::setNames(housing_dfs, dataset_names)
-
-
-#============================================#
-# Data Cleaning ----
-#============================================#
-# filtering all dfs: keeping renewals, dropping levies that last forever and dropping missing values of sale amount
-dfs <- purrr::map(housing_dfs, ~.x %>% 
-                                filter(description == "R" & duration != 1000) %>%
-                                janitor::clean_names() %>%
-                                drop_na(sale_amount) %>%
-                                mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0),
-                                       ln_sale_amount = log(sale_amount))                
-                    )
+# running data setup code
+source(paste0(code,"/housing_data_setup.R"))
 
 #==========================================================================================================#
 #                                     Non-Aggregated Results (using raw sale_amount) ----

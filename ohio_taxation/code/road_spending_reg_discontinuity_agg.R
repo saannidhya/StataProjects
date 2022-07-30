@@ -2,31 +2,22 @@
 # Purpose : Use median sale amount as outcome of interest for Road spending and Taxes project
 # Name    : Saani Rawat
 # Created : 07/16/2022
-# Log     : 
+# Log     : finished the program. Replicated in Stata as well. See road_spending_reg_discontinuity_agg.do
 #==========================================================================================================#
 
-# Note: run road_spending_reg_discontinuity.R first
+# specify the set up location
+root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
+data <- paste0(root,"/data")
+code <- paste0(root,"/code")
+
+# running data setup code
+source(paste0(code,"/housing_data_setup.R"))
+
 
 #============================================================================================================#
 #                         Aggregated Results (using median sale_amount for each county, vote and year) ----
 #============================================================================================================#
 
-
-# |- filtering ---- 
-# get colnames from t+1 to t+10
-# yr_t_plus_names <- dfs$housing_roads_census_t_plus_10_matches %>% select(starts_with("yr_t_plus")) %>% colnames() %>% sort()
-yr_t_names <- dfs$housing_roads_census_t_plus_10_matches %>% select(starts_with("yr_t_")) %>% colnames() %>% sort()
-
-# create aggregate datasets 
-# Dataset contains the following indices:
-# i: tendigit_fips, t = year
-dfs_agg <- purrr::map2(.x = dfs, .y = yr_t_names, ~ .x %>% 
-                         drop_na(sale_amount) %>%
-                         group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_for) %>%
-                         rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
-                         summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
-                                   meadian_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))             
-)
 
 #========================================#
 # |- Manipulation test (X variable) ----
@@ -68,6 +59,8 @@ for (i in 30:50){
 purrr::map2(dfs_agg, names(dfs_agg), ~print(rdrobust::rdplot(y = .x$median_sale_amount, 
                                                              x = .x$votes_pct_for, 
                                                              c = 50, p = 1, title = .y)))
+
+
 
 #=========================================#
 # |- running regressions (aggregate) ----

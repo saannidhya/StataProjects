@@ -1,5 +1,5 @@
 *-------------------------------------------------------------------------------------------------;
-* Purpose: Merge cleaned housing data with census & road voting data
+* Purpose: Merge cleaned housing data with census & road voting data to perform RDD
 * Created by: Saani Rawat
 * Log: 
 * 		1. 05July2022: finished cleaning roads_and_census dataset							
@@ -7,6 +7,7 @@
 *		3. 08July2022: updated the code to include t-1, t-2 variables and merge
 *		4. 11July2022: updated code by generating new dataset for _merge==3 only
 *		5. 18July2022: added code to generate aggregate housing datasets with median sale amount
+*		6. 30July2022: added code to generate SALE_AMOUNT_per_sq_feet variable
 *-------------------------------------------------------------------------------------------------;
 
 
@@ -76,6 +77,9 @@ foreach t of numlist -2/-1 1/10 {
 	sort TENDIGIT_FIPS year
 	scalar cutoff = 50	
 	
+	*creating sale_amount per square feet variable;
+	generate SALE_AMOUNT_per_sq_feet = SALE_AMOUNT/universal_building_square_feet
+	
 	if `t' < 0 {
 		local t_abs = abs(`t')
 		rename year yr_t_minus_`t_abs'
@@ -138,6 +142,9 @@ foreach t of numlist -2/-1 1/10 {
   * keeping only up till first obs;
   keep if dup <= 1
   keep TENDIGIT_FIPS year median_sale_amount
+  
+	*creating sale_amount per square feet variable;
+	generate SALE_AMOUNT_per_sq_feet = SALE_AMOUNT/universal_building_square_feet  
 
   if `t' < 0 {
     local t_abs = abs(`t')
