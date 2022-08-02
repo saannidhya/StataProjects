@@ -131,6 +131,9 @@ foreach t of numlist -2/-1 1/10 {
   clear all 
   use "${shared}\housesales_9521_slim.dta", clear
   scalar cutoff = 50  
+  
+  *creating sale_amount per square feet variable;
+  generate SALE_AMOUNT_per_sq_feet = SALE_AMOUNT/universal_building_square_feet  
 
   *removing missing SALE_AMOUNT;
   drop if SALE_AMOUNT == .
@@ -143,9 +146,6 @@ foreach t of numlist -2/-1 1/10 {
   keep if dup <= 1
   keep TENDIGIT_FIPS year median_sale_amount
   
-	*creating sale_amount per square feet variable;
-	generate SALE_AMOUNT_per_sq_feet = SALE_AMOUNT/universal_building_square_feet  
-
   if `t' < 0 {
     local t_abs = abs(`t')
 

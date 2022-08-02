@@ -41,13 +41,25 @@ narrow <- grade5 %>%
 mod1 <- lm(avgmath ~ above40 + x + x_above, data = narrow)
 mod2 <- lm(avgverb ~ above40 + x + x_above, data = narrow)
 
-model1 <- rdrobust::rdrobust(y = narrow$avgmath, x = narrow$x, c = 0, all = TRUE, kernel = "uni")
+mod1 <- lm(avgmath ~ above40 + x + x_above, data = narrow %>% filter(between(x,-5,5)) )
+
+model1 <- rdrobust::rdrobust(y = narrow$avgmath, x = narrow$x, c = 0, all = TRUE, kernel = "uni", h = c(5, 5))
 
 summary(model1)
 
 summary(mod1)
+
 summary(mod2)
 
               
 
 
+# lm() and rdrobust() giving exactly the same coefficient
+# narrow2 <- dfs_agg$housing_roads_census_t_plus_9_matches %>% 
+#   mutate(above50 = if_else(votes_pct_for >= cutoff, 1, 0),
+#          x = votes_pct_for - cutoff,
+#          x_above = above50*x) 
+# mod1 <- lm(median_sale_amount ~ above50 + x + x_above, data = filter(narrow2, abs(x) <= 10))
+# summary(mod1)
+# reg1 <- rdrobust::rdrobust(y = narrow2$median_sale_amount, x = narrow2$x, c = 0, all = TRUE, kernel = "uni", h = 10, vce="hc0")
+# summary(reg1)  

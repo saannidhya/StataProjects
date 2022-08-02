@@ -62,7 +62,8 @@ dfs <- purrr::map(housing_dfs, ~.x %>%
                     janitor::clean_names() %>%
                     drop_na(sale_amount) %>%
                     mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0),
-                           ln_sale_amount = log(sale_amount))                
+                           ln_sale_amount = log(sale_amount),
+                           sale_amount_per_sq_feet = sale_amount/universal_building_square_feet)  # note: NAs exist for some values of universal_building_square_feet variable but not sale_amount              
 )
 
 # |- filtering ---- 
@@ -78,7 +79,8 @@ dfs_agg <- purrr::map2(.x = dfs, .y = yr_t_names, ~ .x %>%
                          group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_for) %>%
                          rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
                          summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
-                                   median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))             
+                                   median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE),
+                                   median_sale_amount_per_sq_feet = median(sale_amount_per_sq_feet, na.rm = TRUE))              
 )
 
 # datasets with covariates
@@ -86,6 +88,5 @@ dfs_agg_covs <- purrr::map(.x = dfs_agg, ~ .x %>%
                                   dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
                                   ungroup()
                            )
-
 
 
