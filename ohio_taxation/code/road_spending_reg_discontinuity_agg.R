@@ -24,7 +24,7 @@ source(paste0(code,"/housing_data_setup.R"))
 #========================================#
 # |- Manipulation test (X variable) ----
 #========================================#
-dens_tests <- purrr::map(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_for, c = 50))
+dens_tests <- purrr::map(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_for, c = cutoff))
 summary(dens_tests$housing_roads_census_t_minus_1_matches)
 summary(dens_tests$housing_roads_census_t_minus_2_matches)
 summary(dens_tests$housing_roads_census_t_plus_1_matches)
