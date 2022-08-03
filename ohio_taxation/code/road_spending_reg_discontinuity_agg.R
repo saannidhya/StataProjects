@@ -1,9 +1,11 @@
-#==========================================================================================================#
+#================================================================================================================#
 # Purpose : Use median sale amount as outcome of interest for Road spending and Taxes project
 # Name    : Saani Rawat
 # Created : 07/16/2022
-# Log     : finished the program. Replicated in Stata as well. See road_spending_reg_discontinuity_agg.do
-#==========================================================================================================#
+# Log     : 
+#       07/16/2022: finished the program. Replicated in Stata as well. See road_spending_reg_discontinuity_agg.do
+#       08/02/2022: added sale_amount_per_sq_feet as outcome of interest
+#================================================================================================================#
 
 # specify the set up location
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
@@ -49,6 +51,8 @@ rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_10_matches$votes_pct_for, c =
 
 dfs$housing_roads_census_t_minus_1_matches 
 
+### median sale amount ###
+
 # t+10 as an example (14 is the best)
 for (i in 30:50){
   rdrobust::rdplot(y = dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount, 
@@ -60,11 +64,24 @@ purrr::map2(dfs_agg, names(dfs_agg), ~print(rdrobust::rdplot(y = .x$median_sale_
                                                              x = .x$votes_pct_for, 
                                                              c = 50, p = 1, title = .y)))
 
+### sale_amount_per_sq_feett ###
+for (i in 30:50){
+  rdrobust::rdplot(y = dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount, 
+                   x = dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, 
+                   c = 50, p = 1, nbins = c(i,i), title = paste0(as.character(i)))
+}
+
+purrr::map2(dfs_agg_per, names(dfs_agg_per), ~print(rdrobust::rdplot(y = .x$median_sale_amount_per_sq_feet, 
+                                                                     x = .x$votes_pct_for, 
+                                                                     c = 50, p = 1, title = .y)))
 
 
 #=========================================#
-# |- running regressions (aggregate) ----
+# running regressions (aggregate) ----
 #=========================================#
+
+### median sale amount ###
+
 # storing univariate RDD models (outcome vs running variable, no covariates) from t-2 to t+10
 regs <- purrr::map(.x = dfs_agg, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 # regs_summary <- purrr::map(.x = dfs_agg, ~ summary(rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE)))
@@ -104,32 +121,33 @@ rdrandinf(dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount,
           dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, 
           cutoff = cutoff)
 
+
+### sale_amount_per_sq_feett ###
+regs_per <- purrr::map(.x = dfs_agg_per, ~ rdrobust::rdrobust(y = .x$median_sale_amount_per_sq_feet, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+
+
+purrr::map(regs_per, .f = ~ .x %>% summary() )
+
+summary(regs_per$housing_roads_census_t_minus_1_matches)
+summary(regs_per$housing_roads_census_t_minus_2_matches)
+summary(regs_per$housing_roads_census_t_plus_1_matches)
+summary(regs_per$housing_roads_census_t_plus_2_matches)
+summary(regs_per$housing_roads_census_t_plus_3_matches)
+summary(regs_per$housing_roads_census_t_plus_4_matches)
+summary(regs_per$housing_roads_census_t_plus_5_matches)
+summary(regs_per$housing_roads_census_t_plus_6_matches)
+summary(regs_per$housing_roads_census_t_plus_7_matches)
+summary(regs_per$housing_roads_census_t_plus_8_matches)
+summary(regs_per$housing_roads_census_t_plus_9_matches)
+summary(regs_per$housing_roads_census_t_plus_10_matches)
+
+
+
 #=========================================#
 # |- Introducing covariates ----
 #=========================================#
-# importing covariates
-covars <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
-            select(-c(starts_with("yr_t_"),) ) %>%
-            janitor::clean_names() %>%
-            rename(vote_year = year)
-covars
 
-# merging covariates with dataset
-dfs_agg_covars <- purrr::map(dfs_agg, ~ .x %>%
-                               select(-votes_pct_for) %>%
-                               left_join(y = covars, by = c("tendigit_fips","vote_year")) %>%
-                               mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0))
-                               )
 
-# comparing ALL baseline characterists (above and below cutoff)
-baseline_summary <- map(dfs_agg_covars, ~ .x %>%
-                                            ungroup() %>%
-                                            select(-c("tendigit_fips", "year", "vote_year","tendigit_fips_year", "purpose2", 
-                                                      "tax_type", "description", "millage_percent","duration", "votes_for", 
-                                                      "votes_against","votes_pct_for_cntr")) %>%
-                                            group_by(treated) %>%
-                                            summarize(across(everything(), ~ mean(.x, na.rm = TRUE)))
-                        )
 
 
 create_bw_dfs <- function(df_list, cutoff, bandwidth){

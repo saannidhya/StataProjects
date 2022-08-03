@@ -106,25 +106,41 @@ rdrobust::rdrobust(y = df$median_sale_amount,
 
 mod1 <- lm(formula = median_sale_amount ~  votes_pct_for_cntrd + treated + votes_pct_for_cntrd_abv + 
              pop + pctsinparhhld + pctrent + pctwhite + pctseparated + incherfindahl, 
-           data = df %>% filter(abs(votes_pct_for_cntrd) <=5) )
+           data = df %>% filter(abs(votes_pct_for_cntrd) <= 5) )
 summary(mod1)
 
 car::vif(mod1)
 
-# lm() and rdrobust() giving exactly the same coefficient
 
-df <- dfs_agg_covs$housing_roads_census_t_plus_9_matches %>% 
-  mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0),
-         votes_pct_for_cntrd = votes_pct_for - cutoff,
-         votes_pct_for_cntrd_abv = votes_pct_for_cntrd*treated)  
+
+# function that takes a list and gives p-value of treatment effect for each covariate
+v_list <- c("pop", "pctsinparhhld", "pctrent", "pctwhite", "pctseparated", "incherfindahl","pctmin")
+
+test_func <- function(v_list){
   
+  p_val_list <- list()
+  reg <- rdrobust::rdrobust(y = df$median_sale_amount,
+                     x = df$votes_pct_for,
+                     c = cutoff, 
+                     all = TRUE,
+                     vce = "hc0"
+                    )
+  p_val_list["no_covars"] <- reg$pv[1] # conventional
+  
+  for (v in v_list){
+  reg <-  rdrobust::rdrobust(y = df$median_sale_amount,
+                       x = df$votes_pct_for,
+                       c = cutoff, 
+                       all = TRUE,
+                       vce = "hc0",
+                       covs = df %>% select(v)
+                    )
+  p_val_list[v] <-  reg$pv[1] # conventional
+  }
+  return(p_val_list)
+}
 
-narrow2 <- dfs_agg$housing_roads_census_t_plus_9_matches %>%
-  mutate(above50 = if_else(votes_pct_for >= cutoff, 1, 0),
-         x = votes_pct_for - cutoff,
-         x_above = above50*x)
-mod1 <- lm(median_sale_amount ~ above50 + x + x_above, data = filter(narrow2, abs(x) <= 10))
-summary(mod1)
-reg1 <- rdrobust::rdrobust(y = narrow2$median_sale_amount, x = narrow2$x, c = 0, all = TRUE, kernel = "uni", h = 10, vce="hc0")
-summary(reg1)
+test_func(v_list)
+
+
 

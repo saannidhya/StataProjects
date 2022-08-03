@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/code/ohio_road_housing_census_merge.txt
   log type:  text
- opened on:  30 Jul 2022, 16:39:13
+ opened on:   2 Aug 2022, 16:44:51
 
 . 
 . * defining lists/scalars;
@@ -79,51 +79,37 @@ file C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_tax
   4.         order TENDIGIT_FIPS year, first
   5.         sort TENDIGIT_FIPS year
   6.         scalar cutoff = 50      
-  7.         
+  7.     local t_abs = abs(`t')  
+  8.         if `t' < 0 {
+  9.                 local yr_var_root = "yr_t_minus"
+ 10.                 local t_type = "t_minus"
+ 11.         }
+ 12.         else {
+ 13.                 local yr_var_root = "yr_t_plus"         
+ 14.                 local t_type = "t_plus"
+ 15.         }       
+ 16.         
 .         *creating sale_amount per square feet variable;
 .         generate SALE_AMOUNT_per_sq_feet = SALE_AMOUNT/universal_building_square_feet
-  8.         
-.         if `t' < 0 {
-  9.                 local t_abs = abs(`t')
- 10.                 rename year yr_t_minus_`t_abs'
- 11. 
-.                 *destring TENDIGIT_FIPS and year (converting into numeric) before merging;
-.                 destring TENDIGIT_FIPS yr_t_minus_`t_abs', replace
- 12.                 recast float yr_t_minus_`t_abs'
- 13. 
-.                 * merging with roads and census data;
-.                 merge m:1 TENDIGIT_FIPS yr_t_minus_`t_abs' using "${data}/roads_and_census.dta"
- 14.                 
-.                 * re-generating centered variable to avoid absolute value sign
-.                 drop votes_pct_for_cntr
- 15.                 generate votes_pct_for_cntr = votes_pct_for - cutoff            
- 16.                 
-.                 * saving dataset with matches and non-matches;
-.                 save "${shared}\housing_roads_census_t_minus_`t_abs'.dta", replace 
- 17.                 keep if _merge == 3
- 18.                 save "${shared}\housing_roads_census_t_minus_`t_abs'_matches.dta", replace              
- 19.         }
- 20.         else {
- 21.                 rename year yr_t_plus_`t'
- 22. 
-.                 *destring TENDIGIT_FIPS and year (converting into numeric) before merging;
-.                 destring TENDIGIT_FIPS yr_t_plus_`t', replace
- 23.                 recast float yr_t_plus_`t'
- 24.                 format %10.0f TENDIGIT_FIPS
- 25. 
-.                 * merging with roads and census data;
-.                 merge m:1 TENDIGIT_FIPS yr_t_plus_`t' using "${data}/roads_and_census.dta"
- 26.                 
-.                 * re-generating centered variable to avoid absolute value sign
-.                 drop votes_pct_for_cntr
- 27.                 generate votes_pct_for_cntr = votes_pct_for - cutoff
- 28.                 
-.                 * saving dataset with matches and non-matches;
-.                 save "${shared}\housing_roads_census_t_plus_`t'.dta", replace   
- 29.                 keep if _merge == 3
- 30.                 save "${shared}\housing_roads_census_t_plus_`t'_matches.dta", replace           
- 31.         }       
- 32.         
+ 17.         
+.         rename year yr_`t_type'_`t_abs'
+ 18. 
+.         *destring TENDIGIT_FIPS and year (converting into numeric) before merging;
+.         destring TENDIGIT_FIPS yr_`t_type'_`t_abs', replace
+ 19.         recast float yr_`t_type'_`t_abs'
+ 20. 
+.         * merging with roads and census data;
+.         merge m:1 TENDIGIT_FIPS yr_`t_type'_`t_abs' using "${data}/roads_and_census.dta"
+ 21.         
+.         * re-generating centered variable to avoid absolute value sign
+.         drop votes_pct_for_cntr
+ 22.         generate votes_pct_for_cntr = votes_pct_for - cutoff            
+ 23.         
+.         * saving dataset with matches and non-matches;
+.         save "${shared}\housing_roads_census_`t_type'_`t_abs'.dta", replace 
+ 24.         keep if _merge == 3
+ 25.         save "${shared}\housing_roads_census_`t_type'_`t_abs'_matches.dta", replace     
+ 26.         
 . }
 (2,517,252 missing values generated)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -331,79 +317,56 @@ file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_roads_census_t_plus
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_roads_census_t_plus_10_matches.dta saved
 
 . 
-. 
 . *---------------------------------------------------------------------------------------------------------;
 . *       Aggregating dataset using median sale amount
 . *---------------------------------------------------------------------------------------------------------;
 . foreach t of numlist -2/-1 1/10 {
-  2.   clear all 
-  3.   use "${shared}\housesales_9521_slim.dta", clear
-  4.   scalar cutoff = 50  
-  5.   
-.   *creating sale_amount per square feet variable;
-.   generate SALE_AMOUNT_per_sq_feet = SALE_AMOUNT/universal_building_square_feet  
-  6. 
-.   *removing missing SALE_AMOUNT;
-.   drop if SALE_AMOUNT == .
-  7. 
-.   *aggregating and using median SALE_AMOUNT;
-.   bysort TENDIGIT_FIPS year: egen median_sale_amount = median(SALE_AMOUNT)
-  8.   bysort TENDIGIT_FIPS year: gen dup = cond(_N==1, 0, _n)
-  9. 
-.   * keeping only up till first obs;
-.   keep if dup <= 1
- 10.   keep TENDIGIT_FIPS year median_sale_amount
- 11.   
-.   if `t' < 0 {
- 12.     local t_abs = abs(`t')
- 13. 
+  2.         clear all 
+  3.         use "${shared}\housesales_9521_slim.dta", clear
+  4.         scalar cutoff = 50  
+  5.     local t_abs = abs(`t')  
+  6.         if `t' < 0 {
+  7.                 local yr_var_root = "yr_t_minus"
+  8.                 local t_type = "t_minus"
+  9.         }
+ 10.         else {
+ 11.                 local yr_var_root = "yr_t_plus"         
+ 12.                 local t_type = "t_plus"
+ 13.         }
+ 14.         
+.         *removing missing SALE_AMOUNT;
+.         drop if SALE_AMOUNT == .
+ 15. 
+.         *aggregating and using median SALE_AMOUNT;
+.         bysort TENDIGIT_FIPS year: egen median_sale_amount = median(SALE_AMOUNT)
+ 16.         bysort TENDIGIT_FIPS year: gen dup = cond(_N==1, 0, _n)
+ 17. 
+.         * keeping only up till first obs;
+.         keep if dup <= 1
+ 18.         keep TENDIGIT_FIPS year median_sale_amount
+ 19.   
 .     * renaming and re-formatting before merge;
-.     rename year yr_t_minus_`t_abs'
- 14.     destring TENDIGIT_FIPS yr_t_minus_`t_abs', replace
- 15.     recast float yr_t_minus_`t_abs'
- 16. 
+.         rename year `yr_var_root'_`t_abs'
+ 20.         destring TENDIGIT_FIPS `yr_var_root'_`t_abs', replace
+ 21.         recast float `yr_var_root'_`t_abs'
+ 22.         
 .     * merging with roads and census data;
-.     merge 1:1 TENDIGIT_FIPS yr_t_minus_`t_abs' using "${data}/roads_and_census.dta"
- 17.     
-.         * keeping only renewals, _merge == 3 and duration != 100;
-.         keep if _merge == 3
- 18.         keep if description == "R"
- 19.         drop if duration == 1000
- 20.         format %12.0g TENDIGIT_FIPS
- 21. 
-.     * re-generating centered variable to avoid absolute value sign
-.     drop votes_pct_for_cntr
- 22.     generate votes_pct_for_cntr = votes_pct_for - cutoff    
+.         merge 1:1 TENDIGIT_FIPS `yr_var_root'_`t_abs' using "${data}/roads_and_census.dta"              
  23.     
-.     * saving dataset;
-.     save "${shared}\housing_agg_roads_census_t_minus_`t_abs'.dta", replace 
- 24.   }
- 25.   else {
- 26. 
-.     * renaming and re-formatting before merge;
-.     rename year yr_t_plus_`t'
- 27.     destring TENDIGIT_FIPS yr_t_plus_`t', replace
- 28.     recast float yr_t_plus_`t'
- 29. 
-.     * merging with roads and census data;
-.     merge 1:1 TENDIGIT_FIPS yr_t_plus_`t' using "${data}/roads_and_census.dta"
- 30. 
 .         * keeping only renewals, _merge == 3 and duration != 100;
 .         keep if _merge == 3
- 31.         keep if description == "R"
- 32.         drop if duration == 1000
- 33.         format %12.0g TENDIGIT_FIPS
- 34.     
+ 24.         keep if description == "R"
+ 25.         drop if duration == 1000
+ 26.         format %12.0g TENDIGIT_FIPS
+ 27. 
 .     * re-generating centered variable to avoid absolute value sign
 .     drop votes_pct_for_cntr
- 35.     generate votes_pct_for_cntr = votes_pct_for - cutoff
- 36.     
+ 28.     generate votes_pct_for_cntr = votes_pct_for - cutoff    
+ 29.     
 .     * saving dataset;
-.     save "${shared}\housing_agg_roads_census_t_plus_`t'.dta", replace   
- 37.   } 
- 38.   
+.     save "${shared}\housing_agg_roads_census_`t_type'_`t_abs'.dta", replace 
+ 30.   
 . }
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -419,10 +382,10 @@ yr_t_minus_2: all characters numeric; replaced as int
     Matched                             3,266  (_merge==3)
     -----------------------------------------
 (55,144 observations deleted)
-(969 observations deleted)
+(968 observations deleted)
 (53 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_minus_2.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_minus_2.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -438,10 +401,10 @@ yr_t_minus_1: all characters numeric; replaced as int
     Matched                             3,381  (_merge==3)
     -----------------------------------------
 (54,914 observations deleted)
-(1,017 observations deleted)
+(1,016 observations deleted)
 (56 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_minus_1.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_minus_1.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -457,10 +420,10 @@ yr_t_plus_1: all characters numeric; replaced as int
     Matched                             3,671  (_merge==3)
     -----------------------------------------
 (54,334 observations deleted)
-(1,116 observations deleted)
+(1,115 observations deleted)
 (58 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_1.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_1.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -478,8 +441,8 @@ yr_t_plus_2: all characters numeric; replaced as int
 (54,054 observations deleted)
 (1,175 observations deleted)
 (58 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_2.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_2.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -497,8 +460,8 @@ yr_t_plus_3: all characters numeric; replaced as int
 (53,820 observations deleted)
 (1,234 observations deleted)
 (61 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_3.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_3.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -516,8 +479,8 @@ yr_t_plus_4: all characters numeric; replaced as int
 (53,886 observations deleted)
 (1,228 observations deleted)
 (58 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_4.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_4.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -535,8 +498,8 @@ yr_t_plus_5: all characters numeric; replaced as int
 (54,146 observations deleted)
 (1,181 observations deleted)
 (57 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_5.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_5.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -554,8 +517,8 @@ yr_t_plus_6: all characters numeric; replaced as int
 (54,478 observations deleted)
 (1,109 observations deleted)
 (50 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_6.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_6.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -573,8 +536,8 @@ yr_t_plus_7: all characters numeric; replaced as int
 (54,816 observations deleted)
 (1,055 observations deleted)
 (49 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_7.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_7.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -592,8 +555,8 @@ yr_t_plus_8: all characters numeric; replaced as int
 (55,174 observations deleted)
 (1,002 observations deleted)
 (48 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_8.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_8.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -609,10 +572,10 @@ yr_t_plus_9: all characters numeric; replaced as int
     Matched                             3,123  (_merge==3)
     -----------------------------------------
 (55,430 observations deleted)
-(960 observations deleted)
+(959 observations deleted)
 (47 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_9.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_9.dta saved
-(2,517,252 missing values generated)
 (2,136,786 observations deleted)
 (4,951,537 observations deleted)
 TENDIGIT_FIPS: all characters numeric; replaced as double
@@ -628,16 +591,325 @@ yr_t_plus_10: all characters numeric; replaced as int
     Matched                             2,979  (_merge==3)
     -----------------------------------------
 (55,718 observations deleted)
-(916 observations deleted)
+(915 observations deleted)
 (46 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_10.dta not found)
 file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_t_plus_10.dta saved
 
 . 
+. *---------------------------------------------------------------------------------------------------------;
+. *       Aggregating dataset using SALE_AMOUNT_per_sq_feet
+. *---------------------------------------------------------------------------------------------------------;
+. 
+. foreach t of numlist -2/-1 1/10 {
+  2.         clear all 
+  3.         use "${shared}\housesales_9521_slim.dta", clear
+  4.         scalar cutoff = 50  
+  5.         local t_abs = abs(`t')
+  6.         if `t' < 0 {
+  7.                 local yr_var_root = "yr_t_minus"
+  8.                 local t_type = "t_minus"
+  9.         }
+ 10.         else {
+ 11.                 local yr_var_root = "yr_t_plus"         
+ 12.                 local t_type = "t_plus"
+ 13.         }
+ 14.         
+.         *creating sale_amount per square feet variable;
+.         generate sale_amount_per_sq_feet = SALE_AMOUNT/universal_building_square_feet  
+ 15. 
+.         *removing missing SALE_AMOUNT and universal_building_square_feet;
+.         drop if SALE_AMOUNT == .
+ 16.         drop if universal_building_square_feet == .
+ 17. 
+.         *aggregating and using median SALE_AMOUNT;
+.         bysort TENDIGIT_FIPS year: egen median_sale_amount_per_sq_feet = median(sale_amount_per_sq_feet)
+ 18.         bysort TENDIGIT_FIPS year: gen dup = cond(_N==1, 0, _n)
+ 19. 
+.         * keeping only up till first obs;
+.         keep if dup <= 1
+ 20.         keep TENDIGIT_FIPS year median_sale_amount_per_sq_feet  
+ 21. 
+.         * renaming and re-formatting before merge;
+.         rename year `yr_var_root'_`t_abs'
+ 22.         destring TENDIGIT_FIPS `yr_var_root'_`t_abs', replace
+ 23.         recast float `yr_var_root'_`t_abs'
+ 24.         
+.     * merging with roads and census data;
+.         merge 1:1 TENDIGIT_FIPS `yr_var_root'_`t_abs' using "${data}/roads_and_census.dta"                      
+ 25.         
+.         * keeping only renewals, _merge == 3 and duration != 100;
+.         keep if _merge == 3
+ 26.         keep if description == "R"
+ 27.         drop if duration == 1000
+ 28.         format %12.0g TENDIGIT_FIPS
+ 29.         
+.     * re-generating centered variable to avoid absolute value sign
+.     drop votes_pct_for_cntr
+ 30.     generate votes_pct_for_cntr = votes_pct_for - cutoff
+ 31.     
+.     * saving dataset;
+.     save "${shared}\housing_agg_roads_census_per_`t_type'_`t_abs'.dta", replace         
+ 32.         
+. }
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_minus_2: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        54,744
+        from master                    53,835  (_merge==1)
+        from using                        909  (_merge==2)
+
+    Matched                             3,251  (_merge==3)
+    -----------------------------------------
+(54,744 observations deleted)
+(967 observations deleted)
+(53 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_minus_2.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_minus_2.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_minus_1: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        54,506
+        from master                    53,716  (_merge==1)
+        from using                        790  (_merge==2)
+
+    Matched                             3,370  (_merge==3)
+    -----------------------------------------
+(54,506 observations deleted)
+(1,013 observations deleted)
+(56 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_minus_1.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_minus_1.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_1: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        53,922
+        from master                    53,424  (_merge==1)
+        from using                        498  (_merge==2)
+
+    Matched                             3,662  (_merge==3)
+    -----------------------------------------
+(53,922 observations deleted)
+(1,109 observations deleted)
+(58 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_1.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_1.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_2: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        53,650
+        from master                    53,288  (_merge==1)
+        from using                        362  (_merge==2)
+
+    Matched                             3,798  (_merge==3)
+    -----------------------------------------
+(53,650 observations deleted)
+(1,169 observations deleted)
+(58 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_2.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_2.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_3: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        53,422
+        from master                    53,174  (_merge==1)
+        from using                        248  (_merge==2)
+
+    Matched                             3,912  (_merge==3)
+    -----------------------------------------
+(53,422 observations deleted)
+(1,230 observations deleted)
+(61 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_3.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_3.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_4: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        53,480
+        from master                    53,203  (_merge==1)
+        from using                        277  (_merge==2)
+
+    Matched                             3,883  (_merge==3)
+    -----------------------------------------
+(53,480 observations deleted)
+(1,224 observations deleted)
+(58 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_4.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_4.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_5: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        53,736
+        from master                    53,331  (_merge==1)
+        from using                        405  (_merge==2)
+
+    Matched                             3,755  (_merge==3)
+    -----------------------------------------
+(53,736 observations deleted)
+(1,178 observations deleted)
+(57 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_5.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_5.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_6: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        54,064
+        from master                    53,495  (_merge==1)
+        from using                        569  (_merge==2)
+
+    Matched                             3,591  (_merge==3)
+    -----------------------------------------
+(54,064 observations deleted)
+(1,107 observations deleted)
+(50 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_6.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_6.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_7: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        54,414
+        from master                    53,670  (_merge==1)
+        from using                        744  (_merge==2)
+
+    Matched                             3,416  (_merge==3)
+    -----------------------------------------
+(54,414 observations deleted)
+(1,051 observations deleted)
+(49 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_7.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_7.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_8: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        54,768
+        from master                    53,847  (_merge==1)
+        from using                        921  (_merge==2)
+
+    Matched                             3,239  (_merge==3)
+    -----------------------------------------
+(54,768 observations deleted)
+(1,001 observations deleted)
+(47 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_8.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_8.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_9: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        55,010
+        from master                    53,968  (_merge==1)
+        from using                      1,042  (_merge==2)
+
+    Matched                             3,118  (_merge==3)
+    -----------------------------------------
+(55,010 observations deleted)
+(957 observations deleted)
+(47 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_9.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_9.dta saved
+(2,517,252 missing values generated)
+(2,136,786 observations deleted)
+(380,466 observations deleted)
+(4,571,501 observations deleted)
+TENDIGIT_FIPS: all characters numeric; replaced as double
+yr_t_plus_10: all characters numeric; replaced as int
+(77 missing values generated)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                        55,300
+        from master                    54,113  (_merge==1)
+        from using                      1,187  (_merge==2)
+
+    Matched                             2,973  (_merge==3)
+    -----------------------------------------
+(55,300 observations deleted)
+(913 observations deleted)
+(45 observations deleted)
+(file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_10.dta not found)
+file \\cobshares.uccob.uc.edu\economics$\Julia\roads\housing_agg_roads_census_per_t_plus_10.dta saved
+
 . 
 . *end log;
 . log close 
       name:  <unnamed>
        log:  C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/code/ohio_road_housing_census_merge.txt
   log type:  text
- closed on:  30 Jul 2022, 17:11:04
+ closed on:   2 Aug 2022, 17:20:56
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

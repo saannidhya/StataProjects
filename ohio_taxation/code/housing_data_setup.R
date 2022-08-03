@@ -62,8 +62,7 @@ dfs <- purrr::map(housing_dfs, ~.x %>%
                     janitor::clean_names() %>%
                     drop_na(sale_amount) %>%
                     mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0),
-                           ln_sale_amount = log(sale_amount),
-                           sale_amount_per_sq_feet = sale_amount/universal_building_square_feet)  # note: NAs exist for some values of universal_building_square_feet variable but not sale_amount              
+                           ln_sale_amount = log(sale_amount))            
 )
 
 # |- filtering ---- 
@@ -79,8 +78,7 @@ dfs_agg <- purrr::map2(.x = dfs, .y = yr_t_names, ~ .x %>%
                          group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_for) %>%
                          rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
                          summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
-                                   median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE),
-                                   median_sale_amount_per_sq_feet = median(sale_amount_per_sq_feet, na.rm = TRUE))              
+                                   median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))              
 )
 
 # datasets with covariates
@@ -89,4 +87,26 @@ dfs_agg_covs <- purrr::map(.x = dfs_agg, ~ .x %>%
                                   ungroup()
                            )
 
+# creating a dataset with sale_amount_per_sq_feet separately.
+# Reasoning: for sale_amount_per_sq_feet, both variables (sale_amount and universal_building_square_feet) have to be non missing.
+#            if created sale_amount_per_sq_feet in dfs list above, some observations which require only sale_amount for 
+#            median_sale_amount variable might be dropped.
 
+dfs_agg_per <- purrr::map2(housing_dfs, yr_t_names, function(df,yr){
+                dataset <- df %>% 
+                            filter(description == "R" & duration != 1000) %>%
+                            janitor::clean_names() %>%
+                            drop_na(sale_amount) %>%
+                            drop_na(universal_building_square_feet) %>%
+                            mutate(sale_amount_per_sq_feet = sale_amount/universal_building_square_feet)
+                dataset_summarize <- dataset %>%
+                          group_by(tendigit_fips, eval(parse(text = yr)), year, votes_pct_for) %>%
+                          rename(vote_year = year, year = `eval(parse(text = yr))`) %>%
+                          summarize(median_sale_amount_per_sq_feet = median(sale_amount_per_sq_feet, na.rm = TRUE))   
+                return(dataset_summarize)
+      }
+      )
+
+# purrr::map(dfs_agg, ~.x %>% nrow())
+# purrr::map(dfs_agg_per, ~.x %>% nrow())
+# purrr::map(housing_dfs, ~.x %>% nrow())

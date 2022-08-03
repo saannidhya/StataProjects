@@ -8,8 +8,8 @@
 *		4. 11July2022: updated code by generating new dataset for _merge==3 only
 *		5. 18July2022: added code to generate aggregate housing datasets with median sale amount
 *		6. 30July2022: added code to generate SALE_AMOUNT_per_sq_feet variable
+*		7. 02Aug2022 : updated loops to simplify them. created SALE_AMOUNT_per_sq_feet separately
 *-------------------------------------------------------------------------------------------------;
-
 
 * Defining root location via global macros;
 global root "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
@@ -76,86 +76,74 @@ foreach t of numlist -2/-1 1/10 {
 	order TENDIGIT_FIPS year, first
 	sort TENDIGIT_FIPS year
 	scalar cutoff = 50	
+    local t_abs = abs(`t')  
+	if `t' < 0 {
+		local yr_var_root = "yr_t_minus"
+		local t_type = "t_minus"
+	}
+	else {
+		local yr_var_root = "yr_t_plus"		
+		local t_type = "t_plus"
+	}	
 	
 	*creating sale_amount per square feet variable;
 	generate SALE_AMOUNT_per_sq_feet = SALE_AMOUNT/universal_building_square_feet
 	
-	if `t' < 0 {
-		local t_abs = abs(`t')
-		rename year yr_t_minus_`t_abs'
+	rename year yr_`t_type'_`t_abs'
 
-		*destring TENDIGIT_FIPS and year (converting into numeric) before merging;
-		destring TENDIGIT_FIPS yr_t_minus_`t_abs', replace
-		recast float yr_t_minus_`t_abs'
+	*destring TENDIGIT_FIPS and year (converting into numeric) before merging;
+	destring TENDIGIT_FIPS yr_`t_type'_`t_abs', replace
+	recast float yr_`t_type'_`t_abs'
 
-		* merging with roads and census data;
-		merge m:1 TENDIGIT_FIPS yr_t_minus_`t_abs' using "${data}/roads_and_census.dta"
-		
-		* re-generating centered variable to avoid absolute value sign
-		drop votes_pct_for_cntr
-		generate votes_pct_for_cntr = votes_pct_for - cutoff		
-		
-		* saving dataset with matches and non-matches;
-		save "${shared}\housing_roads_census_t_minus_`t_abs'.dta", replace 
-		keep if _merge == 3
-		save "${shared}\housing_roads_census_t_minus_`t_abs'_matches.dta", replace 		
-	}
-	else {
-		rename year yr_t_plus_`t'
-
-		*destring TENDIGIT_FIPS and year (converting into numeric) before merging;
-		destring TENDIGIT_FIPS yr_t_plus_`t', replace
-		recast float yr_t_plus_`t'
-		format %10.0f TENDIGIT_FIPS
-
-		* merging with roads and census data;
-		merge m:1 TENDIGIT_FIPS yr_t_plus_`t' using "${data}/roads_and_census.dta"
-		
-		* re-generating centered variable to avoid absolute value sign
-		drop votes_pct_for_cntr
-		generate votes_pct_for_cntr = votes_pct_for - cutoff
-		
-		* saving dataset with matches and non-matches;
-		save "${shared}\housing_roads_census_t_plus_`t'.dta", replace 	
-		keep if _merge == 3
-		save "${shared}\housing_roads_census_t_plus_`t'_matches.dta", replace 		
-	}	
+	* merging with roads and census data;
+	merge m:1 TENDIGIT_FIPS yr_`t_type'_`t_abs' using "${data}/roads_and_census.dta"
+	
+	* re-generating centered variable to avoid absolute value sign
+	drop votes_pct_for_cntr
+	generate votes_pct_for_cntr = votes_pct_for - cutoff		
+	
+	* saving dataset with matches and non-matches;
+	save "${shared}\housing_roads_census_`t_type'_`t_abs'.dta", replace 
+	keep if _merge == 3
+	save "${shared}\housing_roads_census_`t_type'_`t_abs'_matches.dta", replace 	
 	
 }
-
 
 *---------------------------------------------------------------------------------------------------------;
 *	Aggregating dataset using median sale amount
 *---------------------------------------------------------------------------------------------------------;
 foreach t of numlist -2/-1 1/10 {
-  clear all 
-  use "${shared}\housesales_9521_slim.dta", clear
-  scalar cutoff = 50  
+	clear all 
+	use "${shared}\housesales_9521_slim.dta", clear
+	scalar cutoff = 50  
+    local t_abs = abs(`t')  
+	if `t' < 0 {
+		local yr_var_root = "yr_t_minus"
+		local t_type = "t_minus"
+	}
+	else {
+		local yr_var_root = "yr_t_plus"		
+		local t_type = "t_plus"
+	}
+	
+	*removing missing SALE_AMOUNT;
+	drop if SALE_AMOUNT == .
+
+	*aggregating and using median SALE_AMOUNT;
+	bysort TENDIGIT_FIPS year: egen median_sale_amount = median(SALE_AMOUNT)
+	bysort TENDIGIT_FIPS year: gen dup = cond(_N==1, 0, _n)
+
+	* keeping only up till first obs;
+	keep if dup <= 1
+	keep TENDIGIT_FIPS year median_sale_amount
   
-  *creating sale_amount per square feet variable;
-  generate SALE_AMOUNT_per_sq_feet = SALE_AMOUNT/universal_building_square_feet  
-
-  *removing missing SALE_AMOUNT;
-  drop if SALE_AMOUNT == .
-
-  *aggregating and using median SALE_AMOUNT;
-  bysort TENDIGIT_FIPS year: egen median_sale_amount = median(SALE_AMOUNT)
-  bysort TENDIGIT_FIPS year: gen dup = cond(_N==1, 0, _n)
-
-  * keeping only up till first obs;
-  keep if dup <= 1
-  keep TENDIGIT_FIPS year median_sale_amount
-  
-  if `t' < 0 {
-    local t_abs = abs(`t')
-
     * renaming and re-formatting before merge;
-    rename year yr_t_minus_`t_abs'
-    destring TENDIGIT_FIPS yr_t_minus_`t_abs', replace
-    recast float yr_t_minus_`t_abs'
-
+	rename year `yr_var_root'_`t_abs'
+	destring TENDIGIT_FIPS `yr_var_root'_`t_abs', replace
+	recast float `yr_var_root'_`t_abs'
+	
     * merging with roads and census data;
-    merge 1:1 TENDIGIT_FIPS yr_t_minus_`t_abs' using "${data}/roads_and_census.dta"
+	merge 1:1 TENDIGIT_FIPS `yr_var_root'_`t_abs' using "${data}/roads_and_census.dta"		
     
 	* keeping only renewals, _merge == 3 and duration != 100;
 	keep if _merge == 3
@@ -168,34 +156,65 @@ foreach t of numlist -2/-1 1/10 {
     generate votes_pct_for_cntr = votes_pct_for - cutoff    
     
     * saving dataset;
-    save "${shared}\housing_agg_roads_census_t_minus_`t_abs'.dta", replace 
-  }
-  else {
+    save "${shared}\housing_agg_roads_census_`t_type'_`t_abs'.dta", replace 
+  
+}
 
-    * renaming and re-formatting before merge;
-    rename year yr_t_plus_`t'
-    destring TENDIGIT_FIPS yr_t_plus_`t', replace
-    recast float yr_t_plus_`t'
+*---------------------------------------------------------------------------------------------------------;
+*	Aggregating dataset using SALE_AMOUNT_per_sq_feet
+*---------------------------------------------------------------------------------------------------------;
 
+foreach t of numlist -2/-1 1/10 {
+	clear all 
+	use "${shared}\housesales_9521_slim.dta", clear
+	scalar cutoff = 50  
+	local t_abs = abs(`t')
+	if `t' < 0 {
+		local yr_var_root = "yr_t_minus"
+		local t_type = "t_minus"
+	}
+	else {
+		local yr_var_root = "yr_t_plus"		
+		local t_type = "t_plus"
+	}
+	
+	*creating sale_amount per square feet variable;
+	generate sale_amount_per_sq_feet = SALE_AMOUNT/universal_building_square_feet  
+
+	*removing missing SALE_AMOUNT and universal_building_square_feet;
+	drop if SALE_AMOUNT == .
+	drop if universal_building_square_feet == .
+
+	*aggregating and using median SALE_AMOUNT;
+	bysort TENDIGIT_FIPS year: egen median_sale_amount_per_sq_feet = median(sale_amount_per_sq_feet)
+	bysort TENDIGIT_FIPS year: gen dup = cond(_N==1, 0, _n)
+
+	* keeping only up till first obs;
+	keep if dup <= 1
+	keep TENDIGIT_FIPS year median_sale_amount_per_sq_feet 	
+
+	* renaming and re-formatting before merge;
+	rename year `yr_var_root'_`t_abs'
+	destring TENDIGIT_FIPS `yr_var_root'_`t_abs', replace
+	recast float `yr_var_root'_`t_abs'
+	
     * merging with roads and census data;
-    merge 1:1 TENDIGIT_FIPS yr_t_plus_`t' using "${data}/roads_and_census.dta"
-
+	merge 1:1 TENDIGIT_FIPS `yr_var_root'_`t_abs' using "${data}/roads_and_census.dta"			
+	
 	* keeping only renewals, _merge == 3 and duration != 100;
 	keep if _merge == 3
 	keep if description == "R"
 	drop if duration == 1000
 	format %12.0g TENDIGIT_FIPS
-    
+	
     * re-generating centered variable to avoid absolute value sign
     drop votes_pct_for_cntr
     generate votes_pct_for_cntr = votes_pct_for - cutoff
     
     * saving dataset;
-    save "${shared}\housing_agg_roads_census_t_plus_`t'.dta", replace   
-  } 
-  
+    save "${shared}\housing_agg_roads_census_per_`t_type'_`t_abs'.dta", replace 	
+	
 }
-
 
 *end log;
 log close 
