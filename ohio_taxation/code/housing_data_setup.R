@@ -107,6 +107,11 @@ dfs_agg_per <- purrr::map2(housing_dfs, yr_t_names, function(df,yr){
       }
       )
 
+dfs_agg_per_covs <- purrr::map(.x = dfs_agg_per, ~ .x %>% 
+                             dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
+                             ungroup()
+)
+
 # purrr::map(dfs_agg, ~.x %>% nrow())
 # purrr::map(dfs_agg_per, ~.x %>% nrow())
 # purrr::map(housing_dfs, ~.x %>% nrow())

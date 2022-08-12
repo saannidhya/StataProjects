@@ -58,10 +58,14 @@ t_test <- function(df, var) {
 }
 
 # T-test (all variables) ----
+
+# take all covariate names 
 col_list <- dfs_agg_covs$housing_roads_census_t_plus_1_matches %>%
   select(-c(tendigit_fips,year,vote_year, tendigit_fips_year, votes_pct_for)) %>%
   colnames()
 
+
+## global sample ##
 all_tests <- purrr::map2(.x = dfs_agg_covs, .y = names(dfs_agg_covs), .f = function(df, df_name) {
   # dataset name
   dataset <- deparse(substitute(df))
@@ -79,4 +83,49 @@ all_tests <- purrr::map2(.x = dfs_agg_covs, .y = names(dfs_agg_covs), .f = funct
 }) %>% bind_rows()
 
 # Output as a csv file
-write.csv(all_tests, paste0(tables,"/covariates_balance_test.csv"))
+write.csv(all_tests, paste0(tables,"/covariates_balance_test_global.csv"))
+
+## effective sample ##
+
+dfs_agg_covs_cut <- purrr::map(dfs_agg_covs, ~ .x %>%
+                                 filter(between(votes_pct_for, cutoff - 5, cutoff + 5)) )
+
+all_tests_cut <- purrr::map2(.x = dfs_agg_covs_cut, .y = names(dfs_agg_covs_cut), .f = function(df, df_name) {
+  # dataset name
+  dataset <- deparse(substitute(df))
+  
+  # perform t-test on one dataset at a time
+  t_tests <- purrr::map(.x = col_list, .f = ~ t_test(df = df,
+                                                     var = .x))  %>%
+    bind_rows() %>%
+    mutate(dataset = df_name) %>%
+    
+    
+    # # print t-test results from that dataset in a list
+    return(t_tests)
+  
+}) %>% bind_rows()
+
+# Output as a csv file
+write.csv(all_tests, paste0(tables,"/covariates_balance_test_effective.csv"))
+
+#============================================================================================================#
+#     Covariate discontinuity test ----
+#============================================================================================================#
+# |- RD using covariates ####
+
+covs_list <- col_list[!col_list %in% c('median_sale_amount', 'median_ln_sale_amount')]
+
+regs_covs <- purrr::map( .x = dfs_agg_covs,
+                         .f = function(df){
+                          reg_covs <- purrr::map(.x = covs_list, 
+                                      .f = function(var){
+                                        rdrobust::rdrobust(y = df[[var]], 
+                                                           x = df$votes_pct_for, 
+                                                           c = cutoff, 
+                                                           all = TRUE)
+                                      })
+                          names(reg_covs) <- covs_list
+                          return(reg_covs)
+                 })
+

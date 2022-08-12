@@ -43,13 +43,20 @@ summary(dens_tests$housing_roads_census_t_plus_10_matches) # all passed!
 # Give it the running variable and the cutpoint
 # it will automatically produce a plot and select the number of bins and the bandwidth
 # The output will be the p-value for the presence of a discontinuity
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_1_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_2_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_3_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_4_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_5_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_6_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_7_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_8_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, c = 50)
 rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_10_matches$votes_pct_for, c = 50)
 
 #=========================#
 # |- RD plots ----
 #=========================#
-
-dfs$housing_roads_census_t_minus_1_matches 
 
 ### median sale amount ###
 
@@ -80,7 +87,7 @@ purrr::map2(dfs_agg_per, names(dfs_agg_per), ~print(rdrobust::rdplot(y = .x$medi
 # running regressions (aggregate) ----
 #=========================================#
 
-### median sale amount ###
+### |- median sale amount ####
 
 # storing univariate RDD models (outcome vs running variable, no covariates) from t-2 to t+10
 regs <- purrr::map(.x = dfs_agg, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
@@ -122,17 +129,24 @@ rdrandinf(dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount,
           cutoff = cutoff)
 
 
-### sale_amount_per_sq_feett ###
+### |- sale_amount_per_sq_feett ####
 regs_per <- purrr::map(.x = dfs_agg_per, ~ rdrobust::rdrobust(y = .x$median_sale_amount_per_sq_feet, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 
 
 purrr::map(regs_per, .f = ~ .x %>% summary() )
 
+# no effect before the voting result was decided (passed/failed)
 summary(regs_per$housing_roads_census_t_minus_1_matches)
 summary(regs_per$housing_roads_census_t_minus_2_matches)
+
+# Similar to median sale amount, little effect immediately after the voting result was decided. It takes time to build roads and people to change their preferences.
+# years 1, 2 and 3 after voting result was decided
 summary(regs_per$housing_roads_census_t_plus_1_matches)
 summary(regs_per$housing_roads_census_t_plus_2_matches)
 summary(regs_per$housing_roads_census_t_plus_3_matches)
+
+# Similar to median sale amount, effect starts to appear year 4 onwards and goes on to year 10. Roads have been built and people are starting to move in.
+# However, year 8 and year 10 show no effect
 summary(regs_per$housing_roads_census_t_plus_4_matches)
 summary(regs_per$housing_roads_census_t_plus_5_matches)
 summary(regs_per$housing_roads_census_t_plus_6_matches)
@@ -143,42 +157,3 @@ summary(regs_per$housing_roads_census_t_plus_10_matches)
 
 
 
-#=========================================#
-# |- Introducing covariates ----
-#=========================================#
-
-
-
-
-create_bw_dfs <- function(df_list, cutoff, bandwidth){
-  purrr::map(df_list, ~ .x %>% filter(between(votes_pct_for, cutoff-bandwidth, cutoff+bandwidth)))
-}
-
-dfs_agg_5 <- create_bw_dfs(dfs_agg, 50, 5)
-dfs_agg_10 <- create_bw_dfs(dfs_agg, 50, 10)
-
-# 5 seems to be working better than 10 (10 may be too wide)
-regs_5 <- purrr::map(.x = dfs_agg_5, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
-summary(regs_5$housing_roads_census_t_plus_4_matches)
-
-regs_10 <- purrr::map(.x = dfs_agg_10, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
-summary(regs_10$housing_roads_census_t_plus_1_matches)
-summary(regs_10$housing_roads_census_t_plus_2_matches)
-summary(regs_10$housing_roads_census_t_plus_3_matches)
-summary(regs_10$housing_roads_census_t_plus_4_matches)
-summary(regs_10$housing_roads_census_t_plus_5_matches)
-summary(regs_10$housing_roads_census_t_plus_6_matches)
-summary(regs_10$housing_roads_census_t_plus_7_matches)
-summary(regs_10$housing_roads_census_t_plus_8_matches)
-summary(regs_10$housing_roads_census_t_plus_9_matches)
-summary(regs_10$housing_roads_census_t_plus_10_matches)
-
-?rdrobust::rdrobust
-
-
-
-mod <- rdrobust::rdrobust(y = dfs_agg_covars$housing_roads_census_t_plus_7_matches$median_sale_amount, 
-                   x = dfs_agg_covars$housing_roads_census_t_plus_7_matches$votes_pct_for, 
-                   c = cutoff, covs = dfs_agg_covars$housing_roads_census_t_plus_7_matches[,4:7], all = T)
-
-mod$bws
