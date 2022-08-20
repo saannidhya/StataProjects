@@ -23,6 +23,7 @@ global ln_Y ln_median_sale_amount
 global X votes_pct_for
 global R votes_pct_for_cntr
 global prior_yrs_flg = 1
+global cutoff = 50
 scalar cutoff = 50
 
 * specifying regression parameters (see "help rdrobust" for more options)
@@ -73,25 +74,40 @@ foreach t of numlist -2/-1 1/10 {
 	rddensity $X, c(50)
 	twoway (histogram $X if $X < cutoff, freq width(2) bcolor(red)) ///
 		   (histogram $X if $X >= cutoff, freq width(2) bcolor(blue) xline(50)), ///
-		   leg(off)
+		   leg(off) xtitle("Percent of Votes for Tax Levy") title("Density plot: (`year')")
 	graph export "$plots/density_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.png", replace
 	   
+	display "ran till checkpoint 0"   
+	* regression run
+	rdrobust $Y $X, c($cutoff) all kernel($kernel) p($p) q($q) bwselect($bwselect)
+	
+	* storing optimal bandwidths
+	local h_l = round(`e(h_l)', 0.1)
+	local h_r = round(`e(h_r)', 0.1)
+// 	local b_l = round(`e(b_l)'
+// 	local b_r = round(`e(b_r)'
+	
 	* Polynomial order test	   
-	rdmse median_sale_amount votes_pct_for, c(50) h(5) b(5)	
-
+	*rdmse $Y $X, c(50) h(`e(h_l)') b(`e(b_l)')	
+	
 	*RD plots
 	*rdplot $Y $X, c(50) binselect(esmv) 	 
-	binscatter median_sale_amount votes_pct_for, rd(50) linetype(lfit) ///
-	xtitle("Percent of Votes for Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot") ///
-	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.png") replace
+	* full plot
+	binscatter $Y $X, rd($cutoff) linetype(lfit) ///
+	xtitle("Percent of Votes for Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (Full)") ///
+	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_full.png") replace
+	* plot within the bandwidth selected by rdrobust
+	binscatter $Y $X if votes_pct_for >= cutoff-`h_l' & votes_pct_for <= cutoff+`h_r', rd($cutoff) linetype(lfit) ///
+	xtitle("Percent of Votes for Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (bw: `h_l', `h_r')") ///
+	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
 
 	* generating an exportable table
-	table () ( result ) (), command(rdrobust $Y $X, c(50) all kernel($kernel) p($p) q($q) bwselect($bwselect) )
+	table () ( result ) (), command(rdrobust $Y $X, c($cutoff) all kernel($kernel) p($p) q($q) bwselect($bwselect) )
 	collect layout (result[_r_b] result[_r_se] result[_r_z] result[_r_p] result[_r_lb] result[_r_ub] result[N] result[N_l] result[N_r] result[N_h_l] result[N_h_r] result[bwselect] result[c] result[h_l] result[h_r] result[cmd] result[kernel] result[level] result[outcomevar] result[runningvar] result[p] result[q]) (colname[Conventional Bias-corrected Robust] colname[_hide]) (), name(Table)
 	collect label levels result level "Significance Level" _r_lb "95% lower" _r_ub "95% upper" N_l "Tot. obs. to left" N_r "Tot. obs. to right" N_h_l "Tot. obs. to left within bw" N_h_r "Tot. obs. to right within bw", name(Table) modify
 	collect style cell result[_r_b]#result[_r_se]#result[_r_lb]#result[_r_ub], name(Table) warn nformat(%9.0f)
 	collect style cell result[h_l]#result[h_r], name(Table) warn nformat(%9.2f)
-	collect export "${tables}\est_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", name(Table) as(xlsx) sheet(Sheet1) cell(A1) replace	
+	collect export "${tables}/est_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", name(Table) as(xlsx) sheet(Sheet1) cell(A1) replace	
 	
 }
 
