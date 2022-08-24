@@ -1,5 +1,6 @@
 *-----------------------------------------------------------------------------------------------------------------------;
-* Purpose: Run Regression discontinuity analysis on Outcome of interest (Sale amount) and running variable
+* Purpose: Run Regression discontinuity analysis on Outcome of interest (Median Sale amount 
+* 		   and Median Sale Amount per sq feet) and running variable
 * Created by: Saani Rawat
 * Log: 
 *		1. 18July2022: added code to run a regression. need to update to include all datasets
@@ -78,14 +79,14 @@ foreach t of numlist -2/-1 1/10 {
 	local dens_tst_q = `e(q)'
 	
 	* storing results of density/manipulation test in an excel file
-	putexcel set "${tables}/dens_test_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", replace
-	putexcel set "${tables}/dens_test_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", replace sheet("Density Test Results")
-    putexcel A1 = "Density/Manipulation Test results for `housing_df'" ///
-			 A3 = "N" B2 = `dens_tst_N' ///
-			 A4 = "p" B3 = `dens_tst_p' ///
-			 A5 = "q" B4 = `dens_tst_q' ///
-			 A6 = "pval" B5 = `dens_tst_pval' ///
-			 A7 = "variable" B5 = "$X"  
+// 	putexcel set "${tables}/dens_test_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", replace
+// 	putexcel set "${tables}/dens_test_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", replace sheet("Density Test Results")
+//     putexcel A1 = "Density/Manipulation Test results for `housing_df'" ///
+// 			 A3 = "N" B2 = `dens_tst_N' ///
+// 			 A4 = "p" B3 = `dens_tst_p' ///
+// 			 A5 = "q" B4 = `dens_tst_q' ///
+// 			 A6 = "pval" B5 = `dens_tst_pval' ///
+// 			 A7 = "variable" B5 = "$X"  
 	
 	twoway (histogram $X if $X < cutoff, freq width(2) bcolor(red)) ///
 		   (histogram $X if $X >= cutoff, freq width(2) bcolor(blue) xline(50)), ///
@@ -98,8 +99,6 @@ foreach t of numlist -2/-1 1/10 {
 	* storing optimal bandwidths
 	local h_l = round(`e(h_l)', 0.1)
 	local h_r = round(`e(h_r)', 0.1)
-// 	local b_l = round(`e(b_l)'
-// 	local b_r = round(`e(b_r)'
 	
 	* Polynomial order test	   
 	*rdmse $Y $X, c(50) h(`e(h_l)') b(`e(b_l)')	
@@ -112,7 +111,7 @@ foreach t of numlist -2/-1 1/10 {
 	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_full.png") replace
 	* plot within the bandwidth selected by rdrobust
 	binscatter $Y $X if votes_pct_for >= cutoff-`h_l' & votes_pct_for <= cutoff+`h_r', rd($cutoff) linetype(lfit) ///
-	xtitle("Percent of Votes for Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (bw: `h_l', `h_r')") ///
+	xtitle("Percent of Votes for Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (within b.w)") ///
 	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
 
 	* generating an exportable table
@@ -122,6 +121,13 @@ foreach t of numlist -2/-1 1/10 {
 	collect style cell result[_r_b]#result[_r_se]#result[_r_lb]#result[_r_ub], name(Table) warn nformat(%9.0f)
 	collect style cell result[h_l]#result[h_r], name(Table) warn nformat(%9.2f)
 	collect export "${tables}/est_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", name(Table) as(xlsx) sheet(Sheet1) cell(A1) replace	
+	putexcel set "${tables}/est_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", modify
+	putexcel G1 = "Density/Manipulation Test results for `housing_df'" ///
+			 G2 = "N" H2 = `dens_tst_N' ///
+			 G3 = "p" H3 = `dens_tst_p' ///
+			 G4 = "q" H4 = `dens_tst_q' ///
+			 G5 = "pval" H5 = `dens_tst_pval' ///
+			 G6 = "variable" H6 = "$X"  
 	
 }
 
