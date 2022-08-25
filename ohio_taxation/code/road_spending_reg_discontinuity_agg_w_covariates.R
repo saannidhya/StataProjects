@@ -182,23 +182,34 @@ summary(f10)
 # median sale amount
 covs_list_t_minus_1 = c("pctwithkids","pctlesshs","pctsomecoll","pct18to64","pctwhite","pctblack","pctamerind","pctapi","pctmin","pcthisp","pctnevermarr","incherfindahl","inctaxrate")
 covs_list_t_minus_2 = c("pop","unemprate","pctlt5","pctwhite","pctblack","pctamerind","pctapi","pctotherrace","raceherfindahl","pcthisp","pctnevermarr")
-covs_list_t_plus_1 = c("childpov","poverty","pctwithkids","pctsinparhhld","pctnokids","pcthsgrad","pctsomecoll","pctrent","pctown","pct5to17","raceherfindahl","pcthisp","inctaxrate")
+covs_list_t_plus_1 = c("pctwithkids","pctnokids","pct5to17", "raceherfindahl")
 covs_list_t_plus_2 = c("pctwithkids","pctnokids","pctlesshs","pct18to64","pctwhite","pctblack","pctamerind","pctapi","pctmin","raceherfindahl","incherfindahl")
-covs_list_t_plus_3 = c("pctlt5","pctwhite","pctblack","pctapi","pctotherrace","raceherfindahl","pctnevermarr","incherfindahl","inctaxrate")
+covs_list_t_plus_3 = c("pctlt5","pctwhite","pctblack","pctapi","pctotherrace","raceherfindahl","pctnevermarr", "incherfindahl")
 covs_list_t_plus_4 = c("pctwithkids","pctsinparhhld","pctnokids","pctlesshs","pctrent","pctown","pct5to17","pct18to64","pctamerind","pctotherrace","incherfindahl")
 covs_list_t_plus_5 = c("pop","pctsinparhhld","pctlesshs","pctsomecoll","unemprate","pctrent","pct18to64","pctwhite","pctblack","pctamerind","pctmin","raceherfindahl","incherfindahl")
 covs_list_t_plus_6 = c("childpov","poverty","pctsinparhhld","unemprate","pct18to64","pctmarried","pctseparated")
 covs_list_t_plus_7 = c("poverty","pctsinparhhld","unemprate","pctrent","pct18to64","pctamerind","pctotherrace","pctseparated")
 covs_list_t_plus_8 = c("pop","pctsinparhhld","pctlesshs","pctrent","pct18to64","pctwhite","pctblack","pctamerind","raceherfindahl","pctseparated")
-covs_list_t_plus_9 = c("pop","childpov","poverty","pctsinparhhld","unemprate","medfamy","pct65pls","pctwhite","pctblack","raceherfindahl","pctseparated","inctaxrate")
+covs_list_t_plus_9 = c("pop", "poverty", "pctsinparhhld", "unemprate", "pctrent", "pct18to64", "pctwithkids")
 covs_list_t_plus_10 = c("unemprate","pctrent","pctlt5","pct18to64","pct65pls","pctblack","pctamerind","pctotherrace","pcthisp","pctseparated")
+# median_sale_amount_per_sq_feet
+covs_list_per_t_minus_2 = c("pop", "pctlesshs", "unemprate", "pct18to64", "pctwhite", "pctamerind", "pctapi", "pctnevermarr")
+covs_list_per_t_minus_1 = c("childpov", "poverty", "pctwithkids", "pctsinparhhld", "pctnokids", "pcthsgrad", "pct5to17", "pct65pls", "pctwhite", "pctotherrace", "raceherfindahl", "pcthisp", "pctdivorced", "incherfindahl", "inctaxrate")
+covs_list_per_t_plus_1 = c("pop", "childpov", "poverty", "pctwithkids", "pctsinparhhld", "pcthsgrad", "pct65pls", "pcthisp", "lforcepartrate", "inctaxrate")
+covs_list_per_t_plus_2 = c("pctwithkids", "pctlesshs", "pct18to64", "pctwhite", "pctblack", "pctamerind", "pctapi", "pctnevermarr", "incherfindahl")
+covs_list_per_t_plus_3 = c("pctwithkids", "pctlesshs", "pctsomecoll", "pct18to64", "pctwhite", "pctblack", "pctamerind", "pctapi", "pctotherrace", "pctnevermarr", "incherfindahl")
+covs_list_per_t_plus_4 = c("pctwithkids", "pctsinparhhld", "pctrent", "pctlt5", "pct5to17", "pctotherrace", "pcthisp", "pctmarried", "incherfindahl")
+covs_list_per_t_plus_5 = c("pctwithkids", "pctsinparhhld", "pctrent", "pctlt5", "pct5to17", "pctamerind", "pcthisp", "pctnevermarr", "incherfindahl")
+covs_list_per_t_plus_6 = c("poverty", "pctsinparhhld", "pct5to17", "pctamerind", "pctseparated", "pctdivorced")
+covs_list_per_t_plus_7 = c("pctwithkids", "pctsinparhhld", "pctrent", "pct5to17", "pctblack", "pctnevermarr", "pctdivorced")
+covs_list_per_t_plus_8 = c("pop", "poverty", "unemprate", "pctrent", "pct18to64", "pctamerind", "pctmin", "pctnevermarr", "inctaxrate")
+covs_list_per_t_plus_9 = c("pop", "poverty", "pctsinparhhld", "unemprate", "pctrent", "pct18to64", "pctwhite", "pctblack", "pctamerind", "pcthisp", "pctmarried", "pctseparated", "inctaxrate")
+covs_list_per_t_plus_10 = c("pop", "pctsinparhhld", "pctlesshs", "pctrent", "pct18to64", "pctwhite", "pctblack", "pctseparated", "incherfindahl")
 
 
-
-# lm(dfs_agg_covs$housing_roads_census_t_plus_2_matches %>% select(c("median_sale_amount",covs_list_t_plus_2)) %>% select(-c("pctmin")), 
-#    formula = median_sale_amount ~ .) %>%
+# lm(dfs_agg_per_covs$housing_roads_census_t_plus_1_matches %>% select(c("median_sale_amount_per_sq_feet",covs_list_per_t_plus_1)),
+#    formula = median_sale_amount_per_sq_feet ~ .) %>%
 #   summary()
-
 
 
 #============================================================================================================#
@@ -228,3 +239,4 @@ mod1 <- lm(formula = median_sale_amount ~  votes_pct_for_cntrd + treated + votes
 summary(mod1)
 
 car::vif(mod1)
+

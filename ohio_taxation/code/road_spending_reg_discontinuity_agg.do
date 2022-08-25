@@ -78,16 +78,7 @@ foreach t of numlist -2/-1 1/10 {
 	local dens_tst_p = `e(p)'
 	local dens_tst_q = `e(q)'
 	
-	* storing results of density/manipulation test in an excel file
-// 	putexcel set "${tables}/dens_test_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", replace
-// 	putexcel set "${tables}/dens_test_results_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.xlsx", replace sheet("Density Test Results")
-//     putexcel A1 = "Density/Manipulation Test results for `housing_df'" ///
-// 			 A3 = "N" B2 = `dens_tst_N' ///
-// 			 A4 = "p" B3 = `dens_tst_p' ///
-// 			 A5 = "q" B4 = `dens_tst_q' ///
-// 			 A6 = "pval" B5 = `dens_tst_pval' ///
-// 			 A7 = "variable" B5 = "$X"  
-	
+	* density plot
 	twoway (histogram $X if $X < cutoff, freq width(2) bcolor(red)) ///
 		   (histogram $X if $X >= cutoff, freq width(2) bcolor(blue) xline(50)), ///
 		   leg(off) xtitle("Percent of Votes for Tax Levy") title("Density plot: (`year')")
