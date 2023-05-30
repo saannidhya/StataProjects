@@ -6,9 +6,12 @@
 			 18feb2022  SR Checked validity of masterfile_2006q1_2020q4 file. Found one merging issue (year 2020)
 			 07mar2022	SR Fixed 2020 merge issue. Added new 2021 data (upto Q2). Create master df file (2006-2021Q2)
 			 06apr2022  SR Added data with NAICS code. Fixed issue of MEEI == 2 as per Dr. Jones' suggestion
+			 28apr2023  SR Created a new dataset that contains only unique address for Haiqing Liu. Dataset name: unique_addresses.sas7bdat
+			 30may2023  SR Cleaned unique_addresses.sas7bdat to remove spurious addresses
 \*=================================================================================================*/
 
 %let in_loc = C:\QCEW Data - Ohio\ES202;
+%let out_csv = &in_loc.\extracts;
 
 libname in ("&in_loc.","&in_loc.\2021");
 libname out "&in_loc.\extracts";
@@ -189,8 +192,41 @@ proc sql;
 	   	  from df_2021q2
 	;
 quit;
+*19,435,152 obs;
 
 
+*----------------------------------------------------------------------------------------
+*	Creating a dataset that contains unique addresses
+*----------------------------------------------------------------------------------------;
+
+proc sql;
+	create table unique_addresses as
+		select distinct address, city, state, zip
+			from out.masterfile_2006q1_2021q2;
+quit;
+* 1,144,121 obs. Some are blank.
 
 
+*----------------------------------------------------------------------------------------
+*	cleaning unique addresses
+*----------------------------------------------------------------------------------------;
+*importing and removing text issues;
+proc sql;
+	create table out.unique_addresses as
+		select strip(address) as Address, strip(city) as City, state, zip
+			from unique_addresses
+				where address is not missing and 
+					  not strip(address) in ("**ADDRESS NEEDED**", "** ADDRESS NEEDED **", ".", "0",",", "1", "'","NONE", "NO ADDRESS PROVIDED") and 
+					  strip(state) = "OH"
+;
+quit;
+
+*----------------------------------------------------------------------------------------
+*	exporting cleaned unique_addresses dataset to a csv file for ArcGIS Pro
+*----------------------------------------------------------------------------------------;
+proc export data=out.unique_addresses
+   outfile="&out_csv.\unique_addresses.csv"
+   dbms=csv replace;
+   putnames=yes;
+run;
 
