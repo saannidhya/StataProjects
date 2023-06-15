@@ -39,7 +39,7 @@ summary(dens_tests$housing_roads_census_t_plus_8_matches)
 summary(dens_tests$housing_roads_census_t_plus_9_matches)
 summary(dens_tests$housing_roads_census_t_plus_10_matches) # all passed!
 
-# Mcrary test for t+10
+# Mcrary test
 # Give it the running variable and the cutpoint
 # it will automatically produce a plot and select the number of bins and the bandwidth
 # The output will be the p-value for the presence of a discontinuity
@@ -124,9 +124,9 @@ summary(regs$housing_roads_census_t_plus_10_matches)
 # summary(reg1)  
 
 # using local randomization method;
-rdrandinf(dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount, 
-          dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, 
-          cutoff = cutoff)
+rdlocrand::rdrandinf(dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount, 
+                    dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, 
+                    cutoff = cutoff)
 
 
 ### |- sale_amount_per_sq_feett ####

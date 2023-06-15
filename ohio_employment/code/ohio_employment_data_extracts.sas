@@ -198,13 +198,12 @@ quit;
 *----------------------------------------------------------------------------------------
 *	Creating a dataset that contains unique addresses
 *----------------------------------------------------------------------------------------;
-
 proc sql;
 	create table unique_addresses as
-		select distinct address, city, state, zip
+		select distinct address, city, state, county, zip
 			from out.masterfile_2006q1_2021q2;
 quit;
-* 1,144,121 obs. Some are blank.
+* 1,211,442 obs. Some are blank.;
 
 
 *----------------------------------------------------------------------------------------

@@ -19,7 +19,7 @@ shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
 
 
 # covariates list 
-covs_list <- c("TENDIGIT_FIPS", "year" ,"TENDIGIT_FIPS_year" ,"pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
+vars_list <- c("TENDIGIT_FIPS", "year" ,"TENDIGIT_FIPS_year" ,"pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
                "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
                "pct5to17" ,"pct18to64" ,"pct65pls" ,"pctwhite" ,"pctblack" ,"pctamerind" ,"pctapi" ,"pctotherrace" ,"pctmin" ,"raceherfindahl" ,
                "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl", "inctaxrate")
@@ -27,7 +27,7 @@ covs_list <- c("TENDIGIT_FIPS", "year" ,"TENDIGIT_FIPS_year" ,"pop" ,"childpov" 
 
 # loading census df
 census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) %>%
-  dplyr::select(covs_list) %>%
+  dplyr::select(vars_list) %>%
   dplyr::rename(vote_year = year) %>%
   janitor::clean_names()
 
@@ -115,3 +115,31 @@ dfs_agg_per_covs <- purrr::map(.x = dfs_agg_per, ~ .x %>%
 # purrr::map(dfs_agg, ~.x %>% nrow())
 # purrr::map(dfs_agg_per, ~.x %>% nrow())
 # purrr::map(housing_dfs, ~.x %>% nrow())
+
+
+#============================================#
+# Urban vs Rural ----
+#============================================#
+# importing the urban vs rural file
+
+twp_places_urban <- haven::read_dta(paste0(data,"/twp_places_urban.dta")) %>% janitor::clean_names()
+
+dfs_agg_urb <- purrr::map(dfs_agg, ~ .x %>%
+                                     left_join(twp_places_urban, by = "tendigit_fips")
+                         )
+
+
+# dfs_agg$housing_roads_census_t_plus_2_matches$tendigit_fips %>% unique() %>% length()
+# twp_places_urban$tendigit_fips %>% unique() %>% length()
+# write.csv(dfs_agg$housing_roads_census_t_plus_2_matches$tendigit_fips %>% unique(), "hf.csv", row.names = FALSE)
+# write.csv(twp_places_urban$tendigit_fips %>% unique(), "twp.csv", row.names = FALSE)
+
+# Why are there a good amount of non-matches?
+
+# class(twp_places_urban$tendigit_fips)
+# class(dfs_agg$housing_roads_census_t_plus_2_matches$tendigit_fips)
+
+
+# purrr::map(dfs_agg, ~ .x %>%
+#              
+#              )
