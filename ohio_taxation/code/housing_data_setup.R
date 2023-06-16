@@ -143,3 +143,20 @@ dfs_agg_urb <- purrr::map(dfs_agg, ~ .x %>%
 # purrr::map(dfs_agg, ~ .x %>%
 #              
 #              )
+
+
+#============================================#
+# Split by millage size ----
+#============================================#
+dfs_agg_mill <- purrr::map2(.x = dfs, .y = yr_t_names, ~ .x %>% 
+                         drop_na(sale_amount) %>%
+                         group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_for, millage_percent) %>%
+                         rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
+                         summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
+                                   median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))              
+)
+
+dfs_agg_mill_covs <- purrr::map(.x = dfs_agg_mill, ~ .x %>% 
+                             dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
+                             ungroup()
+)

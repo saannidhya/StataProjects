@@ -8,13 +8,20 @@
 			 06apr2022  SR Added data with NAICS code. Fixed issue of MEEI == 2 as per Dr. Jones' suggestion
 			 28apr2023  SR Created a new dataset that contains only unique address for Haiqing Liu. Dataset name: unique_addresses.sas7bdat
 			 30may2023  SR Cleaned unique_addresses.sas7bdat to remove spurious addresses
+			 15jun2023  SR Used unique_addresses_spatial_join.csv, which was created in ArcGIS Pro after geocoding appropriately formatted 
+						   addresses in unique_addresses.sas7bdat, to identify tendigitfips for each observation in masterfile_2006q1_2020q4 file for Ohio Taxation project.
 \*=================================================================================================*/
 
+*setting up macro variables;
+%let root = C:\Users\rawatsa\OneDrive - University of Cincinnati\StataProjects\ohio_employment;
+%let data = &root.\data;
+%let data_gis = &data.\address_geocoding\address_geocoding_arcgis;
 %let in_loc = C:\QCEW Data - Ohio\ES202;
 %let out_csv = &in_loc.\extracts;
 
 libname in ("&in_loc.","&in_loc.\2021");
 libname out "&in_loc.\extracts";
+libname data "&data.";
 
 *loading in utility functions;
 %include "C:\Users\rawatsa\OneDrive - University of Cincinnati\sas_utility_functions\util_load_macro_functions.sas";
@@ -229,3 +236,58 @@ proc export data=out.unique_addresses
    putnames=yes;
 run;
 
+
+*----------------------------------------------------------------------------------------
+*	Combining out.masterfile_2006q1_2021q2 with geocoded unique addresses from ArcGIS Pro
+*	Only "usual" unique addresses were matched by ArcGIS Pro.
+*----------------------------------------------------------------------------------------;
+
+
+
+/*proc sql;*/
+/*	create table as*/
+/*		select **/
+/*			from ;*/
+/*quit;*/
+
+proc import datafile="&data_gis.\unique_addresses_spatial_join.csv" dbms=csv replace 
+			out=unique_addresses_w_fips (keep= Address	City	State	Zip GEOID	NAME	NAMELSAD INTPTLAT	INTPTLON rename=(geoid = tendigit_fips)); 
+run;
+data unique_addresses_w_fips_ (drop=zip rename=(zip_ = zip) );
+ set unique_addresses_w_fips;
+	Zip_ = PUT(Zip, best.);
+run;
+
+proc sql;
+	create table masterfile_2006q1_2021q2 (drop = address_ city_ state_ zip_) as
+		select *
+			from out.masterfile_2006q1_2021q2 as a
+				left join unique_addresses_w_fips_ (rename = (address=address_ city=city_ state=state_ zip=zip_)) as b
+					on strip(lowcase(a.address)) = strip(lowcase(b.address_)) and 
+					   strip(lowcase(a.city)) = strip(lowcase(b.city_)) and 
+					   strip(lowcase(a.state)) = strip(lowcase(b.state_)) and 
+					   strip(lowcase(a.zip)) = strip(lowcase(b.zip_));
+quit;
+
+/*%put WARNING: total obs: %util_aux_nobs(work.masterfile_2006q1_2021q2); *20,365,595;*/
+
+proc sql;
+	create table data.odjfs_employment_df_w_zip as
+		select *
+			from masterfile_2006q1_2021q2 
+				where INTPTLAT is not missing and INTPTLON is not missing;
+quit;
+
+/*%put WARNING: data.odjfs_employment_df obs: %util_aux_nobs(data.odjfs_employment_df); *4,306,668;*/
+
+
+proc sql;
+	create table data.odjfs_employment_df_no_zip (drop = address_ city_ state_ zip_) as
+		select *
+			from out.masterfile_2006q1_2021q2 as a
+				inner join unique_addresses_w_fips_ (rename = (address=address_ city=city_ state=state_ zip=zip_)) as b
+					on strip(lowcase(a.address)) = strip(lowcase(b.address_)) and 
+							strip(lowcase(a.city)) = strip(lowcase(b.city_)) and 
+							strip(lowcase(a.state)) = strip(lowcase(b.state_)) 
+							;
+quit;

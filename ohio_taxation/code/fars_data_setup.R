@@ -2,9 +2,8 @@
 # Purpose : Merge accident.sas7bdat datasets by year from FARS into one dataset for Ohio only
 # Name    : Saani Rawat
 # Created : 06/14/2023
-# Problem: 
 # Log     : 
-#       06/14/2023: 
+#       06/14/2023: finished creating accident data for Ohio
 #================================================================================================================#
 
 library(utils)
@@ -52,15 +51,24 @@ oh_accident_dfs <- purrr::map(accident_dfs, ~ .x %>%
 cols_list <- c("state", "st_case", "year","ve_forms", "persons", "fatals", 
                "county", "city", "day", "month", "hour", "minute", "latitude", "longitud",
                "tway_id", "nhs", "route")
-oh_accident_dfs_sub <- purrr::map(oh_accident_dfs[paste0("accident_",1999:2021)], ~ .x %>% select(all_of(cols_list)))
+oh_accident_dfs_sub <- purrr::map(oh_accident_dfs[paste0("accident_",1999:2021)], ~ .x %>%
+                                  select(all_of(cols_list)) %>%
+                                  mutate(latitude = as.numeric(latitude), longitud = as.numeric(longitud))
+                                    )
+
+
 
 # creating one dataset which contains Ohio's accident data for all years, along with longitude and latitude information
 # For years 1999 and 2000, the longitude and latitude information is unintelligible (coded as 88888888). Thus, we take years 2001 onwards.
-oh_accident <- do.call(rbind, oh_accident_dfs_sub) %>% filter(year >= 2001)
+oh_accident <- do.call(rbind, oh_accident_dfs_sub) %>% filter(year >= 2001) %>% filter(!(is.na(latitude) | is.na(longitud)))
+
+oh_accident
 
 
-# exporting this Ohio accident dataset. Next steps: using ArcGIS to use the geocoded crash level information and add county subdivision information 
+# exporting this Ohio accident dataset. 
+write.csv(oh_accident, file = paste0(data,"/fars/","oh_accident_2001-2021.csv"), row.names = FALSE)
+
+# Next steps: using ArcGIS to use the geocoded crash level information and add county subdivision information 
 # using a spatial join.
-
 
 
