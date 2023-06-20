@@ -3,7 +3,8 @@
 # Name    : Saani Rawat
 # Created : 07/30/2022
 # Log     : 
-#           08/01/2022: 
+#           08/01/2022: First step of adding covariates to RDD
+#           06/17/2023: combined several previously made changes. See github repo for details
 #==========================================================================================================#
 
 # specify the set up location
@@ -42,13 +43,19 @@ covs_final <- purrr::map(dfs_agg_covs, ~find_covs(.x, y = "median_sale_amount", 
 
 
 ### regressions with covariates for median sale amount
+g1 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_1_matches$median_sale_amount,
+                 x = dfs_agg_covs$housing_roads_census_t_plus_1_matches$votes_pct_for,
+                 c = cutoff,
+                 covs = dfs_agg_covs$housing_roads_census_t_plus_1_matches %>%
+                   select(covs_final$housing_roads_census_t_plus_1_matches) %>% select(-c(pctnokids, pctrent)) ,
+                 all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
 g2 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_2_matches$median_sale_amount,
                  x = dfs_agg_covs$housing_roads_census_t_plus_2_matches$votes_pct_for,
                  c = cutoff,
                  covs = dfs_agg_covs$housing_roads_census_t_plus_2_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_2_matches)  ,
+                   select(covs_final$housing_roads_census_t_plus_2_matches) %>% select(-c(pctnokids, pctmin))  ,
                  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
-g2 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_3_matches$median_sale_amount,
+g3 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_3_matches$median_sale_amount,
                  x = dfs_agg_covs$housing_roads_census_t_plus_3_matches$votes_pct_for,
                  c = cutoff,
                  covs = dfs_agg_covs$housing_roads_census_t_plus_3_matches %>%
@@ -58,13 +65,13 @@ g4 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_4_matches$median_s
                  x = dfs_agg_covs$housing_roads_census_t_plus_4_matches$votes_pct_for,
                  c = cutoff,
                  covs = dfs_agg_covs$housing_roads_census_t_plus_4_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_4_matches) ,
+                   select(covs_final$housing_roads_census_t_plus_4_matches) %>% select(-c(pctnokids, pctown)) ,
                  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) 
 g5 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_5_matches$median_sale_amount,
                  x = dfs_agg_covs$housing_roads_census_t_plus_5_matches$votes_pct_for,
                  c = cutoff,
                  covs = dfs_agg_covs$housing_roads_census_t_plus_5_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_5_matches) ,
+                   select(covs_final$housing_roads_census_t_plus_5_matches) %>% select(-c(pctmin)),
                  all = TRUE) 
 g6 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_6_matches$median_sale_amount,
                  x = dfs_agg_covs$housing_roads_census_t_plus_6_matches$votes_pct_for,
@@ -96,6 +103,11 @@ g10 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_10_matches$median
                   covs = dfs_agg_covs$housing_roads_census_t_plus_10_matches %>%
                     select(covs_final$housing_roads_census_t_plus_10_matches) ,
                   all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) 
+
+g_regs <- list(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10)
+
+treatment_effect_summary(g_regs)
+
 summary(g4)
 summary(g5)
 summary(g6)
@@ -111,10 +123,28 @@ summary(g10)
 # median sale amount per square feet
 covs_final_per <- purrr::map(dfs_agg_per_covs, ~find_covs(.x, y = "median_sale_amount_per_sq_feet", covs_list = covs_list))
 ## 
+# beepr::beep("mario")
 
 
 ### regressions with covariates for median sale amount per square feet
-
+f1 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_1_matches$median_sale_amount_per_sq_feet,
+                 x = dfs_agg_per_covs$housing_roads_census_t_plus_1_matches$votes_pct_for,
+                 c = cutoff,
+                 covs = dfs_agg_per_covs$housing_roads_census_t_plus_1_matches %>%
+                   select(covs_final_per$housing_roads_census_t_plus_1_matches) ,
+                 all = TRUE) 
+f2 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_2_matches$median_sale_amount_per_sq_feet,
+                 x = dfs_agg_per_covs$housing_roads_census_t_plus_2_matches$votes_pct_for,
+                 c = cutoff,
+                 covs = dfs_agg_per_covs$housing_roads_census_t_plus_2_matches %>%
+                   select(covs_final_per$housing_roads_census_t_plus_2_matches) ,
+                 all = TRUE) 
+f3 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_3_matches$median_sale_amount_per_sq_feet,
+                 x = dfs_agg_per_covs$housing_roads_census_t_plus_3_matches$votes_pct_for,
+                 c = cutoff,
+                 covs = dfs_agg_per_covs$housing_roads_census_t_plus_3_matches %>%
+                   select(covs_final_per$housing_roads_census_t_plus_3_matches) %>% select(-c(pctblack, pctmin)) ,
+                 all = TRUE) 
 f4 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_4_matches$median_sale_amount_per_sq_feet,
                  x = dfs_agg_per_covs$housing_roads_census_t_plus_4_matches$votes_pct_for,
                  c = cutoff,
@@ -125,7 +155,7 @@ f5 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_5_matches$medi
                  x = dfs_agg_per_covs$housing_roads_census_t_plus_5_matches$votes_pct_for,
                  c = cutoff,
                  covs = dfs_agg_per_covs$housing_roads_census_t_plus_5_matches %>%
-                   select(covs_final_per$housing_roads_census_t_plus_5_matches) ,
+                   select(covs_final_per$housing_roads_census_t_plus_5_matches) %>% select(-c(pctmin)) ,
                  all = TRUE) 
 f6 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_6_matches$median_sale_amount_per_sq_feet,
                  x = dfs_agg_per_covs$housing_roads_census_t_plus_6_matches$votes_pct_for,
@@ -137,7 +167,7 @@ f7 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_7_matches$medi
                  x = dfs_agg_per_covs$housing_roads_census_t_plus_7_matches$votes_pct_for,
                  c = cutoff,
                  covs = dfs_agg_per_covs$housing_roads_census_t_plus_7_matches %>%
-                   select(covs_final_per$housing_roads_census_t_plus_7_matches) ,
+                   select(covs_final_per$housing_roads_census_t_plus_7_matches) %>% select(-(pctnokids)) ,
                  all = TRUE) 
 f8 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_8_matches$median_sale_amount_per_sq_feet,
                  x = dfs_agg_per_covs$housing_roads_census_t_plus_8_matches$votes_pct_for,
@@ -149,7 +179,7 @@ f9 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_9_matches$medi
                  x = dfs_agg_per_covs$housing_roads_census_t_plus_9_matches$votes_pct_for,
                  c = cutoff,
                  covs = dfs_agg_per_covs$housing_roads_census_t_plus_9_matches %>%
-                   select(covs_final_per$housing_roads_census_t_plus_9_matches) ,
+                   select(covs_final_per$housing_roads_census_t_plus_9_matches) %>% select(-c(pctmin)) ,
                  all = TRUE) 
 f10 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_10_matches$median_sale_amount_per_sq_feet,
                   x = dfs_agg_per_covs$housing_roads_census_t_plus_10_matches$votes_pct_for,
@@ -157,13 +187,18 @@ f10 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_10_matches$me
                   covs = dfs_agg_per_covs$housing_roads_census_t_plus_10_matches %>%
                     select(covs_final_per$housing_roads_census_t_plus_10_matches) ,
                   all = TRUE) 
-summary(f4)
-summary(f5)
-summary(f6)
-summary(f7)
-summary(f8)
-summary(f9)
-summary(f10)
+
+f_regs <- list(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10)
+
+treatment_effect_summary(f_regs)
+
+# summary(f4)
+# summary(f5)
+# summary(f6)
+# summary(f7)
+# summary(f8)
+# summary(f9)
+# summary(f10)
 
 
 # lm(dfs_agg_covs$housing_roads_census_t_plus_4_matches, 
@@ -180,31 +215,65 @@ summary(f10)
 
 ################### Final Covariates List ###############
 # median sale amount
-covs_list_t_minus_1 = c("pctwithkids","pctlesshs","pctsomecoll","pct18to64","pctwhite","pctblack","pctamerind","pctapi","pctmin","pcthisp","pctnevermarr","incherfindahl","inctaxrate")
-covs_list_t_minus_2 = c("pop","unemprate","pctlt5","pctwhite","pctblack","pctamerind","pctapi","pctotherrace","raceherfindahl","pcthisp","pctnevermarr")
-covs_list_t_plus_1 = c("pctwithkids","pctnokids","pct5to17", "raceherfindahl")
-covs_list_t_plus_2 = c("pctwithkids","pctnokids","pctlesshs","pct18to64","pctwhite","pctblack","pctamerind","pctapi","pctmin","raceherfindahl","incherfindahl")
-covs_list_t_plus_3 = c("pctlt5","pctwhite","pctblack","pctapi","pctotherrace","raceherfindahl","pctnevermarr", "incherfindahl")
-covs_list_t_plus_4 = c("pctwithkids","pctsinparhhld","pctnokids","pctlesshs","pctrent","pctown","pct5to17","pct18to64","pctamerind","pctotherrace","incherfindahl")
-covs_list_t_plus_5 = c("pop","pctsinparhhld","pctlesshs","pctsomecoll","unemprate","pctrent","pct18to64","pctwhite","pctblack","pctamerind","pctmin","raceherfindahl","incherfindahl")
-covs_list_t_plus_6 = c("childpov","poverty","pctsinparhhld","unemprate","pct18to64","pctmarried","pctseparated")
-covs_list_t_plus_7 = c("poverty","pctsinparhhld","unemprate","pctrent","pct18to64","pctamerind","pctotherrace","pctseparated")
-covs_list_t_plus_8 = c("pop","pctsinparhhld","pctlesshs","pctrent","pct18to64","pctwhite","pctblack","pctamerind","raceherfindahl","pctseparated")
-covs_list_t_plus_9 = c("pop", "poverty", "pctsinparhhld", "unemprate", "pctrent", "pct18to64", "pctwithkids")
-covs_list_t_plus_10 = c("unemprate","pctrent","pctlt5","pct18to64","pct65pls","pctblack","pctamerind","pctotherrace","pcthisp","pctseparated")
+covs_list_t_minus_2 = dfs_agg_covs$housing_roads_census_t_minus_2_matches %>%
+                        select(covs_final$housing_roads_census_t_minus_2_matches) %>% select(-c(pctotherrace, pctblack)) %>% colnames()
+covs_list_t_minus_1 = dfs_agg_covs$housing_roads_census_t_minus_1_matches %>%
+                        select(covs_final$housing_roads_census_t_minus_1_matches) %>% select(-c(pctblack, pctmin)) %>% colnames()
+covs_list_t_plus_1 = dfs_agg_covs$housing_roads_census_t_plus_1_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_1_matches) %>% select(-c(pctnokids, pctrent)) %>% colnames()
+covs_list_t_plus_2 = dfs_agg_covs$housing_roads_census_t_plus_2_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_2_matches) %>% select(-c(pctnokids, pctmin))  %>% colnames()
+covs_list_t_plus_3 = dfs_agg_covs$housing_roads_census_t_plus_3_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_3_matches)  %>% colnames()
+covs_list_t_plus_4 = dfs_agg_covs$housing_roads_census_t_plus_4_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_4_matches) %>% select(-c(pctnokids, pctown)) %>% colnames()
+covs_list_t_plus_5 = dfs_agg_covs$housing_roads_census_t_plus_5_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_5_matches) %>% colnames()
+covs_list_t_plus_6 = dfs_agg_covs$housing_roads_census_t_plus_6_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_6_matches) %>% colnames()
+covs_list_t_plus_7 = dfs_agg_covs$housing_roads_census_t_plus_7_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_7_matches) %>% colnames()
+covs_list_t_plus_8 = dfs_agg_covs$housing_roads_census_t_plus_8_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_8_matches) %>% colnames()
+covs_list_t_plus_9 = dfs_agg_covs$housing_roads_census_t_plus_9_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_9_matches)  %>% colnames()
+covs_list_t_plus_10 = dfs_agg_covs$housing_roads_census_t_plus_10_matches %>%
+                        select(covs_final$housing_roads_census_t_plus_10_matches) %>% colnames()
+
+hh <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_minus_2_matches$median_sale_amount,
+           x = dfs_agg_covs$housing_roads_census_t_minus_2_matches$votes_pct_for,
+           c = cutoff,
+           covs = dfs_agg_covs$housing_roads_census_t_minus_2_matches %>%
+             select(all_of(covs_list_t_minus_2)) ,
+           all = TRUE) 
+
+
+
 # median_sale_amount_per_sq_feet
-covs_list_per_t_minus_2 = c("pop", "pctlesshs", "unemprate", "pct18to64", "pctwhite", "pctamerind", "pctapi", "pctnevermarr")
-covs_list_per_t_minus_1 = c("childpov", "poverty", "pctwithkids", "pctsinparhhld", "pctnokids", "pcthsgrad", "pct5to17", "pct65pls", "pctwhite", "pctotherrace", "raceherfindahl", "pcthisp", "pctdivorced", "incherfindahl", "inctaxrate")
-covs_list_per_t_plus_1 = c("pop", "childpov", "poverty", "pctwithkids", "pctsinparhhld", "pcthsgrad", "pct65pls", "pcthisp", "lforcepartrate", "inctaxrate")
-covs_list_per_t_plus_2 = c("pctwithkids", "pctlesshs", "pct18to64", "pctwhite", "pctblack", "pctamerind", "pctapi", "pctnevermarr", "incherfindahl")
-covs_list_per_t_plus_3 = c("pctwithkids", "pctlesshs", "pctsomecoll", "pct18to64", "pctwhite", "pctblack", "pctamerind", "pctapi", "pctotherrace", "pctnevermarr", "incherfindahl")
-covs_list_per_t_plus_4 = c("pctwithkids", "pctsinparhhld", "pctrent", "pctlt5", "pct5to17", "pctotherrace", "pcthisp", "pctmarried", "incherfindahl")
-covs_list_per_t_plus_5 = c("pctwithkids", "pctsinparhhld", "pctrent", "pctlt5", "pct5to17", "pctamerind", "pcthisp", "pctnevermarr", "incherfindahl")
-covs_list_per_t_plus_6 = c("poverty", "pctsinparhhld", "pct5to17", "pctamerind", "pctseparated", "pctdivorced")
-covs_list_per_t_plus_7 = c("pctwithkids", "pctsinparhhld", "pctrent", "pct5to17", "pctblack", "pctnevermarr", "pctdivorced")
-covs_list_per_t_plus_8 = c("pop", "poverty", "unemprate", "pctrent", "pct18to64", "pctamerind", "pctmin", "pctnevermarr", "inctaxrate")
-covs_list_per_t_plus_9 = c("pop", "poverty", "pctsinparhhld", "unemprate", "pctrent", "pct18to64", "pctwhite", "pctblack", "pctamerind", "pcthisp", "pctmarried", "pctseparated", "inctaxrate")
-covs_list_per_t_plus_10 = c("pop", "pctsinparhhld", "pctlesshs", "pctrent", "pct18to64", "pctwhite", "pctblack", "pctseparated", "incherfindahl")
+covs_list_per_t_minus_2 = dfs_agg_per_covs$housing_roads_census_t_minus_2_matches %>%
+                        select(covs_final_per$housing_roads_census_t_minus_2_matches) %>% colnames()
+covs_list_per_t_minus_1 = dfs_agg_per_covs$housing_roads_census_t_minus_1_matches %>%
+                        select(covs_final_per$housing_roads_census_t_minus_1_matches) %>% colnames()
+covs_list_per_t_plus_1 = dfs_agg_per_covs$housing_roads_census_t_plus_1_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_1_matches) %>% colnames()
+covs_list_per_t_plus_2 = dfs_agg_per_covs$housing_roads_census_t_plus_2_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_2_matches)  %>% colnames()
+covs_list_per_t_plus_3 = dfs_agg_per_covs$housing_roads_census_t_plus_3_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_3_matches) %>% select(-c(pctblack, pctmin))  %>% colnames()
+covs_list_per_t_plus_4 = dfs_agg_per_covs$housing_roads_census_t_plus_4_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_4_matches) %>% colnames()
+covs_list_per_t_plus_5 = dfs_agg_per_covs$housing_roads_census_t_plus_5_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_5_matches) %>% colnames()
+covs_list_per_t_plus_6 = dfs_agg_per_covs$housing_roads_census_t_plus_6_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_6_matches) %>% colnames()
+covs_list_per_t_plus_7 = dfs_agg_per_covs$housing_roads_census_t_plus_7_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_7_matches)  %>% select(-(pctnokids)) %>% colnames()
+covs_list_per_t_plus_8 = dfs_agg_per_covs$housing_roads_census_t_plus_8_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_8_matches) %>% colnames()
+covs_list_per_t_plus_9 = dfs_agg_per_covs$housing_roads_census_t_plus_9_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_9_matches) %>% select(-c(pctmin))  %>% colnames()
+covs_list_per_t_plus_10 = dfs_agg_per_covs$housing_roads_census_t_plus_10_matches %>%
+                        select(covs_final_per$housing_roads_census_t_plus_10_matches) %>% colnames()
 
 
 # lm(dfs_agg_per_covs$housing_roads_census_t_plus_1_matches %>% select(c("median_sale_amount_per_sq_feet",covs_list_per_t_plus_1)),
@@ -217,7 +286,11 @@ covs_list_per_t_plus_10 = c("pop", "pctsinparhhld", "pctlesshs", "pctrent", "pct
 #============================================================================================================#
 
 df <- dfs_agg_covs$housing_roads_census_t_plus_9_matches %>% 
-  mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0))
+  mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0),
+         votes_pct_for_cntrd = votes_pct_for - cutoff,
+         votes_pct_for_cntrd_abv = votes_pct_for_cntrd*treated)
+# df$votes_pct_for_cntrd
+
 rdrobust::rdrobust(y = df$median_sale_amount,
                    x = df$votes_pct_for, 
                    c = cutoff, all = TRUE, 
@@ -240,3 +313,5 @@ summary(mod1)
 
 car::vif(mod1)
 
+
+beepr::beep("mario")

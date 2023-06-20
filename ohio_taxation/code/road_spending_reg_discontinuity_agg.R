@@ -5,6 +5,7 @@
 # Log     : 
 #       07/16/2022: finished the program. Replicated in Stata as well. See road_spending_reg_discontinuity_agg.do
 #       08/02/2022: added sale_amount_per_sq_feet as outcome of interest
+#       06/17/2023: added utility_functions.R to the code
 #================================================================================================================#
 
 # specify the set up location
@@ -14,7 +15,7 @@ code <- paste0(root,"/code")
 
 # running data setup code
 source(paste0(code,"/housing_data_setup.R"))
-
+source(paste0(code,"/utility_functions.R"))
 
 #============================================================================================================#
 #                         Aggregated Results (using median sale_amount for each county, vote and year) ----
@@ -112,6 +113,7 @@ summary(regs$housing_roads_census_t_plus_8_matches)
 summary(regs$housing_roads_census_t_plus_9_matches)
 summary(regs$housing_roads_census_t_plus_10_matches)
 
+treatment_effect_summary(regs)
 
 # lm() and rdrobust() giving exactly the same coefficient
 # narrow2 <- dfs_agg$housing_roads_census_t_plus_9_matches %>% 

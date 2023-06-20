@@ -37,20 +37,20 @@ sort(unique(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millage_percent))
 # storing univariate RDD models (outcome vs running variable, no covariates) from t-2 to t+10
 regs_g_1.9 <- purrr::map(.x = dfs_agg_mill_g_1.9, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 
-# summary(regs_g_1.9$housing_roads_census_t_minus_1_matches)
-# summary(regs_g_1.9$housing_roads_census_t_minus_2_matches)
-# 
-# summary(regs_g_1.9$housing_roads_census_t_plus_1_matches)
-# summary(regs_g_1.9$housing_roads_census_t_plus_2_matches)
-# summary(regs_g_1.9$housing_roads_census_t_plus_3_matches)
-# 
-# summary(regs_g_1.9$housing_roads_census_t_plus_4_matches)
-# summary(regs_g_1.9$housing_roads_census_t_plus_5_matches)
-# summary(regs_g_1.9$housing_roads_census_t_plus_6_matches)
-# summary(regs_g_1.9$housing_roads_census_t_plus_7_matches)
-# summary(regs_g_1.9$housing_roads_census_t_plus_8_matches)
-# summary(regs_g_1.9$housing_roads_census_t_plus_9_matches)
-# summary(regs_g_1.9$housing_roads_census_t_plus_10_matches)
+summary(regs_g_1.9$housing_roads_census_t_minus_1_matches)
+summary(regs_g_1.9$housing_roads_census_t_minus_2_matches)
+
+summary(regs_g_1.9$housing_roads_census_t_plus_1_matches)
+summary(regs_g_1.9$housing_roads_census_t_plus_2_matches)
+summary(regs_g_1.9$housing_roads_census_t_plus_3_matches)
+
+summary(regs_g_1.9$housing_roads_census_t_plus_4_matches)
+summary(regs_g_1.9$housing_roads_census_t_plus_5_matches)
+summary(regs_g_1.9$housing_roads_census_t_plus_6_matches)
+summary(regs_g_1.9$housing_roads_census_t_plus_7_matches)
+summary(regs_g_1.9$housing_roads_census_t_plus_8_matches)
+summary(regs_g_1.9$housing_roads_census_t_plus_9_matches)
+summary(regs_g_1.9$housing_roads_census_t_plus_10_matches)
 
 
 dist(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millage_percent)

@@ -1,3 +1,5 @@
+
+# takes in a dataset, an outcome variable and a covariate list and outputs a covariate list that gives the lowest p-value for treatment effect
 find_covs <- function(df, y, covs_list){
   
   # initialize
@@ -44,3 +46,10 @@ find_covs <- function(df, y, covs_list){
   fnl[["covariates"]] <- cv_list
   
 }
+
+# takes in a list of RDD regression results and returns a dataframe containing bias-corrected treatment estimate and the corresponding p-values 
+treatment_effect_summary <- function(list){
+  return(data.frame(bias_corrected_coef = purrr::map_dbl(list, ~ .x$coef[2]), 
+                    pval = purrr::map_dbl(list, ~ .x$pv[2])) ) 
+}
+

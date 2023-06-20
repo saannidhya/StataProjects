@@ -1,62 +1,112 @@
-######################################################################################################################
+###################################################################################################################################################
 # created: 07/09/2022
 # by: Saani Rawat
 # purpose: use STATA datasets to check if merge performed by ohio_road_housing_census_merge.do can be replicated
+#          The datasets created should match the following: housing_roads_census_`t_type'_`t_abs'_matches.dta 
 # Log:
-# 1. 07/09/2022: used to download call report txt files from 2001 to 2021
-######################################################################################################################
+# 1. 07/09/2022: created
+# 2. 06/20/2023: updated to match the housing datasets. Only outputting housing_roads_census_`t_type'_`t_abs'_matches.dta
+#                Note: Housing dataset housing_agg_roads_census_`t_type'_`t_abs'.dta" created in housing_data_setup.R (named dfs_agg)
+#                Note: Housing dataset housing_agg_roads_census_per_`t_type'_`t_abs'.dta" created in housing_data_setup.R (named dfs_agg_per)
+###################################################################################################################################################
 
 
-#####################
-#checking merge in R
-#####################
 
-# setting working directory
-setwd("//cobshares.uccob.uc.edu/economics$/Julia/roads")
+# specify the set up location
+root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
+data <- paste0(root,"/data")
+code <- paste0(root,"/code")
+
+# specify the shared location
+shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
+
+
+#======================================================================#
+# Roads dataset ----
+#======================================================================#
+
+cutoff = 50
+rd_var_list = c("year", "pop", "TENDIGIT_FIPS", "TENDIGIT_FIPS_year", "childpov", "poverty", "pctwithkids", "pctsinparhhld", "pctnokids", "pctlesshs", "pcthsgrad", 
+                "pctsomecoll", "pctbachelors", "pctgraddeg", "unemprate", "medfamy", "pctrent", "pctown", "pctlt5", "pct5to17", "pct18to64", "pct65pls", "pctwhite", 
+                "pctblack", "pctamerind", "pctapi", "pctotherrace", "pctmin", "raceherfindahl", "pcthisp", "pctmarried", "pctnevermarr", "pctseparated", "pctdivorced", 
+                "lforcepartrate", "incherfindahl", "inctaxrate", "tax_type", "purpose2", "description", "millage_percent", "duration", "votes_for", "votes_against")
 
 # roads dataset
-rd <- haven::read_dta("roads_levies2_census_9118.dta")
+rd <- haven::read_dta(paste0(data,"/roads_levies2_census_9118.dta"))
 rd_fips <- sort(unique(rd$TENDIGIT_FIPS))
-length(rd_fips)
+# length(rd_fips)
+
+
+roads_and_census <- rd %>%
+                      select(all_of(rd_var_list)) %>% 
+                      janitor::clean_names() %>%
+                      mutate(votes_pct_for = (votes_for / (votes_for + votes_against))*100,
+                             votes_pct_for_cntr = abs(votes_pct_for - cutoff)) %>%
+                      group_by(tendigit_fips, year) %>% 
+                      arrange(tendigit_fips, year, votes_pct_for_cntr) %>% 
+                      mutate(count = row_number()) %>% 
+                      filter(count == 1) %>% 
+                      mutate(yr_t_minus_2 = year - 2, 
+                             yr_t_minus_1 = year - 1,
+                             yr_t_plus_1 = year + 1,
+                             yr_t_plus_2 = year + 2,
+                             yr_t_plus_3 = year + 3,
+                             yr_t_plus_4 = year + 4,
+                             yr_t_plus_5 = year + 5,
+                             yr_t_plus_6 = year + 6,
+                             yr_t_plus_7 = year + 7,
+                             yr_t_plus_8 = year + 8,
+                             yr_t_plus_9 = year + 9,
+                             yr_t_plus_10 = year + 10,
+                             rd_flag = 1) %>%
+                    select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
+                    arrange(tendigit_fips, year)
+
+
+#======================================================================#
+# Housing dataset ----
+#======================================================================#
 
 # housing dataset
-hs <- haven::read_dta("housesales_9521_slim.dta")
-hs_fips <- sort(as.numeric(unique(hs$TENDIGIT_FIPS)))
-length(hs_fips)
+hs <- haven::read_dta(paste0(shared,"/housesales_9521_slim.dta"))
 
 
-# merge performed in STATA
-md <- haven::read_dta("housing_roads_census_t_plus_1.dta", col_select = c("TENDIGIT_FIPS","yr_t_plus_1","year","SALE_AMOUNT","_merge"))
+# past and future years list
+yrs <- c(paste0("yr_t_minus_",as.character(1:2)), paste0("yr_t_plus_",as.character(1:10)))
 
-# filtering roads (same as STATA file)
-rds <- rd %>%
-    select(c("year", "pop", "TENDIGIT_FIPS", "TENDIGIT_FIPS_year", "inctaxrate", "tax_type",
-             "purpose2", "description", "millage_percent", "duration", "votes_for", "votes_against")) %>%
-    mutate(year_t_plus_1 = year + 1, rd_flag = 1,
-           votes_pct_for = (votes_for/(votes_for+votes_against))*100,
-           votes_pct_for_cntr = abs(votes_pct_for - 50)) %>%
-    relocate(TENDIGIT_FIPS, year, year_t_plus_1) %>%
-    arrange(TENDIGIT_FIPS, year) %>%
-    group_by(TENDIGIT_FIPS, year) %>% 
-    mutate(dup = row_number()-1) %>%
-    filter(dup == 0)
+# hss <- purrr::map(yrs, ~ hs %>% 
+#                    janitor::clean_names() %>%
+#                    arrange(tendigit_fips, year) %>%
+#                    rename( {{.x}} := "year") %>%
+#                    mutate(sale_amount_per_sq_feet = sale_amount/universal_building_square_feet,
+#                           tendigit_fips = as.numeric(tendigit_fips),
+#                           {{.x}} := as.numeric({{.x}}),
+#                           hs_flag = 1)
+#                  )
 
-# cleaning housing (same as STATA file)
-hss <- hs %>%
-        select(c("TENDIGIT_FIPS", "year","SALE_AMOUNT")) %>%
-        rename(year_t_plus_1 = year) %>%
-        mutate(TENDIGIT_FIPS = as.numeric(TENDIGIT_FIPS), year_t_plus_1 = as.numeric(year_t_plus_1), hs_flag = 1)
+# start.time <- Sys.time()
+hss <- purrr::map(yrs, ~ hs %>% 
+                    janitor::clean_names() %>%
+                    arrange(tendigit_fips, year) %>%
+                    mutate(sale_amount_per_sq_feet = sale_amount/universal_building_square_feet,
+                           tendigit_fips = as.numeric(tendigit_fips),
+                           hs_flag = 1) %>%
+                    mutate({{.x}} := as.numeric(year)) %>%
+                    select(-c(year))
+)
+names(hss) <- yrs
 
-# outer join of housing and roads datasets
-mrg <- hss %>%
-        full_join(rds, by = c("TENDIGIT_FIPS","year_t_plus_1"))
 
 
-# number of _merge == 3
-nrow(mrg %>% filter(hs_flag == 1 & rd_flag == 1)) # 373,077
+#========================================================================================================#
+# Merging housing and roads (using TENDIGIT_FIPS and year variable : t periods ahead and behind) ----
+# Keeping only matches (to keep non-matches too, use full_join insted)
+#========================================================================================================#
 
-# number of _merge == 1
-nrow(mrg %>% filter(hs_flag == 1 & is.na(rd_flag))) # 6,772,762
+mgd <- purrr::map2(hss, yrs, function(x, y){
+                              x %>% inner_join(roads_and_census, by = c("tendigit_fips", y))
+        })
 
-# number of _merge == 2
-nrow(mrg %>% filter(is.na(hs_flag) & rd_flag == 1)) # 119
+purrr::map_dbl(mgd, nrow) 
+
+# mgd contains datasets that match housing_roads_census_`t_type'_`t_abs'_matches.dta

@@ -17,7 +17,11 @@ data <- paste0(root,"/data")
 code <- paste0(root,"/code")
 
 
-as.character(1980:2021)
+#===========================================================================#
+# FARS Accident Data Cleaning before spatial join ----
+#===========================================================================#
+
+# as.character(1980:2021)
 
 # taking data from each year, extracting only Ohio, and then adding it to other years
 
@@ -69,6 +73,37 @@ oh_accident
 write.csv(oh_accident, file = paste0(data,"/fars/","oh_accident_2001-2021.csv"), row.names = FALSE)
 
 # Next steps: using ArcGIS to use the geocoded crash level information and add county subdivision information 
-# using a spatial join.
+# using a spatial join. See fars_arcgis project for details.
 
 
+#===========================================================================#
+# FARS Accident Data Aggregation after spatial join ----
+#===========================================================================#
+
+# importing Ohio accident dataset after the spatial join. This dataset contains GEOID = 10-digit FIPS code
+
+fars_accident <- readr::read_csv(paste0(data,"/fars/","fars_arcgis/","oh_accident_2001_ExportTable.csv"))
+
+fars_accident_cln <- fars_accident %>%
+                        rename(tendigit_fips = GEOID) %>% 
+                        select(tendigit_fips, year, everything()) %>%
+                        arrange(tendigit_fips, year)
+
+
+fars_accident_agg <- fars_accident_cln %>%
+                              group_by(tendigit_fips, NAME, NAMELSAD, year) %>%
+                              summarize(count = n(), 
+                                        fatals_sum = sum(fatals), fatals_avg = mean(fatals),
+                                        persons_sum = sum(persons), persons_avg = mean(persons ),
+                                        veforms_sum = sum(ve_forms), ve_forms_avg = mean(ve_forms),
+                              )
+  
+
+
+fars_accident_agg %>% select(tendigit_fips, NAME, NAMELSAD) %>% unique() %>% write.csv(file = paste0(data,"/fars/", "fars_fips.csv"))
+
+# comparing with roads tendigit fips
+
+rds <- haven::read_dta(paste0(data,"/roads_levies2_9118.dta"))
+
+rds %>% janitor::clean_names() %>% select(tendigit_fips, subdivision_name) %>% unique() %>% write.csv(file = paste0(data,"/fars/", "roads_fips.csv"))

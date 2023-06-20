@@ -2,7 +2,9 @@
 # Purpose : Data setup before programs. Loads all housing datasets. Filters, cleans and aggregates datasets
 # Name    : Saani Rawat
 # Created : 07/27/2022
-# Log     : separated data setup from original program 
+# Log     : 
+#           07/27/2022: separated data setup from original program 
+#           06/17/2023: combined several previously made changes. See github repo for details
 #==========================================================================================================#
 
 # loading packages
@@ -160,3 +162,7 @@ dfs_agg_mill_covs <- purrr::map(.x = dfs_agg_mill, ~ .x %>%
                              dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
                              ungroup()
 )
+
+
+
+# beepr::beep("mario")
