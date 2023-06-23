@@ -7,6 +7,7 @@
 #================================================================================================================#
 
 library(utils)
+library(tidyverse)
 
 print(data)
 
@@ -27,20 +28,25 @@ code <- paste0(root,"/code")
 
 # storing all fars df names as a list
 accident_files <- list.files(paste0(data,"/fars"), pattern = "accident", recursive = TRUE)
-accident_dataset_names <- paste0(stringr::str_remove(stringr::str_extract(fars_files, "(?<=/)[^/]+(?=\\.)"), ".sas7bdat"), 
-                             "_", 
-                             stringr::str_extract(fars_files, "\\d{4}"))
+accident_files2 <- accident_files[ !grepl("fars_arcgis", accident_files)]
+accident_files3 <- accident_files2[!grepl("\\.csv$", accident_files2)]
 
+accident_dataset_names <- paste0(stringr::str_remove(stringr::str_extract(accident_files3, "(?<=/)[^/]+(?=\\.)"), ".sas7bdat"), 
+                             "_", 
+                             stringr::str_extract(accident_files3, "\\d{4}"))
+
+accident_full_files <- list.files(paste0(data,"/fars"),
+                                                    pattern = "accident",
+                                                    recursive = TRUE,
+                                                    full.names = TRUE)
+accident_full_files2 <- accident_full_files[ !grepl("fars_arcgis", accident_full_files)]
+accident_dataset_fullnames <- accident_full_files2[!grepl("\\.csv$", accident_full_files2)]
 
 # import data
-accident_dfs <- purrr::map(list.files(paste0(data,"/fars"),
-                                     pattern = "accident",
-                                     recursive = TRUE,
-                                     full.names = TRUE),
-                          haven::read_sas)
+accident_dfs <- purrr::map(accident_dataset_fullnames, haven::read_sas)
 
 # assign names to fars dfs
-accident_dfs <- stats::setNames(fars_dfs, fars_dataset_names)
+accident_dfs <- stats::setNames(accident_dfs, accident_dataset_names)
 
 length(accident_dfs)
 
@@ -97,13 +103,80 @@ fars_accident_agg <- fars_accident_cln %>%
                                         persons_sum = sum(persons), persons_avg = mean(persons ),
                                         veforms_sum = sum(ve_forms), ve_forms_avg = mean(ve_forms),
                               )
-  
 
 
-fars_accident_agg %>% select(tendigit_fips, NAME, NAMELSAD) %>% unique() %>% write.csv(file = paste0(data,"/fars/", "fars_fips.csv"))
+View(fars_accident_agg)  
 
-# comparing with roads tendigit fips
 
-rds <- haven::read_dta(paste0(data,"/roads_levies2_9118.dta"))
+#===========================================================================#
+# comparing with roads tendigit fips ----
+#===========================================================================#
+
+fars_accident_agg %>% select(tendigit_fips, NAME, NAMELSAD)  %>% arrange(NAME, NAMELSAD) %>% unique() %>% write.csv(file = paste0(data,"/fars/", "fars_fips.csv"))
+
+# rds <- haven::read_dta(paste0(data,"/roads_levies2_9118.dta"))
+rds <- haven::read_dta(paste0(data,"/roads_levies2_census_9118.dta"))
 
 rds %>% janitor::clean_names() %>% select(tendigit_fips, subdivision_name) %>% unique() %>% write.csv(file = paste0(data,"/fars/", "roads_fips.csv"))
+
+# Based on excel comparison, 686 unique tendigit fips matched between roads and fars datasets, 216 did not match.
+
+#===========================================================================#
+# Joining fars dataset with roads dataset ----
+#===========================================================================#
+rd_var_list = c("year", "pop", "TENDIGIT_FIPS", "TENDIGIT_FIPS_year", "childpov", "poverty", "pctwithkids", "pctsinparhhld", "pctnokids", "pctlesshs", "pcthsgrad", 
+                "pctsomecoll", "pctbachelors", "pctgraddeg", "unemprate", "medfamy", "pctrent", "pctown", "pctlt5", "pct5to17", "pct18to64", "pct65pls", "pctwhite", 
+                "pctblack", "pctamerind", "pctapi", "pctotherrace", "pctmin", "raceherfindahl", "pcthisp", "pctmarried", "pctnevermarr", "pctseparated", "pctdivorced", 
+                "lforcepartrate", "incherfindahl", "inctaxrate", "tax_type", "purpose2", "description", "millage_percent", "duration", "votes_for", "votes_against")
+
+roads_and_census <- rds %>%
+                      select(rd_var_list) %>% 
+                      janitor::clean_names() %>%
+                      mutate(votes_pct_for = (votes_for / (votes_for + votes_against))*100,
+                             votes_pct_for_cntr = abs(votes_pct_for - cutoff)) %>%
+                      group_by(tendigit_fips, year) %>% 
+                      arrange(tendigit_fips, year, votes_pct_for_cntr) %>% 
+                      mutate(count = row_number()) %>% 
+                      filter(count == 1) %>% 
+                      mutate(yr_t_minus_2 = year - 2, 
+                             yr_t_minus_1 = year - 1,
+                             yr_t_plus_1 = year + 1,
+                             yr_t_plus_2 = year + 2,
+                             yr_t_plus_3 = year + 3,
+                             yr_t_plus_4 = year + 4,
+                             yr_t_plus_5 = year + 5,
+                             yr_t_plus_6 = year + 6,
+                             yr_t_plus_7 = year + 7,
+                             yr_t_plus_8 = year + 8,
+                             yr_t_plus_9 = year + 9,
+                             yr_t_plus_10 = year + 10,
+                             rd_flag = 1) %>%
+                      select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
+                      arrange(tendigit_fips, year)
+
+yrs <- c(paste0("yr_t_minus_",as.character(1:2)), paste0("yr_t_plus_",as.character(1:10)))
+
+
+fars <- purrr::map(yrs, ~ fars_accident_agg %>% 
+                    janitor::clean_names() %>%
+                    arrange(tendigit_fips, year) %>%
+                    mutate(fars_flag = 1) %>%
+                    mutate({{.x}} := as.numeric(year)) %>%
+                    select(-c(year)) %>%
+                    select(tendigit_fips , .x, everything())
+)
+names(fars) <- yrs
+
+fars_mgd <- purrr::map2(fars, yrs, function(x, y){
+  x %>% inner_join(roads_and_census, by = c("tendigit_fips", y))
+})
+
+View(fars_mgd$yr_t_plus_10)
+
+# Each observation in this dataset represents a year in which road tax levy voting took place, whether the levy passed or failed
+# and the accident count in successive years afterwards
+
+purrr::map_dbl(fars_mgd, nrow)  
+
+View(fars_mgd$yr_t_plus_3)
+
