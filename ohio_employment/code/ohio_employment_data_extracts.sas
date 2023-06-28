@@ -201,6 +201,15 @@ proc sql;
 quit;
 *19,435,152 obs;
 
+*----------------------------------------------------------------------------------------
+*	Converting the exported SAS dataset into a Stata dataset
+*----------------------------------------------------------------------------------------;
+proc export 
+		    data=out.masterfile_2006q1_2021q2 
+		    outfile="&out_csv.\masterfile_2006q1_2021q2.dta" 
+		    dbms=dta 
+		    replace;
+run;
 
 *----------------------------------------------------------------------------------------
 *	Creating a dataset that contains unique addresses
@@ -219,10 +228,10 @@ quit;
 *importing and removing text issues;
 proc sql;
 	create table out.unique_addresses as
-		select strip(address) as Address, strip(city) as City, state, zip
+		select strip(lowcase(address)) as Address, strip(lowcase(city)) as City, state, zip
 			from unique_addresses
 				where address is not missing and 
-					  not strip(address) in ("**ADDRESS NEEDED**", "** ADDRESS NEEDED **", ".", "0",",", "1", "'","NONE", "NO ADDRESS PROVIDED") and 
+					  not strip(lowcase(address)) in ("**address needed**", "** address needed **", ".", "0",",", "1", "'","none", "no address provided") and 
 					  strip(state) = "OH"
 ;
 quit;
@@ -237,13 +246,38 @@ proc export data=out.unique_addresses
 run;
 
 
+
+*----------------------------------------------------------------------------------------
+*	Dividing unique addresses file into different parts
+*----------------------------------------------------------------------------------------;
+proc sql;
+  create table mydata as
+  select *
+  from out.unique_addresses (firstobs=237070);
+quit;
+data part1 part2 part3 part4;
+  set out.unique_addresses end=last;
+  length subset $6;
+  total_obs = nobs;
+  subset_size = ceil(total_obs/4);
+  if _n_ <= subset_size then subset = 'part1';
+  else if _n_ <= 2*subset_size then subset = 'part2';
+  else if _n_ <= 3*subset_size then subset = 'part3';
+  else subset = 'part4';
+  output subset;
+  if last then stop;
+run;
+
+/*data c;*/
+/*	set out.unique_addresses end=last;*/
+/*	v = nobs;*/
+/*run;*/
+
+
 *----------------------------------------------------------------------------------------
 *	Combining out.masterfile_2006q1_2021q2 with geocoded unique addresses from ArcGIS Pro
 *	Only "usual" unique addresses were matched by ArcGIS Pro.
 *----------------------------------------------------------------------------------------;
-
-
-
 /*proc sql;*/
 /*	create table as*/
 /*		select **/
