@@ -232,9 +232,18 @@ proc sql;
 			from unique_addresses
 				where address is not missing and 
 					  not strip(lowcase(address)) in ("**address needed**", "** address needed **", ".", "0",",", "1", "'","none", "no address provided") and 
-					  strip(state) = "OH"
+					  strip(state) = "OH" and
+					  (index(address, '') = 0) and (index(city, '') = 0) /* removes 3 observations with this special character */
 ;
 quit;
+
+*identifying observations with special character  . ArcGIS Pro stops reading the file whenever it identifies this special character;
+/*proc sql;*/
+/*    create table spec_char_obs as*/
+/*    select **/
+/*    from unique_addresses*/
+/*    where (index(address, '') > 0) or (index(city, '') > 0);*/
+/*quit;*/
 
 *----------------------------------------------------------------------------------------
 *	exporting cleaned unique_addresses dataset to a csv file for ArcGIS Pro
@@ -245,83 +254,71 @@ proc export data=out.unique_addresses
    putnames=yes;
 run;
 
-
-
 *----------------------------------------------------------------------------------------
 *	Dividing unique addresses file into different parts
 *----------------------------------------------------------------------------------------;
-proc sql;
-  create table mydata as
-  select *
-  from out.unique_addresses (firstobs=237070);
-quit;
-data part1 part2 part3 part4;
-  set out.unique_addresses end=last;
-  length subset $6;
-  total_obs = nobs;
-  subset_size = ceil(total_obs/4);
-  if _n_ <= subset_size then subset = 'part1';
-  else if _n_ <= 2*subset_size then subset = 'part2';
-  else if _n_ <= 3*subset_size then subset = 'part3';
-  else subset = 'part4';
-  output subset;
-  if last then stop;
-run;
 
-/*data c;*/
-/*	set out.unique_addresses end=last;*/
-/*	v = nobs;*/
-/*run;*/
+
 
 
 *----------------------------------------------------------------------------------------
 *	Combining out.masterfile_2006q1_2021q2 with geocoded unique addresses from ArcGIS Pro
 *	Only "usual" unique addresses were matched by ArcGIS Pro.
 *----------------------------------------------------------------------------------------;
-/*proc sql;*/
-/*	create table as*/
-/*		select **/
-/*			from ;*/
-/*quit;*/
 
-proc import datafile="&data_gis.\unique_addresses_spatial_join.csv" dbms=csv replace 
+proc import datafile="&data_gis.\unique_addresses_export_after_spatial_join.csv" dbms=csv replace 
 			out=unique_addresses_w_fips (keep= Address	City	State	Zip GEOID	NAME	NAMELSAD INTPTLAT	INTPTLON rename=(geoid = tendigit_fips)); 
 run;
+
 data unique_addresses_w_fips_ (drop=zip rename=(zip_ = zip) );
  set unique_addresses_w_fips;
 	Zip_ = PUT(Zip, best.);
 run;
 
+
+/*data unique_addresses_w_fips_2;*/
+/* set unique_addresses_w_fips_;*/
+/* 	where INTPTLON is missing;*/
+/*run;*/
+
+proc sql;
+	create table unique_addresses_w_fips_2 as
+	select distinct strip(lowcase(a.address)) as address,  strip(lowcase(a.city)) as city, strip(lowcase(a.state)) as state, strip(lowcase(a.zip)) as zip,
+					tendigit_fips, NAME, NAMELSAD, INTPTLAT, INTPTLON
+	from unique_addresses_w_fips_ as a;
+quit;
+
 proc sql;
 	create table masterfile_2006q1_2021q2 (drop = address_ city_ state_ zip_) as
 		select *
 			from out.masterfile_2006q1_2021q2 as a
-				left join unique_addresses_w_fips_ (rename = (address=address_ city=city_ state=state_ zip=zip_)) as b
+				left join unique_addresses_w_fips_2 (rename = (address=address_ city=city_ state=state_ zip=zip_)) as b
 					on strip(lowcase(a.address)) = strip(lowcase(b.address_)) and 
 					   strip(lowcase(a.city)) = strip(lowcase(b.city_)) and 
 					   strip(lowcase(a.state)) = strip(lowcase(b.state_)) and 
 					   strip(lowcase(a.zip)) = strip(lowcase(b.zip_));
 quit;
 
-/*%put WARNING: total obs: %util_aux_nobs(work.masterfile_2006q1_2021q2); *20,365,595;*/
+/*%put WARNING: total obs: %util_aux_nobs(out.masterfile_2006q1_2021q2); *20,365,595;*/
 
 proc sql;
-	create table data.odjfs_employment_df_w_zip as
+	create table data.odjfs_employment_df as
 		select *
 			from masterfile_2006q1_2021q2 
 				where INTPTLAT is not missing and INTPTLON is not missing;
 quit;
 
+* 20241727 obs;
 /*%put WARNING: data.odjfs_employment_df obs: %util_aux_nobs(data.odjfs_employment_df); *4,306,668;*/
 
 
-proc sql;
-	create table data.odjfs_employment_df_no_zip (drop = address_ city_ state_ zip_) as
-		select *
-			from out.masterfile_2006q1_2021q2 as a
-				inner join unique_addresses_w_fips_ (rename = (address=address_ city=city_ state=state_ zip=zip_)) as b
-					on strip(lowcase(a.address)) = strip(lowcase(b.address_)) and 
-							strip(lowcase(a.city)) = strip(lowcase(b.city_)) and 
-							strip(lowcase(a.state)) = strip(lowcase(b.state_)) 
-							;
-quit;
+/*proc sql;*/
+/*	create table data.odjfs_employment_df_no_zip (drop = address_ city_ state_ zip_) as*/
+/*		select **/
+/*			from out.masterfile_2006q1_2021q2 as a*/
+/*				inner join unique_addresses_w_fips_ (rename = (address=address_ city=city_ state=state_ zip=zip_)) as b*/
+/*					on strip(lowcase(a.address)) = strip(lowcase(b.address_)) and */
+/*							strip(lowcase(a.city)) = strip(lowcase(b.city_)) and */
+/*							strip(lowcase(a.state)) = strip(lowcase(b.state_)) */
+/*							;*/
+/*quit;*/
