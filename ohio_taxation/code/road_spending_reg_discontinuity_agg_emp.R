@@ -284,22 +284,36 @@ regs_emp_wages <- purrr::map2( dfs_emp_agg3,
 treatment_effect_summary(regs_emp_wages) %>% rownames_to_column() %>% as_tibble() %>% View()
 
 
-###################################
+######################################################################
+# Removing top and bottom x% of the observations ----
+######################################################################
+x_cut <- 0.05
 
-
-dfs_emp_agg3$yr_t_plus_1$tot_wages
-
-# histogram
+dfs_emp_agg3_winsor <- purrr::map(dfs_emp_agg3, 
+                                  ~ .x %>% 
+                                    filter((tot_wages > quantile(tot_wages, x_cut)) & (tot_wages < quantile(tot_wages, 1-x_cut))))
+  
+# histogram (winsored vs original) example
 ggplot(data = dfs_emp_agg3$yr_t_plus_1) +
+  geom_density(mapping = aes(x = tot_wages))
+ggplot(data = dfs_emp_agg3_winsor$yr_t_plus_1) +
   geom_density(mapping = aes(x = tot_wages))
 
 ggplot(data = dfs_emp_agg3$yr_t_plus_1) +
   geom_density(mapping = aes(x = ln_wages))
-
+ggplot(data = dfs_emp_agg3_winsor$yr_t_plus_1) +
+  geom_density(mapping = aes(x = ln_wages))
 
 ggplot(data = dfs_emp_agg3$yr_t_plus_1) +
+  geom_density(mapping = aes(x = avg_persons))
+ggplot(data = dfs_emp_agg3_winsor$yr_t_plus_1) +
   geom_density(mapping = aes(x = avg_persons))
 
 ggplot(data = dfs_emp_agg3$yr_t_plus_1) +
   geom_density(mapping = aes(x = ln_avg_persons))
+ggplot(data = dfs_emp_agg3_winsor$yr_t_plus_1) +
+  geom_density(mapping = aes(x = avg_persons))
+
+# Note: tot_wages and avg_persons (before log) are still highly skewed even after winsorization
+
 
