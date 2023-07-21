@@ -3,7 +3,8 @@
 # Name    : Saani Rawat
 # Created : 07/03/2023
 # Log     : 
-#           07/03/2023: 
+#           07/03/2023: created the script. Finished for aggregate data.
+#           07/14/2023: created datasets by industry
 #==========================================================================================================#
 
 # specify the set up location
@@ -35,6 +36,13 @@ employment_df <- haven::read_sas(paste0(data_emp,"/odjfs_employment_df.sas7bdat"
 # unique_id column has problems because when you paste the three cols, some unique_ids tend to overlap i.e. 0 + 10 + 1 = 0 + 1 + 10 = 0101 
 
 employment_df %>% select(meei) %>% unique()
+
+#================================================================#
+#  importing roads_and_census dataset ----
+#================================================================# 
+roads_and_census <- haven::read_dta(paste0(data_tax,"/roads_and_census.dta")) %>%
+                      janitor::clean_names() 
+  
 
 #================================================================#
 #  Data checks ----
@@ -115,21 +123,25 @@ employment_df2[duplicated(employment_df2[, c("year", "quarter", "pad", "uin", "r
 
 # View(employment_df2)
 
+haven::write_dta(employment_df2, "H:/Julia/roads/odjfs/mydata.dta")
+
 #============================================#
-# Data Cleaning & Aggregation ----
+# Data Subsetting & Aggregation ----
 #============================================#
 
 emp <- employment_df2 %>% 
         select(c(year, quarter, pad, uin, rep_unit, tendigit_fips, ein, naics, wage, persons))
 
-
+#============================================#
+# Data Aggregation (Overall) ----
+#============================================#
 
 # aggregating by fips, year and quarter
 emp_df_agg_fips_yr_qtr <- emp %>% 
   group_by(tendigit_fips, year, quarter) %>%
   summarise(tot_wages = sum(wage, na.rm = TRUE),
             tot_persons = sum(persons, na.rm = TRUE))
-emp_df_agg_fips_yr_qtr %>% View()
+# emp_df_agg_fips_yr_qtr %>% View()
 
 
 # Aggregating further by year and quarter only for comparison with QCEW reports by ODJFS (see "emp_benchmarking" tab in excel sheet)
@@ -149,12 +161,120 @@ emp_df_agg_fips_yr <- emp_df_agg_fips_yr_qtr %>%
 # (73 + 94 + 106 + 101)/4
 # 127779 + 158007 + 189911 + 162227
 
+#============================================#
+# Data Aggregation (by Industry) ----
+#============================================#
+
+# emp
+# 
+# unique(emp$naics)
+
+emp2 <- emp %>%
+  mutate(naics_2dg = as.numeric(substr(as.character(naics), 1, 2)))
+
+unique(emp2$naics_2dg) %>% sort()
+
+emp2 %>% filter(naics_2dg == 0) # 3 observations with naics code as 0. We can safely ignore them.
+
+# creating NAICS look-up dataframe (created using NAIcS website: https://www.naics.com/search/)
+naics_df <- data.frame(
+  naics_2dg = c(11, 21, 22, 23, 31, 32, 33, 42, 44, 45, 48, 49, 51, 52, 53, 54, 55, 56, 61, 62, 71, 72, 81, 92),
+  `sector_title` = c("agriculture, forestry, fishing and hunting", "mining", "utilities", "construction", "manufacturing", "manufacturing", "manufacturing", "wholesale trade", "retail trade", "retail trade", "transportation and warehousing", "transportation and warehousing", "information", "finance and insurance", "real estate rental and leasing", "professional, scientific, and technical services", "management of companies and enterprises", "administrative and support and waste services", "educational services", "health care and social assistance", "arts, entertainment, and recreation", "accommodation and food services", "other services (except public administration)", "public administration")
+)
+
+emp_2dg <- emp2 %>% left_join(naics_df, by = "naics_2dg")
+
+emp_2dg %>% filter(is.na(sector_title)) # 999999 is naics code for unclassified companies i.e. companies who have not been assigned a NAICS code yet. Nothing we can do about these companies.
+
+naics_df$naics_2dg
+
+emp_by_indstry <- purrr::map(naics_df$naics_2dg, ~ emp_2dg %>% filter(naics_2dg == .x))
+names(emp_by_indstry) <- naics_df$naics_2dg
+
+emp_agg_by_indstry_qtr <- purrr::map(emp_by_indstry, ~ .x %>% 
+                                   group_by(tendigit_fips, year, quarter, naics_2dg, sector_title) %>%
+                                   summarise(tot_wages = sum(wage, na.rm = TRUE),
+                                             avg_persons = sum(persons, na.rm = TRUE))
+                                 )
+
+emp_agg_by_indstry <- purrr::map(emp_agg_by_indstry_qtr, ~ .x %>% 
+                                   group_by(tendigit_fips, year, naics_2dg, sector_title) %>%
+                                   summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
+                                             avg_persons = mean(avg_persons, na.rm = TRUE))
+)
+
+  
 #==========================================================#
-# Merging employment data with census variables data ----
+# Analysis on tendigit_fips ----
 #==========================================================#
+
+intersect(emp_df_agg_fips_yr$tendigit_fips %>% unique(), roads_and_census$tendigit_fips %>% unique())
+
+setdiff(emp_df_agg_fips_yr$tendigit_fips %>% unique(), roads_and_census$tendigit_fips %>% unique())
+
+rd_fips <- roads_and_census %>% select(tendigit_fips) %>% unique()
+
+emp_fips <- emp_df_agg_fips_yr %>% select(tendigit_fips) %>% unique() %>%
+  mutate(emp_fips_flg = 1)
+
+rd_emp_fips <- rd_fips %>% 
+                left_join(emp_fips, by = "tendigit_fips")
+
+# total fips in roads_and_census df
+nrow(rd_fips)
+# total fips that we were able to match with employment df 
+nrow(rd_emp_fips %>% filter(!is.na(emp_fips_flg)))
+# total fips  that we were not able to match with employment df 
+nrow(rd_fips) - nrow(rd_emp_fips %>% filter(!is.na(emp_fips_flg)))
 
 
 
-#==========================================================#
-# Merging employment + census data with roads data ----
-#==========================================================#
+#==============================================================#
+# Merging employment data with census + roads voting data ----
+#==============================================================#
+
+# past and future years list
+yrs <- c(paste0("yr_t_minus_",as.character(1:2)), paste0("yr_t_plus_",as.character(1:10)))
+
+emps <- purrr::map(yrs, ~ emp_df_agg_fips_yr %>% 
+                    arrange(tendigit_fips, year) %>%
+                    mutate(emp_flag = 1) %>%
+                    mutate({{.x}} := as.numeric(year)) %>%
+                    select(-c(year))
+)
+names(emps) <- yrs
+
+
+dfs_emp_agg <- purrr::map2(emps, yrs, function(x, y){
+  x %>% inner_join(roads_and_census, by = c("tendigit_fips", y))
+})
+
+# purrr::map_dbl(dfs_emp_agg, nrow)
+# purrr::map_dbl(dfs_agg, nrow)
+
+# View(dfs_emp_agg$yr_t_plus_2)
+# emp_df_agg_fips_yr %>% filter(tendigit_fips == 3900108350)
+max(roads_and_census$year)   
+
+#========================================#
+# |- Transforming outcome variables ----
+#========================================#
+dfs_emp_agg2 <- purrr::map(dfs_emp_agg, ~ .x %>% 
+                             mutate(ln_wages = log(tot_wages), ln_avg_persons = log(avg_persons)) %>%
+                             filter(!(tot_wages == 0)) %>%
+                             filter(!(avg_persons == 0))
+)
+dfs_emp_agg3 <- purrr::map2(names(dfs_emp_agg2), dfs_emp_agg2, ~ .y %>% select(-starts_with("yr_t_"), .x) %>% 
+                              relocate(year, .after = tendigit_fips) %>% 
+                              relocate(.x, .after = year) %>% 
+                              ungroup()
+)
+names(dfs_emp_agg3) <- names(dfs_emp_agg2)
+
+
+# exporting dfs_emp_agg as Stata datasets
+purrr::map2(dfs_emp_agg3, names(dfs_emp_agg3), ~ haven::write_dta(.x, 
+                                           path = paste0(data_tax,"/employment/dfs_emp_agg_", .y, ".dta")))
+
+
+

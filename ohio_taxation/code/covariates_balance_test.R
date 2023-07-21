@@ -15,9 +15,10 @@ plots <- paste0(data,"/outputs/plots")
 
 # running data setup code
 source(paste0(code,"/housing_data_setup.R"))
+source(paste0(code,"/employment_data_setup.R"))
 
 #============================================================================================================#
-#                        Aggregated datasets: Covariates Balance Test ----
+#                        Aggregated housing datasets: Covariates Balance Test ----
 #============================================================================================================#
 
 # |- Mean of Treatment vs Control (all variables) ----
@@ -74,7 +75,7 @@ all_tests <- purrr::map2(.x = dfs_agg_covs, .y = names(dfs_agg_covs), .f = funct
   t_tests <- purrr::map(.x = col_list, .f = ~ t_test(df = df,
                                                      var = .x))  %>%
     bind_rows() %>%
-    mutate(dataset = df_name) %>%
+    mutate(dataset = df_name)
     
     
   # # print t-test results from that dataset in a list
@@ -129,3 +130,76 @@ regs_covs <- purrr::map( .x = dfs_agg_covs,
                           return(reg_covs)
                  })
 
+
+
+
+#============================================================================================================#
+#                        Aggregated employment datasets: Covariates Balance Test ----
+#============================================================================================================#
+
+# |- Mean of Treatment vs Control (all variables) ----
+dfs_agg_emp_mean <- purrr::map(dfs_emp_agg3, function(df)
+  df %>%
+    select(-c(starts_with("yr_t_"))) %>%
+    mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0)) %>%
+    group_by(treated) %>%
+    summarize(across(-c(tendigit_fips,year, tendigit_fips_year, votes_pct_for), 
+                     ~mean(.x, na.rm=TRUE) ))
+)
+
+# T-test (all variables) ----
+
+# take all covariate names 
+col_list_emp <- dfs_emp_agg3$yr_t_plus_1 %>%
+  select(-c(tendigit_fips,year,yr_t_plus_1, tendigit_fips_year, purpose2, tax_type, votes_for, votes_against, 
+            votes_pct_for, description, millage_percent, duration, votes_pct_for_cntr, emp_flag)) %>%
+  colnames()
+
+
+## global sample ##
+all_tests_emp <- purrr::map2(.x = dfs_emp_agg3 , 
+                             .y = names(dfs_emp_agg3), 
+                             .f = function(df, df_name) {
+  # dataset name
+  dataset <- deparse(substitute(df))
+  
+  # perform t-test on one dataset at a time
+  t_tests <- purrr::map(.x = col_list_emp, .f = ~ t_test(df = df,
+                                                     var = .x))  %>%
+    bind_rows() %>%
+    mutate(dataset = df_name) 
+    
+    
+    # # print t-test results from that dataset in a list
+    return(t_tests)
+  
+}) %>% bind_rows()  %>% mutate(significant = if_else(`p-value` < 0.05, "yes", "no"))
+
+
+# Output as a csv file
+write.csv(all_tests_emp, paste0(tables,"/covariates_balance_test_global_emp.csv"), row.names = FALSE)
+
+
+## effective sample ##
+
+dfs_emp_agg3_cut <- purrr::map(dfs_emp_agg3, ~ .x %>%
+                                 filter(between(votes_pct_for, cutoff - 10, cutoff + 10)) )
+
+all_tests_emp_cut <- purrr::map2(.x = dfs_emp_agg3_cut, .y = names(dfs_emp_agg3_cut), .f = function(df, df_name) {
+  # dataset name
+  dataset <- deparse(substitute(df))
+  
+  # perform t-test on one dataset at a time
+  t_tests <- purrr::map(.x = col_list_emp, .f = ~ t_test(df = df,
+                                                     var = .x))  %>%
+    bind_rows() %>%
+    mutate(dataset = df_name) %>%
+    
+    
+    # # print t-test results from that dataset in a list
+    return(t_tests)
+  
+}) %>% bind_rows() %>% mutate(significant = if_else(`p-value` < 0.05, "yes", "no"))
+
+# Output as a csv file
+write.csv(all_tests_emp_cut, paste0(tables,"/covariates_balance_test_effective_emp.csv"), row.names = FALSE)

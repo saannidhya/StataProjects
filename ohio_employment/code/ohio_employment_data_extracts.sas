@@ -10,6 +10,7 @@
 			 30may2023  SR Cleaned unique_addresses.sas7bdat to remove spurious addresses
 			 15jun2023  SR Used unique_addresses_spatial_join.csv, which was created in ArcGIS Pro after geocoding appropriately formatted 
 						   addresses in unique_addresses.sas7bdat, to identify tendigitfips for each observation in masterfile_2006q1_2020q4 file for Ohio Taxation project.
+			 11jul2023  SR Used unique_addresses_export_after_spatial_join.csv instead, which now contains ALL unique addresses. Output: odjfs_employment_df 
 \*=================================================================================================*/
 
 *setting up macro variables;
@@ -254,11 +255,6 @@ proc export data=out.unique_addresses
    putnames=yes;
 run;
 
-*----------------------------------------------------------------------------------------
-*	Dividing unique addresses file into different parts
-*----------------------------------------------------------------------------------------;
-
-
 
 
 *----------------------------------------------------------------------------------------
@@ -307,7 +303,7 @@ proc sql;
 			from masterfile_2006q1_2021q2 
 				where INTPTLAT is not missing and INTPTLON is not missing;
 quit;
-
+ 
 * 20241727 obs;
 /*%put WARNING: data.odjfs_employment_df obs: %util_aux_nobs(data.odjfs_employment_df); *4,306,668;*/
 

@@ -18,7 +18,7 @@ libname input "&in.";
 * importing dataset;
 proc sql;
 	create table df as
-		select *, sum(m1,m2,m3) as emp_persons
+		select *, mean(m1,m2,m3) as emp_persons
 			from input.&dataset.
 /*				where strip(meei) ^= "3"*/
 ;
@@ -38,7 +38,7 @@ proc sql;
 	create table df_yr_qtr as
 		select quarter, year, sum(wage) as tot_wages, sum(emp_persons) as avg_emp_persons
 			from df
-			 group by quarter, year
+			 group by year, quarter
 ;
 quit;
 

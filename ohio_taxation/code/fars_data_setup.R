@@ -107,6 +107,33 @@ fars_accident_agg <- fars_accident_cln %>%
 
 View(fars_accident_agg)  
 
+#===========================================================================#
+# Adding "zero" observations to fars_accident_agg ----
+# If a specific fips and year is missing in the dataset, that means no
+# fatal accident took place in that fips (in that year), so we just code 
+# observations as 0
+#===========================================================================#
+
+# create column vectors
+a <- fars_accident_agg$tendigit_fips %>% unique() %>% sort()
+b <- fars_accident_agg$year %>% unique() %>% sort()
+
+# create a data frame with the cartesian product
+fars_fips_yrs <- expand.grid(tendigit_fips = a, year = b) %>% tibble() %>% mutate(initial = 0) %>% arrange(tendigit_fips, year)
+fars_fips_yrs
+
+fars_fips_w_0 <- fars_fips_yrs %>% left_join(fars_accident_agg, by = c("tendigit_fips", "year"))
+
+
+# Assuming df is your dataframe and columns_list is your list of columns
+
+fars_fips_w_02 <- fars_fips_w_0 %>%
+  mutate(across(all_of(c("count","fatals_sum","fatals_avg","persons_sum", "persons_avg", "veforms_sum", "ve_forms_avg")), ~replace(., is.na(.), 0))) %>%
+  select(-c(initial, NAME, NAMELSAD))
+
+fips_names <- fars_accident_agg %>% select(c(tendigit_fips, NAME, NAMELSAD)) %>% unique()
+fips_names
+fars_fips_w_zeros <- fars_fips_w_02 %>% left_join(fips_names, by = "tendigit_fips")
 
 #===========================================================================#
 # comparing with roads tendigit fips ----
@@ -179,4 +206,6 @@ View(fars_mgd$yr_t_plus_10)
 purrr::map_dbl(fars_mgd, nrow)  
 
 View(fars_mgd$yr_t_plus_3)
+
+
 
