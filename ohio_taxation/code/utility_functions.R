@@ -53,3 +53,53 @@ treatment_effect_summary <- function(list){
                     pval = purrr::map_dbl(list, ~ .x$pv[2])) ) 
 }
 
+
+find_covs_sign <- function(df, y, covs_list, sign = c("positive","negative")){
+  
+  # initialize
+  cv_list <- NULL
+  fnl <- list()
+  
+  # check for sign argument
+  if (!(sign %in% c("positive", "negative"))) {
+    stop("Invalid value for 'sign'. Please choose 'positive' or 'negative'.")
+  }  
+  
+  # RD without any covariates
+  og <- rdrobust(y = df[[y]],
+                 x = df$votes_pct_for, 
+                 c = cutoff, 
+                 covs = NULL ,
+                 all = TRUE)
+  # storing p-value of treatment effect
+  og_p <- og$pv[[1]]
+  
+  # RD including one covariate at a time
+  for (variable in covs_list){
+    
+    # add variable to cv_list
+    cv_list <- c(cv_list,variable)
+    nw <- rdrobust(y = df[[y]],
+                   x = df$votes_pct_for, 
+                   c = cutoff, 
+                   covs = df %>% select(cv_list) ,
+                   all = TRUE)
+    nw_p <- nw$pv[[1]]
+    nw_est <- nw$coef[[1]]
+    
+    # if p-value of treatment effect does not decrease after include the new covariate, discard the new covariate 
+    if (nw_p >= og_p || (sign == "positive" && nw_est < 0) || (sign == "negative" && nw_est > 0)) {
+      cv_list <- cv_list[!cv_list %in% c(variable)] 
+    } else {
+      # update the original regression
+      og <- nw
+      og_p <- og$pv[[1]]
+    }
+    
+  }
+  
+  fnl[["covariates"]] <- cv_list
+  
+}
+
+

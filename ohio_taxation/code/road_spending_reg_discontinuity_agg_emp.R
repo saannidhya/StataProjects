@@ -237,13 +237,31 @@ dfs_emp_agg2$yr_t_plus_4 %>% colnames()
 # finding covariates ----
 #=========================================#
 
-covs_final_emp_ln_pers <- purrr::map(dfs_emp_agg3, ~find_covs(.x, y = "ln_avg_persons", covs_list = covs_list))
-covs_final_emp_pers <- purrr::map(dfs_emp_agg3, ~find_covs(.x, y = "avg_persons", covs_list = covs_list))
-covs_final_emp_ln_wages <- purrr::map(dfs_emp_agg3, ~find_covs(.x, y = "ln_wages", covs_list = covs_list))
-covs_final_emp_wages <- purrr::map(dfs_emp_agg3, ~find_covs(.x, y = "tot_wages", covs_list = covs_list))
 
+# take all covariate names 
+covs_list_emp <- dfs_emp_agg3$yr_t_plus_1 %>%
+  select(-c(tendigit_fips,year,yr_t_plus_1, tendigit_fips_year, purpose2, tax_type, votes_for, votes_against, 
+            votes_pct_for, description, millage_percent, duration, votes_pct_for_cntr, emp_flag, 
+            ln_wages, ln_avg_persons, tot_wages, avg_persons)) %>%
+  colnames()
 
-# log average persons
+# finding covariates
+covs_final_emp_ln_pers <- purrr::map(dfs_emp_agg3, ~find_covs(.x, y = "ln_avg_persons", covs_list = covs_list_emp))
+covs_final_emp_pers <- purrr::map(dfs_emp_agg3, ~find_covs(.x, y = "avg_persons", covs_list = covs_list_emp))
+covs_final_emp_ln_wages <- purrr::map(dfs_emp_agg3, ~find_covs(.x, y = "ln_wages", covs_list = covs_list_emp))
+covs_final_emp_wages <- purrr::map(dfs_emp_agg3, ~find_covs(.x, y = "tot_wages", covs_list = covs_list_emp))
+
+## finding covariates with the right signs
+covs_final_emp_ln_pers_s <- purrr::map(dfs_emp_agg3, ~find_covs_sign(.x, y = "ln_avg_persons", covs_list = covs_list_emp, sign = "positive"))
+covs_final_emp_ln_wages_s <- purrr::map(dfs_emp_agg3, ~find_covs_sign(.x, y = "ln_wages", covs_list = covs_list_emp, sign = "positive"))
+
+#-----------------------#
+# log average persons   #
+#-----------------------#
+
+###########################
+# before correction of sign
+###########################
 regs_emp_ln_pers <- purrr::map2( dfs_emp_agg3, 
                                   covs_final_emp_ln_pers, 
                                   ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, 
@@ -251,11 +269,71 @@ regs_emp_ln_pers <- purrr::map2( dfs_emp_agg3,
                                                            c = cutoff, all = TRUE)
                                   )
 
+treatment_effect_summary(regs_emp_ln_pers) %>% rownames_to_column() %>% as_tibble() %>% 
+  mutate(significant = if_else(pval < 0.05, "yes", "no"))
 
 
-treatment_effect_summary(regs_emp_ln_pers) %>% rownames_to_column() %>% as_tibble() %>% View()
+# yr 1 had collinearity
+rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_1$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_1$votes_pct_for, 
+                   covs = dfs_emp_agg3$yr_t_plus_1 %>% select(covs_final_emp_ln_pers$yr_t_plus_1) %>% select(-c("pctwhite")),  
+                   c = cutoff, all = TRUE)
 
-# average persons
+# yr 2 had collinearity
+rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_2$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_2$votes_pct_for, 
+                   covs = dfs_emp_agg3$yr_t_plus_2 %>% select(covs_final_emp_ln_pers$yr_t_plus_2) %>% select(-c("pctwhite", "pctnevermarr")),  
+                   c = cutoff, all = TRUE) %>% summary()
+# yr 4 had collinearity
+rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_4$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_4$votes_pct_for, 
+                   covs = dfs_emp_agg3$yr_t_plus_4 %>% select(covs_final_emp_ln_pers$yr_t_plus_4) %>% select(-c("pctrent")),  
+                   c = cutoff, all = TRUE) %>% summary()
+
+# removing variables that caused collinearity
+covs_final_emp_ln_pers$yr_t_plus_1 <- covs_final_emp_ln_pers$yr_t_plus_1[!covs_final_emp_ln_pers$yr_t_plus_1 %in% "pctwhite"]
+covs_final_emp_ln_pers$yr_t_plus_2 <- covs_final_emp_ln_pers$yr_t_plus_2[!covs_final_emp_ln_pers$yr_t_plus_2 %in% c("pctwhite", "pctnevermarr")]
+covs_final_emp_ln_pers$yr_t_plus_4 <- covs_final_emp_ln_pers$yr_t_plus_4[!covs_final_emp_ln_pers$yr_t_plus_4 %in% c("pctrent")]
+
+# running again
+regs_emp_ln_pers <- purrr::map2( dfs_emp_agg3, 
+                                 covs_final_emp_ln_pers, 
+                                 ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, 
+                                                      covs = .x %>% select(.y) ,  
+                                                      c = cutoff, all = TRUE)
+)
+
+treatment_effect_summary(regs_emp_ln_pers) %>% rownames_to_column() %>% as_tibble() %>% 
+  mutate(significant = if_else(pval < 0.05, "yes", "no"))
+
+###########################
+# before correction of sign
+###########################
+# correcting sign (neg to pos)
+covs_final_emp_ln_pers_s$yr_t_minus_1 <- c("poverty", "pctown")
+regs_emp_ln_pers_s <- purrr::map2( dfs_emp_agg3, 
+                                 covs_final_emp_ln_pers_s, 
+                                 ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, 
+                                                      covs = .x %>% select(.y) ,  
+                                                      c = cutoff, all = TRUE)
+)
+treatment_effect_summary(regs_emp_ln_pers_s) %>% rownames_to_column() %>% as_tibble() %>% 
+  mutate(significant = if_else(pval < 0.05, "yes", "no"))
+
+# yr t+ 1
+rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_1$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_1$votes_pct_for, 
+                   covs = dfs_emp_agg3$yr_t_plus_1 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_1) %>% select(-c("pctrent")) ,  
+                   c = cutoff, all = TRUE)
+# yr t+ 3
+rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_3$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_3$votes_pct_for, 
+                   covs = dfs_emp_agg3$yr_t_plus_3 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_3) %>% select(-c("pctrent")),  
+                   c = cutoff, all = TRUE)
+# yr t + 4
+rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_4$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_4$votes_pct_for, 
+                   covs = dfs_emp_agg3$yr_t_plus_4 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_4) %>% select(-c("pctrent")),  
+                   c = cutoff, all = TRUE)
+
+
+#-----------------------#
+# average persons       #
+#-----------------------#
 regs_emp_pers <- purrr::map2( dfs_emp_agg3, 
                               covs_final_emp_pers, 
                                   ~ rdrobust::rdrobust(y = .x$tot_wages, x = .x$votes_pct_for, 
@@ -265,7 +343,9 @@ regs_emp_pers <- purrr::map2( dfs_emp_agg3,
 treatment_effect_summary(regs_emp_pers) %>% rownames_to_column() %>% as_tibble() %>% View()
 
 
-# log average wages
+#-----------------------#
+# log average wages     #
+#-----------------------#
 regs_emp_ln_wages <- purrr::map2( dfs_emp_agg3, 
                                   covs_final_emp_ln_wages, 
                                   ~ rdrobust::rdrobust(y = .x$ln_wages, x = .x$votes_pct_for, 
@@ -274,7 +354,20 @@ regs_emp_ln_wages <- purrr::map2( dfs_emp_agg3,
 )
 treatment_effect_summary(regs_emp_ln_wages) %>% rownames_to_column() %>% as_tibble() %>% View()
 
-# average wages
+# correcting sign (neg to pos)
+covs_final_emp_ln_wages_s$yr_t_minus_1 <- c("poverty", "pctown")
+regs_emp_ln_wages_s <- purrr::map2( dfs_emp_agg3, 
+                                    covs_final_emp_ln_wages_s, 
+                                   ~ rdrobust::rdrobust(y = .x$ln_wages, x = .x$votes_pct_for, 
+                                                        covs = .x %>% select(.y) ,  
+                                                        c = cutoff, all = TRUE)
+)
+treatment_effect_summary(regs_emp_ln_wages_s) %>% rownames_to_column() %>% as_tibble() %>% 
+  mutate(significant = if_else(pval < 0.05, "yes", "no"))
+
+#-----------------------#
+# average wages         #
+#-----------------------#
 regs_emp_wages <- purrr::map2( dfs_emp_agg3, 
                                covs_final_emp_wages, 
                                   ~ rdrobust::rdrobust(y = .x$tot_wages, x = .x$votes_pct_for, 
@@ -316,4 +409,58 @@ ggplot(data = dfs_emp_agg3_winsor$yr_t_plus_1) +
 
 # Note: tot_wages and avg_persons (before log) are still highly skewed even after winsorization
 
+
+######################################################################
+# Using Employment/pop and Wages/popa as outcome variables ----
+######################################################################
+
+# density plots
+ggplot(data = dfs_emp_agg_per$yr_t_plus_2) +
+  geom_density(mapping = aes(x = log(wages_per_cap) ))
+ggplot(data = dfs_emp_agg_per$yr_t_plus_2) +
+  geom_density(mapping = aes(x = emp_per_cap ))
+
+regs_emp_per_emp <- purrr::map(.x = dfs_emp_agg_per, ~ rdrobust::rdrobust(y = .x$emp_per_cap, 
+                                                                          x = .x$votes_pct_for, c = cutoff, all = TRUE))
+treatment_effect_summary(regs_emp_per_emp) %>% rownames_to_column() %>% as_tibble() 
+
+regs_emp_per_ln_emp <- purrr::map(.x = dfs_emp_agg_per, ~ rdrobust::rdrobust(y = .x$ln_emp_per_cap, 
+                                                                               x = .x$votes_pct_for, c = cutoff, all = TRUE))
+treatment_effect_summary(regs_emp_per_ln_emp) %>% rownames_to_column() %>% as_tibble() 
+
+
+regs_emp_per_wages <- purrr::map(.x = dfs_emp_agg_per, ~ rdrobust::rdrobust(y = .x$wages_per_cap, 
+                                                                          x = .x$votes_pct_for, c = cutoff, all = TRUE))
+treatment_effect_summary(regs_emp_per_wages) %>% rownames_to_column() %>% as_tibble() 
+
+regs_emp_per_ln_wages <- purrr::map(.x = dfs_emp_agg_per, ~ rdrobust::rdrobust(y = .x$ln_wages_per_cap, 
+                                                                            x = .x$votes_pct_for, c = cutoff, all = TRUE))
+treatment_effect_summary(regs_emp_per_ln_wages) %>% rownames_to_column() %>% as_tibble() 
+
+
+# wages
+covs_final_emp_per_wages <- purrr::map(dfs_emp_agg_per, ~find_covs_sign(.x, y = "wages_per_cap", 
+                                                                        covs_list = covs_list_emp[!(covs_list_emp %in% c("pop", "inctaxrate"))],
+                                                                        sign = "positive"))
+regs_emp_per_wages <- purrr::map2( dfs_emp_agg_per, 
+                                 covs_final_emp_per_wages, 
+                                 ~ rdrobust::rdrobust(y = .x$wages_per_cap, x = .x$votes_pct_for, 
+                                                      covs = .x %>% select(.y) ,  
+                                                      c = cutoff, all = TRUE)
+)
+
+treatment_effect_summary(regs_emp_per_wages) %>% rownames_to_column() %>% as_tibble() %>% 
+  mutate(significant = if_else(pval < 0.05, "yes", "no"))
+
+
+dfs_emp_agg_per$yr_t_plus_4
+
+
+# ln wages per cap
+covs_final_emp_per_ln_wages <- purrr::map(dfs_emp_agg_per, ~find_covs_sign(.x, y = "ln_wages_per_cap", 
+                                                                        covs_list = covs_list_emp[!(covs_list_emp %in% c("pop", "inctaxrate"))],
+                                                                        sign = "positive"))
+
+
+# cov_list <- covs_list_emp[!(covs_list_emp %in% c("pop", "inctaxrate"))]
 

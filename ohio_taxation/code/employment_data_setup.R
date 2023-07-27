@@ -5,6 +5,7 @@
 # Log     : 
 #           07/03/2023: created the script. Finished for aggregate data.
 #           07/14/2023: created datasets by industry
+#           07/26/2023: adding code to create employment/pop and wage/pop data
 #==========================================================================================================#
 
 # specify the set up location
@@ -43,6 +44,19 @@ employment_df %>% select(meei) %>% unique()
 roads_and_census <- haven::read_dta(paste0(data_tax,"/roads_and_census.dta")) %>%
                       janitor::clean_names() 
   
+#================================================================#
+#  importing census only dataset ----
+#================================================================# 
+# covariates list 
+vars_list <- c("TENDIGIT_FIPS", "year" ,"TENDIGIT_FIPS_year" ,"pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
+               "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
+               "pct5to17" ,"pct18to64" ,"pct65pls" ,"pctwhite" ,"pctblack" ,"pctamerind" ,"pctapi" ,"pctotherrace" ,"pctmin" ,"raceherfindahl" ,
+               "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl", "inctaxrate")
+# loading census df
+census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) %>%
+  dplyr::select(vars_list) %>%
+  janitor::clean_names()
+
 
 #================================================================#
 #  Data checks ----
@@ -277,4 +291,33 @@ purrr::map2(dfs_emp_agg3, names(dfs_emp_agg3), ~ haven::write_dta(.x,
                                            path = paste0(data_tax,"/employment/dfs_emp_agg_", .y, ".dta")))
 
 
+#========================================================#
+# |- Creating employment/pop and wages/pop variables ----
+#========================================================#
+# need population data from census (most matched: 20,313 out of 23,876. Few were NAs due to missing population information)
+emp_df_agg_fips_yr_per <- emp_df_agg_fips_yr %>% 
+                              inner_join(census, by = c("tendigit_fips", "year")) %>%
+                              mutate(wages_per_cap = tot_wages/pop, emp_per_cap = avg_persons/pop) %>% 
+                              select(c("tendigit_fips", "year", "tot_wages", "avg_persons", "wages_per_cap", "emp_per_cap")) %>%
+                              filter(!is.na(wages_per_cap)) %>% filter(!is.na(emp_per_cap))
+# Need to run merge with t-2 to t+10 census data
+
+# preparing outcome variables for merge with census and voting data
+emps_per <- purrr::map(yrs, ~ emp_df_agg_fips_yr_per %>% 
+                     arrange(tendigit_fips, year) %>%
+                     mutate(emp_flag = 1) %>%
+                     mutate({{.x}} := as.numeric(year)) %>%
+                     select(-c(year))
+)
+names(emps_per) <- yrs
+
+
+# merging outcome var with census and voting data
+dfs_emp_agg_per <- purrr::map2(emps_per, yrs, function(x, y){
+  x %>% inner_join(roads_and_census, by = c("tendigit_fips", y)) %>%
+    select(-pop) %>% # do not want this as one of the covariates now since we are using it with outcomes
+    mutate(ln_wages_per_cap = log(wages_per_cap), ln_emp_per_cap = log(emp_per_cap)) %>%
+    filter(!(wages_per_cap == 0)) %>%
+    filter(!(emp_per_cap == 0))
+})
 
