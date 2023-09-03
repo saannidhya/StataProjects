@@ -39,7 +39,6 @@ census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) 
 #  Importing Housing datasets as a list ----
 #============================================#
 
-
 # storing all housing dfs as a list
 dataset_names <- stringr::str_remove(list.files(shared,
                                                 pattern = "matches",

@@ -17,6 +17,14 @@ plots <- paste0(data,"/outputs/plots")
 source(paste0(code,"/housing_data_setup.R"))
 source(paste0(code,"/employment_data_setup.R"))
 
+# importing roads and census dataset. Selecting only renewals and levies that do not last forever. Separating into treatment and control groups.
+roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
+  select(-matches("yr_t_")) %>%
+  select(-c("inctaxrate")) %>%
+  filter(description == "R" & duration != 1000) %>%
+  janitor::clean_names() %>%
+  mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0))    
+
 #============================================================================================================#
 #                        Aggregated housing datasets: Covariates Balance Test ----
 #============================================================================================================#
@@ -203,3 +211,42 @@ all_tests_emp_cut <- purrr::map2(.x = dfs_emp_agg3_cut, .y = names(dfs_emp_agg3_
 
 # Output as a csv file
 write.csv(all_tests_emp_cut, paste0(tables,"/covariates_balance_test_effective_emp.csv"), row.names = FALSE)
+
+
+
+#============================================================================================================#
+#                        Balancing on the covariates in design phase (no outcome vars introduced) ----
+#============================================================================================================#
+
+#=======================================#
+# Using matching techniques
+#=======================================#
+m.out <- MatchIt::matchit(formula = treated ~ pop + childpov + poverty + pctwithkids + pctsinparhhld + pctnokids + pctlesshs + 
+                              pcthsgrad + pctsomecoll + pctbachelors + pctgraddeg + unemprate + medfamy + pctrent + pctown + 
+                              pctlt5 + pct5to17 + pct18to64 + pct65pls + pctwhite + pctblack + pctamerind + pctapi + pctotherrace + 
+                              pctmin + raceherfindahl + pcthisp + pctmarried + pctnevermarr + pctseparated + pctdivorced + lforcepartrate + incherfindahl,
+                            data = roads_and_census, method = 'subclass', estimand = "ATT")
+
+summary(m.out)
+bal_tab = bal.tab(m.out, un = T)
+love.plot(bal_tab, thresholds = 0.1)
+
+nrow(m.out$X)
+
+#=======================================#
+# Using weighting techniques
+#=======================================#
+
+# using weightit and propensity score to balance covariates
+w.out <- WeightIt::weightit(formula = treated ~ pop + childpov + poverty + pctwithkids + pctsinparhhld + pctnokids + pctlesshs + 
+                   pcthsgrad + pctsomecoll + pctbachelors + pctgraddeg + unemprate + medfamy + pctrent + pctown + 
+                   pctlt5 + pct5to17 + pct18to64 + pct65pls + pctwhite + pctblack + pctamerind + pctapi + pctotherrace + 
+                   pctmin + raceherfindahl + pcthisp + pctmarried + pctnevermarr + pctseparated + pctdivorced + lforcepartrate + incherfindahl,
+                 data = roads_and_census, method = 'ps', estimand = "ATE")
+bal_tab = bal.tab(w.out, un = T)
+love.plot(bal_tab, thresholds = 0.1)
+summary(w.out)
+
+weighted_roads_and_census <- roads_and_census %>% mutate(weights = w.out$weights)
+
+# Need to take a subset of covariates and then do weighting based on those variables.

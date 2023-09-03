@@ -157,5 +157,26 @@ summary(regs_per$housing_roads_census_t_plus_8_matches)
 summary(regs_per$housing_roads_census_t_plus_9_matches)
 summary(regs_per$housing_roads_census_t_plus_10_matches)
 
+roads_and_census %>% View()
 
-
+# dfs_agg
+# dfs$housing_roads_census_t_plus_10_matches %>% View()
+# 
+# median()
+# for (df in dfs){
+#   print(median(df$sale_amount))
+# }
+# 
+# median(dfs$housing_roads_census_t_plus_1_matches$sale_amount)
+# median(dfs$housing_roads_census_t_plus_2_matches$sale_amount)
+# 
+# median(dfs$housing_roads_census_t_plus_10_matches$sale_amount)
+# 
+# median(dfs_agg$housing_roads_census_t_plus_10_matches$median_sale_amount)
+# 
+# roads_and_census
+# 
+# housing_dfs$housing_roads_census_t_plus_1_matches
+# 
+# summary(dfs$housing_roads_census_t_plus_10_matches$millage_percent)
+# 

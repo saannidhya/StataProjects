@@ -137,11 +137,11 @@ employment_df2[duplicated(employment_df2[, c("year", "quarter", "pad", "uin", "r
 
 # View(employment_df2)
 
-haven::write_dta(employment_df2, "H:/Julia/roads/odjfs/mydata.dta")
+# haven::write_dta(employment_df2, "H:/Julia/roads/odjfs/odjfs_employment_df2.dta")
 
-#============================================#
-# Data Subsetting & Aggregation ----
-#============================================#
+#===============================================#
+# Data Subsetting (take only relevant cols) ----
+#===============================================#
 
 emp <- employment_df2 %>% 
         select(c(year, quarter, pad, uin, rep_unit, tendigit_fips, ein, naics, wage, persons))
@@ -159,29 +159,21 @@ emp_df_agg_fips_yr_qtr <- emp %>%
 
 
 # Aggregating further by year and quarter only for comparison with QCEW reports by ODJFS (see "emp_benchmarking" tab in excel sheet)
+# emp_df_agg_yr_qtr <- emp_df_agg_fips_yr_qtr %>% 
+#   group_by(year, quarter) %>%
+#   summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
+#             avg_persons = sum(tot_persons, na.rm = TRUE))
 
-emp_df_agg_yr_qtr <- emp_df_agg_fips_yr_qtr %>% 
-  group_by(year, quarter) %>%
-  summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
-            avg_persons = sum(tot_persons, na.rm = TRUE))
-
-# Aggregating by fips, year
+# Using emp_df_agg_fips_yr_qtr to aggregate by fips, year
 emp_df_agg_fips_yr <- emp_df_agg_fips_yr_qtr %>% 
   group_by(tendigit_fips, year) %>%
   summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
             avg_persons = mean(tot_persons, na.rm = TRUE))
 
 
-# (73 + 94 + 106 + 101)/4
-# 127779 + 158007 + 189911 + 162227
-
 #============================================#
 # Data Aggregation (by Industry) ----
 #============================================#
-
-# emp
-# 
-# unique(emp$naics)
 
 emp2 <- emp %>%
   mutate(naics_2dg = as.numeric(substr(as.character(naics), 1, 2)))
@@ -320,4 +312,33 @@ dfs_emp_agg_per <- purrr::map2(emps_per, yrs, function(x, y){
     filter(!(wages_per_cap == 0)) %>%
     filter(!(emp_per_cap == 0))
 })
+
+
+#====================================================================#
+# |- Generating emp and wages vars for only specific NAICS codes ----
+#====================================================================#
+
+naics_2dg_unique <- sort(unique(emp2$naics_2dg))
+
+naics_include <- c("11" = 1, "21" = 1, "22" = 0, "23" = 1, "31" = 1, "32" = 1, "33" = 1,
+                   "42" = 1, "44" = 1, "45" = 1, "48" = 1, "49" = 1, "51" = 0, "52" = 0,
+                   "53" = 0, "54" = 0, "55" = 0, "56" = 1, "61" = 0, "62" = 0, "71" = 1,
+                   "72" = 1, "81" = 1, "92" = 1)
+
+emp_by_naics_2dg_count <- emp2 %>%
+                        group_by(naics_2dg) %>%
+                        summarize(n = n(), .groups = "drop")
+
+# Create a flag
+emp2$include_flag <- ifelse(emp2$naics_2dg %in% names(naics_include[naics_include == 1]), 1, 0)
+
+# Note: observation which have a code of "0" or "99" will be part of 0 i.e. industries that are not directly impacted by roads
+
+# count by this flag
+emp2 %>%
+  group_by(include_flag) %>%
+  summarize(n = n(), .groups = "drop")
+
+emp_naics <- emp2 %>% 
+  filter(include_flag == 1)
 
