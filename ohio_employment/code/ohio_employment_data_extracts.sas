@@ -11,6 +11,9 @@
 			 15jun2023  SR Used unique_addresses_spatial_join.csv, which was created in ArcGIS Pro after geocoding appropriately formatted 
 						   addresses in unique_addresses.sas7bdat, to identify tendigitfips for each observation in masterfile_2006q1_2020q4 file for Ohio Taxation project.
 			 11jul2023  SR Used unique_addresses_export_after_spatial_join.csv instead, which now contains ALL unique addresses. Output: odjfs_employment_df 
+			 21sep2023  SR Started to update code to generate masterfile_2006q1_2022q3 file
+			 25sep2023  SR solved data type issue for some variables in 2022 datasets by using guessingrows=MAX. This slows down the run but improves accuracy.
+			 27sep2023  SR Used new 2022 data provided by ODJFS (for all quarters)
 \*=================================================================================================*/
 
 *setting up macro variables;
@@ -20,7 +23,7 @@
 %let in_loc = C:\QCEW Data - Ohio\ES202;
 %let out_csv = &in_loc.\extracts;
 
-libname in ("&in_loc.","&in_loc.\2021");
+libname in ("&in_loc.","&in_loc.\2021","&in_loc.\2022");
 libname out "&in_loc.\extracts";
 libname data "&data.";
 
@@ -29,7 +32,7 @@ libname data "&data.";
 %util_load_macro_functions(C:\Users\rawatsa\OneDrive - University of Cincinnati\sas_utility_functions,subfolder=1);
 
 *Import macro;
-%macro import_df(in_loc = , df = , file_type = , out_df = , drop_list = , rename_list = );
+%macro import_df(in_loc = , df = , file_type = , out_df = , drop_list = , rename_list = , meei_flag = 1, guessingrows = 1000 );
 
 	proc import datafile="&in_loc.\&df." 
 		%if %sysfunc(findw(%upcase(&file_type.), CSV)) %then %do; dbms = csv %end;
@@ -43,9 +46,15 @@ libname data "&data.";
 				%if &rename_list. ^= %then %do;
 					rename = (&rename_list.)
 				%end;
-			where=(strip(meei) ^= "2")  /*removing meei == 2*/
+			%if &meei_flag. = 1 %then %do;
+				where=(strip(meei) ^= "2")  /*removing meei == 2*/
+			%end;
 	)
 	;
+	%if %sysfunc(findw(%upcase(&file_type.), CSV)) %then %do;
+/*		guessingrows=100000;*/
+		guessingrows=&guessingrows.;
+	%end;
 	run;
 
 %mend import_df;
@@ -53,8 +62,8 @@ libname data "&data.";
 *----------------------------------------------------------------------------------------
 *	Importing data
 *----------------------------------------------------------------------------------------;
-*2006-2018 will be used;
-proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace out=masterfile_2006q1_2020q4; run;
+*2006-2018 will be used. This is because year 2019 NAICS codes are missing in this dataset AND year 2020 had a merge mismatch;
+proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace out=masterfile_2006q1_2020q4 (where=(year <= 2018 and year ne .)); run;
 *2019;
 %import_df(in_loc = &in_loc.,
 			df = current_UCMA191.csv, file_type = csv, out_df = df_2019q1, 
@@ -92,6 +101,54 @@ proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace 
 			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
 			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
 )
+%import_df(in_loc = &in_loc.\2021,
+			df = current_UCMA213.csv, file_type = csv, out_df = df_2021q3, 
+			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+)
+%import_df(in_loc = &in_loc.\2021,
+			df = current_UCMA214.csv, file_type = csv, out_df = df_2021q4, 
+			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+)
+*2022;
+proc import 
+    datafile="&in_loc.\2022\26sep\UCMA 1Q22.xlsx"
+    out=df_2022q1 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2022\26sep\UCMA 2Q22.xlsx"
+    out=df_2022q2 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2022\26sep\UCMA 3Q22.xlsx"
+    out=df_2022q3 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2022\26sep\UCMA 4Q22.xlsx"
+    out=df_2022q4 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+/*'Reporting Unit Description'n = RUD*/
 
 *----------------------------------------------------------------------------------------
 *	Cleaning data
@@ -100,9 +157,9 @@ proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace 
 * converting data type for each variable;
 %macro loop(qtr_list = 2019q1 2019q2 2019q3 2019q4 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2);
 	%do i = 1 %to %sysfunc(countw(&qtr_list.));
-		data df_%scan(&qtr_list.,&i.," ") (drop= naics2 year2 quarter2 county2 m1_ m2_ m3_ wage_);
+		data df_%scan(&qtr_list.,&i.," ") (drop= naics2 year2 quarter2 county2 m1_ m2_ m3_ wage_ meei_);
 			retain year quarter ;
-			set df_%scan(&qtr_list.,&i.," ") (rename= (naics = naics2 year = year2 quarter = quarter2 county = county2 m1 = m1_ m2 = m2_ m3 = m3_ wage = wage_));
+			set df_%scan(&qtr_list.,&i.," ") (rename= (naics = naics2 year = year2 quarter = quarter2 county = county2 m1 = m1_ m2 = m2_ m3 = m3_ wage = wage_ meei = meei_));
 				naics = input(naics2, best32.);
 				year = input(year2, best32.);
 				quarter = input(quarter2, best32.);
@@ -111,10 +168,13 @@ proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace 
 				m2 = input(m2_, best32.);
 				m3 = input(m3_, best32.);
 				wage = input(wage_, best32.);
+				meei = input(meei_, best32.);
 		run;
 	%end;
 %mend ;
-%loop();
+%loop(qtr_list = 2019q1 2019q2 2019q3 2019q4 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2 2021q3 2021q4 2022q1 2022q2 2022q3 2022q4);
+/*%loop(qtr_list = 2022q1 2022q2 2022q3 2022q4)*/
+
 
 *removing illegible entries using EINs (see ohio_data_checks.sas for more details);
 *removing duplicate columns created due to incorrect merge for 2020;
@@ -139,7 +199,7 @@ proc sql;
 				, Zip
 				, Zip4
 				, RUD
-				, MEEI
+				, input(meei, best32.) as meei
 				, OrgType
 				, County
 				, input(naics, best32.) as naics
@@ -151,7 +211,7 @@ proc sql;
 				where strip(EIN) ^= "043583679" and 
 					  strip(EIN) ^= "201731623" and 
 					  strip(EIN) ^= "462603341" and
-					  year <= 2018
+					  year <= 2018 and calculated meei ^= 2
 
 ;
 quit;
@@ -160,11 +220,11 @@ quit;
 *	Exporting Master Data
 *----------------------------------------------------------------------------------------;
 
-*append all years together (2006 onwards) and exporting as sas dataset;
+*19,435,152 obs;*append all years together (2006 onwards) and exporting as sas dataset;
 proc sql;
-	create table out.masterfile_2006q1_2021q2	(where = (strip(EIN) ^= "043583679" and 
+	create table out.masterfile_2006q1_2022q4	(where = (strip(EIN) ^= "043583679" and 
 														  strip(EIN) ^= "201731623" and 
-														  strip(EIN) ^= "462603341")) 
+														  strip(EIN) ^= "462603341" and meei ^= 2)) 
 				as 
 	   select *
 	   	  from masterfile_2006q1_2018q4
@@ -198,9 +258,72 @@ proc sql;
 		   outer union corr
 	   select *
 	   	  from df_2021q2
+		   outer union corr
+	   select *
+	   	  from df_2021q3
+		   outer union corr
+	   select *
+	   	  from df_2021q4
+		   outer union corr
+	   select *
+	   	  from df_2022q1
+		   outer union corr
+	   select *
+	   	  from df_2022q2
+		   outer union corr
+	   select *
+	   	  from df_2022q3
+		   outer union corr
+	   select *
+	   	  from df_2022q4
 	;
 quit;
-*19,435,152 obs;
+
+*----------------------------------------------------------------------------------------
+*	count, employment and wage checks
+*----------------------------------------------------------------------------------------;
+proc sql;
+	create table count as
+		select year, quarter, COUNT(*) AS ObsCount
+			from out.masterfile_2006q1_2022q4
+				group by year, quarter
+;
+quit;
+/*proc sql;*/
+/*	create table empl as*/
+/*		select year, quarter, sum(m1,m2,m2) AS avg_empl*/
+/*			from out.masterfile_2006q1_2022q4*/
+/*				group by year, quarter*/
+/*;*/
+/*quit;*/
+proc sql;
+	create table wage as
+		select year, quarter, sum(wage) AS wages
+			from out.masterfile_2006q1_2022q4
+				group by year, quarter
+;
+quit;
+DATA wage;
+    SET wage;
+    IF Quarter = 1 THEN Date = MDY(3, 31, Year);
+    ELSE IF Quarter = 2 THEN Date = MDY(6, 30, Year);
+    ELSE IF Quarter = 3 THEN Date = MDY(9, 30, Year);
+    ELSE IF Quarter = 4 THEN Date = MDY(12, 31, Year);
+    FORMAT Date DATE9.;
+RUN;
+%util_plt_line(df = wage 
+                , x = date
+                , y = wages
+                , x_lab = "Date"
+                , y_lab = "wages"
+                , title = "Ohio Aggregate quarterly wages"
+                , subtitle = "2006 - 2022"
+                , legend_hide = 0
+                , y_scale = Dollar9.
+                , highlight_x_start = "31MAR2020"D
+                , highlight_x_end   = "30JUN2021"D
+                , highlight_x_lab = "COVID Recession"
+                );
 
 *----------------------------------------------------------------------------------------
 *	Converting the exported SAS dataset into a Stata dataset

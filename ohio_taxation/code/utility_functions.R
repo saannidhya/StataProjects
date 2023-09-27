@@ -50,9 +50,16 @@ find_covs <- function(df, y, covs_list){
 # takes in a list of RDD regression results and returns a dataframe containing bias-corrected treatment estimate and the corresponding p-values 
 treatment_effect_summary <- function(list){
   return(data.frame(bias_corrected_coef = purrr::map_dbl(list, ~ .x$coef[2]), 
-                    pval = purrr::map_dbl(list, ~ .x$pv[2])) ) 
+                    pval = purrr::map_dbl(list, ~ .x$pv[2]) ,
+                    se = purrr::map_dbl(list, ~ .x$se[2]) )) 
 }
 
+treatment_effect_rand_summary <- function(list){
+  return(data.frame(statistic = purrr::map_dbl(list, ~ .x$obs.stat), 
+                    pval = purrr::map_dbl(list, ~ .x$p.value) ,
+                    ci_low = purrr::map_dbl(list, ~ .x$ci[1]),
+                    ci_high = purrr::map_dbl(list, ~ .x$ci[2]))) 
+}
 
 find_covs_sign <- function(df, y, covs_list, sign = c("positive","negative")){
   
@@ -100,6 +107,14 @@ find_covs_sign <- function(df, y, covs_list, sign = c("positive","negative")){
   
   fnl[["covariates"]] <- cv_list
   
+}
+
+winsorize_data <- function(datasets, y, lower = 0.01, upper = 0.99){
+  purrr::map(datasets, function(x){
+    lower_bound <- quantile(x[[y]], lower)
+    upper_bound <- quantile(x[[y]], upper) 
+    return(x[x[[y]] > lower_bound & x[[y]] < upper_bound, ])
+  })
 }
 
 

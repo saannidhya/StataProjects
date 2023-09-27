@@ -225,7 +225,7 @@ m.out <- MatchIt::matchit(formula = treated ~ pop + childpov + poverty + pctwith
                               pcthsgrad + pctsomecoll + pctbachelors + pctgraddeg + unemprate + medfamy + pctrent + pctown + 
                               pctlt5 + pct5to17 + pct18to64 + pct65pls + pctwhite + pctblack + pctamerind + pctapi + pctotherrace + 
                               pctmin + raceherfindahl + pcthisp + pctmarried + pctnevermarr + pctseparated + pctdivorced + lforcepartrate + incherfindahl,
-                            data = roads_and_census, method = 'subclass', estimand = "ATT")
+                            data = roads_and_census, method = 'nearest', estimand = "ATT")
 
 summary(m.out)
 bal_tab = bal.tab(m.out, un = T)
@@ -250,3 +250,42 @@ summary(w.out)
 weighted_roads_and_census <- roads_and_census %>% mutate(weights = w.out$weights)
 
 # Need to take a subset of covariates and then do weighting based on those variables.
+
+
+#=======================================#
+# doing t-test on entire sample
+#=======================================#
+# data("lalonde", package = "cobalt") #If not yet loaded
+# covs <- subset(lalonde, select = -c(treat, re78, nodegree, married))
+# lalonde$p.score <- glm(treat ~ age + educ + race + re74 + re75,
+#                        data = lalonde,
+#                        family = "binomial")$fitted.values
+# bal.tab(covs, treat = lalonde$treat)
+
+roads_and_census_means <-   roads_and_census %>%
+  mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0)) %>%
+  group_by(treated) %>%
+  summarize(across(-c(tendigit_fips, year, tendigit_fips_year, tax_type, purpose2, description, 
+                      votes_pct_for, votes_pct_for_cntr, votes_against, votes_for), 
+                   ~mean(.x, na.rm=TRUE) ))
+
+
+t_tests <- purrr::map(.x = col_list[col_list != c("median_sale_amount", "median_ln_sale_amount", "inctaxrate")], 
+                      .f = ~ t_test(df = roads_and_census, 
+                                    var = .x)) %>% 
+            bind_rows() 
+
+
+
+covs_bal_tab <- bal.tab(roads_and_census %>% select(col_list[col_list != c("median_sale_amount", "median_ln_sale_amount", "inctaxrate")]),
+                        treat = roads_and_census$treated)
+love.plot(covs_bal_tab, thresholds = 0.1)
+
+# th <- roads_and_census %>% filter(treated == 1) %>% select(pctlesshs) %>% pull() 
+# 
+# mean(th)/sd(th) - mean(tu)/sd(tu)
+# 
+# 
+# tu <- roads_and_census %>% filter(treated == 0) %>% select(pctlesshs) %>% pull() 
+# tu
+# mean(tu)/sd(tu)

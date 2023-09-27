@@ -26,8 +26,10 @@ source(paste0(code,"/utility_functions.R"))
 # |- Manipulation test (X variable) ----
 #========================================#
 dens_tests <- purrr::map(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_for, c = cutoff))
-summary(dens_tests$housing_roads_census_t_minus_1_matches)
+summary(dens_tests$housing_roads_census_t_minus_3_matches)
 summary(dens_tests$housing_roads_census_t_minus_2_matches)
+summary(dens_tests$housing_roads_census_t_minus_1_matches)
+summary(dens_tests$housing_roads_census_t_plus_0_matches)
 summary(dens_tests$housing_roads_census_t_plus_1_matches)
 summary(dens_tests$housing_roads_census_t_plus_1_matches)
 summary(dens_tests$housing_roads_census_t_plus_2_matches)
@@ -40,10 +42,20 @@ summary(dens_tests$housing_roads_census_t_plus_8_matches)
 summary(dens_tests$housing_roads_census_t_plus_9_matches)
 summary(dens_tests$housing_roads_census_t_plus_10_matches) # all passed!
 
+# checking for duplicate values based on the running variable
+# dp <- dups$housing_roads_census_t_plus_1_matches[duplicated(dups$housing_roads_census_t_plus_1_matches) | duplicated(dups$housing_roads_census_t_plus_1_matches, fromLast = TRUE)]
+# dfs_agg$housing_roads_census_t_plus_1_matches %>% filter(votes_pct_for == dp[2])
+# roads_and_census %>% filter(votes_pct_for == dp[2]) %>% View()
+
+
 # Mcrary test
 # Give it the running variable and the cutpoint
 # it will automatically produce a plot and select the number of bins and the bandwidth
 # The output will be the p-value for the presence of a discontinuity
+rdd::DCdensity(dfs_agg$housing_roads_census_t_minus_3_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_minus_2_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_minus_1_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_0_matches$votes_pct_for, c = 50)
 rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_1_matches$votes_pct_for, c = 50)
 rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_2_matches$votes_pct_for, c = 50)
 rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_3_matches$votes_pct_for, c = 50)
@@ -62,6 +74,27 @@ rdd::DCdensity(dfs_agg$housing_roads_census_t_plus_10_matches$votes_pct_for, c =
 ### median sale amount ###
 
 # t+10 as an example (14 is the best)
+rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_2_matches$median_sale_amount,
+                 dfs_agg$housing_roads_census_t_plus_2_matches$votes_pct_for,
+                 c = 50, p = 1, binselect = "esmv")
+rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_4_matches$median_sale_amount,
+                 dfs_agg$housing_roads_census_t_plus_4_matches$votes_pct_for,
+                 c = 50, p = 1, binselect = "esmv")
+rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_5_matches$median_sale_amount,
+                 dfs_agg$housing_roads_census_t_plus_5_matches$votes_pct_for,
+                 c = 50, p = 1, binselect = "esmv")
+rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_6_matches$median_sale_amount,
+                 dfs_agg$housing_roads_census_t_plus_6_matches$votes_pct_for,
+                 c = 50, p = 1, binselect = "esmv")
+rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_7_matches$median_sale_amount,
+                 dfs_agg$housing_roads_census_t_plus_7_matches$votes_pct_for,
+                 c = 50, p = 1, binselect = "esmv")
+rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_8_matches$median_sale_amount,
+                 dfs_agg$housing_roads_census_t_plus_8_matches$votes_pct_for,
+                 c = 50, p = 1, binselect = "esmv")
+
+
+# trying different number of bins (from 30 to 50)
 for (i in 30:50){
   rdrobust::rdplot(y = dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount, 
                    x = dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, 
@@ -88,18 +121,20 @@ purrr::map2(dfs_agg_per, names(dfs_agg_per), ~print(rdrobust::rdplot(y = .x$medi
 # running regressions (aggregate) ----
 #=========================================#
 
-### |- median sale amount ####
+### |- median sale amount as the outcome var ####
 
 # storing univariate RDD models (outcome vs running variable, no covariates) from t-2 to t+10
 regs <- purrr::map(.x = dfs_agg, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 # regs_summary <- purrr::map(.x = dfs_agg, ~ summary(rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE)))
 
 # no effect before the voting result was decided (passed/failed)
-summary(regs$housing_roads_census_t_minus_1_matches)
+summary(regs$housing_roads_census_t_minus_3_matches)
 summary(regs$housing_roads_census_t_minus_2_matches)
+summary(regs$housing_roads_census_t_minus_1_matches)
 
 # Little effect immediately after the voting result was decided. It takes time to build roads and people to change their preferences.
 # years 1, 2 and 3 after voting result was decided
+summary(regs$housing_roads_census_t_plus_0_matches)
 summary(regs$housing_roads_census_t_plus_1_matches)
 summary(regs$housing_roads_census_t_plus_2_matches)
 summary(regs$housing_roads_census_t_plus_3_matches)
@@ -113,7 +148,34 @@ summary(regs$housing_roads_census_t_plus_8_matches)
 summary(regs$housing_roads_census_t_plus_9_matches)
 summary(regs$housing_roads_census_t_plus_10_matches)
 
-treatment_effect_summary(regs)
+tes <- treatment_effect_summary(regs) %>% 
+          mutate(conf_int_low = bias_corrected_coef - 1.65*se,
+                 conf_int_high = bias_corrected_coef + 1.65*se) %>% as_tibble(rownames = "dataset") %>% 
+          mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+                 ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+                 ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                  paste0("-", str_extract(ord, "[0-9]+")), 
+                                  str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+
+ggplot(tes, aes(ord, bias_corrected_coef)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects: Median House Price",
+    subtitle = "With confidence intervals",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3,-2, -1, 0:10))
+
+
 
 # lm() and rdrobust() giving exactly the same coefficient
 # narrow2 <- dfs_agg$housing_roads_census_t_plus_9_matches %>% 
@@ -125,17 +187,76 @@ treatment_effect_summary(regs)
 # reg1 <- rdrobust::rdrobust(y = narrow2$median_sale_amount, x = narrow2$x, c = 0, all = TRUE, kernel = "uni", h = 10, vce="hc0")
 # summary(reg1)  
 
+
 # using local randomization method;
-rdlocrand::rdrandinf(dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount, 
-                    dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, 
-                    cutoff = cutoff)
+regs_rand <- purrr::map(dfs_agg, ~ rdlocrand::rdrandinf(.x$median_sale_amount,
+                                                     .x$votes_pct_for,
+                                                     cutoff = cutoff,
+                                                     ci = 0.05))
+tes_rand <- treatment_effect_rand_summary(regs_rand) %>% as_tibble(rownames = "dataset") %>% 
+                                        mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+                                               ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+                                               ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                                                       paste0("-", str_extract(ord, "[0-9]+")), 
+                                                                       str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+ggplot(tes_rand, aes(ord, statistic)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects based on Local Randomization",
+    subtitle = "With confidence intervals",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3:10))
 
+# Q. What is the cause of this large variation in T.E for year 5 and year 10? must be 1 or 2 outliers?
+# after removing top and bottom 1%, std dev in outcome var looks much more even across datasets
+dfs_agg_winsored <- winsorize_data(dfs_agg, "median_sale_amount")
 
-### |- sale_amount_per_sq_feett ####
+regs_rand_w <- purrr::map(dfs_agg_winsored, ~ rdlocrand::rdrandinf(.x$median_sale_amount,
+                                                                   .x$votes_pct_for,
+                                                                   cutoff = cutoff,
+                                                                   ci = 0.05))
+tes_rand_w <- treatment_effect_rand_summary(regs_rand_w) %>% as_tibble(rownames = "dataset") %>% 
+  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                 paste0("-", str_extract(ord, "[0-9]+")), 
+                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+ggplot(tes_rand_w, aes(ord, statistic)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects based on Local Randomization",
+    subtitle = "With confidence intervals",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3:10))
+
+# beepr::beep("mario")
+
+### |- median_sale_amount_per_sq_feet as the outcome var ####
+
+# using local polynomial approximation
 regs_per <- purrr::map(.x = dfs_agg_per, ~ rdrobust::rdrobust(y = .x$median_sale_amount_per_sq_feet, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 
-
-purrr::map(regs_per, .f = ~ .x %>% summary() )
+# purrr::map(regs_per, .f = ~ .x %>% summary() )
 
 # no effect before the voting result was decided (passed/failed)
 summary(regs_per$housing_roads_census_t_minus_1_matches)
@@ -157,26 +278,64 @@ summary(regs_per$housing_roads_census_t_plus_8_matches)
 summary(regs_per$housing_roads_census_t_plus_9_matches)
 summary(regs_per$housing_roads_census_t_plus_10_matches)
 
-roads_and_census %>% View()
+tes_per <- treatment_effect_summary(regs_per) %>% 
+  mutate(conf_int_low = bias_corrected_coef - 1.65*se,
+         conf_int_high = bias_corrected_coef + 1.65*se) %>% as_tibble(rownames = "dataset") %>% 
+  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                 paste0("-", str_extract(ord, "[0-9]+")), 
+                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
 
-# dfs_agg
-# dfs$housing_roads_census_t_plus_10_matches %>% View()
-# 
-# median()
-# for (df in dfs){
-#   print(median(df$sale_amount))
-# }
-# 
-# median(dfs$housing_roads_census_t_plus_1_matches$sale_amount)
-# median(dfs$housing_roads_census_t_plus_2_matches$sale_amount)
-# 
-# median(dfs$housing_roads_census_t_plus_10_matches$sale_amount)
-# 
-# median(dfs_agg$housing_roads_census_t_plus_10_matches$median_sale_amount)
-# 
-# roads_and_census
-# 
-# housing_dfs$housing_roads_census_t_plus_1_matches
-# 
-# summary(dfs$housing_roads_census_t_plus_10_matches$millage_percent)
-# 
+ggplot(tes_per, aes(ord, bias_corrected_coef)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects",
+    subtitle = "With 95% confidence intervals",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3,-2, -1, 0:10))
+# roads_and_census %>% View()
+
+# using local randomization method
+dfs_agg_per_winsored <- winsorize_data(dfs_agg_per, "median_sale_amount_per_sq_feet")
+# purrr::map(dfs_agg_per_winsored, ~ summary(.x$median_sale_amount_per_sq_feet))
+
+regs_per_rand <- purrr::map(dfs_agg_per_winsored, ~ rdlocrand::rdrandinf(.x$median_sale_amount_per_sq_feet,
+                                                        .x$votes_pct_for,
+                                                        cutoff = cutoff,
+                                                        ci = 0.05))
+tes_rand_per <- treatment_effect_rand_summary(regs_per_rand) %>% as_tibble(rownames = "dataset") %>% 
+  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                 paste0("-", str_extract(ord, "[0-9]+")), 
+                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+ggplot(tes_rand_per, aes(ord, statistic)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects based on Local Randomization",
+    subtitle = "With 95% confidence intervals",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3:10))
+
+

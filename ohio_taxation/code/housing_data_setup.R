@@ -5,6 +5,7 @@
 # Log     : 
 #           07/27/2022: separated data setup from original program 
 #           06/17/2023: combined several previously made changes. See github repo for details
+#           09/11/2023: replaced STATA created "merged" datasets with identical csv files from ohio_road_housing_census_merge.R
 #==========================================================================================================#
 
 # loading packages
@@ -38,18 +39,17 @@ census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) 
 #============================================#
 #  Importing Housing datasets as a list ----
 #============================================#
-
 # storing all housing dfs as a list
-dataset_names <- stringr::str_remove(list.files(shared,
+dataset_names <- stringr::str_remove(list.files(paste0(data,"/housing"),
                                                 pattern = "matches",
                                                 recursive = TRUE),
-                                     paste0(".", "dta")) 
+                                     paste0(".", "csv")) 
 # import data
-housing_dfs <- purrr::map(list.files(shared,
+housing_dfs <- purrr::map(list.files(paste0(data,"/housing"),
                                      pattern = "matches",
                                      recursive = TRUE,
                                      full.names = TRUE),
-                          haven::read_dta)
+                          readr::read_csv)
 # assign names to housing dfs
 housing_dfs <- stats::setNames(housing_dfs, dataset_names)
 
@@ -65,6 +65,7 @@ dfs <- purrr::map(housing_dfs, ~.x %>%
                     mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0),
                            ln_sale_amount = log(sale_amount))            
 )
+
 
 # |- filtering ---- 
 # get colnames from t+1 to t+10

@@ -8,6 +8,7 @@
 # 2. 06/20/2023: updated to match the housing datasets. Only outputting housing_roads_census_`t_type'_`t_abs'_matches.dta
 #                Note: Housing dataset housing_agg_roads_census_`t_type'_`t_abs'.dta" created in housing_data_setup.R (named dfs_agg)
 #                Note: Housing dataset housing_agg_roads_census_per_`t_type'_`t_abs'.dta" created in housing_data_setup.R (named dfs_agg_per)
+# 3. 09/04/2023: Added placebo cutoffs of t-3 and t+0
 ###################################################################################################################################################
 
 
@@ -46,8 +47,10 @@ roads_and_census <- rd %>%
                       arrange(tendigit_fips, year, votes_pct_for_cntr) %>% 
                       mutate(count = row_number()) %>% 
                       filter(count == 1) %>% 
-                      mutate(yr_t_minus_2 = year - 2, 
+                      mutate(yr_t_minus_3 = year - 3, 
+                             yr_t_minus_2 = year - 2, 
                              yr_t_minus_1 = year - 1,
+                             yr_t_plus_0 = year,
                              yr_t_plus_1 = year + 1,
                              yr_t_plus_2 = year + 2,
                              yr_t_plus_3 = year + 3,
@@ -72,7 +75,7 @@ hs <- haven::read_dta(paste0(shared,"/housesales_9521_slim.dta"))
 
 
 # past and future years list
-yrs <- c(paste0("yr_t_minus_",as.character(1:2)), paste0("yr_t_plus_",as.character(1:10)))
+yrs <- c(paste0("yr_t_minus_",as.character(1:3)), paste0("yr_t_plus_",as.character(0:10)))
 
 # hss <- purrr::map(yrs, ~ hs %>% 
 #                    janitor::clean_names() %>%
@@ -85,6 +88,7 @@ yrs <- c(paste0("yr_t_minus_",as.character(1:2)), paste0("yr_t_plus_",as.charact
 #                  )
 
 # start.time <- Sys.time()
+# creating copies of (slim) raw housing dataset such that we have t_minus and t_plus variables in the dataset (to merge on)
 hss <- purrr::map(yrs, ~ hs %>% 
                     janitor::clean_names() %>%
                     arrange(tendigit_fips, year) %>%
@@ -92,11 +96,11 @@ hss <- purrr::map(yrs, ~ hs %>%
                            tendigit_fips = as.numeric(tendigit_fips),
                            hs_flag = 1) %>%
                     mutate({{.x}} := as.numeric(year)) %>%
-                    select(-c(year))
+                    select(-c(year)) 
+                    # arrange(tendigit_fips, {{.x}})
+                  
 )
 names(hss) <- yrs
-
-
 
 #========================================================================================================#
 # Merging housing and roads (using TENDIGIT_FIPS and year variable : t periods ahead and behind) ----
@@ -107,6 +111,11 @@ mgd <- purrr::map2(hss, yrs, function(x, y){
                               x %>% inner_join(roads_and_census, by = c("tendigit_fips", y))
         })
 
-purrr::map_dbl(mgd, nrow) 
+names(mgd) <- paste0(gsub("^yr", "housing_roads_census", names(mgd)), "_matches")
 
-# mgd contains datasets that match housing_roads_census_`t_type'_`t_abs'_matches.dta
+# purrr::map_dbl(mgd, nrow) 
+
+purrr::imap(mgd, ~ write.csv(.x, paste0(data,"/housing/", .y, ".csv"), row.names = FALSE))
+# beepr::beep("mario")
+
+# Note: mgd contains datasets that match housing_roads_census_`t_type'_`t_abs'_matches.dta created in Stata
