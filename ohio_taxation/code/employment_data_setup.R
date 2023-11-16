@@ -6,6 +6,7 @@
 #           07/03/2023: created the script. Finished for aggregate data.
 #           07/14/2023: created datasets by industry
 #           07/26/2023: adding code to create employment/pop and wage/pop data
+#           08/13/2023: adding code to create firm creation and destruction rates
 #==========================================================================================================#
 
 # specify the set up location
@@ -341,4 +342,12 @@ emp2 %>%
 
 emp_naics <- emp2 %>% 
   filter(include_flag == 1)
+
+
+
+
+#=====================================================================#
+#  Generating firm creation/destruction rates using ODJFS data ----
+#=====================================================================#
+df_sort_mth <- haven::read_sas(paste0(data_tax,"/employment","/df_sort_mth.sas7bdat"))
 

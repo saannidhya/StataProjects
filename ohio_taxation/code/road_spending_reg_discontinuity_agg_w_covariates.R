@@ -5,6 +5,7 @@
 # Log     : 
 #           08/01/2022: First step of adding covariates to RDD
 #           06/17/2023: combined several previously made changes. See github repo for details
+#           10/25/2023: Ran RDD on dfs_agg_pure_covs (data uncontaminated by passed additional levies)
 #==========================================================================================================#
 
 # specify the set up location
@@ -404,3 +405,42 @@ car::vif(mod1)
 
 
 # beepr::beep("mario")
+
+#============================================================================================================#
+#                         Aggregated Results (using roads_agg_pure_covs i.e. uncontaminated dataset) ----
+#============================================================================================================#
+
+# using median_sale_amount
+covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5")
+g_p_regs <- purrr::map(dfs_agg_pure_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount, 
+                                                               x = .x$votes_pct_for, c = cutoff, 
+                                                               covs = .x %>% select(all_of(covs_my_list)),
+                                                               all = TRUE))
+tes_g_p <- treatment_effect_summary(g_p_regs) %>% 
+  mutate(conf_int_low = bias_corrected_coef - 1.96*se,
+         conf_int_high = bias_corrected_coef + 1.96*se) %>% as_tibble(rownames = "dataset") %>% 
+  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                 paste0("-", str_extract(ord, "[0-9]+")), 
+                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+ggplot(tes_g_p, aes(ord, bias_corrected_coef)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects",
+    subtitle = "With covariates",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-2, -1, 1:10))
+
+
+# using median_sale_amount_per_sq_foot

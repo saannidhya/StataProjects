@@ -6,6 +6,7 @@
 #       07/16/2022: finished the program. Replicated in Stata as well. See road_spending_reg_discontinuity_agg.do
 #       08/02/2022: added sale_amount_per_sq_feet as outcome of interest
 #       06/17/2023: added utility_functions.R to the code
+#       10/25/2023: Ran RDD on dfs_agg_pure (data uncontaminated by passed additional levies)
 #================================================================================================================#
 
 # specify the set up location
@@ -14,6 +15,7 @@ data <- paste0(root,"/data")
 code <- paste0(root,"/code")
 
 # running data setup code
+source(paste0(code,"/ohio_road_housing_census_merge.R"))
 source(paste0(code,"/housing_data_setup.R"))
 source(paste0(code,"/utility_functions.R"))
 
@@ -339,3 +341,59 @@ ggplot(tes_rand_per, aes(ord, statistic)) +
   ) + scale_x_continuous(breaks = c(-3:10))
 
 
+
+#============================================================================================================#
+#                         Aggregated Results (using roads_agg_pure i.e. uncontaminated dataset) ----
+#============================================================================================================#
+# Mcrary test
+# Give it the running variable and the cutpoint
+# it will automatically produce a plot and select the number of bins and the bandwidth
+# The output will be the p-value for the presence of a discontinuity
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_minus_3_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_minus_2_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_minus_1_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_0_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_1_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_2_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_3_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_4_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_5_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_6_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_7_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_8_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_9_matches$votes_pct_for, c = 50)
+rdd::DCdensity(dfs_agg_pure$housing_roads_census_t_plus_10_matches$votes_pct_for, c = 50)
+
+#=========================================#
+# running regressions (aggregate) ----
+#=========================================#
+
+### |- median sale amount as the outcome var ####
+# storing univariate RDD models (outcome vs running variable, no covariates) from t-2 to t+10
+regs_pure <- purrr::map(.x = dfs_agg_pure, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+
+tes_pure <- treatment_effect_summary(regs_pure) %>% 
+  mutate(conf_int_low = bias_corrected_coef - 1.65*se,
+         conf_int_high = bias_corrected_coef + 1.65*se) %>% as_tibble(rownames = "dataset") %>% 
+  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                 paste0("-", str_extract(ord, "[0-9]+")), 
+                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+ggplot(tes_pure, aes(ord, bias_corrected_coef)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects: Median House Price",
+    subtitle = "With confidence intervals",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3,-2, -1, 0:10))

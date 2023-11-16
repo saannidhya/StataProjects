@@ -115,7 +115,7 @@ names(mgd) <- paste0(gsub("^yr", "housing_roads_census", names(mgd)), "_matches"
 
 # purrr::map_dbl(mgd, nrow) 
 
-purrr::imap(mgd, ~ write.csv(.x, paste0(data,"/housing/", .y, ".csv"), row.names = FALSE))
+# purrr::imap(mgd, ~ write.csv(.x, paste0(data,"/housing/", .y, ".csv"), row.names = FALSE))
 # beepr::beep("mario")
 
 # Note: mgd contains datasets that match housing_roads_census_`t_type'_`t_abs'_matches.dta created in Stata
