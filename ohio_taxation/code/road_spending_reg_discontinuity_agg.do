@@ -122,3 +122,16 @@ foreach t of numlist -2/-1 1/10 {
 	
 }
 
+
+*----------------------------------------------------------------------------------;
+* Histogram of Running variable: pct votes for
+*----------------------------------------------------------------------------------;
+
+use "${data}/roads_and_census.dta", clear
+
+keep if description == "R"
+keep if duration != 1000
+
+histogram votes_pct_for, title("Histogram of % Votes for") xtitle("% Votes for") graphregion(color(white)) plotregion(color(white)) xline($cutoff, lwidth(medium) lpattern(solid) lcolor(red) extend)
+
+graph export "${plots}/votes_pct_for_histogram.png", as(png) replace

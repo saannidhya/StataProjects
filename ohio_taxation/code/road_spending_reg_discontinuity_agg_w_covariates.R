@@ -49,12 +49,15 @@ covs_final <- purrr::map(dfs_agg_covs, ~find_covs(.x, y = "median_sale_amount", 
 # some common vars upon eye-balling: pop, poverty, pct_white, pctsinparhhld, medfamy
 
 ### regressions with covariates for median sale amount
+
+# local polynomial approach #
 g1 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_1_matches$median_sale_amount,
                  x = dfs_agg_covs$housing_roads_census_t_plus_1_matches$votes_pct_for,
                  c = cutoff,
                  covs = dfs_agg_covs$housing_roads_census_t_plus_1_matches %>%
                    select(covs_final$housing_roads_census_t_plus_1_matches) ,
                  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+
 g2 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_2_matches$median_sale_amount,
                  x = dfs_agg_covs$housing_roads_census_t_plus_2_matches$votes_pct_for,
                  c = cutoff,
@@ -113,19 +116,12 @@ g10 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_10_matches$median
 g_regs <- list(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10)
 
 # pop, poverty, pct_white, pctsinparhhld, medfamy
-covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5")
+covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 g_regs <- purrr::map(dfs_agg_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount, 
                                                              x = .x$votes_pct_for, c = cutoff, 
                                                              covs = .x %>% select(all_of(covs_my_list)),
                                                              all = TRUE))
-tes_g <- treatment_effect_summary(g_regs) %>% 
-  mutate(conf_int_low = bias_corrected_coef - 1.96*se,
-         conf_int_high = bias_corrected_coef + 1.96*se) %>% as_tibble(rownames = "dataset") %>% 
-  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
-         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
-         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
-                                 paste0("-", str_extract(ord, "[0-9]+")), 
-                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+tes_g <- te_tables(g_regs)
 ggplot(tes_g, aes(ord, bias_corrected_coef)) +       
   geom_point(size = 3, shape = 19, color = "blue") +
   geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
@@ -147,6 +143,20 @@ ggplot(tes_g, aes(ord, bias_corrected_coef)) +
 # lm(dfs_agg_covs$housing_roads_census_t_plus_10_matches,
 #    formula = median_sale_amount ~ unemprate+pctrent+pctlt5+pct18to64+pct65pls+pctblack+pctamerind+pctotherrace+pcthisp+pctseparated) %>%
 #   summary()
+
+# local randomization approach #
+dfs_agg_covs$housing_roads_census_t_minus_1_matches %>% select(all_of(covs_my_list))
+rdlocrand::rdrandinf(dfs_agg_covs$housing_roads_census_t_minus_1_matches$median_sale_amount,
+                     dfs_agg_covs$housing_roads_census_t_minus_1_matches$votes_pct_for,
+                     # x = dfs_agg_covs$housing_roads_census_t_minus_1_matches %>% select(all_of(covs_my_list)),
+                     cutoff = cutoff,
+                     ci = 0.05)
+
+regs_rand <- purrr::map(dfs_agg_covs, ~ rdlocrand::rdrandinf(y = .x$median_sale_amount,
+                                                        z = .x$votes_pct_for,
+                                                        x = .x %>% select(all_of(covs_my_list)),
+                                                        cutoff = cutoff,
+                                                        ci = 0.05))
 
 ## winsorization of median_sale_amount
 # removing top and bottom 1% of observations

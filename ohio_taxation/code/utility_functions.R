@@ -61,6 +61,28 @@ treatment_effect_rand_summary <- function(list){
                     ci_high = purrr::map_dbl(list, ~ .x$ci[2]))) 
 }
 
+# treatment effect table
+te_tables <- function(list, rand=FALSE){
+  if (rand == FALSE){
+    treatment_effect_summary(list) %>% 
+      mutate(conf_int_low = bias_corrected_coef - 1.96*se,
+             conf_int_high = bias_corrected_coef + 1.96*se) %>% as_tibble(rownames = "dataset") %>% 
+      mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+             ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+             ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                     paste0("-", str_extract(ord, "[0-9]+")), 
+                                     str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+  }
+  else {
+    treatment_effect_rand_summary(list) %>% as_tibble(rownames = "dataset") %>% 
+      mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
+             ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
+             ord = as.numeric(ifelse(str_detect(ord, "minus"), 
+                                     paste0("-", str_extract(ord, "[0-9]+")), 
+                                     str_extract(ord, "[0-9]+")))) %>% arrange(ord)
+  }
+}
+
 find_covs_sign <- function(df, y, covs_list, sign = c("positive","negative")){
   
   # initialize

@@ -7,6 +7,7 @@
 #           07/14/2023: created datasets by industry
 #           07/26/2023: adding code to create employment/pop and wage/pop data
 #           08/13/2023: adding code to create firm creation and destruction rates
+#           11/23/2023: added some comments. Commented some code out
 #==========================================================================================================#
 
 # specify the set up location
@@ -38,7 +39,7 @@ employment_df <- haven::read_sas(paste0(data_emp,"/odjfs_employment_df.sas7bdat"
 # unique_id column has problems because when you paste the three cols, some unique_ids tend to overlap i.e. 0 + 10 + 1 = 0 + 1 + 10 = 0101 
 
 employment_df %>% select(meei) %>% unique()
-
+employment_df
 #================================================================#
 #  importing roads_and_census dataset ----
 #================================================================# 
@@ -71,7 +72,10 @@ duplicate_rows <- employment_df[duplicated(employment_df[, c("year", "quarter", 
 
 # Note: for year 2019 and quarter 3 & 4, some of the observations were assigned two different geocodes (long and lat) by ArcGIS.
 #       I do not know why this might be (54 observations)
-
+# Update: This happened because master dataset from SAS was appending Q3 and Q4 for 2019 twice. This has been changed in SAS master dataset.
+#         However, because ArcGIS geocoding was done on old dataset, odjfs_employment_df.sas7bdat contains these duplicates.
+# How I handled this: looked at duplicates line by line for Q3, Q4 2019 and then checked if it had a corresponding uins
+# in 2019Q2, 2019Q1 etc.
 
 # employment_df %>% filter((uin == "0831615") & (rep_unit == "00155")) %>% View()
 ## need to remove the following observations:
@@ -121,8 +125,7 @@ remove_df <- data.frame(
                     3906115000, 3905704220)
 )
 
-# Suppose your original data frame is named df
-# Remove the rows
+# Remove the duplicate rows
 employment_df2 <- anti_join(employment_df, remove_df, by = c("uin", "rep_unit", "tendigit_fips"))
 
 
@@ -131,8 +134,8 @@ nrow(employment_df) -  nrow(employment_df2)
 
 
 # if we check duplicates now: 
-employment_df2[duplicated(employment_df2[, c("year", "quarter", "pad", "uin", "rep_unit")]) | 
-                duplicated(employment_df2[, c("year", "quarter", "pad", "uin", "rep_unit")], fromLast = TRUE),]
+# employment_df2[duplicated(employment_df2[, c("year", "quarter", "pad", "uin", "rep_unit")]) | 
+#                 duplicated(employment_df2[, c("year", "quarter", "pad", "uin", "rep_unit")], fromLast = TRUE),]
 
 # no duplicates left now based on year, quarter, pad, uin, rep_unit
 
@@ -179,9 +182,9 @@ emp_df_agg_fips_yr <- emp_df_agg_fips_yr_qtr %>%
 emp2 <- emp %>%
   mutate(naics_2dg = as.numeric(substr(as.character(naics), 1, 2)))
 
-unique(emp2$naics_2dg) %>% sort()
+# unique(emp2$naics_2dg) %>% sort()
 
-emp2 %>% filter(naics_2dg == 0) # 3 observations with naics code as 0. We can safely ignore them.
+# emp2 %>% filter(naics_2dg == 0) # 3 observations with naics code as 0. We can safely ignore them.
 
 # creating NAICS look-up dataframe (created using NAIcS website: https://www.naics.com/search/)
 naics_df <- data.frame(
@@ -191,9 +194,9 @@ naics_df <- data.frame(
 
 emp_2dg <- emp2 %>% left_join(naics_df, by = "naics_2dg")
 
-emp_2dg %>% filter(is.na(sector_title)) # 999999 is naics code for unclassified companies i.e. companies who have not been assigned a NAICS code yet. Nothing we can do about these companies.
+# emp_2dg %>% filter(is.na(sector_title)) # 999999 is naics code for unclassified companies i.e. companies who have not been assigned a NAICS code yet. Nothing we can do about these companies.
 
-naics_df$naics_2dg
+# naics_df$naics_2dg
 
 emp_by_indstry <- purrr::map(naics_df$naics_2dg, ~ emp_2dg %>% filter(naics_2dg == .x))
 names(emp_by_indstry) <- naics_df$naics_2dg

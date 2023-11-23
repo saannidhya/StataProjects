@@ -1,8 +1,9 @@
 #==========================================================================================================#
-# Purpose : Data setup for running variable. Creates running variable for "R","A" types and also drops obs that violate SUTVS
+# Purpose : Data setup for running variable. Creates running variable for "R","A" types and also drops obs 
+#           that violate SUTVA.
 # Name    : Saani Rawat
 # Created : 10/12/2023
-# Log     : 
+# Log     : 1. updated the code 
 #==========================================================================================================#
 
 # specify the set up location
