@@ -37,90 +37,106 @@ t_test_sig_level <- 0.05
 #                                   !(variable %in% c('median_sale_amount','median_ln_sale_amount','median_sale_amount_per_sq_feet'))) %>%
 #                          select(variable) %>%
 #                          pull() )
+
+
 # names(var_list) <- names(dfs_agg_covs)
 covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
                "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
                "pct5to17" ,"pct18to64" ,"pct65pls" ,"pctwhite" ,"pctblack" ,"pctamerind" ,"pctapi" ,"pctotherrace" ,"pctmin" ,"raceherfindahl" ,
                "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl")
 
-# median sale amount
-covs_final <- purrr::map(dfs_agg_covs, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
-
 # some common vars upon eye-balling: pop, poverty, pct_white, pctsinparhhld, medfamy
 
 ### regressions with covariates for median sale amount
 
-# local polynomial approach #
-g1 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_1_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_1_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_1_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_1_matches) ,
-                 all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+#|||||||||||||||||||||||||||||||||||||||||||||||||#
+# Different Covariates for each outcome period
+#|||||||||||||||||||||||||||||||||||||||||||||||||#
 
-g2 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_2_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_2_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_2_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_2_matches)  ,
-                 all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
-g3 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_3_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_3_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_3_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_3_matches) %>% select(-c(pctmin))  ,
-                 all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
-g4 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_4_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_4_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_4_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_4_matches)  ,
-                 all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) 
-g5 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_5_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_5_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_5_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_5_matches),
-                 all = TRUE) 
-g6 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_6_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_6_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_6_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_6_matches) ,
-                 all = TRUE) 
-g7 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_7_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_7_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_7_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_7_matches) ,
-                 all = TRUE) 
-g8 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_8_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_8_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_8_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_8_matches) %>% select(-c(pctmin)),
-                 all = TRUE) 
-g9 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_9_matches$median_sale_amount,
-                 x = dfs_agg_covs$housing_roads_census_t_plus_9_matches$votes_pct_for,
-                 c = cutoff,
-                 covs = dfs_agg_covs$housing_roads_census_t_plus_9_matches %>%
-                   select(covs_final$housing_roads_census_t_plus_9_matches) ,
-                 all = TRUE) 
-g10 <- rdrobust(  y = dfs_agg_covs$housing_roads_census_t_plus_10_matches$median_sale_amount,
-                  x = dfs_agg_covs$housing_roads_census_t_plus_10_matches$votes_pct_for,
-                  c = cutoff,
-                  covs = dfs_agg_covs$housing_roads_census_t_plus_10_matches %>%
-                    select(covs_final$housing_roads_census_t_plus_10_matches) ,
-                  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) 
+# selecting the best set of covariates for each median sale amount period
+covs_final <- purrr::map(dfs_agg_covs, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
 
-g_regs <- list(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10)
+# cleaning covs_final to avoid multicollinearity
+covs_final$housing_roads_census_t_minus_3_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final$housing_roads_census_t_minus_2_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final$housing_roads_census_t_minus_1_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final$housing_roads_census_t_plus_0_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final$housing_roads_census_t_plus_1_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final$housing_roads_census_t_plus_2_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final$housing_roads_census_t_plus_3_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5", "pctlesshs")
+covs_final$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches[covs_final$housing_roads_census_t_plus_8_matches != "pctmin"]
+covs_final
+
+## local polynomial approach ##
+gs <- purrr::map2(covs_final, dfs_agg_covs, .f = function(x,y){
+                              # print(paste0("Outcome variable is ",deparse(substitute(y))))
+                              rdrobust(  y = y$median_sale_amount,
+                                         x = y$votes_pct_for,
+                                         c = cutoff,
+                                         covs = y %>%
+                                           select(x) ,
+                                         all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+purrr::walk2(names(gs), gs, .f = function(x, y) {
+  print(paste0("Outcome variable is ",x))
+  summary(y) 
+})
+tes_gs <- te_tables(gs)
+ggplot(tes_gs, aes(ord, bias_corrected_coef)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects",
+    subtitle = "With covariates",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-2, -1, 1:10))
+
+
+# output for paper draft 
+write.csv(tes_gs, paste0(tables, "/tes_gs.csv"), row.names = FALSE)
+
+
+# nrow(dfs_agg_covs$housing_roads_census_t_plus_1_matches)
+# gs$housing_roads_census_t_plus_1_matches$coef/gs$housing_roads_census_t_plus_1_matches$se
+# gs$housing_roads_census_t_plus_1_matches$bwselect
+# 
+# gs$housing_roads_census_t_plus_4_matches$Estimate[2]
+# 
+# gs$housing_roads_census_t_plus_1_matches$bws
+# 
+# mean(c(20992, 19867, 14461, 15129, 18532, 22645, 13438))
+
+# bandwidth
+purrr::walk2(gs, names(gs), ~print(paste0("Eff. Bandwidth (p) for ", .y, ": " , round(.x$bws[1,],1))))
+purrr::walk2(gs, names(gs), ~print(paste0("Bias Bandwidth (b) for ", .y, ": " , round(.x$bws[2,],1))))
+
+# observations
+purrr::walk2(gs, names(gs), ~print(paste0("Eff. Observations for ", .y, ": " , sum(.x$N_h))))
+purrr::walk2(gs, names(gs), ~print(paste0("Total Observations for ", .y, ": " , sum(.x$N))))
+
+#|||||||||||||||||||||||||||||||||||||||||||||||||#
+# Same Covariates for each outcome period
+#|||||||||||||||||||||||||||||||||||||||||||||||||#
 
 # pop, poverty, pct_white, pctsinparhhld, medfamy
-covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5", "pctlesshs")
 g_regs <- purrr::map(dfs_agg_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount, 
                                                              x = .x$votes_pct_for, c = cutoff, 
                                                              covs = .x %>% select(all_of(covs_my_list)),
                                                              all = TRUE))
+purrr::walk2(names(g_regs), g_regs, .f = function(x, y) {
+  print(paste0("Outcome variable is ",x))
+  summary(y) 
+})
 tes_g <- te_tables(g_regs)
 ggplot(tes_g, aes(ord, bias_corrected_coef)) +       
   geom_point(size = 3, shape = 19, color = "blue") +
@@ -145,50 +161,99 @@ ggplot(tes_g, aes(ord, bias_corrected_coef)) +
 #   summary()
 
 # local randomization approach #
-dfs_agg_covs$housing_roads_census_t_minus_1_matches %>% select(all_of(covs_my_list))
-rdlocrand::rdrandinf(dfs_agg_covs$housing_roads_census_t_minus_1_matches$median_sale_amount,
-                     dfs_agg_covs$housing_roads_census_t_minus_1_matches$votes_pct_for,
-                     # x = dfs_agg_covs$housing_roads_census_t_minus_1_matches %>% select(all_of(covs_my_list)),
-                     cutoff = cutoff,
-                     ci = 0.05)
+g_regs_rand <- purrr::map(dfs_agg_covs, ~ rdlocrand::rdrandinf(.x$median_sale_amount,
+                                                               .x$votes_pct_for,
+                                                               covariates = .x %>% select(all_of(covs_my_list)),
+                                                               cutoff = cutoff,
+                                                               ci = 0.05,
+                                                               wmasspoints = TRUE))
+purrr::walk2(names(g_regs_rand), g_regs_rand, .f = function(x, y) {
+  print(paste0("Outcome variable is ",x))
+  summary(y) 
+})
+tes_g_rand <- te_tables(g_regs_rand, rand = TRUE)
+ggplot(tes_g_rand, aes(ord, statistic)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects based on Local Randomization",
+    subtitle = "With confidence intervals",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3:10))
 
-regs_rand <- purrr::map(dfs_agg_covs, ~ rdlocrand::rdrandinf(y = .x$median_sale_amount,
-                                                        z = .x$votes_pct_for,
-                                                        x = .x %>% select(all_of(covs_my_list)),
-                                                        cutoff = cutoff,
-                                                        ci = 0.05))
 
 ## winsorization of median_sale_amount
 # removing top and bottom 1% of observations
-# dfs_agg_covs_winsored <- winsorize_data(dfs_agg_covs, "median_sale_amount")
-# regs_rand_cv_w <- purrr::map(dfs_agg_covs_winsored, ~ rdlocrand::rdrandinf(.x$median_sale_amount,
-#                                                                    .x$votes_pct_for,
-#                                                                    cutoff = cutoff,
-#                                                                    covariates = .x %>% select(all_of(covs_my_list)),
-#                                                                    ci = 0.05))
-# tes_rand_cv_w <- treatment_effect_rand_summary(regs_rand_cv_w) %>% as_tibble(rownames = "dataset") %>% 
-#   mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
-#          ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
-#          ord = as.numeric(ifelse(str_detect(ord, "minus"), 
-#                                  paste0("-", str_extract(ord, "[0-9]+")), 
-#                                  str_extract(ord, "[0-9]+")))) %>% arrange(ord)
-# ggplot(tes_rand_w, aes(ord, statistic)) +       
-#   geom_point(size = 3, shape = 19, color = "blue") +
-#   geom_errorbar(aes(ymin = ci_low, ymax = ci_high), 
-#                 width = 0.2, color = "grey50", size = 0.7) +
-#   geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-#   labs(
-#     title = "Visualization of Treatment Effects based on Local Randomization",
-#     subtitle = "With confidence intervals",
-#     x = "Year",
-#     y = "Treatment Effect",
-#     color = "Position"
-#   ) +
-#   theme_minimal() +
-#   theme(
-#     plot.title = element_text(hjust = 0.5),
-#     legend.position = "bottom"
-#   ) + scale_x_continuous(breaks = c(-3:10))
+dfs_agg_covs_winsored <- winsorize_data(dfs_agg_covs, "median_sale_amount")
+
+# local polynomial approach
+covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
+               "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
+               "pct5to17" ,"pct18to64" ,"pct65pls" ,"pctwhite" ,"pctblack" ,"pctamerind" ,"pctapi" ,"pctotherrace" ,"pctmin" ,"raceherfindahl" ,
+               "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl")
+
+covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5", "pctlesshs")
+g_regs_w <- purrr::map(dfs_agg_covs_winsored, ~ rdrobust::rdrobust(y = .x$median_sale_amount, 
+                                                        x = .x$votes_pct_for, c = cutoff, 
+                                                        covs = .x %>% select(all_of(covs_my_list)),
+                                                        all = TRUE))
+purrr::walk2(names(g_regs_w), g_regs_w, .f = function(x, y) {
+  print(paste0("Outcome variable is ",x))
+  summary(y) 
+})
+tes_g_w <- te_tables(g_regs_w)
+ggplot(tes_g_w, aes(ord, bias_corrected_coef)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects",
+    subtitle = "With covariates",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-2, -1, 1:10))
+
+# local randomization approach
+g_regs_rand_w <- purrr::map(dfs_agg_covs_winsored, ~ rdlocrand::rdrandinf(.x$median_sale_amount,
+                                                               .x$votes_pct_for,
+                                                               covariates = .x %>% select(all_of(covs_my_list)),
+                                                               cutoff = cutoff,
+                                                               ci = 0.05,
+                                                               wmasspoints = TRUE))
+tes_g_rand_w <- te_tables(g_regs_rand_w, rand = TRUE)
+ggplot(tes_g_rand_w, aes(ord, statistic)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Visualization of Treatment Effects based on Local Randomization",
+    subtitle = "With confidence intervals",
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3:10))
 
 
 #============================================================================================================#
@@ -198,7 +263,7 @@ regs_rand <- purrr::map(dfs_agg_covs, ~ rdlocrand::rdrandinf(y = .x$median_sale_
 # median sale amount per square feet
 covs_final_per <- purrr::map(dfs_agg_per_covs, ~find_covs(.x, y = "median_sale_amount_per_sq_feet", covs_list = covs_list))
 ## 
-# beepr::beep("mario")
+beepr::beep("mario")
 
 
 ### regressions with covariates for median sale amount per square feet
