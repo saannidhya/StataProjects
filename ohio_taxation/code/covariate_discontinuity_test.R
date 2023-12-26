@@ -63,3 +63,17 @@ covs_regs_pvals <- purrr::imap(covs_regs_ls, ~treatment_effect_summary(.x) %>% r
 
 # View(covs_regs_pvals)
 write.csv(covs_regs_pvals, paste0(tables, "/covariate_discontinuity_test.csv"), row.names = FALSE)
+
+
+#|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
+# running covariate discontinuity regressions  ----
+#|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
+
+cv_regs <- purrr::map(covariate_list, 
+           ~ rdrobust::rdrobust(y = roads_and_census %>% select(.x) %>% pull(), x = roads_and_census$votes_pct_for, c = cutoff, all = TRUE))
+names(cv_regs) <- covariate_list  
+
+te_cv_regs <- treatment_effect_summary(cv_regs)
+
+round(min(te_cv_regs$pval), 2)
+round(max(te_cv_regs$pval), 2)

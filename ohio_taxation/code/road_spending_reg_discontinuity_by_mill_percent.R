@@ -22,6 +22,9 @@ source(paste0(code,"/housing_data_setup.R"))
 #                         Splitting by millage size of > 1.9 and < 1.9 ----
 #============================================================================================================#
 
+purrr::map_dbl(dfs_agg_mill, ~ round(mean(.x$millage_percent),1))
+
+
 dfs_agg_mill_g_1.9 <- purrr::map(dfs_agg_mill, ~ .x %>% filter(millage_percent > 1.9))
 
 dfs_agg_mill_l_1.9 <- purrr::map(dfs_agg_mill, ~ .x %>% filter(millage_percent <= 1.9))
@@ -53,7 +56,10 @@ summary(regs_g_1.9$housing_roads_census_t_plus_9_matches)
 summary(regs_g_1.9$housing_roads_census_t_plus_10_matches)
 
 
-dist(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millage_percent)
+# dist(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millage_percent)
+
+tes_g_1.9 <- te_tables(regs_g_1.9)
+tes_g_1.9
 
 #==================================================================================#
 # running regressions (aggregate) for millage size <= 1.9 ----
@@ -75,6 +81,8 @@ regs_l_1.9 <- purrr::map(.x = dfs_agg_mill_l_1.9, ~ rdrobust::rdrobust(y = .x$me
 # summary(regs_l_1.9$housing_roads_census_t_plus_9_matches)
 # summary(regs_l_1.9$housing_roads_census_t_plus_10_matches)
 
+tes_l_1.9 <- te_tables(regs_l_1.9)
+tes_l_1.9
 
 
 

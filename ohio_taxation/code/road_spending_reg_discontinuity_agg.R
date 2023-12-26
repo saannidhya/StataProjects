@@ -16,7 +16,7 @@ data <- paste0(root,"/data")
 code <- paste0(root,"/code")
 
 # running data setup code
-source(paste0(code,"/ohio_road_housing_census_merge.R"))
+# source(paste0(code,"/ohio_road_housing_census_merge.R"))
 source(paste0(code,"/housing_data_setup.R"))
 source(paste0(code,"/utility_functions.R"))
 
@@ -32,10 +32,16 @@ source(paste0(code,"/utility_functions.R"))
 dens_test <- rddensity::rddensity(X = roads_and_census$votes_pct_for, c = cutoff, massPoints = FALSE)
 summary(dens_test)
 
+dens_test$test$p_jk
+
 # checking for duplicate values based on the running variable
 # dp <- dups$housing_roads_census_t_plus_1_matches[duplicated(dups$housing_roads_census_t_plus_1_matches) | duplicated(dups$housing_roads_census_t_plus_1_matches, fromLast = TRUE)]
 # dfs_agg$housing_roads_census_t_plus_1_matches %>% filter(votes_pct_for == dp[2])
 # roads_and_census %>% filter(votes_pct_for == dp[2]) %>% View()
+
+# range of p-vals after introducing outcome  variables
+purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_for, c = cutoff, massPoints = FALSE)$test$p_jk) %>% min() %>% round(2)
+purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_for, c = cutoff, massPoints = FALSE)$test$p_jk) %>% max() %>% round(2)
 
 
 # Mcrary test
@@ -190,6 +196,8 @@ ggplot(tes_rand, aes(ord, statistic)) +
 # Q. What is the cause of this large variation in T.E for year 5 and year 10? must be 1 or 2 outliers?
 # after removing top and bottom 1%, std dev in outcome var looks much more even across datasets
 dfs_agg_winsored <- winsorize_data(dfs_agg, "median_sale_amount")
+
+purrr::map_dbl(dfs_agg_winsored, ~ .x %>% select(median_sale_amount) %>% pull() %>% mean()) %>% mean()
 
 # using local polynomial method;
 

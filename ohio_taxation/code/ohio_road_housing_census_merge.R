@@ -72,6 +72,8 @@ roads_and_census <- rd %>%
 
 # housing dataset
 hs <- haven::read_dta(paste0(shared,"/housesales_9521_slim.dta"))
+head(hs)
+View(hs)
 
 
 # past and future years list
@@ -119,3 +121,26 @@ names(mgd) <- paste0(gsub("^yr", "housing_roads_census", names(mgd)), "_matches"
 # beepr::beep("mario")
 
 # Note: mgd contains datasets that match housing_roads_census_`t_type'_`t_abs'_matches.dta created in Stata
+
+#||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
+# Winsorization on full housing data for paper ----
+#||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
+
+
+mean(hs %>% filter(!is.na(SALE_AMOUNT)) %>% select(SALE_AMOUNT) %>% pull())
+median(hs %>% filter(!is.na(SALE_AMOUNT)) %>% select(SALE_AMOUNT) %>% pull())
+
+gs <- hs %>% filter(!is.na(SALE_AMOUNT)) 
+# gg %>% filter(!is.na(SALE_AMOUNT)) 
+# nrow(hs) - hs %>% filter(is.na(SALE_AMOUNT)) %>% nrow()
+
+hs_winsorized <- winsorize_data(list(gs) , "SALE_AMOUNT")
+
+mean(gs$SALE_AMOUNT)
+round(min(hs_winsorized[[1]]$SALE_AMOUNT))
+round(max(hs_winsorized[[1]]$SALE_AMOUNT))
+
+round(mean(hs_winsorized[[1]]$SALE_AMOUNT)) # 138,565
+round(sd(hs_winsorized[[1]]$SALE_AMOUNT)) # 108,687
+
+

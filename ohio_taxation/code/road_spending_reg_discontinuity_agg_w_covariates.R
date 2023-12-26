@@ -519,3 +519,31 @@ ggplot(tes_g_p, aes(ord, bias_corrected_coef)) +
 
 
 # using median_sale_amount_per_sq_foot
+
+
+View(roads_and_census)
+unique(str_to_lower(roads_and_census$tax_type))
+unique(roads_and_census$duration)
+roads_and_census %>% mutate(tax_type = str_to_lower(tax_type)) %>% group_by(tax_type) %>% count()
+roads_and_census %>% group_by(duration) %>% count()
+roads_and_census %>% group_by(treated) %>% count()
+
+mean(roads_and_census$votes_pct_for)
+median(roads_and_census$votes_pct_for)
+sd(roads_and_census$votes_pct_for)
+
+colnames(roads_and_census)
+
+2770/(2770+19)
+2770+19
+
+2267/2789
+522/2789
+
+purrr::map_dbl(dfs_agg, ~ max(.x$year))
+
+dfs_agg$housing_roads_census_t_plus_1_matches$year
+
+min(dfs_agg$housing_roads_census_t_plus_1_matches$year)
+max(dfs_agg$housing_roads_census_t_plus_1_matches$year)
+

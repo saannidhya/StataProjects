@@ -44,7 +44,7 @@ regs_rur_cd <- purrr::map(.x = dfs_agg_rur_cd, ~ rdrobust::rdrobust(y = .x$media
 regs_rur_ua <- purrr::map(.x = dfs_agg_rur_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 
 
-summary(regs_urb_cd$housing_roads_census_t_plus_6_matches)
+summary(regs_urb_cd$housing_roads_census_t_plus_4_matches)
 
 # find_covs <- function(df, y, covs_list)
   
@@ -58,7 +58,20 @@ treatment_effect_summary(regs_rur_ua)
 
 # regs_urb_cd$housing_roads_census_t_plus_6_matches$
 
-
+# summary(regs_urb_cd$housing_roads_census_t_plus_4_matches)
+# regs_urb_cd$housing_roads_census_t_plus_4_matches$Estimate
+# 
+# dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches$votes_pct_for_cntrd <- dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches$votes_pct_for - cutoff
+# 
+# dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches <- mutate(dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches,
+#                                                                        treated = if_else(votes_pct_for_cntrd >= 0, 1, 0))
+# 
+# dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches %>% View()
+# 
+# dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches$treated
+# 
+# rr <- lm(data = dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches, formula = median_sale_amount ~ votes_pct_for_cntrd + treated + treated*votes_pct_for_cntrd)
+# summary(rr)
 
 #=================================================================================#
 # Aggregate datasets with covariates ----
