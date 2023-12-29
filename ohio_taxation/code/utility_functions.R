@@ -139,4 +139,22 @@ winsorize_data <- function(datasets, y, lower = 0.01, upper = 0.99){
   })
 }
 
-
+plot_te <- function(te_table, title = "", subtitle = ""){
+  ggplot(te_table, aes(ord, bias_corrected_coef)) +       
+    geom_point(size = 3, shape = 19, color = "blue") +
+    geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                  width = 0.2, color = "grey50", size = 0.7) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+    labs(
+      title = title,
+      subtitle = subtitle,
+      x = "Year",
+      y = "Treatment Effect",
+      color = "Position"
+    ) +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      legend.position = "bottom"
+    ) + scale_x_continuous(breaks = c(-2, -1, 1:10))
+}

@@ -123,13 +123,11 @@ dfs_agg_per_covs <- purrr::map(.x = dfs_agg_per, ~ .x %>%
 # Urban vs Rural ----
 #============================================#
 # importing the urban vs rural file
-
-twp_places_urban <- haven::read_dta(paste0(data,"/twp_places_urban.dta")) %>% janitor::clean_names()
-
-dfs_agg_urb <- purrr::map(dfs_agg, ~ .x %>%
-                                     left_join(twp_places_urban, by = "tendigit_fips")
-                         )
-
+# twp_places_urban <- haven::read_dta(paste0(data,"/twp_places_urban.dta")) %>% janitor::clean_names()
+# 
+# dfs_agg_urb <- purrr::map(dfs_agg, ~ .x %>%
+#                                      left_join(twp_places_urban, by = "tendigit_fips")
+#                          )
 
 # dfs_agg$housing_roads_census_t_plus_2_matches$tendigit_fips %>% unique() %>% length()
 # twp_places_urban$tendigit_fips %>% unique() %>% length()

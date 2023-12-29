@@ -21,12 +21,14 @@ source(paste0(code,"/utility_functions.R"))
 # Aggregate datasets without covariates ----
 #=================================================================================#
 
+# importing the urban vs rural file
+twp_places_urban <- haven::read_dta(paste0(data,"/twp_places_urban.dta")) %>% janitor::clean_names()
 
 # creating urban flags using clusterdummy and uadummy. 0 == rural and 1 == urban
 dfs_agg_twp <- purrr::map(dfs_agg, ~ .x %>%
                                      left_join(twp_places_urban, by = "tendigit_fips") %>%
                                      mutate(urban_flg_cd = if_else(is.na(clusterdummy), 0, clusterdummy),
-                                            urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy)))
+                                            urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy))) # if NA, then assuming the region is rural
 
 # splitting the datasets into urban and rural, by both: clusterdummy and uadummy
 dfs_agg_urb_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)))

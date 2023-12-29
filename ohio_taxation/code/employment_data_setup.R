@@ -36,6 +36,7 @@ employment_df <- haven::read_sas(paste0(data_emp,"/odjfs_employment_df.sas7bdat"
                   mutate(persons = (m1 + m2 + m3)/3, 
                          unique_id = paste0(pad,uin,rep_unit))
 
+
 # unique_id column has problems because when you paste the three cols, some unique_ids tend to overlap i.e. 0 + 10 + 1 = 0 + 1 + 10 = 0101 
 
 employment_df %>% select(meei) %>% unique()
@@ -148,7 +149,7 @@ nrow(employment_df) -  nrow(employment_df2)
 #===============================================#
 
 emp <- employment_df2 %>% 
-        select(c(year, quarter, pad, uin, rep_unit, tendigit_fips, ein, naics, wage, persons))
+        select(c(year, quarter, pad, uin, rep_unit, tendigit_fips, ein, naics, wage, persons)) 
 
 #============================================#
 # Data Aggregation (Overall) ----
@@ -158,8 +159,10 @@ emp <- employment_df2 %>%
 emp_df_agg_fips_yr_qtr <- emp %>% 
   group_by(tendigit_fips, year, quarter) %>%
   summarise(tot_wages = sum(wage, na.rm = TRUE),
-            tot_persons = sum(persons, na.rm = TRUE))
+            tot_persons = sum(persons, na.rm = TRUE)) # adding avg employees in all the establishments
 # emp_df_agg_fips_yr_qtr %>% View()
+
+# Key note: for persons, whenever a time dimension collapses, we do avg, otherwise we do sum because persons are "stock", not "flow".
 
 
 # Aggregating further by year and quarter only for comparison with QCEW reports by ODJFS (see "emp_benchmarking" tab in excel sheet)
@@ -172,9 +175,30 @@ emp_df_agg_fips_yr_qtr <- emp %>%
 emp_df_agg_fips_yr <- emp_df_agg_fips_yr_qtr %>% 
   group_by(tendigit_fips, year) %>%
   summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
-            avg_persons = mean(tot_persons, na.rm = TRUE))
+            avg_persons = round(mean(tot_persons, na.rm = TRUE)))
 
+#============================================#
+# Data Quality Check (Ohio Time series) ----
+#============================================#
+emp_df_agg_yr <- emp_df_agg_fips_yr %>% 
+  ungroup() %>%
+  group_by(year) %>%
+  summarize(tot_wages = sum(tot_wages, na.rm = TRUE),
+            avg_persons = round(sum(avg_persons, na.rm = TRUE))) %>% ungroup() %>%
+  mutate(tot_wages = tot_wages/1000000000,
+         avg_persons = avg_persons/1000000) 
 
+# ggplot(data = emp_df_agg_yr) +
+#   theme_minimal() +
+#   geom_rect(aes(xmin = 2008, xmax = 2009, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
+#   geom_rect(aes(xmin = 2019, xmax = 2021, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
+#   geom_line(mapping = aes(x = year, y = tot_wages)) 
+# ggplot(data = emp_df_agg_yr) +
+#   theme_minimal() +
+#   geom_rect(aes(xmin = 2008, xmax = 2009, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
+#   geom_rect(aes(xmin = 2019, xmax = 2021, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
+#   geom_line(mapping = aes(x = year, y = avg_persons))
+  
 #============================================#
 # Data Aggregation (by Industry) ----
 #============================================#
@@ -204,14 +228,18 @@ names(emp_by_indstry) <- naics_df$naics_2dg
 emp_agg_by_indstry_qtr <- purrr::map(emp_by_indstry, ~ .x %>% 
                                    group_by(tendigit_fips, year, quarter, naics_2dg, sector_title) %>%
                                    summarise(tot_wages = sum(wage, na.rm = TRUE),
-                                             avg_persons = sum(persons, na.rm = TRUE))
+                                             tot_persons = sum(persons, na.rm = TRUE)) # adding avg employees in all the establishments
                                  )
 
-emp_agg_by_indstry <- purrr::map(emp_agg_by_indstry_qtr, ~ .x %>% 
+emp_agg_by_indstry_yr <- purrr::map(emp_agg_by_indstry_qtr, ~ .x %>% 
                                    group_by(tendigit_fips, year, naics_2dg, sector_title) %>%
                                    summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
-                                             avg_persons = mean(avg_persons, na.rm = TRUE))
+                                             avg_persons = round(mean(tot_persons, na.rm = TRUE)))
 )
+
+# exporting industry-level employment datasets as Stata datasets
+purrr::map2(emp_agg_by_indstry_yr, names(emp_agg_by_indstry_yr), ~ haven::write_dta(.x, 
+                                                                  path = paste0(data_tax,"/employment/industry/df_emp_", .y, ".dta")))
 
   
 #==========================================================#
@@ -235,8 +263,7 @@ nrow(rd_fips)
 # total fips that we were able to match with employment df 
 nrow(rd_emp_fips %>% filter(!is.na(emp_fips_flg)))
 # total fips  that we were not able to match with employment df 
-nrow(rd_fips) - nrow(rd_emp_fips %>% filter(!is.na(emp_fips_flg)))
-
+nrow(rd_fips) - nrow(rd_emp_fips %>% filter(!is.na(emp_fips_flg))) # need to take a note of these 192 FIPS codes
 
 
 #==============================================================#
@@ -244,7 +271,7 @@ nrow(rd_fips) - nrow(rd_emp_fips %>% filter(!is.na(emp_fips_flg)))
 #==============================================================#
 
 # past and future years list
-yrs <- c(paste0("yr_t_minus_",as.character(1:2)), paste0("yr_t_plus_",as.character(1:10)))
+yrs <- c(paste0("yr_t_minus_",as.character(1:3)), "yr_t_plus_0", paste0("yr_t_plus_",as.character(1:10)))
 
 emps <- purrr::map(yrs, ~ emp_df_agg_fips_yr %>% 
                     arrange(tendigit_fips, year) %>%
@@ -255,8 +282,8 @@ emps <- purrr::map(yrs, ~ emp_df_agg_fips_yr %>%
 names(emps) <- yrs
 
 
-dfs_emp_agg <- purrr::map2(emps, yrs, function(x, y){
-  x %>% inner_join(roads_and_census, by = c("tendigit_fips", y))
+dfs_emp_join <- purrr::map2(emps, yrs, function(x, y){
+  x %>% inner_join(roads_and_census, by = c("tendigit_fips", y)) 
 })
 
 # purrr::map_dbl(dfs_emp_agg, nrow)
@@ -269,21 +296,21 @@ max(roads_and_census$year)
 #========================================#
 # |- Transforming outcome variables ----
 #========================================#
-dfs_emp_agg2 <- purrr::map(dfs_emp_agg, ~ .x %>% 
-                             mutate(ln_wages = log(tot_wages), ln_avg_persons = log(avg_persons)) %>%
-                             filter(!(tot_wages == 0)) %>%
-                             filter(!(avg_persons == 0))
-)
-dfs_emp_agg3 <- purrr::map2(names(dfs_emp_agg2), dfs_emp_agg2, ~ .y %>% select(-starts_with("yr_t_"), .x) %>% 
+# dfs_emp_agg2 <- purrr::map(dfs_emp_agg, ~ .x %>% 
+#                              mutate(ln_wages = log(tot_wages), ln_avg_persons = log(avg_persons)) %>%
+#                              filter(!(tot_wages == 0)) %>%
+#                              filter(!(avg_persons == 0))
+# )
+dfs_emp_agg <- purrr::map2(names(dfs_emp_join), dfs_emp_join, ~ .y %>% select(-starts_with("yr_t_"), .x) %>% 
                               relocate(year, .after = tendigit_fips) %>% 
                               relocate(.x, .after = year) %>% 
                               ungroup()
 )
-names(dfs_emp_agg3) <- names(dfs_emp_agg2)
+names(dfs_emp_agg) <- names(dfs_emp_join)
 
-
+# dfs_emp_agg$yr_t_plus_1 %>% View()
 # exporting dfs_emp_agg as Stata datasets
-purrr::map2(dfs_emp_agg3, names(dfs_emp_agg3), ~ haven::write_dta(.x, 
+purrr::map2(dfs_emp_agg, names(dfs_emp_agg), ~ haven::write_dta(.x, 
                                            path = paste0(data_tax,"/employment/dfs_emp_agg_", .y, ".dta")))
 
 
@@ -294,7 +321,7 @@ purrr::map2(dfs_emp_agg3, names(dfs_emp_agg3), ~ haven::write_dta(.x,
 emp_df_agg_fips_yr_per <- emp_df_agg_fips_yr %>% 
                               inner_join(census, by = c("tendigit_fips", "year")) %>%
                               mutate(wages_per_cap = tot_wages/pop, emp_per_cap = avg_persons/pop) %>% 
-                              select(c("tendigit_fips", "year", "tot_wages", "avg_persons", "wages_per_cap", "emp_per_cap")) %>%
+                              select(c("tendigit_fips", "year", "tot_wages", "pop", "avg_persons", "wages_per_cap", "emp_per_cap")) %>%
                               filter(!is.na(wages_per_cap)) %>% filter(!is.na(emp_per_cap))
 # Need to run merge with t-2 to t+10 census data
 

@@ -48,7 +48,7 @@ drop if dup > 1
 drop dup
 
 * creating new year variables: t+1, ...., t+10. Merge will be done based on these variables
-foreach t of numlist -2/-1 1/10 {
+foreach t of numlist -3/10 {	
 	if `t' < 0 {
 		local t_abs = abs(`t')
 		generate yr_t_minus_`t_abs' = year + `t'
@@ -58,7 +58,7 @@ foreach t of numlist -2/-1 1/10 {
 	}
 }
 
-order TENDIGIT_FIPS year yr_t_minus_1 yr_t_minus_2 yr_t_plus_1-yr_t_plus_10, first
+order TENDIGIT_FIPS year yr_t_minus_3 yr_t_minus_2 yr_t_minus_1 yr_t_plus_0-yr_t_plus_10, first
 // keep TENDIGIT_FIPS year yr_t_plus_1-yr_t_plus_10
 
 * saving after filtering
