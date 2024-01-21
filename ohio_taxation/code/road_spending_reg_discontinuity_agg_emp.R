@@ -12,7 +12,10 @@
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
 data <- paste0(root,"/data")
 code <- paste0(root,"/code")
+tables <- paste0(data,"/outputs/tables/employment")
+plots <- paste0(data,"/outputs/plots/employment")
 
+cutoff = 50
 
 # running data setup code
 # source(paste0(code,"/employment_data_setup.R"))
@@ -157,9 +160,14 @@ te_emp_ln_wages <- te_tables(regs_emp_ln_wages)
 plot_te(te_emp_ln_wages)
 
 
+
 regs_emp_ln_avg_persons <- purrr::map(.x = dfs_emp_agg_ln_R, ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 te_emp_ln_avg_persons <- te_tables(regs_emp_ln_avg_persons)
 plot_te(te_emp_ln_avg_persons)
+
+# output for paper draft 
+write.csv(te_emp_ln_wages, paste0(tables, "/te_emp_ln_wages.csv"), row.names = FALSE)
+write.csv(te_emp_ln_avg_persons, paste0(tables, "/te_emp_ln_avg_persons.csv"), row.names = FALSE)
 
 
 #=========================================#

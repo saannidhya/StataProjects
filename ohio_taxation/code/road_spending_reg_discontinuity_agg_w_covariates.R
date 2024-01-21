@@ -487,10 +487,13 @@ car::vif(mod1)
 
 # using median_sale_amount
 covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5")
+
 g_p_regs <- purrr::map(dfs_agg_pure_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount, 
                                                                x = .x$votes_pct_for, c = cutoff, 
                                                                covs = .x %>% select(all_of(covs_my_list)),
                                                                all = TRUE))
+
+
 tes_g_p <- treatment_effect_summary(g_p_regs) %>% 
   mutate(conf_int_low = bias_corrected_coef - 1.96*se,
          conf_int_high = bias_corrected_coef + 1.96*se) %>% as_tibble(rownames = "dataset") %>% 
