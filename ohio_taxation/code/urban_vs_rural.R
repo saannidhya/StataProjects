@@ -2,9 +2,9 @@
 # Purpose : Run RD based on urban vs rural distinction
 # Name    : Saani Rawat
 # Created : 06/13/2023
-# Problem: Then, I will have a large number of obs above cutoff and very few obs below cutoff
 # Log     : 
 #       06/13/2023: 
+#       01/30/2024: updated code. Main analysis using "ua" urban flag category. Added covs to analysis
 #================================================================================================================#
 
 
@@ -31,31 +31,36 @@ dfs_agg_twp <- purrr::map(dfs_agg, ~ .x %>%
                                             urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy))) # if NA, then assuming the region is rural
 
 # splitting the datasets into urban and rural, by both: clusterdummy and uadummy
-dfs_agg_urb_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)))
-dfs_agg_urb_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)))
-dfs_agg_rur_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)))
-dfs_agg_rur_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)))
+dfs_agg_urb_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)) %>% mutate(votes_against = 100 - votes_pct_for))
+dfs_agg_urb_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)) %>% mutate(votes_against = 100 - votes_pct_for))
+dfs_agg_rur_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)) %>% mutate(votes_against = 100 - votes_pct_for))
+dfs_agg_rur_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)) %>% mutate(votes_against = 100 - votes_pct_for))
 
 
 #=================================================================================#
 # running regressions without covariates (aggregate) ----
 #=================================================================================#
-regs_urb_cd <- purrr::map(.x = dfs_agg_urb_cd, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
-regs_urb_ua <- purrr::map(.x = dfs_agg_urb_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
-regs_rur_cd <- purrr::map(.x = dfs_agg_rur_cd, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
-regs_rur_ua <- purrr::map(.x = dfs_agg_rur_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+regs_urb_cd <- purrr::map(.x = dfs_agg_urb_cd, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_against, c = cutoff, all = TRUE))
+regs_urb_ua <- purrr::map(.x = dfs_agg_urb_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_against, c = cutoff, all = TRUE))
+regs_rur_cd <- purrr::map(.x = dfs_agg_rur_cd, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_against, c = cutoff, all = TRUE))
+regs_rur_ua <- purrr::map(.x = dfs_agg_rur_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_against, c = cutoff, all = TRUE))
 
 
-summary(regs_urb_cd$housing_roads_census_t_plus_4_matches)
+# summary(regs_urb_cd$housing_roads_census_t_plus_4_matches)
+
+tes_urb_cd <- te_tables(regs_urb_cd)
+tes_urb_ua <- te_tables(regs_urb_ua)
+tes_rur_cd <- te_tables(regs_rur_cd)
+tes_rur_ua <- te_tables(regs_rur_ua)
+
+plot_te(tes_urb_cd)
+plot_te(tes_urb_ua)
+plot_te(tes_rur_cd)
+plot_te(tes_rur_ua)
 
 # find_covs <- function(df, y, covs_list)
-  
 
 
-treatment_effect_summary(regs_urb_cd)
-treatment_effect_summary(regs_urb_ua)
-treatment_effect_summary(regs_rur_cd)
-treatment_effect_summary(regs_rur_ua)
 
 
 # regs_urb_cd$housing_roads_census_t_plus_6_matches$
@@ -86,10 +91,10 @@ dfs_agg_covs_twp <- purrr::map(dfs_agg_covs, ~ .x %>%
                                         urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy)))
 
 # splitting the datasets into urban and rural, by both: clusterdummy and uadummy
-dfs_agg_covs_urb_cd <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)))
-dfs_agg_covs_urb_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)))
-dfs_agg_covs_rur_cd <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)))
-dfs_agg_covs_rur_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)))
+dfs_agg_covs_urb_cd <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)) %>% mutate(votes_against = 100 - votes_pct_for) )
+dfs_agg_covs_urb_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)) %>% mutate(votes_against = 100 - votes_pct_for) )
+dfs_agg_covs_rur_cd <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)) %>% mutate(votes_against = 100 - votes_pct_for) )
+dfs_agg_covs_rur_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)) %>% mutate(votes_against = 100 - votes_pct_for) )
 
 
 
@@ -97,60 +102,87 @@ dfs_agg_covs_rur_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua
 # running regressions with covariates (aggregate) ----
 #=================================================================================#
 
+# selecting the best set of covariates for each median sale amount period
+covs_final_urb_cd <- purrr::map(dfs_agg_covs_urb_cd, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
+covs_final_urb_ua <- purrr::map(dfs_agg_covs_urb_ua, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
+covs_final_rur_cd <- purrr::map(dfs_agg_covs_rur_cd, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
+covs_final_rur_ua <- purrr::map(dfs_agg_covs_rur_ua, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
+
+
 covs_list_names <- gsub(pattern = "housing_roads_census", replacement = "covs_list", x = names(dfs_agg_covs))
 covs_list_names_clean <- gsub(pattern = "_matches", replacement = "", x =covs_list_names)
 
-# creating a list that contains all the covariate lists from t - 2 to t + 10
+# creating a list that contains all the covariate lists from t - 3 to t + 10
 selected_covs_lists = mget(covs_list_names_clean)
 
+covs_final_urb_cd$housing_roads_census_t_minus_1_matches
+covs_final_urb_cd$housing_roads_census_t_minus_2_matches[!covs_final_urb_cd$housing_roads_census_t_minus_2_matches %in% c("pctown","pctmin")]
+covs_final_urb_cd$housing_roads_census_t_minus_3_matches[!covs_final_urb_cd$housing_roads_census_t_minus_2_matches %in% c("pctown","pctmin")]
+covs_final_urb_cd$housing_roads_census_t_plus_0_matches[!covs_final_urb_cd$housing_roads_census_t_minus_2_matches %in% c("pctown","pctmin")]
+covs_final_urb_cd$housing_roads_census_t_plus_1_matches[!covs_final_urb_cd$housing_roads_census_t_minus_2_matches %in% c("pctown","pctmin")]
+
+covs_final_urb_cd2 <- purrr::map(covs_final_urb_cd, ~ .x[!(.x %in% c("pctown","pctmin","pctnokids",NA))])
 
 # running regressions with covariates
-regs_covs_urb_cd <- purrr::map2(dfs_agg_covs_urb_cd, selected_covs_lists ,
+regs_covs_urb_cd <- purrr::map2(dfs_agg_covs_urb_cd, covs_final_urb_cd2 ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_pct_for, 
+                                                     x = x$votes_against, 
                                                      c = cutoff, 
-                                                     covs = x %>% select(y),
+                                                     # covs = x %>% select(y),
+                                                     covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
                                                      all = TRUE)
                                 }
             )
+tes_covs_urb_cd <- te_tables(regs_covs_urb_cd) 
+plot_te(tes_covs_urb_cd)
 
-treatment_effect_summary(regs_covs_urb_cd)
+regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua ,
+                                function(x, y){
+                                  rdrobust::rdrobust(y = x$median_sale_amount,
+                                                     x = x$votes_against, 
+                                                     c = cutoff, 
+                                                     # covs = x %>% select(y),
+                                                     # covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
+                                                     covs =  x %>% select(c("pctmin", "pctown")),
+                                                     all = TRUE)
+                                }
+)
+tes_covs_urb_ua <- te_tables(regs_covs_urb_ua) 
+# plot_te(tes_urb_ua)
+plot_te(tes_covs_urb_ua)
+
+# lm_model <- map(dfs_agg_covs_urb_ua, ~ lm(.x$median_sale_amount ~ .x$votes_against + .x$pop + .x$poverty + .x$pctmin + .x$pctown) )
+# 
+# map(lm_model, vif)
+# map(lm_model, summary)
+
+regs_covs_rur_cd <- purrr::map2(dfs_agg_covs_rur_cd, covs_final_rur_cd ,
+                                function(x, y){
+                                  rdrobust::rdrobust(y = x$median_sale_amount,
+                                                     x = x$votes_against, 
+                                                     c = cutoff, 
+                                                     covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
+                                                     # covs = x %>% select(y),
+                                                     all = TRUE)
+                                }
+)
+tes_covs_rur_cd <- te_tables(regs_covs_rur_cd) 
+plot_te(tes_covs_rur_cd)
 
 
-regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, selected_covs_lists ,
+regs_covs_rur_ua <- purrr::map2(dfs_agg_covs_rur_ua, covs_final_rur_ua ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
                                                      x = x$votes_pct_for, 
                                                      c = cutoff, 
-                                                     covs = x %>% select(y),
+                                                     covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown", "medfamy", "unemprate", "raceherfindahl")),
+                                                     # covs = x %>% select(y),
                                                      all = TRUE)
                                 }
 )
-
-regs_covs_rur_cd <- purrr::map2(dfs_agg_covs_rur_cd, selected_covs_lists ,
-                                function(x, y){
-                                  rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_pct_for, 
-                                                     c = cutoff, 
-                                                     covs = x %>% select(y),
-                                                     all = TRUE)
-                                }
-)
-
-regs_covs_rur_ua <- purrr::map2(dfs_agg_covs_rur_ua, selected_covs_lists ,
-                                function(x, y){
-                                  rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_pct_for, 
-                                                     c = cutoff, 
-                                                     covs = x %>% select(y),
-                                                     all = TRUE)
-                                }
-)
-
-treatment_effect_summary(regs_covs_urb_cd)
-treatment_effect_summary(regs_covs_urb_ua)
-treatment_effect_summary(regs_covs_rur_cd)
-treatment_effect_summary(regs_covs_rur_ua)
+tes_covs_rur_ua <- te_tables(regs_covs_rur_ua) 
+plot_te(tes_covs_rur_ua)
+# plot_te(tes_rur_ua)
 
 

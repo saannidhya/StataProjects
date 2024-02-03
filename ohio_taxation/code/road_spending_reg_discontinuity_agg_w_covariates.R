@@ -16,10 +16,13 @@ tables <- paste0(data,"/outputs/tables")
 plots <- paste0(data,"/outputs/plots")
 
 # running data setup code
-# source(paste0(code,"/housing_data_setup.R"))
+source(paste0(code,"/housing_data_setup.R"))
 # running covariates balance test
 source(paste0(code,"/covariates_balance_test.R"))
 source(paste0(code,"/utility_functions.R"))
+# uncontaminated datasets
+source(paste0(code,"/roads_data_setup.R"))
+
 
 # user-defined parameters  ----
 t_test_sig_level <- 0.05
@@ -82,6 +85,7 @@ purrr::walk2(names(gs), gs, .f = function(x, y) {
   summary(y) 
 })
 tes_gs <- te_tables(gs)
+plot_te(tes_gs, title = "Visualization of Treatment Effects", subtitle = "With covariates")
 ggplot(tes_gs, aes(ord, bias_corrected_coef)) +       
   geom_point(size = 3, shape = 19, color = "blue") +
   geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
@@ -138,23 +142,7 @@ purrr::walk2(names(g_regs), g_regs, .f = function(x, y) {
   summary(y) 
 })
 tes_g <- te_tables(g_regs)
-ggplot(tes_g, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects",
-    subtitle = "With covariates",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-2, -1, 1:10))
+plot_te(tes_g, title = "Visualization of Treatment Effects", subtitle = "With covariates")
 
 # lm(dfs_agg_covs$housing_roads_census_t_plus_10_matches,
 #    formula = median_sale_amount ~ unemprate+pctrent+pctlt5+pct18to64+pct65pls+pctblack+pctamerind+pctotherrace+pcthisp+pctseparated) %>%
@@ -172,6 +160,8 @@ purrr::walk2(names(g_regs_rand), g_regs_rand, .f = function(x, y) {
   summary(y) 
 })
 tes_g_rand <- te_tables(g_regs_rand, rand = TRUE)
+# plot_te(tes_g_rand, title = "Visualization of Treatment Effects based on Local Randomization", subtitle = "With covariates")
+
 ggplot(tes_g_rand, aes(ord, statistic)) +       
   geom_point(size = 3, shape = 19, color = "blue") +
   geom_errorbar(aes(ymin = ci_low, ymax = ci_high), 
@@ -211,23 +201,7 @@ purrr::walk2(names(g_regs_w), g_regs_w, .f = function(x, y) {
   summary(y) 
 })
 tes_g_w <- te_tables(g_regs_w)
-ggplot(tes_g_w, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects",
-    subtitle = "With covariates",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-2, -1, 1:10))
+plot_te(tes_g_w)
 
 # local randomization approach
 g_regs_rand_w <- purrr::map(dfs_agg_covs_winsored, ~ rdlocrand::rdrandinf(.x$median_sale_amount,
@@ -330,52 +304,17 @@ f10 <- rdrobust(  y = dfs_agg_per_covs$housing_roads_census_t_plus_10_matches$me
 
 f_regs <- list(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10)
 
+#|||||||||||||||||||||||||||||||||||||||||||||||||#
+# Same Covariates for each outcome period
+#|||||||||||||||||||||||||||||||||||||||||||||||||#
 covs_my_list <- c("poverty")
 f_regs <- purrr::map(dfs_agg_per_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount_per_sq_feet, 
                                                         x = .x$votes_pct_for, c = cutoff, 
                                                         covs = .x %>% select(all_of(covs_my_list)),
                                                         all = TRUE))
-tes_f <- treatment_effect_summary(f_regs) %>% 
-  mutate(conf_int_low = bias_corrected_coef - 1.96*se,
-         conf_int_high = bias_corrected_coef + 1.96*se) %>% as_tibble(rownames = "dataset") %>% 
-  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
-         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
-         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
-                                 paste0("-", str_extract(ord, "[0-9]+")), 
-                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
-ggplot(tes_f, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects",
-    subtitle = "With covariates",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-3:10))
 
-# lm(dfs_agg_covs$housing_roads_census_t_plus_10_matches,
-#    formula = median_sale_amount ~ unemprate+pctrent+pctlt5+pct18to64+pct65pls+pctblack+pctamerind+pctotherrace+pcthisp+pctseparated) %>%
-#   summary()
-
-
-# lm(dfs_agg_covs$housing_roads_census_t_plus_4_matches, 
-#    formula = median_sale_amount ~ pctwithkids + pctsinparhhld + pctlesshs + pctrent + pct5to17 + pct18to64 + pctamerind + pctotherrace + incherfindahl) %>%
-#   summary()
-# 
-# 
-# lm(dfs_agg_covs$housing_roads_census_t_minus_2_matches %>% select(c("median_sale_amount",covs_list_t_minus_2)), 
-#    formula = median_sale_amount ~ .) %>%
-#   summary()
-# 
-# Reduce(intersect, covs_final)
+tes_f <- te_tables(f_regs)
+plot_te(tes_f)
 
 
 ################### Final Covariates List ###############
@@ -488,65 +427,13 @@ car::vif(mod1)
 # using median_sale_amount
 covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5")
 
-g_p_regs <- purrr::map(dfs_agg_pure_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount, 
-                                                               x = .x$votes_pct_for, c = cutoff, 
+## same covariates
+g_p_regs <- purrr::map(dfs_agg_pure_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount,
+                                                               x = .x$votes_pct_for, c = cutoff,
                                                                covs = .x %>% select(all_of(covs_my_list)),
                                                                all = TRUE))
-
-
-tes_g_p <- treatment_effect_summary(g_p_regs) %>% 
-  mutate(conf_int_low = bias_corrected_coef - 1.96*se,
-         conf_int_high = bias_corrected_coef + 1.96*se) %>% as_tibble(rownames = "dataset") %>% 
-  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
-         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
-         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
-                                 paste0("-", str_extract(ord, "[0-9]+")), 
-                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
-ggplot(tes_g_p, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects",
-    subtitle = "With covariates",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-2, -1, 1:10))
-
+tes_g_p <- te_tables(g_p_regs)
+plot_te(tes_g_p, title = "T.E Estimates: Uncontaminated voting data", subtitle = "Treatment Effect estimates")
 
 # using median_sale_amount_per_sq_foot
-
-
-View(roads_and_census)
-unique(str_to_lower(roads_and_census$tax_type))
-unique(roads_and_census$duration)
-roads_and_census %>% mutate(tax_type = str_to_lower(tax_type)) %>% group_by(tax_type) %>% count()
-roads_and_census %>% group_by(duration) %>% count()
-roads_and_census %>% group_by(treated) %>% count()
-
-mean(roads_and_census$votes_pct_for)
-median(roads_and_census$votes_pct_for)
-sd(roads_and_census$votes_pct_for)
-
-colnames(roads_and_census)
-
-2770/(2770+19)
-2770+19
-
-2267/2789
-522/2789
-
-purrr::map_dbl(dfs_agg, ~ max(.x$year))
-
-dfs_agg$housing_roads_census_t_plus_1_matches$year
-
-min(dfs_agg$housing_roads_census_t_plus_1_matches$year)
-max(dfs_agg$housing_roads_census_t_plus_1_matches$year)
 

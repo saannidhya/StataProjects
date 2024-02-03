@@ -139,7 +139,7 @@ winsorize_data <- function(datasets, y, lower = 0.01, upper = 0.99){
   })
 }
 
-plot_te <- function(te_table, title = "", subtitle = ""){
+plot_te <- function(te_table, title = ggplot2::waiver(), subtitle = ggplot2::waiver(), caption = ggplot2::waiver()){
   ggplot(te_table, aes(ord, bias_corrected_coef)) +       
     geom_point(size = 3, shape = 19, color = "blue") +
     geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
@@ -148,6 +148,7 @@ plot_te <- function(te_table, title = "", subtitle = ""){
     labs(
       title = title,
       subtitle = subtitle,
+      caption = caption,
       x = "Year",
       y = "Treatment Effect",
       color = "Position"
@@ -156,5 +157,5 @@ plot_te <- function(te_table, title = "", subtitle = ""){
     theme(
       plot.title = element_text(hjust = 0.5),
       legend.position = "bottom"
-    ) + scale_x_continuous(breaks = c(-2, -1, 1:10))
+    ) + scale_x_continuous(breaks = c(-3:10))
 }

@@ -102,11 +102,10 @@ names(dfs_agg_pure) <- paste0("housing_roads_census_", df_names, "_matches")
 
 # Adding covariates to dfs_agg_pure  ----
 dfs_agg_pure_covs <- purrr::map(.x = dfs_agg_pure, ~ .x %>% 
-                                     dplyr::left_join(y = census %>% rename(vote_year = year), by = c("tendigit_fips","vote_year")) %>%
+                                     dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
                                      ungroup()
 )
 dfs_agg_pure_covs
-
 
 #======================================================================#
 # Eliminating contaminated observations for dfs_agg_per ----

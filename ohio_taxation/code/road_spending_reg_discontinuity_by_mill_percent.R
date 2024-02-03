@@ -13,6 +13,7 @@
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
 data <- paste0(root,"/data")
 code <- paste0(root,"/code")
+plots <- paste0(data,"/outputs/plots")
 
 # running data setup code
 source(paste0(code,"/housing_data_setup.R"))
@@ -22,12 +23,13 @@ source(paste0(code,"/housing_data_setup.R"))
 #                         Splitting by millage size of > 1.9 and < 1.9 ----
 #============================================================================================================#
 
-purrr::map_dbl(dfs_agg_mill, ~ round(mean(.x$millage_percent),1))
+# computing the mean
 
+mean_mill <- purrr::map_dbl(dfs_agg_mill, ~ round(mean(.x$millage_percent),1))
 
-dfs_agg_mill_g_1.9 <- purrr::map(dfs_agg_mill, ~ .x %>% filter(millage_percent > 1.9))
+dfs_agg_mill_g_1.9 <- purrr::map2(dfs_agg_mill, mean_mill, ~ .x %>% filter(millage_percent > .y))
 
-dfs_agg_mill_l_1.9 <- purrr::map(dfs_agg_mill, ~ .x %>% filter(millage_percent <= 1.9))
+dfs_agg_mill_l_1.9 <- purrr::map2(dfs_agg_mill, mean_mill, ~ .x %>% filter(millage_percent <= .y))
 
 sort(unique(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millage_percent))
 
@@ -40,58 +42,28 @@ sort(unique(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millage_percent))
 # storing univariate RDD models (outcome vs running variable, no covariates) from t-2 to t+10
 regs_g_1.9 <- purrr::map(.x = dfs_agg_mill_g_1.9, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 
-summary(regs_g_1.9$housing_roads_census_t_minus_1_matches)
-summary(regs_g_1.9$housing_roads_census_t_minus_2_matches)
-
-summary(regs_g_1.9$housing_roads_census_t_plus_1_matches)
-summary(regs_g_1.9$housing_roads_census_t_plus_2_matches)
-summary(regs_g_1.9$housing_roads_census_t_plus_3_matches)
-
-summary(regs_g_1.9$housing_roads_census_t_plus_4_matches)
-summary(regs_g_1.9$housing_roads_census_t_plus_5_matches)
-summary(regs_g_1.9$housing_roads_census_t_plus_6_matches)
-summary(regs_g_1.9$housing_roads_census_t_plus_7_matches)
-summary(regs_g_1.9$housing_roads_census_t_plus_8_matches)
-summary(regs_g_1.9$housing_roads_census_t_plus_9_matches)
-summary(regs_g_1.9$housing_roads_census_t_plus_10_matches)
-
-
 # dist(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millage_percent)
 
 tes_g_1.9 <- te_tables(regs_g_1.9)
 tes_g_1.9
+png(paste0(plots,"/tes_g_1.9.png"))
+plot_te(tes_g_1.9, title = "Millage percent greater than mean of 1.9%", subtitle = "Treatment Effect Estimates", caption = "")
+dev.off()
 
 #==================================================================================#
 # running regressions (aggregate) for millage size <= 1.9 ----
 #==================================================================================#
-regs_l_1.9 <- purrr::map(.x = dfs_agg_mill_l_1.9, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 
-# summary(regs_l_1.9$housing_roads_census_t_minus_1_matches)
-# summary(regs_l_1.9$housing_roads_census_t_minus_2_matches)
-# 
-# summary(regs_l_1.9$housing_roads_census_t_plus_1_matches)
-# summary(regs_l_1.9$housing_roads_census_t_plus_2_matches)
-# summary(regs_l_1.9$housing_roads_census_t_plus_3_matches)
-# 
-# summary(regs_l_1.9$housing_roads_census_t_plus_4_matches)
-# summary(regs_l_1.9$housing_roads_census_t_plus_5_matches)
-# summary(regs_l_1.9$housing_roads_census_t_plus_6_matches)
-# summary(regs_l_1.9$housing_roads_census_t_plus_7_matches)
-# summary(regs_l_1.9$housing_roads_census_t_plus_8_matches)
-# summary(regs_l_1.9$housing_roads_census_t_plus_9_matches)
-# summary(regs_l_1.9$housing_roads_census_t_plus_10_matches)
+regs_l_1.9 <- purrr::map(.x = dfs_agg_mill_l_1.9, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 
 tes_l_1.9 <- te_tables(regs_l_1.9)
 tes_l_1.9
+png(paste0(plots,"/tes_l_1.9.png"))
+plot_te(tes_l_1.9, title = "Millage percent less than mean of 1.9%", subtitle = "Treatment Effect Estimates", caption = "")
+dev.off()
 
 
 
-
-df_compare <- data.frame(regs_g_1.9 = purrr::map_dbl(regs_g_1.9, ~ .x$coef[2]), 
-                         regs_l_1.9 = purrr::map_dbl(regs_l_1.9, ~ .x$coef[2]),
-                         diff = purrr::map_dbl(regs_g_1.9, ~ .x$coef[2]) - purrr::map_dbl(regs_l_1.9, ~ .x$coef[2]))
-
-df_compare
 
 
 

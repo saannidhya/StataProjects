@@ -5,6 +5,7 @@
 # Created : 07/21/2023
 # Log     : 
 #           07/21/2023: wrote the program to automate the test for all covariates, regardless of the dataset
+#           02/02/2024: updated the run. Looking at pre-treatment covariates as 
 #================================================================================================================#
 
 # specify the set up location
@@ -17,53 +18,28 @@ plots <- paste0(data,"/outputs/plots")
 # running data setup code
 source(paste0(code,"/utility_functions.R"))
 source(paste0(code,"/housing_data_setup.R"))
-source(paste0(code,"/employment_data_setup.R"))
+# source(paste0(code,"/employment_data_setup.R"))
 
 
 # input dataset. This should be a list of t-2 to t+10 datasets (can be employment, fars or housing)
 # E.g. dfs_agg_covs, dfs_emp_agg3
-df = dfs_emp_agg3
-
+# df = dfs_emp_agg3
+df = dfs_agg_covs
 
 # take all covariate names 
 covariate_list <- c("pctnokids" ,"pctgraddeg" ,"pctlt5" ,"pctblack" ,"raceherfindahl" ,"pctdivorced" ,"childpov" ,
                     "pctlesshs" ,"unemprate" ,"pct5to17" ,"pctamerind" ,"pcthisp" ,"lforcepartrate" ,"poverty" ,
                     "pcthsgrad" ,"medfamy" ,"pct18to64" ,"pctapi" ,"pctmarried" ,"incherfindahl" ,"pctwithkids" ,
-                    "pctsomecoll" ,"pctrent" ,"pct65pls" ,"pctotherrace" ,"pctnevermarr" ,"inctaxrate" ,"pop" ,
+                    "pctsomecoll" ,"pctrent" ,"pct65pls" ,"pctotherrace" ,"pctnevermarr" ,"pop" ,
                     "pctsinparhhld" ,"pctbachelors" ,"pctown" ,"pctwhite" ,"pctmin" ,"pctseparated")
 
-#================================================================#
-# running covariate discontinuity regressions (aggregate) ----
-#================================================================#
-
-covs_regs_ls <- vector("list", length(df)) # Initialize list of lists
-names(covs_regs_ls) <- names(df) # Assign names to covs_regs_ls based on df
-for (i in seq_along(df)){
-  dataset <- df[[i]]
-  
-  covs_regs <- purrr::map(covariate_list, 
-                          ~ rdrobust::rdrobust(y = dataset %>% select(.x) %>% pull(), x = dataset$votes_pct_for, c = cutoff, all = TRUE))
-  names(covs_regs) <- covariate_list  
-  
-  covs_regs_ls[[i]] <- covs_regs
-}
-# beepr::beep("mario") 
-
-# Note: covs_regs_ls is a list of lists. Each element of  covs_regs_ls is a list of regression results based on using 34 covariate variables as outcomes 
-
-#================================================================#
-# running covariate discontinuity regressions (aggregate) ----
-#================================================================#
-covs_regs_pvals <- purrr::imap(covs_regs_ls, ~treatment_effect_summary(.x) %>% rownames_to_column() %>% tibble() %>%
-                              mutate(dataset = .y, significant = if_else(pval < 0.05, 1, 0))) %>%
-                              bind_rows() %>% arrange(rowname) %>% rename(variable = rowname)
-  
-# Note: .y referes to the name of .x
-# None of the variables in the covariate list had a consistently significant Treatment Effect
-
-# View(covs_regs_pvals)
-write.csv(covs_regs_pvals, paste0(tables, "/covariate_discontinuity_test.csv"), row.names = FALSE)
-
+# importing roads and census dataset. Selecting only renewals and levies that do not last forever. Separating into treatment and control groups.
+roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
+  select(-matches("yr_t_")) %>%
+  select(-c("inctaxrate")) %>%
+  filter(description == "R" & duration != 1000) %>%
+  janitor::clean_names() %>%
+  mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0))    
 
 #|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
 # running covariate discontinuity regressions  ----
@@ -73,7 +49,7 @@ cv_regs <- purrr::map(covariate_list,
            ~ rdrobust::rdrobust(y = roads_and_census %>% select(.x) %>% pull(), x = roads_and_census$votes_pct_for, c = cutoff, all = TRUE))
 names(cv_regs) <- covariate_list  
 
-te_cv_regs <- treatment_effect_summary(cv_regs)
+te_cv_regs <- te_tables(cv_regs)
+# View(te_cv_regs)
 
-round(min(te_cv_regs$pval), 2)
-round(max(te_cv_regs$pval), 2)
+write.csv(select(te_cv_regs, -c("year", "ord")), paste0(tables, "/covariate_discontinuity_test.csv"), row.names = FALSE)
