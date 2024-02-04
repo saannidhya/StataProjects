@@ -34,7 +34,14 @@ census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) 
   dplyr::rename(vote_year = year) %>%
   janitor::clean_names()
 
-
+# importing roads and census dataset. Selecting only renewals and levies that do not last forever. Separating into treatment and control groups.
+roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
+  select(-matches("yr_t_")) %>%
+  select(-c("inctaxrate")) %>%
+  filter(description == "R" & duration != 1000) %>%
+  janitor::clean_names() %>%
+  mutate(votes_pct_against = 100 - votes_pct_for) %>%
+  mutate(treated = if_else(votes_pct_against > cutoff, 1, 0))    
 
 #============================================#
 #  Importing Housing datasets as a list ----
@@ -62,13 +69,14 @@ dfs <- purrr::map(housing_dfs, ~.x %>%
                     filter(description == "R" & duration != 1000) %>%
                     janitor::clean_names() %>%
                     drop_na(sale_amount) %>%
-                    mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0),
+                    mutate(votes_pct_against = 100 - votes_pct_for) %>%
+                    mutate(treated = if_else(votes_pct_against > cutoff, 1, 0),
                            ln_sale_amount = log(sale_amount))            
 )
 
 
 # |- filtering ---- 
-# get colnames from t+1 to t+10
+# get colnames from t+10
 # yr_t_plus_names <- dfs$housing_roads_census_t_plus_10_matches %>% select(starts_with("yr_t_plus")) %>% colnames() %>% sort()
 yr_t_names <- dfs$housing_roads_census_t_plus_10_matches %>% select(starts_with("yr_t_")) %>% colnames() %>% sort()
 
@@ -77,7 +85,7 @@ yr_t_names <- dfs$housing_roads_census_t_plus_10_matches %>% select(starts_with(
 # i: tendigit_fips, t = year
 dfs_agg <- purrr::map2(.x = dfs, .y = yr_t_names, ~ .x %>% 
                          drop_na(sale_amount) %>%
-                         group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_for) %>%
+                         group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_against) %>%
                          rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
                          summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
                                    median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))              
@@ -100,9 +108,10 @@ dfs_agg_per <- purrr::map2(housing_dfs, yr_t_names, function(df,yr){
                             janitor::clean_names() %>%
                             drop_na(sale_amount) %>%
                             drop_na(universal_building_square_feet) %>%
-                            mutate(sale_amount_per_sq_feet = sale_amount/universal_building_square_feet)
+                            mutate(sale_amount_per_sq_feet = sale_amount/universal_building_square_feet,
+                                   votes_pct_against = 100 - votes_pct_for)
                 dataset_summarize <- dataset %>%
-                          group_by(tendigit_fips, eval(parse(text = yr)), year, votes_pct_for) %>%
+                          group_by(tendigit_fips, eval(parse(text = yr)), year, votes_pct_against) %>%
                           rename(vote_year = year, year = `eval(parse(text = yr))`) %>%
                           summarize(median_sale_amount_per_sq_feet = median(sale_amount_per_sq_feet, na.rm = TRUE))   
                 return(dataset_summarize)
@@ -150,7 +159,7 @@ dfs_agg_per_covs <- purrr::map(.x = dfs_agg_per, ~ .x %>%
 #============================================#
 dfs_agg_mill <- purrr::map2(.x = dfs, .y = yr_t_names, ~ .x %>% 
                          drop_na(sale_amount) %>%
-                         group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_for, millage_percent) %>%
+                         group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_against, millage_percent) %>%
                          rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
                          summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
                                    median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))              

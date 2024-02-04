@@ -8,6 +8,7 @@
 #       06/17/2023: added utility_functions.R to the code
 #       10/25/2023: Ran RDD on dfs_agg_pure (data uncontaminated by passed additional levies)
 #       11/23/2023: made changes to density tests- did them before introducing outcome vars
+#       02/03/2024: switching to votes_pct_against
 #================================================================================================================#
 
 # specify the set up location
@@ -29,7 +30,7 @@ source(paste0(code,"/utility_functions.R"))
 # |- Manipulation test (X variable) ----
 #========================================#
 
-dens_test <- rddensity::rddensity(X = roads_and_census$votes_pct_for, c = cutoff, massPoints = FALSE)
+dens_test <- rddensity::rddensity(X = roads_and_census$votes_pct_against, c = cutoff, massPoints = FALSE)
 summary(dens_test)
 
 dens_test$test$p_jk
@@ -40,15 +41,15 @@ dens_test$test$p_jk
 # roads_and_census %>% filter(votes_pct_for == dp[2]) %>% View()
 
 # range of p-vals after introducing outcome  variables
-purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_for, c = cutoff, massPoints = FALSE)$test$p_jk) %>% min() %>% round(2)
-purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_for, c = cutoff, massPoints = FALSE)$test$p_jk) %>% max() %>% round(2)
+purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_against, c = cutoff, massPoints = FALSE)$test$p_jk) %>% min() %>% round(2)
+purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_against, c = cutoff, massPoints = FALSE)$test$p_jk) %>% max() %>% round(2)
 
 
 # Mcrary test
 # Give it the running variable and the cutpoint
 # it will automatically produce a plot and select the number of bins and the bandwidth
 # The output will be the p-value for the presence of a discontinuity
-rdd::DCdensity(roads_and_census$votes_pct_for, c = 50)
+rdd::DCdensity(roads_and_census$votes_pct_against, c = 50)
 
 #==========================================#
 # |- RD plots (used Stata for plots) ----
@@ -108,7 +109,7 @@ purrr::map2(dfs_agg_per, names(dfs_agg_per), ~print(rdrobust::rdplot(y = .x$medi
 
 # using local polynomial method;
 # storing univariate RDD models (outcome vs running variable, no covariates) from t-2 to t+10
-regs <- purrr::map(.x = dfs_agg, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+regs <- purrr::map(.x = dfs_agg, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
 # regs_summary <- purrr::map(.x = dfs_agg, ~ summary(rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE)))
 
 # no effect before the voting result was decided (passed/failed)
@@ -133,25 +134,7 @@ summary(regs$housing_roads_census_t_plus_9_matches)
 summary(regs$housing_roads_census_t_plus_10_matches)
 
 tes <- te_tables(regs)
-ggplot(tes, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects: Median House Price",
-    subtitle = "With confidence intervals",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-3,-2, -1, 0:10))
-
-
+plot_te(tes)
 
 # lm() and rdrobust() giving exactly the same coefficient
 # narrow2 <- dfs_agg$housing_roads_census_t_plus_9_matches %>% 
@@ -166,7 +149,7 @@ ggplot(tes, aes(ord, bias_corrected_coef)) +
 
 # using local randomization method;
 regs_rand <- purrr::map(dfs_agg, ~ rdlocrand::rdrandinf(.x$median_sale_amount,
-                                                     .x$votes_pct_for,
+                                                     .x$votes_pct_against,
                                                      cutoff = cutoff,
                                                      ci = 0.05))
 tes_rand <- te_tables(regs_rand, rand = TRUE)
@@ -201,37 +184,20 @@ purrr::map_dbl(dfs_agg_winsored, ~ .x %>% select(median_sale_amount) %>% pull() 
 
 # using local polynomial method;
 
-regs_w <- purrr::map(.x = dfs_agg_winsored, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+regs_w <- purrr::map(.x = dfs_agg_winsored, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
 purrr::walk2(names(regs_w), regs_w, .f = function(x, y) {
   print(paste0("Outcome variable is ",x))
   summary(y) 
 })
 
 tes_w <- te_tables(regs_w)
-
-ggplot(tes_w, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects: Median House Price",
-    subtitle = "With confidence intervals",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-3,-2, -1, 0:10))
+plot_te(tes_w, title = "Visualization of Treatment Effects: Median House Price", subtitle = "Winsorized 1%")
 
 
 # using local randomization method;
 
 regs_rand_w <- purrr::map(dfs_agg_winsored, ~ rdlocrand::rdrandinf(.x$median_sale_amount,
-                                                                   .x$votes_pct_for,
+                                                                   .x$votes_pct_against,
                                                                    cutoff = cutoff,
                                                                    ci = 0.05))
 tes_rand_w <- te_tables(regs_rand_w, rand=TRUE)
@@ -242,7 +208,7 @@ ggplot(tes_rand_w, aes(ord, statistic)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
   labs(
     title = "Visualization of Treatment Effects based on Local Randomization",
-    subtitle = "With confidence intervals",
+    subtitle = "Winsorized 1%",
     x = "Year",
     y = "Treatment Effect",
     color = "Position"
@@ -258,34 +224,18 @@ ggplot(tes_rand_w, aes(ord, statistic)) +
 ### |- median_sale_amount_per_sq_feet as the outcome var ####
 
 # using local polynomial approximation
-regs_per <- purrr::map(.x = dfs_agg_per, ~ rdrobust::rdrobust(y = .x$median_sale_amount_per_sq_feet, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+regs_per <- purrr::map(.x = dfs_agg_per, ~ rdrobust::rdrobust(y = .x$median_sale_amount_per_sq_feet, x = .x$votes_pct_against, c = cutoff, all = TRUE))
 purrr::walk2(names(regs_per), regs_per, .f = function(x, y) {
   print(paste0("Outcome variable is ",x))
   summary(y) 
 })
 
 tes_per <- te_tables(regs_per)
-ggplot(tes_per, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects",
-    subtitle = "With 95% confidence intervals",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-3,-2, -1, 0:10))
+plot_te(tes_per, title = "Visualization of T.E Estimates: Median Housing Price per Sq foot", subtitle = "With 95% confidence intervals")
 
 # using local randomization method
 regs_per_rand <- purrr::map(dfs_agg_per, ~ rdlocrand::rdrandinf(.x$median_sale_amount_per_sq_feet,
-                                                                         .x$votes_pct_for,
+                                                                         .x$votes_pct_against,
                                                                          cutoff = cutoff,
                                                                          ci = 0.05))
 tes_rand_w <- te_tables(regs_per_rand, rand=TRUE)
@@ -315,34 +265,18 @@ dfs_agg_per_winsored <- winsorize_data(dfs_agg_per, "median_sale_amount_per_sq_f
 
 
 # local polynomial approach
-regs_per_w <- purrr::map(.x = dfs_agg_per_winsored, ~ rdrobust::rdrobust(y = .x$median_sale_amount_per_sq_feet, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+regs_per_w <- purrr::map(.x = dfs_agg_per_winsored, ~ rdrobust::rdrobust(y = .x$median_sale_amount_per_sq_feet, x = .x$votes_pct_against, c = cutoff, all = TRUE))
 purrr::walk2(names(regs_per), regs_per, .f = function(x, y) {
   print(paste0("Outcome variable is ",x))
   summary(y) 
 })
 
 tes_per_w <- te_tables(regs_per_w)
-ggplot(tes_per_w, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects",
-    subtitle = "With 95% confidence intervals",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-3,-2, -1, 0:10))
+plot_te(tes_per_w, title = "Visualization of T.E: Median House Price per sq foot", subtitle = "With 95% confidence intervals")
 
 # local randomization approach
 regs_per_rand_w <- purrr::map(dfs_agg_per_winsored, ~ rdlocrand::rdrandinf(.x$median_sale_amount_per_sq_feet,
-                                                        .x$votes_pct_for,
+                                                        .x$votes_pct_against,
                                                         cutoff = cutoff,
                                                         ci = 0.05))
 tes_rand_per_w <- te_tables(regs_per_rand_w, rand=TRUE)
@@ -352,7 +286,7 @@ ggplot(tes_rand_per_w, aes(ord, statistic)) +
                 width = 0.2, color = "grey50", size = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
   labs(
-    title = "Visualization of Treatment Effects based on Local Randomization",
+    title = "T.E based on Local Randomization: Median House Price per sq foot",
     subtitle = "With 95% confidence intervals",
     x = "Year",
     y = "Treatment Effect",
@@ -376,30 +310,8 @@ ggplot(tes_rand_per_w, aes(ord, statistic)) +
 
 ### |- median sale amount as the outcome var ####
 # storing univariate RDD models (outcome vs running variable, no covariates) from t-2 to t+10
-regs_pure <- purrr::map(.x = dfs_agg_pure, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+dfs_agg_pure <- purrr::map(dfs_agg_pure, ~ .x %>% mutate(votes_pct_against = 100 - votes_pct_for))
 
-tes_pure <- treatment_effect_summary(regs_pure) %>% 
-  mutate(conf_int_low = bias_corrected_coef - 1.65*se,
-         conf_int_high = bias_corrected_coef + 1.65*se) %>% as_tibble(rownames = "dataset") %>% 
-  mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
-         ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
-         ord = as.numeric(ifelse(str_detect(ord, "minus"), 
-                                 paste0("-", str_extract(ord, "[0-9]+")), 
-                                 str_extract(ord, "[0-9]+")))) %>% arrange(ord)
-ggplot(tes_pure, aes(ord, bias_corrected_coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    title = "Visualization of Treatment Effects: Median House Price",
-    subtitle = "With confidence intervals",
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-3,-2, -1, 0:10))
+regs_pure <- purrr::map(.x = dfs_agg_pure, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+tes_pure <- te_tables(regs_pure)
+plot_te(tes_pure, title = "Visualization of T.E: Median House Price", subtitle = "with confidence intervals")

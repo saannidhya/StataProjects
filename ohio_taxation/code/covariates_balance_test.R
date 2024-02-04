@@ -28,14 +28,6 @@ covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pc
                "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl")
 
 
-# importing roads and census dataset. Selecting only renewals and levies that do not last forever. Separating into treatment and control groups.
-roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
-  select(-matches("yr_t_")) %>%
-  select(-c("inctaxrate")) %>%
-  filter(description == "R" & duration != 1000) %>%
-  janitor::clean_names() %>%
-  mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0))    
-
 #============================================================================================================#
 #     Covariate discontinuity test (before introducing outcome variable) ----
 #============================================================================================================#

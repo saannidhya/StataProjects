@@ -8,7 +8,7 @@ find_covs <- function(df, y, covs_list){
   
   # RD without any covariates
   og <- rdrobust(y = df[[y]],
-                 x = df$votes_pct_for, 
+                 x = df$votes_pct_against, 
                  c = cutoff, 
                  covs = NULL ,
                  all = TRUE)
@@ -21,7 +21,7 @@ find_covs <- function(df, y, covs_list){
     # add variable to cv_list
     cv_list <- c(cv_list,variable)
     nw <- rdrobust(y = df[[y]],
-                   x = df$votes_pct_for, 
+                   x = df$votes_pct_against, 
                    c = cutoff, 
                    covs = df %>% select(cv_list) ,
                    all = TRUE)
@@ -35,7 +35,7 @@ find_covs <- function(df, y, covs_list){
     if (!(length(cv_list) == 0)){
       # update the original regression
       og <- rdrobust(y = df[[y]],
-                     x = df$votes_pct_for,
+                     x = df$votes_pct_against,
                      c = cutoff,
                      covs = df %>% select(cv_list) ,
                      all = TRUE)
@@ -96,7 +96,7 @@ find_covs_sign <- function(df, y, covs_list, sign = c("positive","negative")){
   
   # RD without any covariates
   og <- rdrobust(y = df[[y]],
-                 x = df$votes_pct_for, 
+                 x = df$votes_pct_against, 
                  c = cutoff, 
                  covs = NULL ,
                  all = TRUE)
@@ -109,7 +109,7 @@ find_covs_sign <- function(df, y, covs_list, sign = c("positive","negative")){
     # add variable to cv_list
     cv_list <- c(cv_list,variable)
     nw <- rdrobust(y = df[[y]],
-                   x = df$votes_pct_for, 
+                   x = df$votes_pct_against, 
                    c = cutoff, 
                    covs = df %>% select(cv_list) ,
                    all = TRUE)
