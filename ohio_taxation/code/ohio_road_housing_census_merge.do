@@ -23,19 +23,32 @@ log using "${root}/code/ohio_road_housing_census_merge.txt", text replace
 * defining lists/scalars;
 scalar cutoff = 50
 
+*importing roads dataset 
+import excel using "${data}/updated_road_tax_levies_1991_2022.xlsx", firstrow clear
+format TENDIGIT_FIPS %12.0f
+
+
+*merging roads data with census dataset
+merge m:1 TENDIGIT_FIPS year using "${data}/census_property_9021.dta"
+keep if _merge == 3 
+
 *importing tax levies dataset (also contains census info);
-use "${data}/roads_levies2_census_9118.dta", clear
+// use "${data}/roads_levies2_census_9118.dta", clear
+// use "${data}/census_property_9021.dta", clear
 sort TENDIGIT_FIPS year
+order TENDIGIT_FIPS year
+drop _merge
 
 *storing a snapshot (to restore later, if needed);
 preserve
 
-* keeping only the required variables (using vars in Dr. Brasington's email: see email on 07/08/2022, 8:13am)
-keep year pop TENDIGIT_FIPS TENDIGIT_FIPS_year childpov poverty pctwithkids pctsinparhhld pctnokids pctlesshs pcthsgrad pctsomecoll pctbachelors pctgraddeg unemprate medfamy pctrent pctown pctlt5 pct5to17 pct18to64 pct65pls pctwhite pctblack pctamerind pctapi pctotherrace pctmin raceherfindahl pcthisp pctmarried pctnevermarr pctseparated pctdivorced lforcepartrate incherfindahl inctaxrate tax_type purpose2 description millage_percent duration votes_for votes_against 
+* keeping only the required variables (using vars in Dr. Brasington's email: see email on 07/08/2022, 8:13am) (removed TENDIGIT_FIPS_year and inctaxrate)
+keep year pop TENDIGIT_FIPS childpov poverty pctwithkids pctsinparhhld pctnokids pctlesshs pcthsgrad pctsomecoll pctbachelors pctgraddeg unemprate medfamy pctrent pctown pctlt5 pct5to17 pct18to64 pct65pls pctwhite pctblack pctamerind pctapi pctotherrace pctmin raceherfindahl pcthisp pctmarried pctnevermarr pctseparated pctdivorced lforcepartrate incherfindahl taxtype purpose2 description millagepercent duration votesfor votesagainst 
 
 *calculating votes_pct_for and votes_pct_for_cntr
-generate votes_pct_for = (votes_for / (votes_for + votes_against))*100
+generate votes_pct_for = (votesfor / (votesfor + votesagainst))*100
 generate votes_pct_for_cntr = abs(votes_pct_for - cutoff)
+generate votes_pct_against = 100 - votes_pct_for
 
 *---------------------------------------------------------------------------------------------;
 *	filtering to remove dups																  ;
@@ -70,7 +83,7 @@ save "${data}/roads_and_census.dta", replace
 *---------------------------------------------------------------------------------------------------------;
 
 *importing housing sales data;
-foreach t of numlist -2/-1 1/10 {
+foreach t of numlist -3/10 {
 	clear all 
 	use "${shared}\housesales_9521_slim.dta", clear
 	order TENDIGIT_FIPS year, first
@@ -112,7 +125,9 @@ foreach t of numlist -2/-1 1/10 {
 *---------------------------------------------------------------------------------------------------------;
 *	Aggregating dataset using median sale amount
 *---------------------------------------------------------------------------------------------------------;
-foreach t of numlist -2/-1 1/10 {
+// local t = 3
+
+foreach t of numlist -3/10 {
 	clear all 
 	use "${shared}\housesales_9521_slim.dta", clear
 	scalar cutoff = 50  
@@ -148,8 +163,8 @@ foreach t of numlist -2/-1 1/10 {
 	* keeping only renewals, _merge == 3 and duration != 100;
 	keep if _merge == 3
 	keep if description == "R"
-	drop if duration == 1000
-	format %12.0g TENDIGIT_FIPS
+	drop if duration == "1000"
+// 	format %12.0g TENDIGIT_FIPS
 
     * re-generating centered variable to avoid absolute value sign
     drop votes_pct_for_cntr
@@ -160,11 +175,27 @@ foreach t of numlist -2/-1 1/10 {
   
 }
 
+// use "${shared}\housing_roads_census_t_plus_3_matches.dta", clear
+// import delimited "C:\Users\rawatsa\OneDrive - University of Cincinnati\StataProjects\ohio_taxation\data\housing\housing_roads_census_t_plus_3_matches.csv", clear
+//
+//
+//
+// drop if duration == 1000
+// keep if description == "R"
+// keep if upper(trim(description)) == "R"
+// keep if description == "R"
+// drop if upper(trim(sale_amount)) == "NA"
+
+
+
+
+
+
 *---------------------------------------------------------------------------------------------------------;
 *	Aggregating dataset using SALE_AMOUNT_per_sq_feet
 *---------------------------------------------------------------------------------------------------------;
 
-foreach t of numlist -2/-1 1/10 {
+foreach t of numlist -3/10 {
 	clear all 
 	use "${shared}\housesales_9521_slim.dta", clear
 	scalar cutoff = 50  
@@ -204,7 +235,7 @@ foreach t of numlist -2/-1 1/10 {
 	* keeping only renewals, _merge == 3 and duration != 100;
 	keep if _merge == 3
 	keep if description == "R"
-	drop if duration == 1000
+	drop if duration == "1000"
 	format %12.0g TENDIGIT_FIPS
 	
     * re-generating centered variable to avoid absolute value sign

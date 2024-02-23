@@ -18,7 +18,7 @@ plots <- paste0(data,"/outputs/plots")
 # running data setup code
 source(paste0(code,"/housing_data_setup.R"))
 # running covariates balance test
-source(paste0(code,"/covariates_balance_test.R"))
+# source(paste0(code,"/covariates_balance_test.R"))
 source(paste0(code,"/utility_functions.R"))
 # uncontaminated datasets
 source(paste0(code,"/roads_data_setup.R"))
@@ -63,29 +63,26 @@ covs_final <- purrr::map(dfs_agg_covs, ~find_covs(.x, y = "median_sale_amount", 
 covs_final$housing_roads_census_t_minus_3_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 covs_final$housing_roads_census_t_minus_2_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 covs_final$housing_roads_census_t_minus_1_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
-# covs_final$housing_roads_census_t_plus_0_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
-# covs_final$housing_roads_census_t_plus_1_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
-# covs_final$housing_roads_census_t_plus_2_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
-# covs_final$housing_roads_census_t_plus_3_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5", "pctlesshs")
-covs_final$housing_roads_census_t_plus_0_matches <- c("poverty")
-covs_final$housing_roads_census_t_plus_1_matches <- c("poverty")
-covs_final$housing_roads_census_t_plus_2_matches <- c("poverty")
-covs_final$housing_roads_census_t_plus_3_matches <- c("poverty")
-covs_final$housing_roads_census_t_plus_2_matches <- covs_final$housing_roads_census_t_plus_2_matches[!(covs_final$housing_roads_census_t_plus_2_matches %in% c("pctnokids"))]
-covs_final$housing_roads_census_t_plus__matches <- covs_final$housing_roads_census_t_plus_3_matches[!(covs_final$housing_roads_census_t_plus_3_matches %in% c("pctnokids", "pctrent"))]
-covs_final$housing_roads_census_t_plus_4_matches <- covs_final$housing_roads_census_t_plus_4_matches[!(covs_final$housing_roads_census_t_plus_4_matches %in% c("pctnokids"))]
+covs_final$housing_roads_census_t_plus_0_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final$housing_roads_census_t_plus_1_matches <- c("pop")
 covs_final$housing_roads_census_t_plus_5_matches <- covs_final$housing_roads_census_t_plus_5_matches[!(covs_final$housing_roads_census_t_plus_5_matches %in% c("pctnokids"))]
-covs_final$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches[!(covs_final$housing_roads_census_t_plus_8_matches %in% c("pctmin","pctdivorced"))]
-covs_final$housing_roads_census_t_plus_10_matches <- covs_final$housing_roads_census_t_plus_10_matches[!(covs_final$housing_roads_census_t_plus_10_matches %in% c("pctnokids"))]
+covs_final$housing_roads_census_t_plus_7_matches <- covs_final$housing_roads_census_t_plus_8_matches[!(covs_final$housing_roads_census_t_plus_7_matches %in% c("pctmin"))]
+covs_final$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches[!(covs_final$housing_roads_census_t_plus_8_matches %in% c("pctmin"))]
+covs_final$housing_roads_census_t_plus_10_matches <- covs_final$housing_roads_census_t_plus_10_matches[!(covs_final$housing_roads_census_t_plus_10_matches %in% c("pctnokids","pctmin"))]
 
-covs_final[10]
-covs_final_old <- covs_final
 
+# using forward selection function 
+# dfs_agg_covss <- map(dfs_agg_covs, ~ .x %>% 
+#                        mutate(treated = ifelse( votes_pct_against > cutoff, 1, 0),
+#                               treat_times_votes = votes_pct_against * treated))
+# covs_fwd <- purrr::map(dfs_agg_covss, ~forward_selection_covs(.x, y = "median_sale_amount", x = "votes_pct_against", covs_list = covs_list))
 
 ## local polynomial approach ##
 # t + 10, t + 5, pctnokids
+# names(dfs_agg_covs$housing_roads_census_t_minus_1_matches)
 
 gs <- purrr::map2(covs_final, dfs_agg_covs, .f = function(x,y){
+                              # print(paste0("Covariates list: ", deparse(substitute(y))))
                               # print(paste0("Covariates list: ", x))
                               rdrobust(  y = y$median_sale_amount,
                                          x = y$votes_pct_against,
@@ -100,7 +97,43 @@ purrr::walk2(names(gs), gs, .f = function(x, y) {
 })
 tes_gs <- te_tables(gs)
 plot_te(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
-plot_te(tes, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+# plot_te(tes, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
+
+# implemented using rdd_lm() which uses lm() funciton in R
+tgt <- map2(covs_final, dfs_agg_covs, .f = function(x, y){
+  rdd_lm(df = y, y = "median_sale_amount", x = "votes_pct_against", covs = x)
+})
+tes_tgt <- te_tables_lm(tgt)
+plot_te(tes_tgt, var = coef)
+ggplot(tes_tgt, aes(ord, coef)) +       
+  geom_point(size = 3, shape = 19, color = "blue") +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  ) + scale_x_continuous(breaks = c(-3:10))
+
+# map(tgt, vif)
+# tgt$housing_roads_census_t_plus_10_matches$coefficients
+
+map(gs, ~ .x$pv[2])
+
+gs$housing_roads_census_t_plus_0_matches
+
+# from gs list, select elements that start with "housing_roads_census_t_plus_"
+tes_gs %>% filter((ord >= 4))
+  # select(bias_corrected_coef) %>% pull %>% mean
+
+
 
 
 # output for paper draft 
@@ -432,15 +465,24 @@ car::vif(mod1)
 #============================================================================================================#
 
 # using median_sale_amount
-covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5")
+# covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5")
 
 ## same covariates
 g_p_regs <- purrr::map(dfs_agg_pure_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount,
-                                                               x = .x$votes_pct_for, c = cutoff,
-                                                               covs = .x %>% select(all_of(covs_my_list)),
+                                                               x = .x$votes_pct_against, c = cutoff,
+                                                               covs = .x %>% select(covs_final),
                                                                all = TRUE))
+g_p_regs <- purrr::map2(covs_final, dfs_agg_pure_covs, .f = function(x,y){
+                                                        rdrobust(  y = y$median_sale_amount,
+                                                                   x = y$votes_pct_against,
+                                                                   c = cutoff,
+                                                                   covs = y %>%
+                                                                     select(x) ,
+                                                                   all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+
 tes_g_p <- te_tables(g_p_regs)
-plot_te(tes_g_p, title = "T.E Estimates: Uncontaminated voting data", subtitle = "Treatment Effect estimates")
+plot_te(tes_g_p, title = "T.E Estimates: Uncontaminated voting data")
 
 # using median_sale_amount_per_sq_foot
 

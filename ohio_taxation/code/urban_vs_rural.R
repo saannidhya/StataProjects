@@ -31,19 +31,19 @@ dfs_agg_twp <- purrr::map(dfs_agg, ~ .x %>%
                                             urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy))) # if NA, then assuming the region is rural
 
 # splitting the datasets into urban and rural, by both: clusterdummy and uadummy
-dfs_agg_urb_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)) %>% mutate(votes_against = 100 - votes_pct_for))
-dfs_agg_urb_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)) %>% mutate(votes_against = 100 - votes_pct_for))
-dfs_agg_rur_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)) %>% mutate(votes_against = 100 - votes_pct_for))
-dfs_agg_rur_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)) %>% mutate(votes_against = 100 - votes_pct_for))
+dfs_agg_urb_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)) )
+dfs_agg_urb_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)) )
+dfs_agg_rur_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)) )
+dfs_agg_rur_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)) )
 
 
 #=================================================================================#
 # running regressions without covariates (aggregate) ----
 #=================================================================================#
-regs_urb_cd <- purrr::map(.x = dfs_agg_urb_cd, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_against, c = cutoff, all = TRUE))
-regs_urb_ua <- purrr::map(.x = dfs_agg_urb_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_against, c = cutoff, all = TRUE))
-regs_rur_cd <- purrr::map(.x = dfs_agg_rur_cd, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_against, c = cutoff, all = TRUE))
-regs_rur_ua <- purrr::map(.x = dfs_agg_rur_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_against, c = cutoff, all = TRUE))
+regs_urb_cd <- purrr::map(.x = dfs_agg_urb_cd, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+regs_urb_ua <- purrr::map(.x = dfs_agg_urb_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+regs_rur_cd <- purrr::map(.x = dfs_agg_rur_cd, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+regs_rur_ua <- purrr::map(.x = dfs_agg_rur_ua, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
 
 
 # summary(regs_urb_cd$housing_roads_census_t_plus_4_matches)
@@ -91,10 +91,10 @@ dfs_agg_covs_twp <- purrr::map(dfs_agg_covs, ~ .x %>%
                                         urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy)))
 
 # splitting the datasets into urban and rural, by both: clusterdummy and uadummy
-dfs_agg_covs_urb_cd <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)) %>% mutate(votes_against = 100 - votes_pct_for) )
-dfs_agg_covs_urb_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)) %>% mutate(votes_against = 100 - votes_pct_for) )
-dfs_agg_covs_rur_cd <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)) %>% mutate(votes_against = 100 - votes_pct_for) )
-dfs_agg_covs_rur_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)) %>% mutate(votes_against = 100 - votes_pct_for) )
+dfs_agg_covs_urb_cd <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)) )
+dfs_agg_covs_urb_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)) )
+dfs_agg_covs_rur_cd <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)) )
+dfs_agg_covs_rur_ua <- purrr::map(dfs_agg_covs_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)) )
 
 
 
@@ -127,7 +127,7 @@ covs_final_urb_cd2 <- purrr::map(covs_final_urb_cd, ~ .x[!(.x %in% c("pctown","p
 regs_covs_urb_cd <- purrr::map2(dfs_agg_covs_urb_cd, covs_final_urb_cd2 ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_against, 
+                                                     x = x$votes_pct_against, 
                                                      c = cutoff, 
                                                      # covs = x %>% select(y),
                                                      covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
@@ -140,7 +140,7 @@ plot_te(tes_covs_urb_cd)
 regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_against, 
+                                                     x = x$votes_pct_against, 
                                                      c = cutoff, 
                                                      # covs = x %>% select(y),
                                                      # covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
@@ -160,7 +160,7 @@ plot_te(tes_covs_urb_ua)
 regs_covs_rur_cd <- purrr::map2(dfs_agg_covs_rur_cd, covs_final_rur_cd ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_against, 
+                                                     x = x$votes_pct_against, 
                                                      c = cutoff, 
                                                      covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
                                                      # covs = x %>% select(y),
@@ -174,7 +174,7 @@ plot_te(tes_covs_rur_cd)
 regs_covs_rur_ua <- purrr::map2(dfs_agg_covs_rur_ua, covs_final_rur_ua ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_pct_for, 
+                                                     x = x$votes_pct_against, 
                                                      c = cutoff, 
                                                      covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown", "medfamy", "unemprate", "raceherfindahl")),
                                                      # covs = x %>% select(y),
@@ -184,5 +184,37 @@ regs_covs_rur_ua <- purrr::map2(dfs_agg_covs_rur_ua, covs_final_rur_ua ,
 tes_covs_rur_ua <- te_tables(regs_covs_rur_ua) 
 plot_te(tes_covs_rur_ua)
 # plot_te(tes_rur_ua)
+
+
+# append the two datasets tes_covs_urb_ua and tes_covs_rur_ua
+tes_covs_urb_ua <- tes_covs_urb_ua %>% mutate(cat = "urban")
+tes_covs_rur_ua <- tes_covs_rur_ua %>% mutate(cat = "rural")
+
+tes_covs_ua <- rbind(tes_covs_urb_ua, tes_covs_rur_ua) %>% mutate(ord = if_else(cat == "rural", ord - 0.15, ord + 0.15))
+
+
+ggplot(tes_covs_ua, aes(ord, robust_coef, color = cat)) +       
+  geom_point(size = 3, shape = 19) +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high, color = cat), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position",
+    title = "Treatment Effects: Urban vs Rural"
+    # caption = "Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information."
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom",
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    panel.grid.minor.y = element_blank(),
+    legend.title = element_blank()
+  ) + 
+  scale_x_continuous(breaks = c(-3:10))
+
 
 

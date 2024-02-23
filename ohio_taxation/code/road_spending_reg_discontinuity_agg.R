@@ -59,45 +59,45 @@ rdd::DCdensity(roads_and_census$votes_pct_against, c = 50)
 
 # t+10 as an example (14 is the best)
 rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_2_matches$median_sale_amount,
-                 dfs_agg$housing_roads_census_t_plus_2_matches$votes_pct_for,
+                 dfs_agg$housing_roads_census_t_plus_2_matches$votes_pct_against,
                  c = 50, p = 1, binselect = "esmv")
 rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_4_matches$median_sale_amount,
-                 dfs_agg$housing_roads_census_t_plus_4_matches$votes_pct_for,
+                 dfs_agg$housing_roads_census_t_plus_4_matches$votes_pct_against,
                  c = 50, p = 1, binselect = "esmv")
 rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_5_matches$median_sale_amount,
-                 dfs_agg$housing_roads_census_t_plus_5_matches$votes_pct_for,
+                 dfs_agg$housing_roads_census_t_plus_5_matches$votes_pct_against,
                  c = 50, p = 1, binselect = "esmv")
 rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_6_matches$median_sale_amount,
-                 dfs_agg$housing_roads_census_t_plus_6_matches$votes_pct_for,
+                 dfs_agg$housing_roads_census_t_plus_6_matches$votes_pct_against,
                  c = 50, p = 1, binselect = "esmv")
 rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_7_matches$median_sale_amount,
-                 dfs_agg$housing_roads_census_t_plus_7_matches$votes_pct_for,
+                 dfs_agg$housing_roads_census_t_plus_7_matches$votes_pct_against,
                  c = 50, p = 1, binselect = "esmv")
 rdrobust::rdplot(dfs_agg$housing_roads_census_t_plus_8_matches$median_sale_amount,
-                 dfs_agg$housing_roads_census_t_plus_8_matches$votes_pct_for,
+                 dfs_agg$housing_roads_census_t_plus_8_matches$votes_pct_against,
                  c = 50, p = 1, binselect = "esmv")
 
 
 # trying different number of bins (from 30 to 50)
 for (i in 30:50){
   rdrobust::rdplot(y = dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount, 
-                   x = dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, 
+                   x = dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_against, 
                    c = 50, p = 1, nbins = c(i,i), title = paste0(as.character(i)))
 }
 
 purrr::map2(dfs_agg, names(dfs_agg), ~print(rdrobust::rdplot(y = .x$median_sale_amount, 
-                                                             x = .x$votes_pct_for, 
+                                                             x = .x$votes_pct_against, 
                                                              c = 50, p = 1, title = .y)))
 
 ### sale_amount_per_sq_feett ###
 for (i in 30:50){
   rdrobust::rdplot(y = dfs_agg$housing_roads_census_t_plus_9_matches$median_sale_amount, 
-                   x = dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_for, 
+                   x = dfs_agg$housing_roads_census_t_plus_9_matches$votes_pct_against, 
                    c = 50, p = 1, nbins = c(i,i), title = paste0(as.character(i)))
 }
 
 purrr::map2(dfs_agg_per, names(dfs_agg_per), ~print(rdrobust::rdplot(y = .x$median_sale_amount_per_sq_feet, 
-                                                                     x = .x$votes_pct_for, 
+                                                                     x = .x$votes_pct_against, 
                                                                      c = 50, p = 1, title = .y)))
 
 

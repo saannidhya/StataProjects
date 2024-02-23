@@ -23,11 +23,11 @@ cutoff = 50
 rd_var_list = c("year", "pop", "TENDIGIT_FIPS", "TENDIGIT_FIPS_year", "childpov", "poverty", "pctwithkids", "pctsinparhhld", "pctnokids", "pctlesshs", "pcthsgrad", 
                 "pctsomecoll", "pctbachelors", "pctgraddeg", "unemprate", "medfamy", "pctrent", "pctown", "pctlt5", "pct5to17", "pct18to64", "pct65pls", "pctwhite", 
                 "pctblack", "pctamerind", "pctapi", "pctotherrace", "pctmin", "raceherfindahl", "pcthisp", "pctmarried", "pctnevermarr", "pctseparated", "pctdivorced", 
-                "lforcepartrate", "incherfindahl", "inctaxrate", "tax_type", "purpose2", "description", "millage_percent", "duration", "votes_for", "votes_against")
-roads_vars <- c("tax_type", "purpose2", "description", "millage_percent", "duration", "votes_for", "votes_against")
+                "lforcepartrate", "incherfindahl", "inctaxrate", "tax_type", "purpose2", "description", "millagepercent", "duration", "votes_for", "votes_against")
+roads_vars <- c("tax_type", "purpose2", "description", "millagepercent", "duration", "votesfor", "votesagainst")
 
 # importing roads  dataset
-rd <- haven::read_dta(paste0(data,"/roads_levies2_census_9118.dta"))
+rd <- haven::read_dta(paste0(data,"/roads_and_census.dta"))
 
 # cleaning roads dataset: creating vote share variables, keeping the obs per fips per year closest to cutoff, adding fail flag
 # note: rds contains both additional and renewal road tax levies
@@ -65,11 +65,11 @@ dfs_agg_all <- dfs_agg_n %>% bind_rows() %>% arrange(tendigit_fips, vote_year, y
 # Performing a left join on dfs_agg_all with "additional" road tax levy dataset called rds_additional_vts
 # numeric_df column is s.t. t_minus_3 = 1, t_minus_2 = 2, and so on..
 dfs_agg_all_add <- dfs_agg_all %>% left_join(rds_additional_vts, by = c("tendigit_fips", "year")) %>%
-                      ungroup() %>%
-                      mutate(numeric_df = as.numeric(factor(dataset, levels = c("t_minus_3", "t_minus_2", "t_minus_1", "t_plus_0", 
-                                                                                "t_plus_1", "t_plus_2", "t_plus_3", "t_plus_4", 
-                                                                                "t_plus_5", "t_plus_6", "t_plus_7", "t_plus_8", 
-                                                                                "t_plus_9", "t_plus_10"))))
+  ungroup() %>%
+  mutate(numeric_df = as.numeric(factor(dataset, levels = c("t_minus_3", "t_minus_2", "t_minus_1", "t_plus_0", 
+                                                            "t_plus_1", "t_plus_2", "t_plus_3", "t_plus_4", 
+                                                            "t_plus_5", "t_plus_6", "t_plus_7", "t_plus_8", 
+                                                            "t_plus_9", "t_plus_10"))))
 
 # Create a grouping variable based on breaks (break happens whenever "gap" of more than 1 appears in the consecutive obs)
 # We do this to identify whether the next obs in dataset belongs to same tax levy or different tax levy (count of "group" increases each time a new tax levy is identified)
@@ -81,29 +81,28 @@ dfs_agg_all_add$group <- cumsum(dfs_agg_all_add$`break`)
 # identifying the first pass flag for the group and then creating drop flag based on the first pass flag
 # Once a first pass flag (for "A" levies) is observed, drop flag == 1 for all observations after that one (in the group)
 dff <- dfs_agg_all_add %>%
-          group_by(group) %>%
-          mutate(pass_flg = if_else(is.na(pass_flg), 0, pass_flg)) %>%
-          mutate(first_pass_flg = if_else((pass_flg == 1) & (row_number() == min(row_number()[pass_flg == 1])), 1, 0)) %>%
-          mutate(drop_flg = if_else( (cumsum(pass_flg) >= 1) & (first_pass_flg != 1) , 1, 0)) %>%
-          filter(!(drop_flg == 1)) # remove the drop_flg == 1 observations
+  group_by(group) %>%
+  mutate(pass_flg = if_else(is.na(pass_flg), 0, pass_flg)) %>%
+  mutate(first_pass_flg = if_else((pass_flg == 1) & (row_number() == min(row_number()[pass_flg == 1])), 1, 0)) %>%
+  mutate(drop_flg = if_else( (cumsum(pass_flg) >= 1) & (first_pass_flg != 1) , 1, 0)) %>%
+  filter(!(drop_flg == 1)) # remove the drop_flg == 1 observations
 # note: I get warning whenever there is a group s.t. row_number()[pass_flg == 1] is missing i.e. has no values
 
 
 # Generating dfs_agg_pure from dfs_agg after eliminating contaminated obseravations ----
 # create separate datasets for t-3 up to t+10
 dfs_agg_pure <- purrr::map(df_names, ~ dff %>%  filter(dataset == .x)  %>% ungroup() %>%
-                                               select(-c("tax_type","purpose2","description", "millage_percent","duration",
-                                                         "votes_for","votes_against","votes_pct_for.y", "fail_flg","pass_flg",
-                                                         "numeric_df","break","group", "first_pass_flg","drop_flg")) %>% 
-                                               rename(votes_pct_for = votes_pct_for.x))
+                             select(-c("tax_type","purpose2","description", "millage_percent","duration",
+                                       "votes_for","votes_against","votes_pct_for", "fail_flg","pass_flg",
+                                       "numeric_df","break","group", "first_pass_flg","drop_flg")))
 names(dfs_agg_pure) <- paste0("housing_roads_census_", df_names, "_matches")
 # dfs_agg_pure
 
 
 # Adding covariates to dfs_agg_pure  ----
 dfs_agg_pure_covs <- purrr::map(.x = dfs_agg_pure, ~ .x %>% 
-                                     dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
-                                     ungroup()
+                                  dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
+                                  ungroup()
 )
 dfs_agg_pure_covs
 

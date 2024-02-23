@@ -6,6 +6,7 @@
 #           07/27/2022: separated data setup from original program 
 #           06/17/2023: combined several previously made changes. See github repo for details
 #           09/11/2023: replaced STATA created "merged" datasets with identical csv files from ohio_road_housing_census_merge.R
+#           02/17/2024: replaced csv files with STATA created "merged" (a.k.a "matches") datasets
 #==========================================================================================================#
 
 # loading packages
@@ -22,14 +23,15 @@ shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
 
 
 # covariates list 
-vars_list <- c("TENDIGIT_FIPS", "year" ,"TENDIGIT_FIPS_year" ,"pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
+vars_list <- c("TENDIGIT_FIPS", "year" ,"pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
                "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
                "pct5to17" ,"pct18to64" ,"pct65pls" ,"pctwhite" ,"pctblack" ,"pctamerind" ,"pctapi" ,"pctotherrace" ,"pctmin" ,"raceherfindahl" ,
-               "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl", "inctaxrate")
+               "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl")
 
 
 # loading census df
-census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) %>%
+# census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) %>%
+census <- haven::read_dta(paste0(data,"/census_property_9021.dta")) %>%
   dplyr::select(vars_list) %>%
   dplyr::rename(vote_year = year) %>%
   janitor::clean_names()
@@ -37,8 +39,7 @@ census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) 
 # importing roads and census dataset. Selecting only renewals and levies that do not last forever. Separating into treatment and control groups.
 roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
   select(-matches("yr_t_")) %>%
-  select(-c("inctaxrate")) %>%
-  filter(description == "R" & duration != 1000) %>%
+  filter(description == "R" & duration != "1000") %>%
   janitor::clean_names() %>%
   mutate(votes_pct_against = 100 - votes_pct_for) %>%
   mutate(treated = if_else(votes_pct_against > cutoff, 1, 0))    
@@ -47,16 +48,16 @@ roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
 #  Importing Housing datasets as a list ----
 #============================================#
 # storing all housing dfs as a list
-dataset_names <- stringr::str_remove(list.files(paste0(data,"/housing"),
+dataset_names <- stringr::str_remove(list.files(paste0(shared),
                                                 pattern = "matches",
                                                 recursive = TRUE),
-                                     paste0(".", "csv")) 
+                                     paste0(".", "dta")) 
 # import data
-housing_dfs <- purrr::map(list.files(paste0(data,"/housing"),
+housing_dfs <- purrr::map(list.files(paste0(shared),
                                      pattern = "matches",
                                      recursive = TRUE,
                                      full.names = TRUE),
-                          readr::read_csv)
+                          haven::read_dta) 
 # assign names to housing dfs
 housing_dfs <- stats::setNames(housing_dfs, dataset_names)
 
@@ -66,7 +67,7 @@ housing_dfs <- stats::setNames(housing_dfs, dataset_names)
 #============================================#
 # filtering all dfs: keeping renewals, dropping levies that last forever and dropping missing values of sale amount
 dfs <- purrr::map(housing_dfs, ~.x %>% 
-                    filter(description == "R" & duration != 1000) %>%
+                    filter(description == "R" & duration != "1000") %>%
                     janitor::clean_names() %>%
                     drop_na(sale_amount) %>%
                     mutate(votes_pct_against = 100 - votes_pct_for) %>%
@@ -104,7 +105,7 @@ dfs_agg_covs <- purrr::map(.x = dfs_agg, ~ .x %>%
 
 dfs_agg_per <- purrr::map2(housing_dfs, yr_t_names, function(df,yr){
                 dataset <- df %>% 
-                            filter(description == "R" & duration != 1000) %>%
+                            filter(description == "R" & duration != "1000") %>%
                             janitor::clean_names() %>%
                             drop_na(sale_amount) %>%
                             drop_na(universal_building_square_feet) %>%
