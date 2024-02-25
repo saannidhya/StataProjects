@@ -59,16 +59,23 @@ covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pc
 # selecting the best set of covariates for each median sale amount period
 covs_final <- purrr::map(dfs_agg_covs, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
 
+list10 <- find_covs(dfs_agg_covs$housing_roads_census_t_plus_10_matches, y = "median_sale_amount", covs_list = covs_list)
+
 # cleaning covs_final to avoid multicollinearity
 covs_final$housing_roads_census_t_minus_3_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 covs_final$housing_roads_census_t_minus_2_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 covs_final$housing_roads_census_t_minus_1_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 covs_final$housing_roads_census_t_plus_0_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+# covs_final$housing_roads_census_t_plus_0_matches <- covs_final$housing_roads_census_t_plus_0_matches[!(covs_final$housing_roads_census_t_plus_0_matches %in% c("pctmin"))]
 covs_final$housing_roads_census_t_plus_1_matches <- c("pop")
-covs_final$housing_roads_census_t_plus_5_matches <- covs_final$housing_roads_census_t_plus_5_matches[!(covs_final$housing_roads_census_t_plus_5_matches %in% c("pctnokids"))]
-covs_final$housing_roads_census_t_plus_7_matches <- covs_final$housing_roads_census_t_plus_8_matches[!(covs_final$housing_roads_census_t_plus_7_matches %in% c("pctmin"))]
-covs_final$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches[!(covs_final$housing_roads_census_t_plus_8_matches %in% c("pctmin"))]
-covs_final$housing_roads_census_t_plus_10_matches <- covs_final$housing_roads_census_t_plus_10_matches[!(covs_final$housing_roads_census_t_plus_10_matches %in% c("pctnokids","pctmin"))]
+# covs_final$housing_roads_census_t_plus_1_matches <- covs_final$housing_roads_census_t_plus_1_matches[!(covs_final$housing_roads_census_t_plus_1_matches %in% c("pctmin"))]
+covs_final$housing_roads_census_t_plus_2_matches <- covs_final$housing_roads_census_t_plus_2_matches[!(covs_final$housing_roads_census_t_plus_2_matches %in% c("pctnokids"))]
+covs_final$housing_roads_census_t_plus_3_matches <- covs_final$housing_roads_census_t_plus_3_matches[!(covs_final$housing_roads_census_t_plus_3_matches %in% c("pctnokids"))]
+covs_final$housing_roads_census_t_plus_4_matches <- covs_final$housing_roads_census_t_plus_4_matches[!(covs_final$housing_roads_census_t_plus_4_matches %in% c("pctnokids","pctown"))]
+covs_final$housing_roads_census_t_plus_5_matches <- covs_final$housing_roads_census_t_plus_5_matches[!(covs_final$housing_roads_census_t_plus_5_matches %in% c("pctown", "pctmin"))]
+# covs_final$housing_roads_census_t_plus_7_matches <- covs_final$housing_roads_census_t_plus_7_matches[!(covs_final$housing_roads_census_t_plus_7_matches %in% c("pctmin"))]
+covs_final$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches[!(covs_final$housing_roads_census_t_plus_8_matches %in% c("pctmin", "pctnokids"))]
+# covs_final$housing_roads_census_t_plus_10_matches <- covs_final$housing_roads_census_t_plus_10_matches[!(covs_final$housing_roads_census_t_plus_10_matches %in% c("pctnokids","pctmin"))]
 
 
 # using forward selection function 
@@ -98,6 +105,17 @@ purrr::walk2(names(gs), gs, .f = function(x, y) {
 tes_gs <- te_tables(gs)
 plot_te(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 # plot_te(tes, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
+# y <- dfs_agg_covs$housing_roads_census_t_plus_10_matches
+# x <-  c("pctsinparhhld", "pctrent", "pct18to64", "pctwhite")
+# geg <- rdrobust(  y = y$median_sale_amount,
+#            x = y$votes_pct_against,
+#            c = cutoff,
+#            covs = y %>%
+#              select(x) ,
+#            all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+# summary(geg)
+# minus: 3, 1 . plus: 0, 1, 2, 3, 4, 5, 8
 
 
 # implemented using rdd_lm() which uses lm() funciton in R

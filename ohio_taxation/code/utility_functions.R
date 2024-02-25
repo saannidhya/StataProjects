@@ -143,7 +143,7 @@ plot_te <- function(te_table, title = ggplot2::waiver(), subtitle = ggplot2::wai
   ggplot(te_table, aes(ord, robust_coef)) +       
     geom_point(size = 3, shape = 19, color = "blue") +
     geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                  width = 0.2, color = "grey50", size = 0.7) +
+                  width = 0.2, color = "grey50", linewidth = 0.7) +
     geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
     labs(
       title = title,

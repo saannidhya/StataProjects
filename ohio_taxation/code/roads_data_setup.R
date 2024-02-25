@@ -20,11 +20,11 @@ shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
 #======================================================================#
 
 cutoff = 50
-rd_var_list = c("year", "pop", "TENDIGIT_FIPS", "TENDIGIT_FIPS_year", "childpov", "poverty", "pctwithkids", "pctsinparhhld", "pctnokids", "pctlesshs", "pcthsgrad", 
+rd_var_list = c("year", "pop", "TENDIGIT_FIPS", "childpov", "poverty", "pctwithkids", "pctsinparhhld", "pctnokids", "pctlesshs", "pcthsgrad", 
                 "pctsomecoll", "pctbachelors", "pctgraddeg", "unemprate", "medfamy", "pctrent", "pctown", "pctlt5", "pct5to17", "pct18to64", "pct65pls", "pctwhite", 
                 "pctblack", "pctamerind", "pctapi", "pctotherrace", "pctmin", "raceherfindahl", "pcthisp", "pctmarried", "pctnevermarr", "pctseparated", "pctdivorced", 
-                "lforcepartrate", "incherfindahl", "inctaxrate", "tax_type", "purpose2", "description", "millagepercent", "duration", "votes_for", "votes_against")
-roads_vars <- c("tax_type", "purpose2", "description", "millagepercent", "duration", "votesfor", "votesagainst")
+                "lforcepartrate", "incherfindahl", "taxtype", "purpose2", "description", "millagepercent", "duration", "votesfor", "votesagainst")
+roads_vars <- c("taxtype", "purpose2", "description", "millagepercent", "duration", "votesfor", "votesagainst")
 
 # importing roads  dataset
 rd <- haven::read_dta(paste0(data,"/roads_and_census.dta"))
@@ -34,7 +34,7 @@ rd <- haven::read_dta(paste0(data,"/roads_and_census.dta"))
 rds <- rd %>%
   select(all_of(rd_var_list)) %>% 
   janitor::clean_names() %>%
-  mutate(votes_pct_for = (votes_for / (votes_for + votes_against))*100,
+  mutate(votes_pct_for = (votesfor / (votesfor + votesagainst))*100,
          votes_pct_for_cntr = abs(votes_pct_for - cutoff)) %>%
   group_by(tendigit_fips, year) %>% 
   arrange(tendigit_fips, year, votes_pct_for_cntr) %>% 
@@ -92,8 +92,8 @@ dff <- dfs_agg_all_add %>%
 # Generating dfs_agg_pure from dfs_agg after eliminating contaminated obseravations ----
 # create separate datasets for t-3 up to t+10
 dfs_agg_pure <- purrr::map(df_names, ~ dff %>%  filter(dataset == .x)  %>% ungroup() %>%
-                             select(-c("tax_type","purpose2","description", "millage_percent","duration",
-                                       "votes_for","votes_against","votes_pct_for", "fail_flg","pass_flg",
+                             select(-c("taxtype","purpose2","description", "millagepercent","duration",
+                                       "votesfor","votesagainst","votes_pct_for", "fail_flg","pass_flg",
                                        "numeric_df","break","group", "first_pass_flg","drop_flg")))
 names(dfs_agg_pure) <- paste0("housing_roads_census_", df_names, "_matches")
 # dfs_agg_pure
