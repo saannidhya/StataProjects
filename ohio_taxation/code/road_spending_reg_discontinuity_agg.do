@@ -21,8 +21,8 @@ global shared "\\cobshares.uccob.uc.edu\economics$\Julia\roads"
 * assigning global macros for variables
 global Y median_sale_amount // median_sale_amount_per_sq_feet
 global ln_Y ln_median_sale_amount
-global X votes_pct_against
-global R votes_pct_against_cntr
+global X votes_pct_for
+global R votes_pct_for_cntr
 global prior_yrs_flg = 1
 global cutoff = 50
 scalar cutoff = 50
@@ -67,8 +67,9 @@ foreach t of numlist -3/10 {
 	display "`Y'"	
 	
 	* generating treatment/control flag, log of SALE_AMOUNT and interaction term: treated x votes_pct_against;
-	generate votes_pct_against = 100 - votes_pct_for
+// 	generate votes_pct_against = 100 - votes_pct_for
 	generate votes_pct_against_cntr = votes_pct_against - cutoff
+// 	generate votes_pct_for_cntr = votes_pct_for - cutoff
 	generate treated = 1 if votes_pct_against > cutoff
 	replace treated = 0 if votes_pct_against <= cutoff
 	
@@ -84,8 +85,8 @@ foreach t of numlist -3/10 {
 	* density plot
 	twoway (histogram $X if $X <= cutoff, freq width(2) bcolor(red)) ///
 		   (histogram $X if $X > cutoff, freq width(2) bcolor(blue) xline(50)), ///
-		   leg(off) xtitle("Percent of Votes Against Tax Levy") title("Density plot: (`year')")
-	graph export "$plots/density_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.png", replace
+		   leg(off) xtitle("Percent of Votes For Tax Levy") title("Density plot: (`year')")
+	graph export "$plots/votes_pct_for/density_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.png", replace
 	   
 	* regression run
 	rdrobust $Y $X, c($cutoff) all kernel($kernel) p($p) q($q) bwselect($bwselect)
@@ -100,13 +101,13 @@ foreach t of numlist -3/10 {
 	*RD plots
 	*rdplot $Y $X, c(50) binselect(esmv) 	 
 	* full plot
-	binscatter $Y $X, rd($cutoff) linetype(lfit) ///
-	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (Full)") ///
-	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_full.png") replace
+// 	binscatter $Y $X, rd($cutoff) linetype(lfit) ///
+// 	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (Full)") ///
+// 	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_full.png") replace
 	* plot within the bandwidth selected by rdrobust
 	binscatter $Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) linetype(lfit) ///
-	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (within b.w)") ///
-	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
+	xtitle("Percent of Votes For Tax Levy") ytitle("`Y' (`year')")  ///
+	savegraph("$plots/votes_pct_for/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
 
 	* generating an exportable table
 // 	table () ( result ) (), command(rdrobust $Y $X, c($cutoff) all kernel($kernel) p($p) q($q) bwselect($bwselect) )
@@ -140,4 +141,4 @@ histogram votes_pct_against, title("Histogram of % Votes Against") ///
   xline($cutoff, lwidth(medium) lpattern(solid) lcolor(red) extend) ///
   xtick(0(10)100) xlabel(0(10)100)
 
-graph export "${plots}/votes_pct_against_histogram.png", as(png) replace
+graph export "${plots}/votes_pct_for/votes_pct_against_histogram.png", as(png) replace

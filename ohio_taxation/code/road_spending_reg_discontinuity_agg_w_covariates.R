@@ -59,8 +59,6 @@ covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pc
 # selecting the best set of covariates for each median sale amount period
 covs_final <- purrr::map(dfs_agg_covs, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
 
-list10 <- find_covs(dfs_agg_covs$housing_roads_census_t_plus_10_matches, y = "median_sale_amount", covs_list = covs_list)
-
 # cleaning covs_final to avoid multicollinearity
 covs_final$housing_roads_census_t_minus_3_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 covs_final$housing_roads_census_t_minus_2_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
@@ -153,7 +151,6 @@ tes_gs %>% filter((ord >= 4))
 
 
 
-
 # output for paper draft 
 write.csv(tes_gs, paste0(tables, "/tes_gs.csv"), row.names = FALSE)
 
@@ -169,7 +166,7 @@ write.csv(tes_gs, paste0(tables, "/tes_gs.csv"), row.names = FALSE)
 # mean(c(20992, 19867, 14461, 15129, 18532, 22645, 13438))
 
 # bandwidth
-purrr::walk2(gs, names(gs), ~print(paste0("Eff. Bandwidth (p) for ", .y, ": " , round(.x$bws[1,],1))))
+purrr::walk2(gs, names(gs), ~print(paste0("Eff. Bandwidth (h) for ", .y, ": " , round(.x$bws[1,],1))))
 purrr::walk2(gs, names(gs), ~print(paste0("Bias Bandwidth (b) for ", .y, ": " , round(.x$bws[2,],1))))
 
 # observations
@@ -179,6 +176,7 @@ purrr::walk2(gs, names(gs), ~print(paste0("Total Observations for ", .y, ": " , 
 #|||||||||||||||||||||||||||||||||||||||||||||||||#
 # Same Covariates for each outcome period
 #|||||||||||||||||||||||||||||||||||||||||||||||||#
+
 
 # pop, poverty, pct_white, pctsinparhhld, medfamy
 covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5", "pctlesshs")
@@ -231,16 +229,15 @@ ggplot(tes_g_rand, aes(ord, statistic)) +
 
 
 ## winsorization of median_sale_amount
+housing_dfs_winsorized <- winsorize_data(housing_dfs, "SALE_AMOUNT", na.rm = TRUE)
+# mean house value, keeping only t + 0 to t + 10
+map_dbl(housing_dfs_winsorized, ~mean(.x$SALE_AMOUNT, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(housing_dfs_winsorized, ~sd(.x$SALE_AMOUNT, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+
 # removing top and bottom 1% of observations
 dfs_agg_covs_winsored <- winsorize_data(dfs_agg_covs, "median_sale_amount")
 
 # local polynomial approach
-covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
-               "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
-               "pct5to17" ,"pct18to64" ,"pct65pls" ,"pctwhite" ,"pctblack" ,"pctamerind" ,"pctapi" ,"pctotherrace" ,"pctmin" ,"raceherfindahl" ,
-               "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl")
-
-covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5", "pctlesshs")
 g_regs_w <- purrr::map2(covs_final, dfs_agg_covs_winsored, .f = function(x,y){
   # print(paste0("Outcome variable is ",deparse(substitute(y))))
   rdrobust(  y = y$median_sale_amount,
@@ -249,10 +246,6 @@ g_regs_w <- purrr::map2(covs_final, dfs_agg_covs_winsored, .f = function(x,y){
              covs = y %>% select(x) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
 })
-# g_regs_w <- purrr::map(dfs_agg_covs_winsored, ~ rdrobust::rdrobust(y = .x$median_sale_amount, 
-#                                                         x = .x$votes_pct_for, c = cutoff, 
-#                                                         covs = .x %>% select(all_of(covs_my_list)),
-#                                                         all = TRUE))
 purrr::walk2(names(g_regs_w), g_regs_w, .f = function(x, y) {
   print(paste0("Outcome variable is ",x))
   summary(y) 
@@ -485,12 +478,24 @@ car::vif(mod1)
 # using median_sale_amount
 # covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5")
 
-## same covariates
-g_p_regs <- purrr::map(dfs_agg_pure_covs, ~ rdrobust::rdrobust(y = .x$median_sale_amount,
-                                                               x = .x$votes_pct_against, c = cutoff,
-                                                               covs = .x %>% select(covs_final),
-                                                               all = TRUE))
-g_p_regs <- purrr::map2(covs_final, dfs_agg_pure_covs, .f = function(x,y){
+## find covariates
+covs_final_un <- purrr::map(dfs_agg_pure_covs, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
+
+# cleaning covs_final to avoid multicollinearity
+covs_final_un$housing_roads_census_t_minus_3_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final_un$housing_roads_census_t_minus_2_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final_un$housing_roads_census_t_minus_1_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final_un$housing_roads_census_t_plus_0_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
+covs_final_un$housing_roads_census_t_plus_1_matches <- c("pop")
+covs_final_un$housing_roads_census_t_plus_2_matches <- covs_final_un$housing_roads_census_t_plus_2_matches[!(covs_final_un$housing_roads_census_t_plus_2_matches %in% c("pctnokids"))]
+covs_final_un$housing_roads_census_t_plus_3_matches <- c("pctwhite")
+covs_final_un$housing_roads_census_t_plus_4_matches <- covs_final_un$housing_roads_census_t_plus_4_matches[!(covs_final_un$housing_roads_census_t_plus_4_matches %in% c("pctown"))]
+covs_final_un$housing_roads_census_t_plus_7_matches <- covs_final_un$housing_roads_census_t_plus_7_matches[!(covs_final_un$housing_roads_census_t_plus_7_matches %in% c("pctown"))]
+covs_final_un$housing_roads_census_t_plus_9_matches <- covs_final_un$housing_roads_census_t_plus_9_matches[!(covs_final_un$housing_roads_census_t_plus_9_matches %in% c("pctown"))]
+
+
+## run regressions
+g_p_regs <- purrr::map2(covs_final_un, dfs_agg_pure_covs, .f = function(x,y){
                                                         rdrobust(  y = y$median_sale_amount,
                                                                    x = y$votes_pct_against,
                                                                    c = cutoff,
@@ -498,9 +503,16 @@ g_p_regs <- purrr::map2(covs_final, dfs_agg_pure_covs, .f = function(x,y){
                                                                      select(x) ,
                                                                    all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
 })
-
 tes_g_p <- te_tables(g_p_regs)
 plot_te(tes_g_p, title = "T.E Estimates: Uncontaminated voting data")
 
-# using median_sale_amount_per_sq_foot
+# bandwidth
+purrr::walk2(g_p_regs, names(g_p_regs), ~print(paste0("Eff. Bandwidth (h) for ", .y, ": " , round(.x$bws[1,],1))))
+purrr::walk2(g_p_regs, names(g_p_regs), ~print(paste0("Bias Bandwidth (b) for ", .y, ": " , round(.x$bws[2,],1))))
 
+# observations
+purrr::walk2(g_p_regs, names(g_p_regs), ~print(paste0("Eff. Observations for ", .y, ": " , sum(.x$N_h))))
+purrr::walk2(g_p_regs, names(g_p_regs), ~print(paste0("Total Observations for ", .y, ": " , sum(.x$N))))
+
+# output for paper draft 
+write.csv(tes_g_p, paste0(tables, "/tes_g_p.csv"), row.names = FALSE)

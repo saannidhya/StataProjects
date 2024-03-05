@@ -131,10 +131,10 @@ find_covs_sign <- function(df, y, covs_list, sign = c("positive","negative")){
   
 }
 
-winsorize_data <- function(datasets, y, lower = 0.01, upper = 0.99){
+winsorize_data <- function(datasets, y, lower = 0.01, upper = 0.99, na.rm = FALSE){
   purrr::map(datasets, function(x){
-    lower_bound <- quantile(x[[y]], lower)
-    upper_bound <- quantile(x[[y]], upper) 
+    lower_bound <- quantile(x[[y]], lower, na.rm = na.rm)
+    upper_bound <- quantile(x[[y]], upper, na.rm = na.rm) 
     return(x[x[[y]] > lower_bound & x[[y]] < upper_bound, ])
   })
 }

@@ -41,8 +41,8 @@ dens_test$test$p_jk
 # roads_and_census %>% filter(votes_pct_for == dp[2]) %>% View()
 
 # range of p-vals after introducing outcome  variables
-purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_against, c = cutoff, massPoints = FALSE)$test$p_jk) %>% min() %>% round(2)
-purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_against, c = cutoff, massPoints = FALSE)$test$p_jk) %>% max() %>% round(2)
+purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_against, c = cutoff, massPoints = FALSE)$test$p_jk)[4:14] %>% min() %>% round(2)
+purrr::map_dbl(dfs_agg, ~ rddensity::rddensity(X = .x$votes_pct_against, c = cutoff, massPoints = FALSE)$test$p_jk)[4:14] %>% max() %>% round(2)
 
 
 # Mcrary test

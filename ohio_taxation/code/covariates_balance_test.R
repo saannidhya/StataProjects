@@ -20,6 +20,8 @@ plots <- paste0(data,"/outputs/plots")
 # running data setup code
 source(paste0(code,"/housing_data_setup.R"))
 # source(paste0(code,"/employment_data_setup.R"))
+# running reg discontinuity with covs for bandwidth and selected covariates info
+source(paste0(code,"/road_spending_reg_discontinuity_agg_w_covariates.R"))
 
 # list of covariates
 covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
@@ -54,13 +56,20 @@ purrr::walk(covs_list, .f = function(var) {
 #============================================================================================================#
 
 #=======================================#
+# Love plot
+#=======================================#
+bal.plot(roads_and_census, var.name = "votes_pct_against", covs = "pop", group = "treated", type = "histogram")
+# roads_and_census$
+
+#=======================================#
 # Using matching techniques
 #=======================================#
+  
 m.out <- MatchIt::matchit(formula = treated ~ pop + childpov + poverty + pctwithkids + pctsinparhhld + pctnokids + pctlesshs + 
                               pcthsgrad + pctsomecoll + pctbachelors + pctgraddeg + unemprate + medfamy + pctrent + pctown + 
                               pctlt5 + pct5to17 + pct18to64 + pct65pls + pctwhite + pctblack + pctamerind + pctapi + pctotherrace + 
                               pctmin + raceherfindahl + pcthisp + pctmarried + pctnevermarr + pctseparated + pctdivorced + lforcepartrate + incherfindahl,
-                            data = roads_and_census, method = 'nearest', estimand = "ATT")
+                            data = roads_and_census_2, method = 'nearest', estimand = "ATT")
 
 summary(m.out)
 bal_tab = bal.tab(m.out, un = T)
@@ -110,21 +119,51 @@ weighted_roads_and_census <- roads_and_census %>% mutate(weights = w.out$weights
 roads_and_census_means <-   roads_and_census %>%
   mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0)) %>%
   group_by(treated) %>%
-  summarize(across(-c(tendigit_fips, year, tendigit_fips_year, tax_type, purpose2, description, 
-                      votes_pct_for, votes_pct_for_cntr, votes_against, votes_for), 
+  summarize(across(-c(tendigit_fips, year, taxtype, purpose2, description, 
+                      votes_pct_for, votes_pct_for_cntr, votesagainst, votesfor), 
                    ~mean(.x, na.rm=TRUE) ))
 
 
-t_tests <- purrr::map(.x = col_list[col_list != c("median_sale_amount", "median_ln_sale_amount", "inctaxrate")], 
-                      .f = ~ t_test(df = roads_and_census, 
-                                    var = .x)) %>% 
-            bind_rows() 
+# t_tests <- purrr::map(.x = col_list[col_list != c("median_sale_amount", "median_ln_sale_amount", "inctaxrate")], 
+#                       .f = ~ t_test(df = roads_and_census, 
+#                                     var = .x)) %>% 
+#             bind_rows() 
 
+# column names renaming list for graphical purposes
+new_names <- c(pop = "Population", poverty = "Poverty Rate", pctmin = "Minority Rate", medfamy = "Median Family Income", 
+               pct18to64 = "% 18-64 Age Group", pctsinparhhld = "% Households with Children under 18", pctlt5 = "% of population under 5",
+               pctrent = "% Renters", pctlesshs = "% Less than High School Education", pctwhite = "% White", pctwithkids = "% With Kids",
+               pctblack = "% Black",  pctapi = "% Asian & Pacific Islander", incherfindahl = "Income Heterogeneity Index",
+               pct5to17 = "% 5-17 Age Group", raceherfindahl = "Race Heterogeneity Index",
+               pcthsgrad = "% did not graduate High-School", pctnokids = "% with No Kids", 
+               pctseparated = "% Separated", childpov = "% Children below poverty rate", unemprate = "Unemployment Rate",
+               pctown = "% Homeowners", pctamerind = "% American Indian",
+               pctotherrace = "% Other Races", pctmarried = "% Married", treated = "treated")
 
+# rows should not contain NA values, keep within effective bandwidth
+chr_lst <- unique(flatten_chr(covs_final))
+roads_and_census_2 <- roads_and_census %>% drop_na()  %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) 
 
-covs_bal_tab <- bal.tab(roads_and_census %>% select(col_list[col_list != c("median_sale_amount", "median_ln_sale_amount", "inctaxrate")]),
-                        treat = roads_and_census$treated)
-love.plot(covs_bal_tab, thresholds = 0.1)
+roads_and_census_3 <- roads_and_census_2 %>% select(chr_lst[chr_lst != "pctsomecoll"], treated) %>% 
+  rename_with(~new_names[.x], .names = chr_lst[chr_lst != "pctsomecoll"])
+
+covs_bal_tab <- bal.tab(roads_and_census_3 %>% select(-treated) %>% 
+                          rename(),
+                        treat = roads_and_census_3$treated)
+love.plot(covs_bal_tab, thresholds = 0.5, colors = c("#1e90ff"))
+
+#  standardize variables
+roads_and_census_std <- roads_and_census_2 %>% mutate(across(chr_lst, ~ (.-mean(.))/sd(.)))
+
+# group by treated and the compute mean and standard deviation. Transpose the table
+roads_and_census_std %>% group_by(treated) %>% summarize(across(chr_lst, list(mean = ~mean(., na.rm = TRUE), 
+                                                                      sd = ~sd(., na.rm = TRUE))) ) %>% 
+  pivot_longer(cols = -treated, names_to = "variable", values_to = "value") %>% 
+  pivot_wider(names_from = treated, values_from = value, names_prefix = "treated_") %>%
+  mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""),
+         std_mean_diff = treated_1 - treated_0)
+
 
 # th <- roads_and_census %>% filter(treated == 1) %>% select(pctlesshs) %>% pull() 
 # 
@@ -141,6 +180,8 @@ love.plot(covs_bal_tab, thresholds = 0.1)
 
 colnames(roads_and_census)
 
+roads_and_census %>% View()
+
 # global: aggregate
 means_global_agg <- roads_and_census %>% select(all_of(covs_list)) %>%
   summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
@@ -149,7 +190,7 @@ means_global_agg <- roads_and_census %>% select(all_of(covs_list)) %>%
   mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", "")) 
 means_global_agg
 # global: passed and failed
-means_global_div <- roads_and_census %>% select(treated, all_of(covs_list)) %>%
+means_global_div <- roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>% View()
   group_by(treated) %>%
   summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                       sd = ~sd(., na.rm = TRUE))), count = n()) %>%
@@ -158,9 +199,12 @@ means_global_div <- roads_and_census %>% select(treated, all_of(covs_list)) %>%
   mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
 means_global_div %>% tail()
 
+# average bandwidth length (from t+0 to t+10)
+avg_bw <- mean(map_dbl(gs[4:length(gs)], ~round(.x$bws[1,],1)[[1]]))
+
 # effective 1: agg
 means_eff_agg <-   roads_and_census %>% select(votes_pct_for, all_of(covs_list)) %>%
-    filter(between(votes_pct_for, 45, 55)) %>% select(-votes_pct_for) %>%
+    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_for) %>%
     summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                         sd = ~sd(., na.rm = TRUE))), count = n()) %>%
     pivot_longer(cols = everything(), names_to = "variable", values_to = "effective_value") %>% 
@@ -168,7 +212,7 @@ means_eff_agg <-   roads_and_census %>% select(votes_pct_for, all_of(covs_list))
 means_eff_agg  %>% tail()
 # effective 1: passed and failed
 means_eff_div <-   roads_and_census %>% select(treated, votes_pct_for, all_of(covs_list)) %>%
-    filter(between(votes_pct_for, 45, 55)) %>% select(-votes_pct_for) %>%
+    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_for) %>%
     group_by(treated) %>%
     summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                         sd = ~sd(., na.rm = TRUE))), count = n()) %>%
@@ -193,17 +237,36 @@ add_parentheses <- function(x, stat) {
 
 # exporting tbl1 as csv
 tbl1 %>% 
-  filter(variable %in% c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5", "count")) %>%
+  # filter(variable %in% c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5", "count")) %>%
+  filter(variable %in% unique(flatten_chr(covs_final))) %>%
   mutate(across(where(is.numeric), ~round(., 2))) %>%
   relocate(variable, statistic, everything()) %>%
   select(-effective_value) %>%
   rename(`Global: Full Sample` = global_value, `Global: Failed levies` = global_treated_0, `Global: Passed levies` = global_treated_1,
          `Eff: Passed levies` = effective_treated_1, `Eff: Failed levies` = effective_treated_0)  %>%
-  rowwise() %>%
-  mutate(across(where(is.numeric), ~add_parentheses(., statistic)))  %>%
+  rowwise() %>% 
+  # mutate(across(where(is.numeric), ~add_parentheses(., statistic)))  %>%
   ungroup() %>%
-  write.csv(paste0(tables,"/tbl1.csv"), row.names = FALSE)
+  write.csv(paste0(tables,"/covar_bal_tab.csv"), row.names = FALSE)
+
+# mean/median/sd vote share
+roads_and_census$votes_pct_against %>% mean %>% round
+roads_and_census$votes_pct_against %>% median %>% round
+roads_and_census$votes_pct_against %>% sd %>% round
+# mean/median/sd vote share excluding The Great Recession years (2008-2009)
+roads_and_census %>% filter(year != 2008 & year != 2009) %>% pull(votes_pct_against) %>% mean %>% round
+roads_and_census %>% filter(year != 2008 & year != 2009) %>% pull(votes_pct_against) %>% median %>% round
+roads_and_census %>% filter(year != 2008 & year != 2009) %>% pull(votes_pct_against) %>% sd %>% round
+
+# mean/median population with treated as the grouping variable and observations only within bandwidth of cutoff
+pop <- roads_and_census %>% filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% 
+  group_by(treated) %>% 
+  summarize(mean_pop = mean(pop), median_pop = median(pop), sd_pop = sd(pop)) 
+pop$mean_pop[2] - pop$mean_pop[1] # difference in means
 
 
 
-
+medfamy <- roads_and_census %>% filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% filter(!is.na(medfamy)) %>%
+  group_by(treated) %>% 
+  summarize(mean_medfamy= mean(medfamy), median_medfamy = median(medfamy), sd_pop = sd(medfamy)) 
+medfamy$mean_medfamy[2] - medfamy$mean_medfamy[1] # difference in means

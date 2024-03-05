@@ -24,7 +24,7 @@ source(paste0(code,"/housing_data_setup.R"))
 # input dataset. This should be a list of t-2 to t+10 datasets (can be employment, fars or housing)
 # E.g. dfs_agg_covs, dfs_emp_agg3
 # df = dfs_emp_agg3
-df = dfs_agg_covs
+# df = dfs_agg_covs
 
 # take all covariate names 
 covariate_list <- c("pctnokids" ,"pctgraddeg" ,"pctlt5" ,"pctblack" ,"raceherfindahl" ,"pctdivorced" ,"childpov" ,
@@ -36,20 +36,22 @@ covariate_list <- c("pctnokids" ,"pctgraddeg" ,"pctlt5" ,"pctblack" ,"raceherfin
 # importing roads and census dataset. Selecting only renewals and levies that do not last forever. Separating into treatment and control groups.
 roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
   select(-matches("yr_t_")) %>%
-  select(-c("inctaxrate")) %>%
   filter(description == "R" & duration != 1000) %>%
   janitor::clean_names() %>%
-  mutate(treated = if_else(votes_pct_for >= cutoff, 1, 0))    
+  mutate(treated = if_else(votes_pct_against >= cutoff, 1, 0))    
 
 #|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
 # running covariate discontinuity regressions  ----
 #|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
 
-cv_regs <- purrr::map(covariate_list, 
-           ~ rdrobust::rdrobust(y = roads_and_census %>% select(.x) %>% pull(), x = roads_and_census$votes_pct_for, c = cutoff, all = TRUE))
-names(cv_regs) <- covariate_list  
+cv_regs <- purrr::map(chr_lst, 
+           ~ rdrobust::rdrobust(y = roads_and_census %>% select(.x) %>% pull(), x = roads_and_census$votes_pct_against, c = cutoff, all = TRUE))
+names(cv_regs) <- chr_lst  
 
-te_cv_regs <- te_tables(cv_regs)
+te_cv_regs <- te_tables(cv_regs) %>% arrange(pval)
+sort(te_cv_regs$pval)
+min(te_cv_regs$pval)
+max(te_cv_regs$pval)
 # View(te_cv_regs)
 
 write.csv(select(te_cv_regs, -c("year", "ord")), paste0(tables, "/covariate_discontinuity_test.csv"), row.names = FALSE)
