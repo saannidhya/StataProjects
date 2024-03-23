@@ -17,6 +17,12 @@ code <- paste0(root,"/code")
 source(paste0(code,"/housing_data_setup.R"))
 source(paste0(code,"/utility_functions.R"))
 
+covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
+               "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
+               "pct5to17" ,"pct18to64" ,"pct65pls" ,"pctwhite" ,"pctblack" ,"pctamerind" ,"pctapi" ,"pctotherrace" ,"pctmin" ,"raceherfindahl" ,
+               "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl")
+
+
 #=================================================================================#
 # Aggregate datasets without covariates ----
 #=================================================================================#
@@ -58,27 +64,8 @@ plot_te(tes_urb_ua)
 plot_te(tes_rur_cd)
 plot_te(tes_rur_ua)
 
-# find_covs <- function(df, y, covs_list)
+tes_urb_ua[4:14,"robust_coef"] %>% pull %>% mean / map_dbl(dfs_agg_urb_ua, ~median(.x$median_sale_amount))[4:14] %>% mean
 
-
-
-
-# regs_urb_cd$housing_roads_census_t_plus_6_matches$
-
-# summary(regs_urb_cd$housing_roads_census_t_plus_4_matches)
-# regs_urb_cd$housing_roads_census_t_plus_4_matches$Estimate
-# 
-# dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches$votes_pct_for_cntrd <- dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches$votes_pct_for - cutoff
-# 
-# dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches <- mutate(dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches,
-#                                                                        treated = if_else(votes_pct_for_cntrd >= 0, 1, 0))
-# 
-# dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches %>% View()
-# 
-# dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches$treated
-# 
-# rr <- lm(data = dfs_agg_urb_cd$housing_roads_census_t_plus_4_matches, formula = median_sale_amount ~ votes_pct_for_cntrd + treated + treated*votes_pct_for_cntrd)
-# summary(rr)
 
 #=================================================================================#
 # Aggregate datasets with covariates ----
@@ -109,53 +96,49 @@ covs_final_rur_cd <- purrr::map(dfs_agg_covs_rur_cd, ~find_covs(.x, y = "median_
 covs_final_rur_ua <- purrr::map(dfs_agg_covs_rur_ua, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
 
 
-covs_list_names <- gsub(pattern = "housing_roads_census", replacement = "covs_list", x = names(dfs_agg_covs))
-covs_list_names_clean <- gsub(pattern = "_matches", replacement = "", x =covs_list_names)
-
-# creating a list that contains all the covariate lists from t - 3 to t + 10
-selected_covs_lists = mget(covs_list_names_clean)
-
-covs_final_urb_cd$housing_roads_census_t_minus_1_matches
-covs_final_urb_cd$housing_roads_census_t_minus_2_matches[!covs_final_urb_cd$housing_roads_census_t_minus_2_matches %in% c("pctown","pctmin")]
-covs_final_urb_cd$housing_roads_census_t_minus_3_matches[!covs_final_urb_cd$housing_roads_census_t_minus_2_matches %in% c("pctown","pctmin")]
-covs_final_urb_cd$housing_roads_census_t_plus_0_matches[!covs_final_urb_cd$housing_roads_census_t_minus_2_matches %in% c("pctown","pctmin")]
-covs_final_urb_cd$housing_roads_census_t_plus_1_matches[!covs_final_urb_cd$housing_roads_census_t_minus_2_matches %in% c("pctown","pctmin")]
-
-covs_final_urb_cd2 <- purrr::map(covs_final_urb_cd, ~ .x[!(.x %in% c("pctown","pctmin","pctnokids",NA))])
-
 # running regressions with covariates
-regs_covs_urb_cd <- purrr::map2(dfs_agg_covs_urb_cd, covs_final_urb_cd2 ,
-                                function(x, y){
-                                  rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_pct_against, 
-                                                     c = cutoff, 
-                                                     # covs = x %>% select(y),
-                                                     covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
-                                                     all = TRUE)
-                                }
-            )
-tes_covs_urb_cd <- te_tables(regs_covs_urb_cd) 
-plot_te(tes_covs_urb_cd)
-
-regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua ,
+regs_covs_urb_cd <- purrr::map2(dfs_agg_covs_urb_cd, covs_final_urb_cd ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
                                                      x = x$votes_pct_against, 
                                                      c = cutoff, 
                                                      # covs = x %>% select(y),
                                                      # covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
-                                                     covs =  x %>% select(c("pctmin", "pctown")),
+                                                     all = TRUE)
+                                }
+            )
+tes_covs_urb_cd <- te_tables(regs_covs_urb_cd) 
+plot_te(tes_covs_urb_cd)
+
+# covs_final_urb_ua2 <- covs_final_urb_ua
+# covs_final_urb_ua2$housing_roads_census_t_minus_3_matches <- c("medfamy")
+# covs_final_urb_ua2$housing_roads_census_t_minus_2_matches <- c("medfamy")
+# covs_final_urb_ua2$housing_roads_census_t_minus_1_matches <- c("medfamy")
+# covs_final_urb_ua2$housing_roads_census_t_plus_0_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+# covs_final_urb_ua2$housing_roads_census_t_plus_1_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+# covs_final_urb_ua2$housing_roads_census_t_plus_2_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+# covs_final_urb_ua2$housing_roads_census_t_plus_3_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+# covs_final_urb_ua2$housing_roads_census_t_plus_4_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+# covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+# covs_final_urb_ua2$housing_roads_census_t_plus_6_matches <- c("medfamy", "pctmin")
+# covs_final_urb_ua2$housing_roads_census_t_plus_7_matches <- c("medfamy", "pctmin")
+# covs_final_urb_ua2$housing_roads_census_t_plus_8_matches <- c("medfamy", "pctmin")
+# covs_final_urb_ua2$housing_roads_census_t_plus_9_matches <- c("medfamy", "pctmin")
+# covs_final_urb_ua2$housing_roads_census_t_plus_10_matches <- c("medfamy", "pctmin")
+regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua2 ,
+                                function(x, y){
+                                  rdrobust::rdrobust(y = x$median_sale_amount,
+                                                     x = x$votes_pct_against, 
+                                                     c = cutoff, 
+                                                     # covs = x %>% select(y),
+                                                     # covs =  x %>% select(c("pop")),
+                                                     covs =  x %>% select("medfamy"),
                                                      all = TRUE)
                                 }
 )
 tes_covs_urb_ua <- te_tables(regs_covs_urb_ua) 
-# plot_te(tes_urb_ua)
 plot_te(tes_covs_urb_ua)
-
-# lm_model <- map(dfs_agg_covs_urb_ua, ~ lm(.x$median_sale_amount ~ .x$votes_against + .x$pop + .x$poverty + .x$pctmin + .x$pctown) )
-# 
-# map(lm_model, vif)
-# map(lm_model, summary)
+tes_covs_urb_ua[4:14,"robust_coef"] %>% pull %>% mean / map_dbl(dfs_agg_covs_urb_ua, ~median(.x$median_sale_amount))[4:14] %>% mean
 
 regs_covs_rur_cd <- purrr::map2(dfs_agg_covs_rur_cd, covs_final_rur_cd ,
                                 function(x, y){
@@ -192,7 +175,6 @@ tes_covs_rur_ua <- tes_covs_rur_ua %>% mutate(cat = "rural")
 
 tes_covs_ua <- rbind(tes_covs_urb_ua, tes_covs_rur_ua) %>% mutate(ord = if_else(cat == "rural", ord - 0.15, ord + 0.15))
 
-
 ggplot(tes_covs_ua, aes(ord, robust_coef, color = cat)) +       
   geom_point(size = 3, shape = 19) +
   geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high, color = cat), 
@@ -203,7 +185,6 @@ ggplot(tes_covs_ua, aes(ord, robust_coef, color = cat)) +
     y = "Treatment Effect",
     color = "Position",
     title = "Treatment Effects: Urban vs Rural"
-    # caption = "Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information.Note: Here is where you can add your notes or source information."
   ) +
   theme_minimal() +
   theme(
@@ -214,7 +195,142 @@ ggplot(tes_covs_ua, aes(ord, robust_coef, color = cat)) +
     panel.grid.minor.y = element_blank(),
     legend.title = element_blank()
   ) + 
-  scale_x_continuous(breaks = c(-3:10))
+  scale_x_continuous(breaks = c(-3:10)) +
+  ylim(c(NA, 50000)) # Add this line
 
 
+#=================================================================================#
+# winsorizing the data after identifying urban and rural ----
+#=================================================================================#
 
+
+housing_dfs_twp <- purrr::map(map(housing_dfs, ~.x %>% clean_names), ~ .x %>%
+                            left_join(twp_places_urban, by = "tendigit_fips") %>%
+                            mutate(urban_flg_cd = if_else(is.na(clusterdummy), 0, clusterdummy),
+                                   urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy))) 
+
+# splitting the datasets into urban and rural, by both: clusterdummy and uadummy
+housing_dfs_twp_urb_cd <- purrr::map(housing_dfs_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)) )
+housing_dfs_twp_urb_ua <- purrr::map(housing_dfs_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)) )
+housing_dfs_twp_rur_cd <- purrr::map(housing_dfs_twp, ~ .x %>% filter(urban_flg_cd == 0) %>% select(-(urban_flg_ua)) )
+housing_dfs_twp_rur_ua <- purrr::map(housing_dfs_twp, ~ .x %>% filter(urban_flg_ua == 0) %>% select(-(urban_flg_cd)) )
+
+# winsorizing the data by each urban and rural category
+housing_dfs_twp_urb_cd_w <- winsorize_data(housing_dfs_twp_urb_cd, "sale_amount", na.rm = TRUE)
+housing_dfs_twp_urb_ua_w <- winsorize_data(housing_dfs_twp_urb_ua, "sale_amount", na.rm = TRUE)
+housing_dfs_twp_rur_cd_w <- winsorize_data(housing_dfs_twp_rur_cd, "sale_amount", na.rm = TRUE)
+housing_dfs_twp_rur_ua_w <- winsorize_data(housing_dfs_twp_rur_ua, "sale_amount", na.rm = TRUE)
+
+
+housing_dfs_twp_w <- winsorize_data(housing_dfs_twp, "sale_amount", na.rm = TRUE)
+
+map(housing_dfs_twp_urb_ua_w, ~summary(.x$sale_amount))
+map(housing_dfs_twp_rur_ua_w, ~summary(.x$sale_amount))
+
+# cleaning the datasets
+dfs_twp_urb_ua_w <- purrr::map(housing_dfs_twp_urb_ua_w, ~.x %>% 
+                    filter(description == "R" & duration != "1000") %>%
+                    drop_na(sale_amount) %>%
+                    mutate(votes_pct_against = 100 - votes_pct_for) %>%
+                    mutate(treated = if_else(votes_pct_against > cutoff, 1, 0),
+                           ln_sale_amount = log(sale_amount))            
+)
+dfs_twp_rur_ua_w <- purrr::map(housing_dfs_twp_rur_ua_w, ~.x %>% 
+                    filter(description == "R" & duration != "1000") %>%
+                    drop_na(sale_amount) %>%
+                    mutate(votes_pct_against = 100 - votes_pct_for) %>%
+                    mutate(treated = if_else(votes_pct_against > cutoff, 1, 0),
+                           ln_sale_amount = log(sale_amount))            
+)
+
+# aggregating the datasets (without and with covariates)
+yr_t_names <- dfs_twp_urb_ua_w$housing_roads_census_t_plus_10_matches %>% select(starts_with("yr_t_")) %>% colnames() %>% sort()
+dfs_agg_urb_ua_w <- purrr::map2(.x = dfs_twp_urb_ua_w, .y = yr_t_names, ~ .x %>% 
+                         drop_na(sale_amount) %>%
+                         group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_against) %>%
+                         rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
+                         summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
+                                   median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))              
+)
+dfs_agg_covs_urb_ua_w <- purrr::map(.x = dfs_agg_urb_ua_w, ~ .x %>% 
+                             dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
+                             ungroup()
+)
+dfs_agg_rur_ua_w <- purrr::map2(.x = dfs_twp_rur_ua_w, .y = yr_t_names, ~ .x %>% 
+                                  drop_na(sale_amount) %>%
+                                  group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_against) %>%
+                                  rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
+                                  summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
+                                            median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))              
+)
+dfs_agg_covs_rur_ua_w <- purrr::map(.x = dfs_agg_rur_ua_w, ~ .x %>% 
+                                      dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
+                                      ungroup()
+)
+
+# running regressions without covariates
+regs_urb_ua_w <- purrr::map(dfs_agg_urb_ua_w, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+tes_urb_ua_w <- te_tables(regs_urb_ua_w)
+plot_te(tes_urb_ua_w)
+mean(tes_urb_ua_w[4:14,"robust_coef"] %>% pull() ) / mean(map_dbl(dfs_agg_urb_ua_w, ~median(.x$median_sale_amount))[4:14])
+
+regs_rur_ua_w <- purrr::map(dfs_agg_rur_ua_w, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+tes_rur_ua_w <- te_tables(regs_rur_ua_w)
+plot_te(tes_rur_ua_w)
+
+# running regressions with covariates
+regs_covs_urb_ua_w <- purrr::map2(dfs_agg_covs_urb_ua_w, covs_final_urb_ua ,
+                                function(x, y){
+                                  rdrobust::rdrobust(y = x$median_sale_amount,
+                                                     x = x$votes_pct_against, 
+                                                     c = cutoff, 
+                                                     # covs = x %>% select(y),
+                                                     # covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
+                                                     covs =  x %>% select(c("pctmin", "pctown")),
+                                                     all = TRUE)
+                                }
+)
+tes_covs_urb_ua_w <- te_tables(regs_covs_urb_ua_w)
+tes_covs_urb_ua_w[4:14,"robust_coef"] %>% pull %>% mean / map_dbl(dfs_agg_covs_urb_ua_w, ~median(.x$median_sale_amount))[4:14] %>% mean
+
+corr_mat_list <- map(dfs_agg_covs_urb_ua[4:14], ~ cor(.x %>% 
+           select("median_sale_amount", covs_my_list)))
+
+plot_te(tes_covs_urb_ua_w)
+
+cor(dfs_agg_covs_urb_ua_w$housing_roads_census_t_plus_4_matches %>% select(-tendigit_fips, -vote_year, -votes_pct_against, -median_sale_amount, -median_ln_sale_amount) %>% select(-contains("pct")), use = "complete.obs")
+
+v <- cor(dfs_agg_covs_urb_ua_w$housing_roads_census_t_plus_4_matches %>% 
+      select("median_sale_amount", covs_my_list), 
+    use = "complete.obs")
+z <- cor(dfs_agg_covs_urb_ua_w$housing_roads_census_t_plus_4_matches %>% 
+           select("votes_pct_against", covs_my_list), 
+         use = "complete.obs")
+z2 <- cor(dfs_agg_covs_urb_ua_w$housing_roads_census_t_plus_4_matches %>% 
+           select("votes_pct_against", covs_list), 
+         use = "complete.obs")
+
+
+map(corr_mat_list ,corrplot::corrplot(~ .x ))
+
+corrplot::corrplot(v, type = "lower", method = "number", number.digits = 1)
+corrplot::corrplot(z, type = "lower", method = "number", number.digits = 1)
+corrplot::corrplot(z2, type = "lower", method = "number", number.digits = 1)
+
+
+regs_covs_urb_ua_w2 <- purrr::map2(dfs_agg_covs_urb_ua_w, covs_final_urb_ua ,
+                                  function(x, y){
+                                    rdrobust::rdrobust(y = x$median_sale_amount,
+                                                       x = x$votes_pct_against, 
+                                                       c = cutoff, 
+                                                       # covs = x %>% select(y),
+                                                       # covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
+                                                       covs =  x %>% select(covs_my_list, "pctgraddeg"),
+                                                       all = TRUE)
+                                  }
+)
+tes_covs_urb_ua_w2 <- te_tables(regs_covs_urb_ua_w2)
+plot_te(tes_covs_urb_ua_w2)
+
+
+tes_covs_urb_ua_w2[4:14,"robust_coef"] %>% pull %>% mean / map_dbl(dfs_agg_covs_urb_ua_w, ~median(.x$median_sale_amount))[4:14] %>% mean
