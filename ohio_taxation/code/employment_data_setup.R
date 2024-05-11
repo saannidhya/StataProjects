@@ -8,6 +8,8 @@
 #           07/26/2023: adding code to create employment/pop and wage/pop data
 #           08/13/2023: adding code to create firm creation and destruction rates
 #           11/23/2023: added some comments. Commented some code out
+#           05/02/2024: updated the code to directly load cleaned employment dataset (check git for prev versions)
+#           05/03/2024: generated aggregate employment data by fips, year and quarter using cleaned employment dataset
 #==========================================================================================================#
 
 # specify the set up location
@@ -16,6 +18,7 @@ data_emp <- paste0(root,"/ohio_employment/data")
 code_emp <- paste0(root,"/ohio_employment/code")
 data_tax <- paste0(root,"/ohio_taxation/data")
 code_tax <- paste0(root,"/ohio_taxation/code")
+shared_odjfs <- "//cobshares.uccob.uc.edu/economics$/Julia/roads/odjfs"
 
 # loading packages
 packages <- c("Rbearcat", "tidyverse", "lubridate", "haven", "stringr", "here", "knitr", "janitor", "scales","data.table","rdrobust")
@@ -28,122 +31,33 @@ check_and_install <- function(pkg){
 lapply(packages, check_and_install)
 
 #================================================================#
-#  loading employment dataset (with geocoded addresses) ----
-#================================================================#
-
-employment_df <- haven::read_sas(paste0(data_emp,"/odjfs_employment_df.sas7bdat")) %>%
-                  janitor::clean_names()  %>% 
-                  mutate(persons = (m1 + m2 + m3)/3, 
-                         unique_id = paste0(pad,uin,rep_unit))
-
-
-# unique_id column has problems because when you paste the three cols, some unique_ids tend to overlap i.e. 0 + 10 + 1 = 0 + 1 + 10 = 0101 
-
-employment_df %>% select(meei) %>% unique()
-employment_df
-#================================================================#
 #  importing roads_and_census dataset ----
 #================================================================# 
 roads_and_census <- haven::read_dta(paste0(data_tax,"/roads_and_census.dta")) %>%
-                      janitor::clean_names() 
-  
+  filter(description == "R" & duration != "1000") %>%
+  janitor::clean_names() %>%
+  mutate(votes_pct_against = 100 - votes_pct_for) %>%
+  mutate(treated = if_else(votes_pct_against > cutoff, 1, 0)) 
+
 #================================================================#
 #  importing census only dataset ----
 #================================================================# 
 # covariates list 
-vars_list <- c("TENDIGIT_FIPS", "year" ,"TENDIGIT_FIPS_year" ,"pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
+vars_list <- c("TENDIGIT_FIPS", "year"  ,"pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
                "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
                "pct5to17" ,"pct18to64" ,"pct65pls" ,"pctwhite" ,"pctblack" ,"pctamerind" ,"pctapi" ,"pctotherrace" ,"pctmin" ,"raceherfindahl" ,
-               "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl", "inctaxrate")
+               "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl")
 # loading census df
-census <- haven::read_dta(paste0(data,"/cosub_place_panel_property2_9018.dta")) %>%
+census <- haven::read_dta(paste0(data_tax,"/census_property_9021.dta")) %>%
   dplyr::select(vars_list) %>%
   janitor::clean_names()
 
-
 #================================================================#
-#  Data checks ----
-#================================================================#
-# df is your data frame
-duplicate_rows <- employment_df[duplicated(employment_df[, c("year", "quarter", "pad", "uin", "rep_unit")]) | 
-                       duplicated(employment_df[, c("year", "quarter", "pad", "uin", "rep_unit")], fromLast = TRUE),]
-
-# print duplicate rows
-# View(duplicate_rows)
-
-# Note: for year 2019 and quarter 3 & 4, some of the observations were assigned two different geocodes (long and lat) by ArcGIS.
-#       I do not know why this might be (54 observations)
-# Update: This happened because master dataset from SAS was appending Q3 and Q4 for 2019 twice. This has been changed in SAS master dataset.
-#         However, because ArcGIS geocoding was done on old dataset, odjfs_employment_df.sas7bdat contains these duplicates.
-# How I handled this: looked at duplicates line by line for Q3, Q4 2019 and then checked if it had a corresponding uins
-# in 2019Q2, 2019Q1 etc.
-
-# employment_df %>% filter((uin == "0831615") & (rep_unit == "00155")) %>% View()
-## need to remove the following observations:
-#================================================================#
-# 1.  uin == 1425962, rep == 00000, tendigit_fips == 3915326166
-# 2.  uin == 1156401, rep == 00000, tendigit_fips == 3909955118
-# 3.  uin == 0607666, rep == 00000, tendigit_fips == 3902940824
-# 4.  uin == 0831615, rep == 00155, tendigit_fips == 3911381494
-# 5.  uin == 1657015, rep == 00004, tendigit_fips == 3915901336 (no prev quarter to compare with, arbitarily chose 3915901336 to remove)
-# 6.  uin == 1543034, rep == 00019, tendigit_fips == 3904541740
-# 7.  uin == 0773502, rep == 00000, tendigit_fips == 3904981242
-# 8.  uin == 1722768, rep == 00000, tendigit_fips == 3909344856  (no prev quarter to compare with, arbitarily chose 3909344856 to remove)
-# 9.  uin == 0981827, rep == 00000, tendigit_fips == 3909372067
-# 10. uin == 1316409, rep == 00000, tendigit_fips == 3904918000
-# 11. uin == 1457637, rep == 00000, tendigit_fips == 3900551688
-# 12. uin == 0957724, rep == 00000, tendigit_fips == 3904983342
-# 13. uin == 1715275, rep == 00000, tendigit_fips == 3915508056
-# 14. uin == 1478390, rep == 00000, tendigit_fips == 3901384602
-# 15. uin == 0733251, rep == 00103, tendigit_fips == 3903571416
-# 16. uin == 1438339, rep == 00000, tendigit_fips == 3914779674
-# 17. uin == 0716484, rep == 00000, tendigit_fips == 3904983342
-# 18. uin == 1248178, rep == 00000, tendigit_fips == 3915528098 
-# 19. uin == 1471008, rep == 00000, tendigit_fips == 3915528098 
-# 20. uin == 1688663, rep == 00000, tendigit_fips == 3903766656
-# 21. uin == 1495014, rep == 00034, tendigit_fips == 3915580892
-# 22. uin == 1457285, rep == 00000, tendigit_fips == 3903504500
-# 23. uin == 1512191, rep == 00000, tendigit_fips == 3916521238
-# 24. uin == 0726873, rep == 00122, tendigit_fips == 3903537240 (prev quarters were unreliable, arbitarily chose 3909344856 to remove)
-# 25. uin == 0726873, rep == 00131, tendigit_fips == 3906115000
-# 26. uin == 1495014, rep == 00003, tendigit_fips == 3905704220
-# These observations were removed after checking year 2019 quarter 3,4 values for the specific uins with quarters 1, 2
+#  loading cleaned employment dataset (with geocoded addresses) ----
 #================================================================#
 
-
-# Create a data frame with the above 26 conditions for removal
-remove_df <- data.frame(
-  uin = c("1425962", "1156401", "0607666", "0831615", "1657015", "1543034", "0773502", "1722768", "0981827", 
-          "1316409", "1457637", "0957724", "1715275", "1478390", "0733251", "1438339", "0716484", "1248178", 
-          "1471008", "1688663", "1495014", "1457285", "1512191", "0726873", "0726873", "1495014"),
-  rep_unit = c('00000', '00000', '00000', '00155', '00004', '00019', '00000', '00000', '00000', 
-          '00000', '00000', '00000', '00000', '00000', '00103', '00000', '00000', '00000', 
-          '00000', '00000', '00034', '00000', '00000', '00122', '00131', '00003'),
-  tendigit_fips = c(3915326166, 3909955118, 3902940824, 3911381494, 3915901336, 3904541740, 
-                    3904981242, 3909344856, 3909372067, 3904918000, 3900551688, 3904983342, 
-                    3915508056, 3901384602, 3903571416, 3914779674, 3904983342, 3915528098, 
-                    3915528098, 3903766656, 3915580892, 3903504500, 3916521238, 3903537240, 
-                    3906115000, 3905704220)
-)
-
-# Remove the duplicate rows
-employment_df2 <- anti_join(employment_df, remove_df, by = c("uin", "rep_unit", "tendigit_fips"))
-
-
-# num observations removed
-nrow(employment_df) -  nrow(employment_df2)
-
-
-# if we check duplicates now: 
-# employment_df2[duplicated(employment_df2[, c("year", "quarter", "pad", "uin", "rep_unit")]) | 
-#                 duplicated(employment_df2[, c("year", "quarter", "pad", "uin", "rep_unit")], fromLast = TRUE),]
-
-# no duplicates left now based on year, quarter, pad, uin, rep_unit
-
-# View(employment_df2)
-
-# haven::write_dta(employment_df2, "H:/Julia/roads/odjfs/odjfs_employment_df2.dta")
-
+employment_df2 <- haven::read_dta(paste0(data_tax,"/employment/employment_data_cleaned.dta"))
+  
 #===============================================#
 # Data Subsetting (take only relevant cols) ----
 #===============================================#
@@ -162,6 +76,8 @@ emp_df_agg_fips_yr_qtr <- emp %>%
             tot_persons = sum(persons, na.rm = TRUE)) # adding avg employees in all the establishments
 # emp_df_agg_fips_yr_qtr %>% View()
 
+# haven::write_dta(emp_df_agg_fips_yr_qtr, path = paste0(data_tax,"/employment/emp_df_agg_fips_yr_qtr.dta"))
+
 # Key note: for persons, whenever a time dimension collapses, we do avg, otherwise we do sum because persons are "stock", not "flow".
 
 
@@ -177,6 +93,10 @@ emp_df_agg_fips_yr <- emp_df_agg_fips_yr_qtr %>%
   summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
             avg_persons = round(mean(tot_persons, na.rm = TRUE)))
 
+# haven::write_dta(emp_df_agg_fips_yr, path = paste0(data_tax,"/employment/emp_df_agg_fips_yr.dta"))
+
+
+
 #============================================#
 # Data Quality Check (Ohio Time series) ----
 #============================================#
@@ -185,19 +105,23 @@ emp_df_agg_yr <- emp_df_agg_fips_yr %>%
   group_by(year) %>%
   summarize(tot_wages = sum(tot_wages, na.rm = TRUE),
             avg_persons = round(sum(avg_persons, na.rm = TRUE))) %>% ungroup() %>%
-  mutate(tot_wages = tot_wages/1000000000,
-         avg_persons = avg_persons/1000000) 
+  mutate(tot_wages_b = tot_wages/1000000000,
+         avg_persons_mm = avg_persons/1000000) # converting to billions and millions
 
-# ggplot(data = emp_df_agg_yr) +
-#   theme_minimal() +
-#   geom_rect(aes(xmin = 2008, xmax = 2009, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
-#   geom_rect(aes(xmin = 2019, xmax = 2021, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
-#   geom_line(mapping = aes(x = year, y = tot_wages)) 
-# ggplot(data = emp_df_agg_yr) +
-#   theme_minimal() +
-#   geom_rect(aes(xmin = 2008, xmax = 2009, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
-#   geom_rect(aes(xmin = 2019, xmax = 2021, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
-#   geom_line(mapping = aes(x = year, y = avg_persons))
+# generate a time series plot using ggplot with year in x axis and tot_wages and avg_persons in y axis
+ggplot(data = emp_df_agg_yr) +
+  theme_minimal() +
+  geom_rect(aes(xmin = 2008, xmax = 2009, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
+  geom_rect(aes(xmin = 2019, xmax = 2021, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
+  geom_line(mapping = aes(x = year, y = tot_wages_b)) +
+  labs(title = "Ohio Wages: 2006-2020", x = "Year", y = "Wages (in billions)")
+
+ggplot(data = emp_df_agg_yr) +
+  theme_minimal() +
+  geom_rect(aes(xmin = 2008, xmax = 2009, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
+  geom_rect(aes(xmin = 2019, xmax = 2021, ymin = -Inf, ymax = Inf), fill = "gray", alpha = 0.8) +
+  geom_line(mapping = aes(x = year, y = avg_persons_mm)) + 
+  labs(title = "Ohio Employment: 2006-2020", x = "Year", y = "Employment (in millions)")
   
 #============================================#
 # Data Aggregation (by Industry) ----
@@ -216,7 +140,8 @@ naics_df <- data.frame(
   `sector_title` = c("agriculture, forestry, fishing and hunting", "mining", "utilities", "construction", "manufacturing", "manufacturing", "manufacturing", "wholesale trade", "retail trade", "retail trade", "transportation and warehousing", "transportation and warehousing", "information", "finance and insurance", "real estate rental and leasing", "professional, scientific, and technical services", "management of companies and enterprises", "administrative and support and waste services", "educational services", "health care and social assistance", "arts, entertainment, and recreation", "accommodation and food services", "other services (except public administration)", "public administration")
 )
 
-emp_2dg <- emp2 %>% left_join(naics_df, by = "naics_2dg")
+emp_2dg <- emp2 %>% left_join(naics_df, by = "naics_2dg") %>% 
+  arrange(tendigit_fips, year, quarter)
 
 # emp_2dg %>% filter(is.na(sector_title)) # 999999 is naics code for unclassified companies i.e. companies who have not been assigned a NAICS code yet. Nothing we can do about these companies.
 
@@ -238,8 +163,8 @@ emp_agg_by_indstry_yr <- purrr::map(emp_agg_by_indstry_qtr, ~ .x %>%
 )
 
 # exporting industry-level employment datasets as Stata datasets
-purrr::map2(emp_agg_by_indstry_yr, names(emp_agg_by_indstry_yr), ~ haven::write_dta(.x, 
-                                                                  path = paste0(data_tax,"/employment/industry/df_emp_", .y, ".dta")))
+# purrr::map2(emp_agg_by_indstry_yr, names(emp_agg_by_indstry_yr), ~ haven::write_dta(.x, 
+#                                                                   path = paste0(data_tax,"/employment/industry/df_emp_", .y, ".dta")))
 
   
 #==========================================================#
@@ -280,38 +205,23 @@ emps <- purrr::map(yrs, ~ emp_df_agg_fips_yr %>%
                     select(-c(year))
 )
 names(emps) <- yrs
-
-
-dfs_emp_join <- purrr::map2(emps, yrs, function(x, y){
-  x %>% inner_join(roads_and_census, by = c("tendigit_fips", y)) 
+dfs_emp_agg <- purrr::map2(emps, yrs, function(x, y){
+  
+  x %>% inner_join(roads_and_census, by = c("tendigit_fips", y)) %>%
+    relocate(tendigit_fips, year, everything()) %>% 
+    select(-c(yrs[yrs != y], emp_flag)) %>%
+    ungroup()
 })
 
-# purrr::map_dbl(dfs_emp_agg, nrow)
-# purrr::map_dbl(dfs_agg, nrow)
-
-# View(dfs_emp_agg$yr_t_plus_2)
-# emp_df_agg_fips_yr %>% filter(tendigit_fips == 3900108350)
-max(roads_and_census$year)   
-
-#========================================#
-# |- Transforming outcome variables ----
-#========================================#
-# dfs_emp_agg2 <- purrr::map(dfs_emp_agg, ~ .x %>% 
-#                              mutate(ln_wages = log(tot_wages), ln_avg_persons = log(avg_persons)) %>%
-#                              filter(!(tot_wages == 0)) %>%
-#                              filter(!(avg_persons == 0))
-# )
-dfs_emp_agg <- purrr::map2(names(dfs_emp_join), dfs_emp_join, ~ .y %>% select(-starts_with("yr_t_"), .x) %>% 
-                              relocate(year, .after = tendigit_fips) %>% 
-                              relocate(.x, .after = year) %>% 
-                              ungroup()
+dfs_emp_ln_agg <- purrr::map(dfs_emp_agg, ~ .x %>%
+                             mutate(ln_wages = log(tot_wages), ln_avg_persons = log(avg_persons)) %>%
+                             filter(!(tot_wages == 0)) %>%
+                             filter(!(avg_persons == 0))
 )
-names(dfs_emp_agg) <- names(dfs_emp_join)
 
-# dfs_emp_agg$yr_t_plus_1 %>% View()
 # exporting dfs_emp_agg as Stata datasets
-purrr::map2(dfs_emp_agg, names(dfs_emp_agg), ~ haven::write_dta(.x, 
-                                           path = paste0(data_tax,"/employment/dfs_emp_agg_", .y, ".dta")))
+# purrr::map2(dfs_emp_agg, names(dfs_emp_agg), ~ haven::write_dta(.x, 
+#                                            path = paste0(data_tax,"/employment/dfs_emp_agg_", .y, ".dta")))
 
 
 #========================================================#
@@ -320,8 +230,8 @@ purrr::map2(dfs_emp_agg, names(dfs_emp_agg), ~ haven::write_dta(.x,
 # need population data from census (most matched: 20,313 out of 23,876. Few were NAs due to missing population information)
 emp_df_agg_fips_yr_per <- emp_df_agg_fips_yr %>% 
                               inner_join(census, by = c("tendigit_fips", "year")) %>%
-                              mutate(wages_per_cap = tot_wages/pop, emp_per_cap = avg_persons/pop) %>% 
-                              select(c("tendigit_fips", "year", "tot_wages", "pop", "avg_persons", "wages_per_cap", "emp_per_cap")) %>%
+                              mutate(wages_per_cap = tot_wages/pop, emp_per_cap = avg_persons/pop, wages_by_per = tot_wages/avg_persons) %>% 
+                              select(c("tendigit_fips", "year", "tot_wages", "pop", "avg_persons", "wages_per_cap", "emp_per_cap", "wages_by_per")) %>%
                               filter(!is.na(wages_per_cap)) %>% filter(!is.na(emp_per_cap))
 # Need to run merge with t-2 to t+10 census data
 
@@ -338,7 +248,7 @@ names(emps_per) <- yrs
 # merging outcome var with census and voting data
 dfs_emp_agg_per <- purrr::map2(emps_per, yrs, function(x, y){
   x %>% inner_join(roads_and_census, by = c("tendigit_fips", y)) %>%
-    select(-pop) %>% # do not want this as one of the covariates now since we are using it with outcomes
+    # select(-pop) %>% # do not want this as one of the covariates now since we are using it with outcomes
     mutate(ln_wages_per_cap = log(wages_per_cap), ln_emp_per_cap = log(emp_per_cap)) %>%
     filter(!(wages_per_cap == 0)) %>%
     filter(!(emp_per_cap == 0))
@@ -374,10 +284,4 @@ emp_naics <- emp2 %>%
   filter(include_flag == 1)
 
 
-
-
-#=====================================================================#
-#  Generating firm creation/destruction rates using ODJFS data ----
-#=====================================================================#
-df_sort_mth <- haven::read_sas(paste0(data_tax,"/employment","/df_sort_mth.sas7bdat"))
 

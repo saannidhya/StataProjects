@@ -1,0 +1,25 @@
+naics_2dg,sector_title
+11,"agriculture, forestry, fishing and hunting"
+21,mining
+22,utilities
+23,construction
+31,manufacturing
+32,manufacturing
+33,manufacturing
+42,wholesale trade
+44,retail trade
+45,retail trade
+48,transportation and warehousing
+49,transportation and warehousing
+51,information
+52,finance and insurance
+53,real estate rental and leasing
+54,"professional, scientific, and technical services"
+55,management of companies and enterprises
+56,administrative and support and waste services
+61,educational services
+62,health care and social assistance
+71,"arts, entertainment, and recreation"
+72,accommodation and food services
+81,other services (except public administration)
+92,public administration

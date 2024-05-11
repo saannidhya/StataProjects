@@ -146,10 +146,12 @@ map(gs, ~ .x$pv[2])
 gs$housing_roads_census_t_plus_0_matches
 
 # from gs list, select elements that start with "housing_roads_census_t_plus_"
-tes_gs %>% filter((ord >= 4))
-  # select(bias_corrected_coef) %>% pull %>% mean
-
-
+tes_gs %>% filter((ord >= 0)) %>%
+  select(robust_coef) %>% pull %>% mean
+coef <- tes_gs %>% filter((ord >= 4)) %>%
+  select(robust_coef) %>% pull %>% mean # used in paper
+base <- map_dbl(dfs, ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+coef/base
 
 # output for paper draft 
 write.csv(tes_gs, paste0(tables, "/tes_gs.csv"), row.names = FALSE)

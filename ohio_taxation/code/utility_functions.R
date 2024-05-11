@@ -62,11 +62,11 @@ treatment_effect_rand_summary <- function(list){
 }
 
 # treatment effect table
-te_tables <- function(list, rand=FALSE){
+te_tables <- function(list, rand=FALSE, ci_level = 1.96){
   if (rand == FALSE){
     treatment_effect_summary(list) %>% 
-      mutate(conf_int_low = robust_coef - 1.96*se,
-             conf_int_high = robust_coef + 1.96*se) %>% as_tibble(rownames = "dataset") %>% 
+      mutate(conf_int_low = robust_coef - ci_level*se,
+             conf_int_high = robust_coef + ci_level*se) %>% as_tibble(rownames = "dataset") %>% 
       mutate(year = str_extract(dataset, pattern = "t_[a-z]+_[0-9]+"),
              ord = str_extract(dataset, pattern = "minus_[0-9]+|plus_[0-9]+"),
              ord = as.numeric(ifelse(str_detect(ord, "minus"), 
