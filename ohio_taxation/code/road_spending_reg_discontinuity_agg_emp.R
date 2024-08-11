@@ -6,7 +6,8 @@
 #        1. 07/05/2023: started the code
 #        2. 07/14/2023: added outcome variable: employment/pop , wages/pop
 #        3. 05/03/2024: Added Wages per person variable. Found that the effect is significant for wages per person.
-#        3. 05/04/2024: Doing industry level analysis
+#        4. 05/04/2024: Doing industry level analysis
+#        5. 07/23/2024: Created confidence interval graph for Dr. B's high-poverty regression
 #================================================================================================================#
 
 # loading packages
@@ -45,20 +46,20 @@ roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
   janitor::clean_names() %>%
   mutate(votes_pct_against = 100 - votes_pct_for) %>%
   mutate(treated = if_else(votes_pct_against > cutoff, 1, 0)) %>%
-  # mutate(yr_t_minus_3 = year - 3, 
-  #        yr_t_minus_2 = year - 2, 
-  #        yr_t_minus_1 = year - 1,
-  #        yr_t_plus_0 = year,
-  #        yr_t_plus_1 = year + 1,
-  #        yr_t_plus_2 = year + 2,
-  #        yr_t_plus_3 = year + 3,
-  #        yr_t_plus_4 = year + 4,
-  #        yr_t_plus_5 = year + 5,
-  #        yr_t_plus_6 = year + 6,
-  #        yr_t_plus_7 = year + 7,
-  #        yr_t_plus_8 = year + 8,
-  #        yr_t_plus_9 = year + 9,
-  #        yr_t_plus_10 = year + 10) %>%
+  mutate(yr_t_minus_3 = year - 3,
+         yr_t_minus_2 = year - 2,
+         yr_t_minus_1 = year - 1,
+         yr_t_plus_0 = year,
+         yr_t_plus_1 = year + 1,
+         yr_t_plus_2 = year + 2,
+         yr_t_plus_3 = year + 3,
+         yr_t_plus_4 = year + 4,
+         yr_t_plus_5 = year + 5,
+         yr_t_plus_6 = year + 6,
+         yr_t_plus_7 = year + 7,
+         yr_t_plus_8 = year + 8,
+         yr_t_plus_9 = year + 9,
+         yr_t_plus_10 = year + 10) %>%
   select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
   arrange(tendigit_fips, year)
 
@@ -84,10 +85,16 @@ dfs_emp_agg <- purrr::map(list.files(paste0(data,"/employment"),
                                      recursive = FALSE,
                                      full.names = TRUE),
                           haven::read_dta)
+dfs_emp_ln_agg <- purrr::map(list.files(paste0(data,"/employment"),
+                                     pattern = "dfs_emp_ln_agg",
+                                     recursive = FALSE,
+                                     full.names = TRUE),
+                          haven::read_dta)
 # assign names to housing dfs
 dfs_emp_agg <- stats::setNames(dfs_emp_agg, emp_dataset_names)
+dfs_emp_ln_agg <- stats::setNames(dfs_emp_ln_agg, emp_dataset_names)
 
-# Also importing employment datasets by discovery
+# Also importing employment datasets by industry
 emp_by_ind_names <- stringr::str_remove(list.files(paste0(data,"/employment/industry"),
                                                     pattern = "df_emp_",
                                                     recursive = FALSE),
@@ -192,7 +199,7 @@ plot_te(te_emp_wages)
 # median(purrr::map_dbl(dfs_emp_agg3, ~ nrow(.x)))
 
 # avg persons
-regs_emp_persons <- purrr::map(.x = dfs_emp_agg_R, ~ rdrobust::rdrobust(y = .x$avg_persons, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+regs_emp_persons <- purrr::map(.x = dfs_emp_agg, ~ rdrobust::rdrobust(y = .x$avg_persons, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 
 # t.e table
 te_emp_pers <- te_tables(regs_emp_persons)
@@ -201,19 +208,17 @@ plot_te(te_emp_pers)
 # summary(regs_emp_wages$yr_t_plus_6)
 
 # log of tot wages
-regs_emp_ln_wages <- purrr::map(.x = dfs_emp_agg_ln_R, ~ rdrobust::rdrobust(y = .x$ln_tot_wages, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+regs_emp_ln_wages <- purrr::map(.x = dfs_emp_ln_agg, ~ rdrobust::rdrobust(y = .x$ln_wages, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 te_emp_ln_wages <- te_tables(regs_emp_ln_wages)
 plot_te(te_emp_ln_wages)
 
-
-
-regs_emp_ln_avg_persons <- purrr::map(.x = dfs_emp_agg_ln_R, ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, c = cutoff, all = TRUE))
+regs_emp_ln_avg_persons <- purrr::map(.x = dfs_emp_ln_agg, ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, c = cutoff, all = TRUE))
 te_emp_ln_avg_persons <- te_tables(regs_emp_ln_avg_persons)
 plot_te(te_emp_ln_avg_persons)
 
 # output for paper draft 
-write.csv(te_emp_ln_wages, paste0(tables, "/te_emp_ln_wages.csv"), row.names = FALSE)
-write.csv(te_emp_ln_avg_persons, paste0(tables, "/te_emp_ln_avg_persons.csv"), row.names = FALSE)
+# write.csv(te_emp_ln_wages, paste0(tables, "/te_emp_ln_wages.csv"), row.names = FALSE)
+# write.csv(te_emp_ln_avg_persons, paste0(tables, "/te_emp_ln_avg_persons.csv"), row.names = FALSE)
 
 
 #=========================================#
@@ -222,21 +227,24 @@ write.csv(te_emp_ln_avg_persons, paste0(tables, "/te_emp_ln_avg_persons.csv"), r
 
 
 # take all covariate names 
-covs_list_emp <- dfs_emp_agg_R$yr_t_plus_1 %>%
-  select(-c(tendigit_fips,year,yr_t_plus_1, tendigit_fips_year, purpose2, tax_type, votes_for, votes_against, 
-            votes_pct_for, description, millage_percent, duration, votes_pct_for_cntr, emp_flag, 
-            tot_wages, avg_persons, inctaxrate)) %>%
+covs_list_emp <- dfs_emp_agg$yr_t_plus_1 %>%
+  select(-c(tendigit_fips,year,yr_t_plus_1, purpose2, taxtype, votesfor, votesagainst, 
+            votes_pct_for, description, millagepercent, duration, votes_pct_for_cntr, votes_pct_against, treated, 
+            tot_wages, avg_persons)) %>%
   colnames()
 
+# checking missing values by covariate
+# map_dbl(dfs_emp_agg$yr_t_plus_1 %>% select(all_of(covs_list_emp)), ~ sum(is.na(.)))
+
 # finding covariates
-covs_final_emp_ln_pers <- purrr::map(dfs_emp_agg_ln_R, ~find_covs(.x, y = "ln_avg_persons", covs_list = covs_list_emp))
-covs_final_emp_pers <- purrr::map(dfs_emp_agg_R, ~find_covs(.x, y = "avg_persons", covs_list = covs_list_emp))
-covs_final_emp_ln_wages <- purrr::map(dfs_emp_agg_ln_R, ~find_covs(.x, y = "ln_tot_wages", covs_list = covs_list_emp))
-covs_final_emp_wages <- purrr::map(dfs_emp_agg_R, ~find_covs(.x, y = "tot_wages", covs_list = covs_list_emp))
+covs_final_emp_ln_pers <- purrr::map(dfs_emp_ln_agg, ~find_covs(.x, y = "ln_avg_persons", covs_list = covs_list_emp))
+covs_final_emp_pers <- purrr::map(dfs_emp_agg, ~find_covs(.x, y = "avg_persons", covs_list = covs_list_emp))
+covs_final_emp_ln_wages <- purrr::map(dfs_emp_ln_agg, ~find_covs(.x, y = "ln_wages", covs_list = covs_list_emp))
+covs_final_emp_wages <- purrr::map(dfs_emp_agg, ~find_covs(.x, y = "tot_wages", covs_list = covs_list_emp))
 
 ## finding covariates with the right signs
-covs_final_emp_ln_pers_s <- purrr::map(dfs_emp_agg_ln_R, ~find_covs_sign(.x, y = "ln_avg_persons", covs_list = covs_list_emp, sign = "positive"))
-covs_final_emp_ln_wages_s <- purrr::map(dfs_emp_agg_ln_R, ~find_covs_sign(.x, y = "ln_tot_wages", covs_list = covs_list_emp, sign = "positive"))
+# covs_final_emp_ln_pers_s <- purrr::map(dfs_emp_agg_ln_R, ~find_covs_sign(.x, y = "ln_avg_persons", covs_list = covs_list_emp, sign = "positive"))
+# covs_final_emp_ln_wages_s <- purrr::map(dfs_emp_agg_ln_R, ~find_covs_sign(.x, y = "ln_tot_wages", covs_list = covs_list_emp, sign = "positive"))
 
 #-----------------------#
 # log average persons   #
@@ -244,7 +252,7 @@ covs_final_emp_ln_wages_s <- purrr::map(dfs_emp_agg_ln_R, ~find_covs_sign(.x, y 
 
 
 # before correction of sign
-regs_emp_ln_pers <- purrr::map2( dfs_emp_agg3, 
+regs_emp_ln_pers <- purrr::map2( dfs_emp_ln_agg, 
                                   covs_final_emp_ln_pers, 
                                   ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, 
                                                            covs = .x %>% select(.y) ,  
@@ -256,17 +264,17 @@ treatment_effect_summary(regs_emp_ln_pers) %>% rownames_to_column() %>% as_tibbl
 
 
 # yr 1 had collinearity
-rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_1$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_1$votes_pct_for, 
-                   covs = dfs_emp_agg3$yr_t_plus_1 %>% select(covs_final_emp_ln_pers$yr_t_plus_1) %>% select(-c("pctwhite")),  
+rdrobust::rdrobust(y = dfs_emp_agg$yr_t_plus_1$ln_avg_persons, x = dfs_emp_agg$yr_t_plus_1$votes_pct_for, 
+                   covs = dfs_emp_agg$yr_t_plus_1 %>% select(covs_final_emp_ln_pers$yr_t_plus_1) %>% select(-c("pctwhite")),  
                    c = cutoff, all = TRUE)
 
 # yr 2 had collinearity
-rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_2$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_2$votes_pct_for, 
-                   covs = dfs_emp_agg3$yr_t_plus_2 %>% select(covs_final_emp_ln_pers$yr_t_plus_2) %>% select(-c("pctwhite", "pctnevermarr")),  
+rdrobust::rdrobust(y = dfs_emp_agg$yr_t_plus_2$ln_avg_persons, x = dfs_emp_agg$yr_t_plus_2$votes_pct_for, 
+                   covs = dfs_emp_agg$yr_t_plus_2 %>% select(covs_final_emp_ln_pers$yr_t_plus_2) %>% select(-c("pctwhite", "pctnevermarr")),  
                    c = cutoff, all = TRUE) %>% summary()
 # yr 4 had collinearity
-rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_4$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_4$votes_pct_for, 
-                   covs = dfs_emp_agg3$yr_t_plus_4 %>% select(covs_final_emp_ln_pers$yr_t_plus_4) %>% select(-c("pctrent")),  
+rdrobust::rdrobust(y = dfs_emp_agg$yr_t_plus_4$ln_avg_persons, x = dfs_emp_agg$yr_t_plus_4$votes_pct_for, 
+                   covs = dfs_emp_agg$yr_t_plus_4 %>% select(covs_final_emp_ln_pers$yr_t_plus_4) %>% select(-c("pctrent")),  
                    c = cutoff, all = TRUE) %>% summary()
 
 # removing variables that caused collinearity
@@ -275,7 +283,7 @@ covs_final_emp_ln_pers$yr_t_plus_2 <- covs_final_emp_ln_pers$yr_t_plus_2[!covs_f
 covs_final_emp_ln_pers$yr_t_plus_4 <- covs_final_emp_ln_pers$yr_t_plus_4[!covs_final_emp_ln_pers$yr_t_plus_4 %in% c("pctrent")]
 
 # running again
-regs_emp_ln_pers <- purrr::map2( dfs_emp_agg3, 
+regs_emp_ln_pers <- purrr::map2( dfs_emp_agg, 
                                  covs_final_emp_ln_pers, 
                                  ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, 
                                                       covs = .x %>% select(.y) ,  
@@ -289,7 +297,7 @@ treatment_effect_summary(regs_emp_ln_pers) %>% rownames_to_column() %>% as_tibbl
 # before correction of sign
 # correcting sign (neg to pos)
 covs_final_emp_ln_pers_s$yr_t_minus_1 <- c("poverty", "pctown")
-regs_emp_ln_pers_s <- purrr::map2( dfs_emp_agg3, 
+regs_emp_ln_pers_s <- purrr::map2( dfs_emp_agg, 
                                  covs_final_emp_ln_pers_s, 
                                  ~ rdrobust::rdrobust(y = .x$ln_avg_persons, x = .x$votes_pct_for, 
                                                       covs = .x %>% select(.y) ,  
@@ -299,25 +307,25 @@ treatment_effect_summary(regs_emp_ln_pers_s) %>% rownames_to_column() %>% as_tib
   mutate(significant = if_else(pval < 0.05, "yes", "no"))
 
 # yr t+ 1
-rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_1$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_1$votes_pct_for, 
-                   covs = dfs_emp_agg3$yr_t_plus_1 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_1) %>% select(-c("pctrent")) ,  
+rdrobust::rdrobust(y = dfs_emp_agg$yr_t_plus_1$ln_avg_persons, x = dfs_emp_agg$yr_t_plus_1$votes_pct_for, 
+                   covs = dfs_emp_agg$yr_t_plus_1 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_1) %>% select(-c("pctrent")) ,  
                    c = cutoff, all = TRUE)
 # yr t+ 3
-rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_3$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_3$votes_pct_for, 
-                   covs = dfs_emp_agg3$yr_t_plus_3 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_3) %>% select(-c("pctrent")),  
+rdrobust::rdrobust(y = dfs_emp_agg$yr_t_plus_3$ln_avg_persons, x = dfs_emp_agg$yr_t_plus_3$votes_pct_for, 
+                   covs = dfs_emp_agg$yr_t_plus_3 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_3) %>% select(-c("pctrent")),  
                    c = cutoff, all = TRUE)
 # yr t + 4
-rdrobust::rdrobust(y = dfs_emp_agg3$yr_t_plus_4$ln_avg_persons, x = dfs_emp_agg3$yr_t_plus_4$votes_pct_for, 
-                   covs = dfs_emp_agg3$yr_t_plus_4 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_4) %>% select(-c("pctrent")),  
+rdrobust::rdrobust(y = dfs_emp_agg$yr_t_plus_4$ln_avg_persons, x = dfs_emp_agg$yr_t_plus_4$votes_pct_for, 
+                   covs = dfs_emp_agg$yr_t_plus_4 %>% select(covs_final_emp_ln_pers_s$yr_t_plus_4) %>% select(-c("pctrent")),  
                    c = cutoff, all = TRUE)
 
 
 #-----------------------#
 # average persons       #
 #-----------------------#
-regs_emp_pers <- purrr::map2( dfs_emp_agg3, 
+regs_emp_pers <- purrr::map2( dfs_emp_agg, 
                               covs_final_emp_pers, 
-                                  ~ rdrobust::rdrobust(y = .x$tot_wages, x = .x$votes_pct_for, 
+                                  ~ rdrobust::rdrobust(y = .x$avg_persons, x = .x$votes_pct_for, 
                                                        covs = .x %>% select(.y) ,  
                                                        c = cutoff, all = TRUE)
 )
@@ -325,7 +333,7 @@ treatment_effect_summary(regs_emp_pers) %>% rownames_to_column() %>% as_tibble()
 
 
 #-----------------------#
-# log average wages     #
+# log wages     #
 #-----------------------#
 regs_emp_ln_wages <- purrr::map2( dfs_emp_agg3, 
                                   covs_final_emp_ln_wages, 
@@ -453,7 +461,7 @@ dfs_emp_agg_p <- map(dfs_emp_agg, ~ .x %>% mutate(wages_per_emp = tot_wages/avg_
       relocate(tendigit_fips, year, tot_wages, avg_persons, wages_per_emp, everything()) %>%
         filter(!(is.na(wages_per_emp) | (avg_persons == 0) | is.nan(wages_per_emp)) )) 
 
-dfs_emp_agg_p$yr_t_minus_3$wages_per_emp %>% summary()
+dfs_emp_agg_p$yr_t_plus_0$wages_per_emp %>% summary()
 
 # running RDD without covariates
 regs_emp_wages_per_emp <- purrr::map(.x = dfs_emp_agg_p, ~ rdrobust::rdrobust(y = .x$wages_per_emp, x = .x$votes_pct_against, c = cutoff, all = TRUE))
@@ -461,9 +469,9 @@ te_emp_wages_per_emp <- te_tables(regs_emp_wages_per_emp)
 plot_te(te_emp_wages_per_emp)
 
 # running RDD with covariates
-covs_final_emp_wages_per_emp <- purrr::map(dfs_emp_agg_p, ~find_covs_sign(.x, y = "wages_per_emp", 
-                                                                        covs_list = covs_list[!(covs_list %in% c("pop", "inctaxrate"))],
-                                                                        sign = "negative"))
+# covs_final_emp_wages_per_emp <- purrr::map(dfs_emp_agg_p, ~find_covs_sign(.x, y = "wages_per_emp", 
+#                                                                         covs_list = covs_list[!(covs_list %in% c("pop", "inctaxrate"))],
+#                                                                         sign = "negative"))
 
 covs_final_emp_wages_per_emp_m <- purrr::map(dfs_emp_agg_p, ~find_covs(.x, y = "wages_per_emp", 
                                                                           covs_list = covs_list[!(covs_list %in% c("pop", "inctaxrate"))]))
@@ -593,13 +601,13 @@ gs_trans <- purrr::map2(cv_f_tr, dfs_emp_trans_agg, .f = function(x,y){
 tes_trans <- te_tables(gs_trans) 
 plot_te(tes_trans, title = "Visualization of Treatment Effects: Wages per employee", subtitle = "Transporting and Warehousing sector") 
 
-y <- dfs_emp_trans_agg$yr_t_plus_1
-x <-           cv_f_tr$yr_t_plus_1
-rdrobust(  y = y$wages_per_emp,
-           x = y$votes_pct_against,
-           c = cutoff,
-           covs = y %>% select(x) ,
-           all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary()
+# y <- dfs_emp_trans_agg$yr_t_plus_1
+# x <-           cv_f_tr$yr_t_plus_1
+# rdrobust(  y = y$wages_per_emp,
+#            x = y$votes_pct_against,
+#            c = cutoff,
+#            covs = y %>% select(x) ,
+#            all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary()
 
 # 0, 1, 2, 3, 10
 
@@ -704,4 +712,123 @@ gs_trade <- purrr::map2(cv_trade, dfs_emp_trade_agg, .f = function(x,y){
 })
 tes_trade <- te_tables(gs_trade) 
 plot_te(tes_trade, title = "Visualization of Treatment Effects: Wages per employed person", subtitle = "Trade sector") 
+
+
+#====================================================#
+# Dr. Brasington's regression analysis ----
+#====================================================#
+
+#==========================================#
+# |--- High poverty rate   ##
+#==========================================#
+
+## wages_per_emp
+dfs_emp_agg_high_pov <- purrr::map(dfs_emp_agg_p, ~ .x %>% filter(poverty > 0.14))
+
+covs_final_emp_wages_per_emp_m_poverty <- purrr::map(dfs_emp_agg_high_pov, ~find_covs(.x, y = "wages_per_emp", 
+                                                                       covs_list = covs_list[!(covs_list %in% c("pop", "inctaxrate"))]))
+
+# covs_final_emp_wages_per_emp_m2 <-
+cv_f_emp_pov <- covs_final_emp_wages_per_emp_m_poverty
+cv_f_emp_pov$yr_t_minus_3 <- c("medfamy", "pctrent", "pctbachelors", "pctblack")
+cv_f_emp_pov$yr_t_minus_2 <- c("medfamy", "poverty", "pctrent")
+cv_f_emp_pov$yr_t_minus_1 <- c("medfamy", "poverty", "pctrent")
+# cv_f_emp_pov$yr_t_minus_2 <- cv_f_emp_pov$yr_t_minus_2
+cv_f_emp_pov$yr_t_plus_0 <- cv_f_emp_pov$yr_t_plus_0[!(cv_f_emp_pov$yr_t_plus_0 %in% c("pctrent", "pctnevermarr"))]
+cv_f_emp_pov$yr_t_plus_1 <- cv_f_emp_pov$yr_t_plus_1[!(cv_f_emp_pov$yr_t_plus_1 %in% c("pctrent", "pctnevermarr"))]
+cv_f_emp_pov$yr_t_plus_2 <- cv_f_emp_pov$yr_t_plus_2[!(cv_f_emp_pov$yr_t_plus_2 %in% c("pctrent", "pctnevermarr"))]
+cv_f_emp_pov$yr_t_plus_4 <- cv_f_emp_pov$yr_t_plus_4[!(cv_f_emp_pov$yr_t_plus_4 %in% c("pctmin", "pctnevermarr"))]
+cv_f_emp_pov$yr_t_plus_8 <- cv_f_emp_pov$yr_t_plus_8[!(cv_f_emp_pov$yr_t_plus_8 %in% c("pctmin", "pctnevermarr"))]
+cv_f_emp_pov$yr_t_plus_10 <- cv_f_emp_pov$yr_t_plus_10[!(cv_f_emp_pov$yr_t_plus_10 %in% c("pctmin", "pctrent"))]
+
+# beepr::beep("mario")
+
+gs_emps_pov <- purrr::map2(cv_f_emp_pov, dfs_emp_agg_high_pov, 
+                           .f = function(x,y){
+  rdrobust(  y = y$wages_per_emp,
+             x = y$votes_pct_against,
+             c = cutoff,
+             covs = y %>%
+               select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+tes_emp_pov <- te_tables(gs_emps_pov, ci_level = 1.96) 
+plot_te(tes_emp_pov, title = "Visualization of Treatment Effects: Wages per employee", subtitle = "Aggregate") 
+
+## lnwage  
+dfs_emp_ln_agg_high_pov <- purrr::map(dfs_emp_ln_agg, ~ .x %>% filter(poverty > 0.14))
+
+covs_final_emp_ln_wages_per_emp_m_poverty <- purrr::map(dfs_emp_ln_agg_high_pov, ~find_covs(.x, y = "ln_wages", 
+                                                                                      covs_list = covs_list[!(covs_list %in% c("pop", "inctaxrate"))]))
+
+gs_ln_emps_pov <- map(dfs_emp_ln_agg_high_pov, ~ rdrobust::rdrobust(y = .x$ln_wages, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+# gs_ln_emps_pov <- purrr::map2(covs_final_emp_ln_wages_per_emp_m_poverty, dfs_emp_ln_agg_high_pov, 
+#                            .f = function(x,y){
+#                              rdrobust(  y = y$ln_wages,
+#                                         x = y$votes_pct_against,
+#                                         c = cutoff,
+#                                         covs = y %>%
+#                                           select(x) ,
+#                                         all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+#                            })
+tes_ln_emp_pov <- te_tables(gs_ln_emps_pov, ci_level = 1.96) 
+plot_te(tes_ln_emp_pov, title = "Visualization of Treatment Effects: Log Wages", subtitle = "Aggregate") 
+
+#==========================================#
+# |--- Unemployment rate ##
+#==========================================#
+
+## wages_per_emp
+dfs_emp_agg_low_unemp <- purrr::map(dfs_emp_agg_p, ~ .x %>% filter(unemprate < 0.043))
+
+# gs_emps_unemp <- map(dfs_emp_agg_low_unemp, ~ rdrobust::rdrobust(y = .x$wages_per_emp, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+# tes_emp_unemp <- te_tables(gs_emps_unemp, ci_level = 1.96)
+# plot_te(tes_emp_unemp, title = "Visualization of Treatment Effects: Wages per Employee", subtitle = "Aggregate")
+covs_final_emp_wages_per_emp_m_unemp <- purrr::map(dfs_emp_agg_low_unemp, ~find_covs(.x, y = "wages_per_emp",
+                                                                           covs_list = covs_list[!(covs_list %in% c("pop", "inctaxrate"))]))
+
+gs_emps_unemp <- purrr::map2(covs_final_emp_wages_per_emp_m_unemp, dfs_emp_agg_low_unemp, 
+                           .f = function(x,y){
+                             rdrobust(  y = y$wages_per_emp,
+                                        x = y$votes_pct_against,
+                                        c = cutoff,
+                                        covs = y %>%
+                                          select(x) ,
+                                        all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+                           })
+tes_emp_unemp <- te_tables(gs_emps_unemp, ci_level = 1.96) 
+plot_te(tes_emp_unemp, title = "Visualization of Treatment Effects: Wages per employee", subtitle = "Aggregate") 
+
+## lnwage
+dfs_emp_ln_agg_low_unemp <- purrr::map(dfs_emp_ln_agg, ~ .x %>% filter(unemprate < 0.043))
+
+covs_final_emp_ln_wages_per_emp_m_unemp <- purrr::map(dfs_emp_ln_agg_low_unemp, ~find_covs(.x, y = "ln_wages", 
+                                                                                      covs_list = covs_list[!(covs_list %in% c("pop", "inctaxrate"))]))
+
+gs_ln_emps_unemp <- purrr::map2(covs_final_emp_ln_wages_per_emp_m_unemp, dfs_emp_ln_agg_low_unemp, 
+                             .f = function(x,y){
+                               rdrobust(  y = y$ln_wages,
+                                          x = y$votes_pct_against,
+                                          c = cutoff,
+                                          covs = y %>%
+                                            select(x) ,
+                                          all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+                             })
+tes_ln_emp_unemp <- te_tables(gs_ln_emps_unemp, ci_level = 1.96) 
+plot_te(tes_ln_emp_unemp, title = "Visualization of Treatment Effects: Wages per employee", subtitle = "Aggregate") 
+
+
+#================================================================#
+#   Confidence interval 
+#================================================================#
+
+# Creating the dataframe & plotting TEs for Wages outcome - with high levels of poverty - above 14% (Dr. B ran this, just plotting TEs here)
+conf_int_low <- c(-0.46, -0.52, -0.43, -0.36, -0.33, -0.37, -0.45, -0.35, -0.35, -0.29, -0.34, -0.26, -0.18)
+conf_int_high <- c(0.06, 0.10, 0.28, 0.11, 0.07, 0.13, -0.02, -0.01, -0.08, 0.02, 0.03, 0.02, 0.08)
+robust_coef <- c(-0.2, -0.21, -0.07, -0.13, -0.13, -0.12, -0.23, -0.18, -0.22, -0.14, -0.15, -0.12, -0.05)
+ord <- c(-3:-1, 1:10)
+
+tes_ln_emp_high_pov <- data.frame(conf_int_low, conf_int_high, robust_coef, ord)
+
+plot_te(tes_ln_emp_high_pov, title = "Treatment Effects: Average wages per worker in High-poverty areas", subtitle = "Poverty level 14% or higher")
 

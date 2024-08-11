@@ -50,6 +50,32 @@ covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pc
 
 # some common vars upon eye-balling: pop, poverty, pct_white, pctsinparhhld, medfamy
 
+### overall sample mean
+## mean house value, keeping only t + 0 to t + 10, before removing 1%
+# mean of sale_amount
+map_dbl(dfs, ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(dfs, ~sd(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map(dfs, ~summary(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] 
+# mean of median_sale_amount
+map_dbl(dfs_agg, ~mean(.x$median_sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(dfs_agg, ~sd(.x$median_sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map(dfs_agg, ~summary(.x$median_sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] 
+
+
+## mean house value, keeping only t + 0 to t + 10, after removing 1%
+map_dbl(winsorize_data(dfs, "sale_amount", lower = 0.01, upper = 0.99, na.rm = TRUE), ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(winsorize_data(dfs, "sale_amount", lower = 0.01, upper = 0.99, na.rm = TRUE), ~sd(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map(winsorize_data(dfs, "sale_amount", lower = 0.01, upper = 0.99, na.rm = TRUE), ~summary(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] 
+
+
+map_dbl(dfs, ~ nrow(.x) )
+map_dbl(winsorize_data(dfs, "sale_amount", lower = 0.01, upper = 0.99, na.rm = TRUE), ~ nrow(.x) )
+
+summary(dfs$housing_roads_census_t_plus_1_matches$sale_amount, na.rm = TRUE)
+
+# map_dbl(dfs_agg, ~mean(.x$median_sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+# map_dbl(dfs_agg, ~sd(.x$median_sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+
 ### regressions with covariates for median sale amount
 
 #|||||||||||||||||||||||||||||||||||||||||||||||||#
@@ -104,6 +130,8 @@ tes_gs <- te_tables(gs)
 plot_te(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 # plot_te(tes, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
+
+
 # y <- dfs_agg_covs$housing_roads_census_t_plus_10_matches
 # x <-  c("pctsinparhhld", "pctrent", "pct18to64", "pctwhite")
 # geg <- rdrobust(  y = y$median_sale_amount,
@@ -117,33 +145,29 @@ plot_te(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtit
 
 
 # implemented using rdd_lm() which uses lm() funciton in R
-tgt <- map2(covs_final, dfs_agg_covs, .f = function(x, y){
-  rdd_lm(df = y, y = "median_sale_amount", x = "votes_pct_against", covs = x)
-})
-tes_tgt <- te_tables_lm(tgt)
-plot_te(tes_tgt, var = coef)
-ggplot(tes_tgt, aes(ord, coef)) +       
-  geom_point(size = 3, shape = 19, color = "blue") +
-  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-                width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-  labs(
-    x = "Year",
-    y = "Treatment Effect",
-    color = "Position"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  ) + scale_x_continuous(breaks = c(-3:10))
+# tgt <- map2(covs_final, dfs_agg_covs, .f = function(x, y){
+#   rdd_lm(df = y, y = "median_sale_amount", x = "votes_pct_against", covs = x)
+# })
+# tes_tgt <- te_tables_lm(tgt)
+# plot_te(tes_tgt, var = coef)
+# ggplot(tes_tgt, aes(ord, coef)) +       
+#   geom_point(size = 3, shape = 19, color = "blue") +
+#   geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+#                 width = 0.2, color = "grey50", size = 0.7) +
+#   geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+#   labs(
+#     x = "Year",
+#     y = "Treatment Effect",
+#     color = "Position"
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     plot.title = element_text(hjust = 0.5),
+#     legend.position = "bottom"
+#   ) + scale_x_continuous(breaks = c(-3:10))
 
 # map(tgt, vif)
 # tgt$housing_roads_census_t_plus_10_matches$coefficients
-
-map(gs, ~ .x$pv[2])
-
-gs$housing_roads_census_t_plus_0_matches
 
 # from gs list, select elements that start with "housing_roads_census_t_plus_"
 tes_gs %>% filter((ord >= 0)) %>%
@@ -154,7 +178,7 @@ base <- map_dbl(dfs, ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", 
 coef/base
 
 # output for paper draft 
-write.csv(tes_gs, paste0(tables, "/tes_gs.csv"), row.names = FALSE)
+# write.csv(tes_gs, paste0(tables, "/tes_gs.csv"), row.names = FALSE)
 
 
 # nrow(dfs_agg_covs$housing_roads_census_t_plus_1_matches)
@@ -174,6 +198,10 @@ purrr::walk2(gs, names(gs), ~print(paste0("Bias Bandwidth (b) for ", .y, ": " , 
 # observations
 purrr::walk2(gs, names(gs), ~print(paste0("Eff. Observations for ", .y, ": " , sum(.x$N_h))))
 purrr::walk2(gs, names(gs), ~print(paste0("Total Observations for ", .y, ": " , sum(.x$N))))
+
+# mean bandwidth - left
+map_dbl(gs, ~ round(.x$bws[1,1],1)  )
+
 
 #|||||||||||||||||||||||||||||||||||||||||||||||||#
 # Same Covariates for each outcome period
@@ -231,10 +259,10 @@ ggplot(tes_g_rand, aes(ord, statistic)) +
 
 
 ## winsorization of median_sale_amount
-housing_dfs_winsorized <- winsorize_data(housing_dfs, "SALE_AMOUNT", na.rm = TRUE)
+dfs_winsorized <- winsorize_data(dfs, "sale_amount", na.rm = TRUE)
 # mean house value, keeping only t + 0 to t + 10
-map_dbl(housing_dfs_winsorized, ~mean(.x$SALE_AMOUNT, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
-map_dbl(housing_dfs_winsorized, ~sd(.x$SALE_AMOUNT, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(dfs_winsorized, ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(dfs_winsorized, ~sd(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
 
 # removing top and bottom 1% of observations
 dfs_agg_covs_winsored <- winsorize_data(dfs_agg_covs, "median_sale_amount")
@@ -290,7 +318,7 @@ ggplot(tes_g_rand_w, aes(ord, statistic)) +
 # median sale amount per square feet
 covs_final_per <- purrr::map(dfs_agg_per_covs, ~find_covs(.x, y = "median_sale_amount_per_sq_feet", covs_list = covs_list))
 ## 
-beepr::beep("mario")
+# beepr::beep("mario")
 
 
 ### regressions with covariates for median sale amount per square feet
@@ -517,4 +545,4 @@ purrr::walk2(g_p_regs, names(g_p_regs), ~print(paste0("Eff. Observations for ", 
 purrr::walk2(g_p_regs, names(g_p_regs), ~print(paste0("Total Observations for ", .y, ": " , sum(.x$N))))
 
 # output for paper draft 
-write.csv(tes_g_p, paste0(tables, "/tes_g_p.csv"), row.names = FALSE)
+# write.csv(tes_g_p, paste0(tables, "/tes_g_p.csv"), row.names = FALSE)

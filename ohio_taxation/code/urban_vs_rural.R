@@ -110,21 +110,21 @@ regs_covs_urb_cd <- purrr::map2(dfs_agg_covs_urb_cd, covs_final_urb_cd ,
 tes_covs_urb_cd <- te_tables(regs_covs_urb_cd) 
 plot_te(tes_covs_urb_cd)
 
-# covs_final_urb_ua2 <- covs_final_urb_ua
-# covs_final_urb_ua2$housing_roads_census_t_minus_3_matches <- c("medfamy")
-# covs_final_urb_ua2$housing_roads_census_t_minus_2_matches <- c("medfamy")
-# covs_final_urb_ua2$housing_roads_census_t_minus_1_matches <- c("medfamy")
-# covs_final_urb_ua2$housing_roads_census_t_plus_0_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-# covs_final_urb_ua2$housing_roads_census_t_plus_1_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-# covs_final_urb_ua2$housing_roads_census_t_plus_2_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-# covs_final_urb_ua2$housing_roads_census_t_plus_3_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-# covs_final_urb_ua2$housing_roads_census_t_plus_4_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-# covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-# covs_final_urb_ua2$housing_roads_census_t_plus_6_matches <- c("medfamy", "pctmin")
-# covs_final_urb_ua2$housing_roads_census_t_plus_7_matches <- c("medfamy", "pctmin")
-# covs_final_urb_ua2$housing_roads_census_t_plus_8_matches <- c("medfamy", "pctmin")
-# covs_final_urb_ua2$housing_roads_census_t_plus_9_matches <- c("medfamy", "pctmin")
-# covs_final_urb_ua2$housing_roads_census_t_plus_10_matches <- c("medfamy", "pctmin")
+covs_final_urb_ua2 <- covs_final_urb_ua
+covs_final_urb_ua2$housing_roads_census_t_minus_3_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_minus_2_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_minus_1_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_0_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+covs_final_urb_ua2$housing_roads_census_t_plus_1_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+covs_final_urb_ua2$housing_roads_census_t_plus_2_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+covs_final_urb_ua2$housing_roads_census_t_plus_3_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+covs_final_urb_ua2$housing_roads_census_t_plus_4_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy", "pctmin", "pctown", "poverty")
+covs_final_urb_ua2$housing_roads_census_t_plus_6_matches <- c("medfamy", "pctmin")
+covs_final_urb_ua2$housing_roads_census_t_plus_7_matches <- c("medfamy", "pctmin")
+covs_final_urb_ua2$housing_roads_census_t_plus_8_matches <- c("medfamy", "pctmin")
+covs_final_urb_ua2$housing_roads_census_t_plus_9_matches <- c("medfamy", "pctmin")
+covs_final_urb_ua2$housing_roads_census_t_plus_10_matches <- c("medfamy", "pctmin")
 regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua2 ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,

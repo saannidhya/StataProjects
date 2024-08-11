@@ -5,7 +5,8 @@
 # Created : 07/21/2023
 # Log     : 
 #           07/21/2023: wrote the program to automate the test for all covariates, regardless of the dataset
-#           02/02/2024: updated the run. Looking at pre-treatment covariates as 
+#           02/02/2024: updated the run. Looking at pre-treatment covariates 
+#           06/26/2024: used the latest version of the code
 #================================================================================================================#
 
 # specify the set up location
@@ -44,9 +45,9 @@ roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
 # running covariate discontinuity regressions  ----
 #|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
 
-cv_regs <- purrr::map(chr_lst, 
+cv_regs <- purrr::map(covariate_list, 
            ~ rdrobust::rdrobust(y = roads_and_census %>% select(.x) %>% pull(), x = roads_and_census$votes_pct_against, c = cutoff, all = TRUE))
-names(cv_regs) <- chr_lst  
+names(cv_regs) <- covariate_list
 
 te_cv_regs <- te_tables(cv_regs) %>% arrange(pval)
 sort(te_cv_regs$pval)
@@ -55,3 +56,5 @@ max(te_cv_regs$pval)
 # View(te_cv_regs)
 
 write.csv(select(te_cv_regs, -c("year", "ord")), paste0(tables, "/covariate_discontinuity_test.csv"), row.names = FALSE)
+
+

@@ -7,6 +7,8 @@
 #           06/17/2023: combined several previously made changes. See github repo for details
 #           09/11/2023: replaced STATA created "merged" datasets with identical csv files from ohio_road_housing_census_merge.R
 #           02/17/2024: replaced csv files with STATA created "merged" (a.k.a "matches") datasets
+#           07/23/2024: added mean and sd info needed for the paper
+#           07/26/2024: computing top 10 renewals and cuts from road levies dataset 
 #==========================================================================================================#
 
 # loading packages
@@ -174,3 +176,67 @@ dfs_agg_mill_covs <- purrr::map(.x = dfs_agg_mill, ~ .x %>%
 
 
 # beepr::beep("mario")
+
+#============================================#
+# Mean and SD for Data section of paper ----
+#============================================#
+
+# mean and sd for sale amount
+map_dbl(dfs, ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+# 166,082
+map_dbl(dfs, ~sd(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+
+housing_dfs_winsorized <- winsorize_data(dfs, "sale_amount", na.rm = TRUE)
+# mean house value, keeping only t + 0 to t + 10
+map_dbl(housing_dfs_winsorized, ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(housing_dfs_winsorized, ~sd(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+
+
+#============================================#
+# Top 10 renewals and cuts ----
+#============================================#
+
+roads_and_census2 <- roads_and_census %>%
+  mutate(renewals = if_else(treated == 0, 1, 0),
+         cuts = if_else(treated == 1, 1, 0))
+
+roads_and_census2 %>%
+  group_by(tendigit_fips, treated) %>%
+  summarise(
+    renewals = sum(renewals),
+    cuts = sum(cuts)
+  ) %>% 
+  filter(treated == 0) %>%
+  arrange(desc(renewals)) %>% head(10)
+
+roads_and_census2 %>%
+  group_by(tendigit_fips, treated) %>%
+  summarise(
+    renewals = sum(renewals),
+    cuts = sum(cuts)
+  ) %>% 
+  filter(treated == 1) %>%
+  arrange(desc(cuts)) %>% head(10)
+
+# Top 10 renewals
+top10_ren <- roads_and_census %>% 
+  group_by(tendigit_fips) %>%
+  count(treated) %>% 
+  filter(treated == 0) %>%
+  arrange(desc(n)) %>% head(10) %>% ungroup()
+top10_ren$tendigit_fips
+
+# Top 10 cuts
+top10_cuts <- roads_and_census %>% 
+  group_by(tendigit_fips) %>%
+  count(treated) %>% 
+  filter(treated == 1) %>%
+  arrange(desc(n)) %>% head(10) %>% ungroup()
+top10_cuts$tendigit_fips
+
+
+roads_and_census %>% 
+  filter(tendigit_fips %in% top10_ren$tendigit_fips) %>% select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 0) %>% head(20)
+
+# roads_and_census %>% 
+  # filter(tendigit_fips %in% top10_cuts$tendigit_fips) %>% select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 1) %>% head(20)

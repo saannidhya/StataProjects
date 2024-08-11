@@ -10,6 +10,7 @@
 #           11/23/2023: added some comments. Commented some code out
 #           05/02/2024: updated the code to directly load cleaned employment dataset (check git for prev versions)
 #           05/03/2024: generated aggregate employment data by fips, year and quarter using cleaned employment dataset
+#           05/14/2023: added code to deal with split cities in employment data
 #==========================================================================================================#
 
 # specify the set up location
@@ -33,11 +34,29 @@ lapply(packages, check_and_install)
 #================================================================#
 #  importing roads_and_census dataset ----
 #================================================================# 
-roads_and_census <- haven::read_dta(paste0(data_tax,"/roads_and_census.dta")) %>%
+roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
+  select(-matches("yr_t_")) %>%
   filter(description == "R" & duration != "1000") %>%
   janitor::clean_names() %>%
   mutate(votes_pct_against = 100 - votes_pct_for) %>%
-  mutate(treated = if_else(votes_pct_against > cutoff, 1, 0)) 
+  mutate(treated = if_else(votes_pct_against > cutoff, 1, 0)) %>%
+  mutate(yr_t_minus_3 = year - 3,
+         yr_t_minus_2 = year - 2,
+         yr_t_minus_1 = year - 1,
+         yr_t_plus_0 = year,
+         yr_t_plus_1 = year + 1,
+         yr_t_plus_2 = year + 2,
+         yr_t_plus_3 = year + 3,
+         yr_t_plus_4 = year + 4,
+         yr_t_plus_5 = year + 5,
+         yr_t_plus_6 = year + 6,
+         yr_t_plus_7 = year + 7,
+         yr_t_plus_8 = year + 8,
+         yr_t_plus_9 = year + 9,
+         yr_t_plus_10 = year + 10) %>%
+  select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
+  arrange(tendigit_fips, year)
+
 
 #================================================================#
 #  importing census only dataset ----
@@ -49,14 +68,67 @@ vars_list <- c("TENDIGIT_FIPS", "year"  ,"pop" ,"childpov" ,"poverty" ,"pctwithk
                "pcthisp" ,"pctmarried" ,"pctnevermarr" ,"pctseparated" ,"pctdivorced" ,"lforcepartrate" ,"incherfindahl")
 # loading census df
 census <- haven::read_dta(paste0(data_tax,"/census_property_9021.dta")) %>%
-  dplyr::select(vars_list) %>%
+  # dplyr::select(vars_list) %>%
   janitor::clean_names()
+
+#================================================================#
+#  importing file to identify split cities ----
+#================================================================#
+split_cities <- readxl::read_excel(paste0(shared_odjfs,"/ohio-only-all-geocodes-2016.xlsx")) %>% janitor::clean_names() %>%
+  filter(str_detect(`name_note_if_split_between_two_counties`, "(split)")) %>%
+  mutate(placefp10 = str_pad(placefp10, width = 5, side = "left", pad = "0")) 
+
+split_cities$placefp10
 
 #================================================================#
 #  loading cleaned employment dataset (with geocoded addresses) ----
 #================================================================#
 
-employment_df2 <- haven::read_dta(paste0(data_tax,"/employment/employment_data_cleaned.dta"))
+employment_df <- haven::read_dta(paste0(data_tax,"/employment/employment_data_cleaned.dta"))
+
+# deflating using 2010 as base (numbers taken from Dr. Brasington's email)
+employment_df2 <- employment_df %>%
+  mutate(
+    wage = case_when(
+      year == 2020 ~ wage * 0.84,
+      year == 2019 ~ wage * 0.86,
+      year == 2018 ~ wage * 0.88,
+      year == 2017 ~ wage * 0.90,
+      year == 2016 ~ wage * 0.92,
+      year == 2015 ~ wage * 0.94,
+      year == 2014 ~ wage * 0.94,
+      year == 2013 ~ wage * 0.95,
+      year == 2012 ~ wage * 0.97,
+      year == 2011 ~ wage * 0.99,
+      year == 2010 ~ wage * 1.00,
+      year == 2009 ~ wage * 1.04,
+      year == 2008 ~ wage * 1.04,
+      year == 2007 ~ wage * 1.08,
+      year == 2006 ~ wage * 1.10,
+      TRUE ~ wage  # Default case to handle any years not listed
+    )
+  )
+
+# get the last 5 digits of tendigit_fips as placefp10
+# employment_df3 <- employment_df2 %>% 
+#   mutate(placefp10 = as.numeric(substr(as.character(tendigit_fips), 6, 10)))
+# 
+# employment_df3 %>% filter(placefp10 %in% split_cities$placefp10) %>% View()
+
+# employment_df2 %>% # change to employment_df to see the original data
+#   group_by(year) %>%
+#   summarize(
+#     mean = mean(wage, na.rm = TRUE),
+#     median = median(wage, na.rm = TRUE),
+#     min = min(wage, na.rm = TRUE),
+#     max = max(wage, na.rm = TRUE),
+#     q1 = quantile(wage, 0.25, na.rm = TRUE),  # First quartile
+#     q2 = quantile(wage, 0.50, na.rm = TRUE),  # Second quartile, same as median
+#     q3 = quantile(wage, 0.75, na.rm = TRUE),  # Third quartile
+#     count = n(),
+#     .groups = 'drop'  # This drops the grouping so the result is no longer grouped
+#   )
+
   
 #===============================================#
 # Data Subsetting (take only relevant cols) ----
@@ -76,7 +148,27 @@ emp_df_agg_fips_yr_qtr <- emp %>%
             tot_persons = sum(persons, na.rm = TRUE)) # adding avg employees in all the establishments
 # emp_df_agg_fips_yr_qtr %>% View()
 
-# haven::write_dta(emp_df_agg_fips_yr_qtr, path = paste0(data_tax,"/employment/emp_df_agg_fips_yr_qtr.dta"))
+
+#=========================================================================================#
+# dealing with split cities in employment data and assigning them same code as voting data
+#=========================================================================================#
+
+emp_df_agg_fips_yr_qtr2 <- emp_df_agg_fips_yr_qtr %>% 
+  mutate(stfips = substr(as.character(tendigit_fips), 1, 2),
+         cofips = substr(as.character(tendigit_fips), 3, 5),
+         placefp10 = substr(as.character(tendigit_fips), 6, 10)) %>% 
+  arrange(placefp10, cofips, year, quarter)
+
+emp_df_agg_fips_yr_qtr3 <- emp_df_agg_fips_yr_qtr2 %>% left_join(split_cities %>% select(tendigit_fips, placefp10), by = "placefp10") %>%
+  mutate(tendigit_fips = if_else(is.na(tendigit_fips.y), tendigit_fips.x, tendigit_fips.y)) %>%
+  relocate(tendigit_fips, everything()) %>% select(-tendigit_fips.x, -tendigit_fips.y) %>% 
+  group_by(tendigit_fips, year, quarter) %>%
+  summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
+            tot_persons = sum(tot_persons, na.rm = TRUE))
+
+# emp_df_agg_fips_yr_qtr2 %>% left_join(split_cities, by = "placefp10") %>% filter(!is.na(name_note_if_split_between_two_counties)) %>% View()
+
+# haven::write_dta(emp_df_agg_fips_yr_qtr3, path = paste0(data_tax,"/employment/emp_df_agg_fips_yr_qtr.dta"))
 
 # Key note: for persons, whenever a time dimension collapses, we do avg, otherwise we do sum because persons are "stock", not "flow".
 
@@ -88,7 +180,7 @@ emp_df_agg_fips_yr_qtr <- emp %>%
 #             avg_persons = sum(tot_persons, na.rm = TRUE))
 
 # Using emp_df_agg_fips_yr_qtr to aggregate by fips, year
-emp_df_agg_fips_yr <- emp_df_agg_fips_yr_qtr %>% 
+emp_df_agg_fips_yr <- emp_df_agg_fips_yr_qtr3 %>% 
   group_by(tendigit_fips, year) %>%
   summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
             avg_persons = round(mean(tot_persons, na.rm = TRUE)))
@@ -156,16 +248,33 @@ emp_agg_by_indstry_qtr <- purrr::map(emp_by_indstry, ~ .x %>%
                                              tot_persons = sum(persons, na.rm = TRUE)) # adding avg employees in all the establishments
                                  )
 
-emp_agg_by_indstry_yr <- purrr::map(emp_agg_by_indstry_qtr, ~ .x %>% 
+
+# dealing with split cities in employment data and assigning them same code as voting data
+
+emp_agg_by_indstry_qtr2 <- purrr::map(emp_agg_by_indstry_qtr, ~ .x %>% 
+                                              mutate(stfips = substr(as.character(tendigit_fips), 1, 2),
+                                                     cofips = substr(as.character(tendigit_fips), 3, 5),
+                                                     placefp10 = substr(as.character(tendigit_fips), 6, 10)) %>%
+                                              arrange(placefp10, cofips, year, quarter) )
+
+emp_agg_by_indstry_qtr3 <- purrr::map(emp_agg_by_indstry_qtr2, ~ .x %>% left_join(split_cities %>% select(tendigit_fips, placefp10), by = "placefp10") %>%
+mutate(tendigit_fips = if_else(is.na(tendigit_fips.y), tendigit_fips.x, tendigit_fips.y)) %>%
+  relocate(tendigit_fips, everything()) %>% select(-tendigit_fips.x, -tendigit_fips.y) %>% 
+  group_by(tendigit_fips, year, quarter, naics_2dg, sector_title) %>%
+  summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
+            tot_persons = sum(tot_persons, na.rm = TRUE)) )
+
+# map_dbl(emp_agg_by_indstry_qtr, nrow)   - map_dbl(emp_agg_by_indstry_qtr3, nrow)
+
+emp_agg_by_indstry_yr <- purrr::map(emp_agg_by_indstry_qtr3, ~ .x %>% 
                                    group_by(tendigit_fips, year, naics_2dg, sector_title) %>%
                                    summarise(tot_wages = sum(tot_wages, na.rm = TRUE),
                                              avg_persons = round(mean(tot_persons, na.rm = TRUE)))
 )
 
 # exporting industry-level employment datasets as Stata datasets
-# purrr::map2(emp_agg_by_indstry_yr, names(emp_agg_by_indstry_yr), ~ haven::write_dta(.x, 
-#                                                                   path = paste0(data_tax,"/employment/industry/df_emp_", .y, ".dta")))
-
+purrr::map2(emp_agg_by_indstry_yr, names(emp_agg_by_indstry_yr), ~ haven::write_dta(.x,
+                                                                  path = paste0(data_tax,"/employment/industry/df_emp_", .y, ".dta")))
   
 #==========================================================#
 # Analysis on tendigit_fips ----
@@ -220,9 +329,11 @@ dfs_emp_ln_agg <- purrr::map(dfs_emp_agg, ~ .x %>%
 )
 
 # exporting dfs_emp_agg as Stata datasets
-# purrr::map2(dfs_emp_agg, names(dfs_emp_agg), ~ haven::write_dta(.x, 
-#                                            path = paste0(data_tax,"/employment/dfs_emp_agg_", .y, ".dta")))
-
+purrr::map2(dfs_emp_agg, names(dfs_emp_agg), ~ haven::write_dta(.x,
+                                           path = paste0(data_tax,"/employment/dfs_emp_agg_", .y, ".dta")))
+# exporting dfs_emp_ln_agg as Stata datasets
+purrr::map2(dfs_emp_ln_agg, names(dfs_emp_ln_agg), ~ haven::write_dta(.x,
+                                           path = paste0(data_tax,"/employment/dfs_emp_ln_agg_", .y, ".dta")))
 
 #========================================================#
 # |- Creating employment/pop and wages/pop variables ----
@@ -253,35 +364,5 @@ dfs_emp_agg_per <- purrr::map2(emps_per, yrs, function(x, y){
     filter(!(wages_per_cap == 0)) %>%
     filter(!(emp_per_cap == 0))
 })
-
-
-#====================================================================#
-# |- Generating emp and wages vars for only specific NAICS codes ----
-#====================================================================#
-
-naics_2dg_unique <- sort(unique(emp2$naics_2dg))
-
-naics_include <- c("11" = 1, "21" = 1, "22" = 0, "23" = 1, "31" = 1, "32" = 1, "33" = 1,
-                   "42" = 1, "44" = 1, "45" = 1, "48" = 1, "49" = 1, "51" = 0, "52" = 0,
-                   "53" = 0, "54" = 0, "55" = 0, "56" = 1, "61" = 0, "62" = 0, "71" = 1,
-                   "72" = 1, "81" = 1, "92" = 1)
-
-emp_by_naics_2dg_count <- emp2 %>%
-                        group_by(naics_2dg) %>%
-                        summarize(n = n(), .groups = "drop")
-
-# Create a flag
-emp2$include_flag <- ifelse(emp2$naics_2dg %in% names(naics_include[naics_include == 1]), 1, 0)
-
-# Note: observation which have a code of "0" or "99" will be part of 0 i.e. industries that are not directly impacted by roads
-
-# count by this flag
-emp2 %>%
-  group_by(include_flag) %>%
-  summarize(n = n(), .groups = "drop")
-
-emp_naics <- emp2 %>% 
-  filter(include_flag == 1)
-
 
 

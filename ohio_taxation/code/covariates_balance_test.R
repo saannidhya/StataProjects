@@ -5,6 +5,8 @@
 # Log     : 07/29/2022 : finished loop for covariate balance test for all datasets
 #           11/23/2023 : Removed work on post-outcome covariates datasets (datasets that contain both outcome 
 #                        and covariates). Now, doing balancing only on covariates and running variables.
+#           06/24/2024 : Updated the code to make it compatible with other files    
+#           07/25/2024 : Added t-3, t-2, t+1 housing datasets to the table
 #==========================================================================================================#
 
 library(kableExtra)
@@ -37,7 +39,7 @@ covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pc
 
 regs_covs <- purrr::map(covs_list, .f = function(var){
                         rdrobust::rdrobust(y = roads_and_census[[var]], 
-                                           x = roads_and_census$votes_pct_for, 
+                                           x = roads_and_census$votes_pct_against, 
                                            c = cutoff, 
                                            all = TRUE)
                       })
@@ -178,9 +180,9 @@ roads_and_census_std %>% group_by(treated) %>% summarize(across(chr_lst, list(me
 #                        Covariates Table for paper  ----
 #============================================================================================================#
 
-colnames(roads_and_census)
-
-roads_and_census %>% View()
+# colnames(roads_and_census)
+# 
+# roads_and_census %>% View()
 
 # global: aggregate
 means_global_agg <- roads_and_census %>% select(all_of(covs_list)) %>%
@@ -190,36 +192,36 @@ means_global_agg <- roads_and_census %>% select(all_of(covs_list)) %>%
   mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", "")) 
 means_global_agg
 # global: passed and failed
-means_global_div <- roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>% View()
+means_global_div <- roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>%
   group_by(treated) %>%
   summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                       sd = ~sd(., na.rm = TRUE))), count = n()) %>%
   pivot_longer(cols = -treated, names_to = "variable", values_to = "value") %>% 
   pivot_wider(names_from = treated, values_from = value, names_prefix = "global_treated_") %>% 
   mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
-means_global_div %>% tail()
+# means_global_div %>% tail()
 
 # average bandwidth length (from t+0 to t+10)
 avg_bw <- mean(map_dbl(gs[4:length(gs)], ~round(.x$bws[1,],1)[[1]]))
 
 # effective 1: agg
-means_eff_agg <-   roads_and_census %>% select(votes_pct_for, all_of(covs_list)) %>%
-    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_for) %>%
+means_eff_agg <-   roads_and_census %>% select(votes_pct_against, all_of(covs_list)) %>%
+    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
     summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                         sd = ~sd(., na.rm = TRUE))), count = n()) %>%
     pivot_longer(cols = everything(), names_to = "variable", values_to = "effective_value") %>% 
     mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
-means_eff_agg  %>% tail()
+# means_eff_agg  %>% tail()
 # effective 1: passed and failed
-means_eff_div <-   roads_and_census %>% select(treated, votes_pct_for, all_of(covs_list)) %>%
-    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_for) %>%
+means_eff_div <-   roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>%
+    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
     group_by(treated) %>%
     summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                         sd = ~sd(., na.rm = TRUE))), count = n()) %>%
     pivot_longer(cols = -treated, names_to = "variable", values_to = "value") %>% 
     pivot_wider(names_from = treated, values_from = value, names_prefix = "effective_treated_") %>% 
     mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
-means_eff_div  %>% tail()
+# means_eff_div  %>% tail()
 
 #------- Covariates Table ---------#  
 tbl1 <- means_global_agg %>% 
@@ -246,8 +248,8 @@ tbl1 %>%
          `Eff: Passed levies` = effective_treated_1, `Eff: Failed levies` = effective_treated_0)  %>%
   rowwise() %>% 
   # mutate(across(where(is.numeric), ~add_parentheses(., statistic)))  %>%
-  ungroup() %>%
-  write.csv(paste0(tables,"/covar_bal_tab.csv"), row.names = FALSE)
+  ungroup() %>% View()
+  # write.csv(paste0(tables,"/covar_bal_tab.csv"), row.names = FALSE)
 
 # mean/median/sd vote share
 roads_and_census$votes_pct_against %>% mean %>% round
@@ -270,3 +272,56 @@ medfamy <- roads_and_census %>% filter(between(votes_pct_against, cutoff - avg_b
   group_by(treated) %>% 
   summarize(mean_medfamy= mean(medfamy), median_medfamy = median(medfamy), sd_pop = sd(medfamy)) 
 medfamy$mean_medfamy[2] - medfamy$mean_medfamy[1] # difference in means
+
+#====================================================#
+# t-3, t-2, t-1 means for Data section of paper ----
+#====================================================#
+
+# global: aggregate
+map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  group_by(dataset) %>%
+  summarize(global_mean_hp = mean(median_sale_amount), global_sd_hp = sd(median_sale_amount)) 
+
+# global: passed and failed
+map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  group_by(dataset, treated) %>%
+  summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) 
+
+# effective 1: agg
+map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  group_by(dataset) %>%
+  summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) 
+
+# effective 1: passed and failed
+map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  group_by(dataset, treated) %>%
+  summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) 
+
+
+# %>%
+
+dfs_agg_covs %>% .[grepl("t_minus", names(.)) ]
+
+dfs_agg_covs$housing_roads_census_t_minus_3_matches %>% colnames
+dfs_agg_covs$housing_roads_census_t_minus_2_matches %>% colnames
+dfs_agg_covs$housing_roads_census_t_minus_1_matches %>% colnames
+bind_
+
+dfs_agg_covs$housing_roads_census_t_minus_1_matches$median_sale_amount %>% mean
+dfs_agg_covs$housing_roads_census_t_minus_1_matches$median_sale_amount %>% sd
+
+dfs_agg
+names(dfs_agg_covs)
+
+means_eff_agg <-   roads_and_census %>% select(votes_pct_against, all_of(covs_list)) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
+                                      sd = ~sd(., na.rm = TRUE))), count = n()) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "effective_value") %>% 
+  mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
