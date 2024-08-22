@@ -34,7 +34,7 @@ lapply(packages, check_and_install)
 #================================================================#
 #  importing roads_and_census dataset ----
 #================================================================# 
-roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
+roads_and_census <- haven::read_dta(paste0(data_tax,"/roads_and_census.dta")) %>%
   select(-matches("yr_t_")) %>%
   filter(description == "R" & duration != "1000") %>%
   janitor::clean_names() %>%

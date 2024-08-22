@@ -224,7 +224,7 @@ top10_ren <- roads_and_census %>%
   count(treated) %>% 
   filter(treated == 0) %>%
   arrange(desc(n)) %>% head(10) %>% ungroup()
-top10_ren$tendigit_fips
+# top10_ren$tendigit_fips
 
 # Top 10 cuts
 top10_cuts <- roads_and_census %>% 
@@ -232,11 +232,11 @@ top10_cuts <- roads_and_census %>%
   count(treated) %>% 
   filter(treated == 1) %>%
   arrange(desc(n)) %>% head(10) %>% ungroup()
-top10_cuts$tendigit_fips
+# top10_cuts$tendigit_fips
 
 
-roads_and_census %>% 
-  filter(tendigit_fips %in% top10_ren$tendigit_fips) %>% select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 0) %>% head(20)
+# roads_and_census %>% 
+#   filter(tendigit_fips %in% top10_ren$tendigit_fips) %>% select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 0) %>% head(20)
 
 # roads_and_census %>% 
   # filter(tendigit_fips %in% top10_cuts$tendigit_fips) %>% select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 1) %>% head(20)

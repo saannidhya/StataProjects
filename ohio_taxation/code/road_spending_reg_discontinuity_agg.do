@@ -7,6 +7,7 @@
 *		2. 26July2022: created loop to generate t-2, ... t+10 variables, created RD plots and pei 2021 test
 *		3. 27July2022: finished the loop
 *		4. 02Aug2022 : generalized the code so that it can handle median_sale_amount and median_sale_amount_per_sq_feet
+*		5. 08Aug2024 : update to include RD plot for employment and wages_per_emp variables as well
 *-----------------------------------------------------------------------------------------------------------------------;
 
 * Defining root location via global macros;
@@ -142,3 +143,64 @@ histogram votes_pct_against, title("Histogram of % Votes Against") ///
   xtick(0(10)100) xlabel(0(10)100)
 
 graph export "${plots}/votes_pct_for/votes_pct_against_histogram.png", as(png) replace
+
+
+*----------------------------------------------------------------------------------;
+* RD plots of employment and wages_per_emp variables
+*----------------------------------------------------------------------------------;
+
+// global Y avg_persons
+global Y wages_per_emp
+
+foreach t of numlist -3/10 {
+	local t_abs = abs(`t')		
+	if `t' < 0 {
+		local t_type = "t_minus"		
+	}
+	else {
+		local t_type = "t_plus"		
+	}
+	if "$Y" == "avg_persons" | "$Y" == "tot_wages" | "$Y" == "wages_per_emp" {
+		local e_prefix = "dfs_emp_agg_yr"
+	}
+	if "$Y" == "ln_avg_persons" | "$Y" == "ln_tot_wages" {
+		local e_prefix = "dfs_emp_ln_agg_yr"
+	}
+	* housing dataset in a local macro
+	local employment_df = "`e_prefix'_`t_type'_" + "`t_abs'"
+	*scalar to store length of the prefix
+	scalar com = length("`e_prefix'")
+	
+	* extracting years. E.g. t_plus_1, t_plus_2 etc.
+	local yr = substr("`employment_df'", com+2, length("`employment_df'")) 
+	* replacing "_" with " "
+	local year = subinstr("`yr'","_", " ",.)
+	local Y = subinstr("${Y}","_", " ",.)
+	local covariates = "${covs_list_`yr'}"
+	
+	* importing median_sale_amount dataset ;
+	use "${data}/employment/`employment_df'.dta", clear	
+	display "`employment_df'"
+	display "`yr'"
+	display "`year'"
+	display "$Y"
+	display "`Y'"	
+	
+	* if wages_per_cap is the y variable
+	if "$Y" == "wages_per_emp" {
+		gen wages_per_emp  = tot_wages/avg_persons
+	}
+	
+	* regression run
+	rdrobust $Y $X, c($cutoff) all kernel($kernel) p($p) q($q) bwselect($bwselect)
+	
+	* storing optimal bandwidths
+	local h_l = round(`e(h_l)', 0.1)
+	local h_r = round(`e(h_r)', 0.1)	
+	
+	* RD Plot;
+	binscatter $Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) linetype(lfit) ///
+	xtitle("Percent of Votes For Tax Levy") ytitle("`Y' (`year')")  ///
+	savegraph("$plots/votes_pct_against/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace	
+
+}

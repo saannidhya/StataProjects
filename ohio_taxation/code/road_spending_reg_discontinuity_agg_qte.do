@@ -30,6 +30,33 @@ global qn = 4
 global ql = 0.25
 global qh = 1
 
+* covariates list
+global covs_list_t_minus_3 = "pop poverty"
+// global covs_list_t_minus_2 = "pop poverty pctmin medfamy pct18to64 pctsinparhhld pctlt5" //bad
+global covs_list_t_minus_2 = ""
+// global covs_list_t_minus_1 = "pop poverty pctmin medfamy pct18to64 pctsinparhhld pctlt5" // bad
+global covs_list_t_minus_1 = "" 
+// global covs_list_t_plus_0  = "pop poverty pctmin medfamy pct18to64 pctsinparhhld pctlt5" // bad
+global covs_list_t_plus_0  =  "pop"
+global covs_list_t_plus_1  = "poverty"
+// global covs_list_t_plus_2  = "pctwithkids pctlesshs pctsomecoll pct18to64 pctblack pctapi incherfindahl" // bad
+global covs_list_t_plus_2  =  "pop"
+// global covs_list_t_plus_3  = "pctwithkids pctsinparhhld pctlesshs pctrent pct5to17 pctapi raceherfindahl pctseparated incherfindahl" // bad
+global covs_list_t_plus_3  = "pop"
+// global covs_list_t_plus_4  = "pctwithkids pctsinparhhld pctlesshs pctrent pct5to17 pct18to64 pctamerind pctseparated incherfindahl"
+global covs_list_t_plus_4  = ""
+global covs_list_t_plus_5  = "pctsinparhhld unemprate pctrent pctlt5 pctwhite pctblack"
+// global covs_list_t_plus_6  = "childpov poverty pctsinparhhld unemprate pct18to64 pctwhite raceherfindahl pctseparated" // good
+global covs_list_t_plus_6  = ""
+// global covs_list_t_plus_7  = "poverty pctsinparhhld unemprate pctrent pct18to64 pctotherrace pctseparated" // good
+global covs_list_t_plus_7  = ""
+// global covs_list_t_plus_8  = "pctwithkids pctsinparhhld pctrent pctlt5 pctwhite pctmarried pctseparated" // bad
+global covs_list_t_plus_8  = ""
+// global covs_list_t_plus_9  = "childpov poverty pctsinparhhld unemprate pctrent pctblack pctmarried pctseparated" // bad
+global covs_list_t_plus_9  = "pop" 
+global covs_list_t_plus_10 = "pctsinparhhld pctrent pct18to64 pctwhite poverty" // good
+
+
 
 *------------------------------------------------------------------------------------------;
 *	Median Housing Price
@@ -73,14 +100,26 @@ foreach t of numlist -3/10 {
 	display "`year'"
 	display "$Y"
 	display "`Y'"	
+	display "covariates = `covariates'"
 	* treated variable
 	gen treated = 1 if votes_pct_against > $cutoff
 	replace treated = 0 if votes_pct_against <= $cutoff	
 	
 // 	rdqte $Y $X , c($cutoff) qn($qn) ql($ql) qh($qh)
 // 	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(5.0)  
-	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0)  	
+// 	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) 
+// 	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) 
+	bootstrap, reps(500) seed(12345): rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) control(`covariates')		
+// 	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0)  	quantiles(0.25 0.5 0.75)
 }
+
+// rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) 
+// use "${shared}/housing_agg_roads_census_t_plus_8.dta", clear	
+// gen treated = 1 if votes_pct_against > $cutoff
+// replace treated = 0 if votes_pct_against <= $cutoff	
+// rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) 
+// bootstrap, reps(100): rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) control(pop poverty pctmin medfamy pct18to64 pctsinparhhld pctlt5)
+// pop poverty pctmin medfamy pct18to64 pctsinparhhld pctlt5
 	
 // rdqte median_sale_amount votes_pct_against, c($cutoff) qn($qn) ql($ql) qh($qh) 
 
@@ -134,6 +173,5 @@ foreach t of numlist -3/10 {
 // 	rdqte $Y $X , c($cutoff) qn($qn) ql($ql) qh($qh)
 // 	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(5.0)  quantiles(0.2 0.4 0.6 0.8)
 // 	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) kernel(triangle) control(poverty)
-	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) kernel(triangle)
-}
+	rddqte $Y treated $X , discontinuity($cutoff) bandwidth(10.0) kernel(triangle) 
 

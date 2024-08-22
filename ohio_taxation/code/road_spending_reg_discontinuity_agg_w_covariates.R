@@ -15,11 +15,12 @@ code <- paste0(root,"/code")
 tables <- paste0(data,"/outputs/tables")
 plots <- paste0(data,"/outputs/plots")
 
+source(paste0(code,"/utility_functions.R"))
+
 # running data setup code
 source(paste0(code,"/housing_data_setup.R"))
 # running covariates balance test
 # source(paste0(code,"/covariates_balance_test.R"))
-source(paste0(code,"/utility_functions.R"))
 # uncontaminated datasets
 source(paste0(code,"/roads_data_setup.R"))
 
@@ -130,6 +131,11 @@ tes_gs <- te_tables(gs)
 plot_te(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 # plot_te(tes, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
+# get mean optimal bandwidth
+purrr::walk2(gs, names(gs), ~print(paste0("Eff. Bandwidth (h) for ", .y, ": " , round(.x$bws[1,],1))))
+
+
+# gs[grep("t_plus", names(gs))] %>% map_dbl( ~ round(.x$bws[1,])[[1]] ) %>% mean
 
 
 # y <- dfs_agg_covs$housing_roads_census_t_plus_10_matches

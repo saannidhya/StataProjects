@@ -6,7 +6,8 @@
 #           11/23/2023 : Removed work on post-outcome covariates datasets (datasets that contain both outcome 
 #                        and covariates). Now, doing balancing only on covariates and running variables.
 #           06/24/2024 : Updated the code to make it compatible with other files    
-#           07/25/2024 : Added t-3, t-2, t+1 housing datasets to the table
+#           07/25/2024 : Added t-3, t-2, t+1 housing datasets to the table for housing outcome
+#           08/15/2024 : Added t-3, t-2, t+1 housing datasets to the table for employment and wages outcomes
 #==========================================================================================================#
 
 library(kableExtra)
@@ -21,7 +22,7 @@ plots <- paste0(data,"/outputs/plots")
 
 # running data setup code
 source(paste0(code,"/housing_data_setup.R"))
-# source(paste0(code,"/employment_data_setup.R"))
+source(paste0(code,"/employment_data_setup.R"))
 # running reg discontinuity with covs for bandwidth and selected covariates info
 source(paste0(code,"/road_spending_reg_discontinuity_agg_w_covariates.R"))
 
@@ -190,7 +191,7 @@ means_global_agg <- roads_and_census %>% select(all_of(covs_list)) %>%
                                       sd = ~sd(., na.rm = TRUE))), count = n()) %>%
   pivot_longer(cols = everything(), names_to = "variable", values_to = "global_value") %>% 
   mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", "")) 
-means_global_agg
+# means_global_agg %>% print(n = 67)
 # global: passed and failed
 means_global_div <- roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>%
   group_by(treated) %>%
@@ -198,8 +199,10 @@ means_global_div <- roads_and_census %>% select(treated, votes_pct_against, all_
                                       sd = ~sd(., na.rm = TRUE))), count = n()) %>%
   pivot_longer(cols = -treated, names_to = "variable", values_to = "value") %>% 
   pivot_wider(names_from = treated, values_from = value, names_prefix = "global_treated_") %>% 
-  mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
+  mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", "")) %>%
+  filter(variable != "votes_pct_against")
 # means_global_div %>% tail()
+# means_global_div %>% print(n = 67)
 
 # average bandwidth length (from t+0 to t+10)
 avg_bw <- mean(map_dbl(gs[4:length(gs)], ~round(.x$bws[1,],1)[[1]]))
@@ -222,6 +225,7 @@ means_eff_div <-   roads_and_census %>% select(treated, votes_pct_against, all_o
     pivot_wider(names_from = treated, values_from = value, names_prefix = "effective_treated_") %>% 
     mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
 # means_eff_div  %>% tail()
+# means_global_agg %>% print(n = 67)
 
 #------- Covariates Table ---------#  
 tbl1 <- means_global_agg %>% 
@@ -277,6 +281,8 @@ medfamy$mean_medfamy[2] - medfamy$mean_medfamy[1] # difference in means
 # t-3, t-2, t-1 means for Data section of paper ----
 #====================================================#
 
+## Housing Price
+
 # global: aggregate
 map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
   filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
@@ -304,24 +310,67 @@ map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated =
   summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) 
 
 
-# %>%
+## Employment
 
-dfs_agg_covs %>% .[grepl("t_minus", names(.)) ]
-
-dfs_agg_covs$housing_roads_census_t_minus_3_matches %>% colnames
-dfs_agg_covs$housing_roads_census_t_minus_2_matches %>% colnames
-dfs_agg_covs$housing_roads_census_t_minus_1_matches %>% colnames
-bind_
-
-dfs_agg_covs$housing_roads_census_t_minus_1_matches$median_sale_amount %>% mean
-dfs_agg_covs$housing_roads_census_t_minus_1_matches$median_sale_amount %>% sd
-
-dfs_agg
-names(dfs_agg_covs)
-
-means_eff_agg <-   roads_and_census %>% select(votes_pct_against, all_of(covs_list)) %>%
+# global: aggregate
+map2(dfs_emp_agg_per , names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
   filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
-  summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
-                                      sd = ~sd(., na.rm = TRUE))), count = n()) %>%
-  pivot_longer(cols = everything(), names_to = "variable", values_to = "effective_value") %>% 
-  mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
+  group_by(dataset) %>%
+  summarize(global_mean_hp = mean(avg_persons), global_sd_hp = sd(avg_persons)) 
+
+# global: passed and failed
+map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  group_by(dataset, treated) %>%
+  summarize(div_mean_hp = mean(avg_persons), div_sd_hp = sd(avg_persons)) 
+
+# effective 1: passed and failed
+map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  group_by(dataset, treated) %>%
+  summarize(div_mean_hp = mean(avg_persons), div_sd_hp = sd(avg_persons)) 
+
+## Wages
+
+# global: aggregate
+map2(dfs_emp_agg_per , names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  group_by(dataset) %>%
+  summarize(global_mean_hp = mean(tot_wages), global_sd_hp = sd(tot_wages)) 
+
+# global: passed and failed
+map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  group_by(dataset, treated) %>%
+  summarize(div_mean_hp = mean(wages_per_cap), div_sd_hp = sd(wages_per_cap)) 
+
+# effective 1: passed and failed
+map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  group_by(dataset, treated) %>%
+  summarize(div_mean_hp = mean(wages_per_cap), div_sd_hp = sd(wages_per_cap)) 
+
+
+## Wages per cap
+
+# global: aggregate
+map2(dfs_emp_agg_p , names(dfs_emp_agg_p), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  group_by(dataset) %>%
+  summarize(global_mean_hp = mean(wages_per_emp), global_sd_hp = sd(wages_per_emp)) 
+
+# global: passed and failed
+map2(dfs_emp_agg_p, names(dfs_emp_agg_p), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  group_by(dataset, treated) %>%
+  summarize(div_mean_hp = mean(wages_per_emp), div_sd_hp = sd(wages_per_emp)) 
+
+# effective 1: passed and failed
+map2(dfs_emp_agg_p, names(dfs_emp_agg_p), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
+  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  group_by(dataset, treated) %>%
+  summarize(div_mean_hp = mean(wages_per_emp), div_sd_hp = sd(wages_per_emp)) 
+

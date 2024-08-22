@@ -113,6 +113,12 @@ naics_df <- data.frame(
   `sector_title` = c("agriculture, forestry, fishing and hunting", "mining", "utilities", "construction", "manufacturing", "manufacturing", "manufacturing", "wholesale trade", "retail trade", "retail trade", "transportation and warehousing", "transportation and warehousing", "information", "finance and insurance", "real estate rental and leasing", "professional, scientific, and technical services", "management of companies and enterprises", "administrative and support and waste services", "educational services", "health care and social assistance", "arts, entertainment, and recreation", "accommodation and food services", "other services (except public administration)", "public administration")
 )
 
+dfs_emp_agg_p <- map(dfs_emp_agg, ~ .x %>% mutate(wages_per_emp = tot_wages/avg_persons) %>%
+                       relocate(tendigit_fips, year, tot_wages, avg_persons, wages_per_emp, everything()) %>%
+                       filter(!(is.na(wages_per_emp) | (avg_persons == 0) | is.nan(wages_per_emp)) )) 
+
+# dfs_emp_agg_p$yr_t_plus_0$wages_per_emp %>% summary()
+
 
 #========================================#
 #  Manipulation test (X variable) ----
@@ -456,12 +462,6 @@ covs_final_emp_per_ln_wages <- purrr::map(dfs_emp_agg_per, ~find_covs_sign(.x, y
 #====================================================#
 # Using Wages/Employment as outcome ----
 #====================================================#
-
-dfs_emp_agg_p <- map(dfs_emp_agg, ~ .x %>% mutate(wages_per_emp = tot_wages/avg_persons) %>%
-      relocate(tendigit_fips, year, tot_wages, avg_persons, wages_per_emp, everything()) %>%
-        filter(!(is.na(wages_per_emp) | (avg_persons == 0) | is.nan(wages_per_emp)) )) 
-
-dfs_emp_agg_p$yr_t_plus_0$wages_per_emp %>% summary()
 
 # running RDD without covariates
 regs_emp_wages_per_emp <- purrr::map(.x = dfs_emp_agg_p, ~ rdrobust::rdrobust(y = .x$wages_per_emp, x = .x$votes_pct_against, c = cutoff, all = TRUE))
