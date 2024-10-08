@@ -1,0 +1,105 @@
+\documentclass{beamer}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+% Theme choice
+\usetheme{Madrid}
+\useoutertheme{progressbar} % Add progress bar at the top
+\setbeamertemplate{footline}[frame number]
+
+% Customizing the progress bar color
+\setbeamercolor{progress bar}{fg=blue}
+
+% Customizing the footer and header
+\setbeamertemplate{headline}{
+    \leavevmode%
+    \hbox{%
+    \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,leftskip=1em]{section in head/foot}%
+        \usebeamerfont{section in head/foot}\insertsectionhead
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,rightskip=1em]{subsection in head/foot}%
+        \usebeamerfont{subsection in head/foot}\insertsubsectionhead
+    \end{beamercolorbox}}%
+    \vskip0pt%
+}
+
+\title{Title of Your Presentation}
+\author{Your Name}
+\institute{Your Institution}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+\section{Introduction}
+\begin{frame}{Introduction}
+    \frametitle{Introduction}
+    \begin{itemize}
+        \item Point 1
+        \item Point 2
+        \item Point 3
+    \end{itemize}
+    \bigskip
+    % Button to navigate to Literature Review slide
+    \hyperlink{literature_review}{\beamergotobutton{Go to Literature Review}}
+\end{frame}
+
+\section{Literature Review}
+\begin{frame}[label=literature_review]{Literature Review}
+    \frametitle{Literature Review}
+    \begin{itemize}
+        \item Point 1
+        \item Point 2
+        \item Point 3
+    \end{itemize}
+    \bigskip
+    % Button to navigate back to Introduction slide
+    \hyperlink{introduction}{\beamergotobutton{Go to Introduction}}
+\end{frame}
+
+\section{Methodology}
+\begin{frame}{Methodology}
+    \frametitle{Methodology}
+    \begin{itemize}
+        \item Point 1
+        \item Point 2
+        \item Point 3
+    \end{itemize}
+\end{frame}
+
+\section{Results}
+\begin{frame}{Results}
+    \frametitle{Results}
+    \begin{itemize}
+        \item Point 1
+        \item Point 2
+        \item Point 3
+    \end{itemize}
+\end{frame}
+
+\section{Conclusion}
+\begin{frame}{Conclusion}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Point 1
+        \item Point 2
+        \item Point 3
+    \end{itemize}
+\end{frame}
+
+% \begin{frame}{References}
+%     \frametitle{References}
+%     \bibliographystyle{plain}
+%     \bibliography{your_bibliography_file}
+% \end{frame}
+
+\end{document}

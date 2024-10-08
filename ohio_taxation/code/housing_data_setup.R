@@ -46,6 +46,7 @@ roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
   mutate(votes_pct_against = 100 - votes_pct_for) %>%
   mutate(treated = if_else(votes_pct_against > cutoff, 1, 0))    
 
+
 #============================================#
 #  Importing Housing datasets as a list ----
 #============================================#
@@ -234,6 +235,8 @@ top10_cuts <- roads_and_census %>%
   arrange(desc(n)) %>% head(10) %>% ungroup()
 # top10_cuts$tendigit_fips
 
+# roads_and_census2 %>% filter(between(votes_pct_against, 35, 65)) %>% pull(tendigit_fips) %>% unique %>% as_tibble_col(column_name =  "tendigit_fips") %>%
+#   write_csv(here("data/outputs/tables/fips_list_for_google_earth.csv"))
 
 # roads_and_census %>% 
 #   filter(tendigit_fips %in% top10_ren$tendigit_fips) %>% select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 0) %>% head(20)
