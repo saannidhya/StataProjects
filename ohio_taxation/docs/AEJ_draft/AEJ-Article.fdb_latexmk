@@ -1,23 +1,23 @@
 # Fdb version 4
-["bibtex AEJ-Article"] 1726270440.97758 "AEJ-Article.aux" "AEJ-Article.bbl" "AEJ-Article" 1726270449.22057 0
+["bibtex AEJ-Article"] 1726270440.97758 "AEJ-Article.aux" "AEJ-Article.bbl" "AEJ-Article" 1728237225.25878 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
   "./aej_references.bib" 1726175914 8455 9a4bbc9b0edef2400dcd19b9bd7ee28b ""
-  "AEJ-Article.aux" 1726270447 17625 e2b926fc0711a339407b5cda7ddfb555 "pdflatex"
+  "AEJ-Article.aux" 1728237223 17625 e2b926fc0711a339407b5cda7ddfb555 "pdflatex"
   (generated)
   "AEJ-Article.bbl"
   "AEJ-Article.blg"
   (rewritten before read)
-["pdflatex"] 1726270443.07478 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/AEJ_draft/AEJ-Article.tex" "AEJ-Article.pdf" "AEJ-Article" 1726270449.22219 0
+["pdflatex"] 1728237218.06822 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/AEJ_draft/AEJ-Article.tex" "AEJ-Article.pdf" "AEJ-Article" 1728237225.26025 0
   "AEA.cls" 1712347676 43333 a7619324a12fa041e8d06a75b271bee8 ""
-  "AEJ-Article.aux" 1726270447 17625 e2b926fc0711a339407b5cda7ddfb555 "pdflatex"
+  "AEJ-Article.aux" 1728237223 17625 e2b926fc0711a339407b5cda7ddfb555 "pdflatex"
   "AEJ-Article.bbl" 1726270442 6515 5ba81cc7e8111320a2cf0d5647d7134d "bibtex AEJ-Article"
   "AEJ-Article.tex" 1726270433 4885 a0484984e15587844910945c84fcc97e ""
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1725751201 82507 a9eef8696c92627b87e9975edea03b2a ""
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0600.pk" 1712335072 7284 dafecbeb59edf98a87aec38f46ff45b9 ""
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0800.pk" 1712335074 9292 27885d527e6ae10ec9cbd792c3ac03fe ""
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1095.pk" 1712334597 12668 fd7cc1e973b58329a7ba77a808efa57e ""
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcti1095.pk" 1724541863 15464 770dcc823a28e391cdad3bcef253259b ""
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1712437782 24236949 a91322689e59c1b474573a3cd8f533eb ""
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1728074728 81088 29d6fa367ac022d1b69251d68c0742e6 ""
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0600.pk" 1725996813 7284 48ed07d9de8433d999fac95e9f37d091 ""
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0800.pk" 1725996819 9292 a8387bfbc6e3a684a19ec8a0a9515a37 ""
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1095.pk" 1725996815 12668 7c05b1dffa2f85bd638c76b90eff227d ""
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcti1095.pk" 1725996817 15464 bd10a9e43bc6d0d22bc67d307f00a3c9 ""
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1714697604 24236949 73babde6043cf70b9c97c581277a0b92 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/tcrm0600.tfm" 993062506 1456 d21918d95ca20f07aa266303b9a0a14c ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/tcrm0800.tfm" 993062506 1444 e35ead393df86aae37b5564284d9aa05 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/tcrm1095.tfm" 993062508 1460 8005ce585ff351dff78998923504da5e ""
@@ -74,12 +74,12 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/caption/caption3.sty" 1696169587 72619 ee90b6612147680fd73c3b1406a74245 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/caption/ltcaption.sty" 1696169587 7418 021d7c4eb11bde94592761855a3d046e ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/caption/subcaption.sty" 1696169587 12494 0c0cdb824278a4d51cefeb2e79901315 ""
-  "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/colortbl/colortbl.sty" 1709026697 12355 ec728d2e4c37cf8919ee2eff9b75ad0c ""
+  "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/colortbl/colortbl.sty" 1716806070 12345 7bca4ad292ae2b62fed1766b543d04d5 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1623003186 13886 d1306dcf79a944f6988e688c1785f9ce ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/float/float.sty" 1469023953 6916 16d2656a1984957e674b149555f1ea1d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/graphics-cfg/color.cfg" 1465894292 1213 620bba36b25224fa9b7e1ccb4ecb76fd ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/graphics-cfg/graphics.cfg" 1465894292 1224 978390e9c2234eab29404bc21b268d1e ""
-  "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/graphics-def/pdftex.def" 1663918690 19448 1e988b341dda20961a6b931bcde55519 ""
+  "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/graphics-def/pdftex.def" 1713599642 19440 9da9dcbb27470349a580fca7372d454b ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/graphics/color.sty" 1665067579 7233 e46ce9241d2b2ca2a78155475fdd557a ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/graphics/graphics.sty" 1665067579 18387 8f900a490197ebaf93c02ae9476d4b09 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/graphics/graphicx.sty" 1665067579 8010 a8d949cbdbc5c983593827c9eec252e1 ""

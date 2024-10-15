@@ -9,6 +9,7 @@
 #                Note: Housing dataset housing_agg_roads_census_`t_type'_`t_abs'.dta" created in housing_data_setup.R (named dfs_agg)
 #                Note: Housing dataset housing_agg_roads_census_per_`t_type'_`t_abs'.dta" created in housing_data_setup.R (named dfs_agg_per)
 # 3. 09/04/2023: Added placebo cutoffs of t-3 and t+0
+# 4. 10/15/2024: Generating Housing Price aggregate variable from housing prices 
 ###################################################################################################################################################
 
 
@@ -144,3 +145,20 @@ round(mean(hs_winsorized[[1]]$SALE_AMOUNT)) # 138,565
 round(sd(hs_winsorized[[1]]$SALE_AMOUNT)) # 108,687
 
 
+#======================================================================#
+# Generating House Price Aggregate dataset ----
+#======================================================================#
+
+# Using house-level sale amount data, grouping by tendigit_fips and year. This data will be used to calculate the growth in house prices
+# data before 1995 is missing for sale_amount. Hence, we start from 1995
+hs_agg <- hs %>% 
+              janitor::clean_names() %>%
+              group_by(tendigit_fips, year) %>% 
+              summarise(total_sale_amount = sum(sale_amount, na.rm = TRUE),
+                        median_sale_amount = median(sale_amount, na.rm = TRUE),
+                        mean_sale_amount = mean(sale_amount, na.rm = TRUE),
+                        count = n() ) %>% 
+              ungroup() %>% 
+              arrange(tendigit_fips, year) %>% 
+              filter(year >= 1995) %>% 
+              mutate(tendigit_fips = as.numeric(tendigit_fips), year = as.numeric(year))

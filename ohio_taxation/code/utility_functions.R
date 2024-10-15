@@ -250,3 +250,33 @@ te_tables_lm <- function(list){
 }
 # treatment_effect_summary_lm(tgt)
 # te_tables_lm(tgt)
+
+compare_covariates <- function(data, city_col, covariates, city1, city2) {
+  # Set options to avoid scientific notation
+  options(scipen = 999)
+  
+  # Filter data for the two specified cities
+  data_city1 <- subset(data, data[[city_col]] == city1)
+  data_city2 <- subset(data, data[[city_col]] == city2)
+  
+  # Initialize a results data frame to store comparisons
+  results <- data.frame(
+    Covariate = covariates,
+    City1_Mean = sapply(covariates, function(cov) mean(data_city1[[cov]], na.rm = TRUE)),
+    City1_SD = sapply(covariates, function(cov) sd(data_city1[[cov]], na.rm = TRUE)),
+    City2_Mean = sapply(covariates, function(cov) mean(data_city2[[cov]], na.rm = TRUE)),
+    City2_SD = sapply(covariates, function(cov) sd(data_city2[[cov]], na.rm = TRUE)),
+    t_stat = NA,  # Placeholder for t-statistics
+    p_value = NA  # Placeholder for p-values
+  )
+  
+  # Perform t-tests for each covariate and store results
+  for (i in seq_along(covariates)) {
+    cov <- covariates[i]
+    t_test_result <- t.test(data_city1[[cov]], data_city2[[cov]], var.equal = TRUE, na.rm = TRUE)
+    results$t_stat[i] <- t_test_result$statistic
+    results$p_value[i] <- t_test_result$p.value
+  }
+  
+  return(results)
+}

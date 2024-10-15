@@ -84,10 +84,10 @@ foreach t of numlist -3/10 {
 	local dens_tst_q = `e(q)'
 	
 	* density plot
-	twoway (histogram $X if $X <= cutoff, freq width(2) bcolor(red)) ///
-		   (histogram $X if $X > cutoff, freq width(2) bcolor(blue) xline(50)), ///
-		   leg(off) xtitle("Percent of Votes For Tax Levy") title("Density plot: (`year')")
-	graph export "$plots/votes_pct_for/density_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.png", replace
+// 	twoway (histogram $X if $X <= cutoff, freq width(2) bcolor(red)) ///
+// 		   (histogram $X if $X > cutoff, freq width(2) bcolor(blue) xline(50)), ///
+// 		   leg(off) xtitle("Percent of Votes For Tax Levy") title("Density plot: (`year')")
+// 	graph export "$plots/votes_pct_for/density_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}.png", replace
 	   
 	* regression run
 	rdrobust $Y $X, c($cutoff) all kernel($kernel) p($p) q($q) bwselect($bwselect)
@@ -106,9 +106,10 @@ foreach t of numlist -3/10 {
 // 	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (Full)") ///
 // 	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_full.png") replace
 	* plot within the bandwidth selected by rdrobust
-	binscatter $Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) linetype(lfit) ///
-	xtitle("Percent of Votes For Tax Levy") ytitle("`Y' (`year')")  ///
-	savegraph("$plots/votes_pct_for/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
+	gen log_Y = log($Y)
+	binscatter log_Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) nbins(10) linetype(lfit) ///
+	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')")  ///
+	savegraph("$plots/votes_pct_against/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
 
 	* generating an exportable table
 // 	table () ( result ) (), command(rdrobust $Y $X, c($cutoff) all kernel($kernel) p($p) q($q) bwselect($bwselect) )
