@@ -60,3 +60,4 @@ response = requests.post("https://api.openai.com/v1/chat/completions", headers=h
 
 response.json()['choices'][0]['message']['content']
 
+

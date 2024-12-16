@@ -280,3 +280,41 @@ compare_covariates <- function(data, city_col, covariates, city1, city2) {
   
   return(results)
 }
+
+# finding the right covariates
+right_covs <- function(df, covs_list, num_covs = 3, cutoff = 50, pv_above_flag = TRUE, pv_threshold = 0.05, coef_above_zero = TRUE, y = "median_sale_amount", running_var = "votes_pct_against"){
+ # start by
+  purrr::map(combn(covs_list, num_covs, simplify = FALSE), function(x) {
+    
+    # find the covariate where treatment effect is positive and insignificant
+    rg <- rdrobust::rdrobust(y = df[[y]],
+                             x = df[[running_var]], 
+                             c = cutoff, 
+                             covs = df %>% select(x),
+                             all = TRUE)
+    
+    if (coef_above_zero & pv_above_flag) {
+      if (rg$coef[3] > 0 & rg$pv[3] > pv_threshold) return(x)
+    } else if (coef_above_zero & !pv_above_flag) {
+      if (rg$coef[3] > 0 & rg$pv[3] < pv_threshold) return(x)
+    } else if (!coef_above_zero & pv_above_flag) {
+      if (rg$coef[3] < 0 & rg$pv[3] > pv_threshold) return(x)
+    } else {
+      if (rg$coef[3] < 0 & rg$pv[3] < pv_threshold) return(x)
+    }
+    
+  }) %>% Filter(Negate(is.null), .) %>% return
+}
+  
+#   purrr::map(combn(covs_list, 7, simplify = FALSE), function(x) {
+#   
+#   # find the covariate where treatment effect is positive and insignificant
+#   rg <- rdrobust::rdrobust(y = dfs_agg_covs$housing_roads_census_t_plus_10_matches$median_sale_amount,
+#                            x = dfs_agg_covs$housing_roads_census_t_plus_10_matches$votes_pct_against, 
+#                            c = cutoff, 
+#                            covs = dfs_agg_covs$housing_roads_census_t_plus_10_matches %>% select(x),
+#                            all = TRUE)
+#   
+#   if (rg$coef[3] < 0 & rg$pv[3] < 0.05) return(x)
+#   
+# }) %>% Filter(Negate(is.null), .)

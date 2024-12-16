@@ -8,6 +8,7 @@
 #        3. 05/03/2024: Added Wages per person variable. Found that the effect is significant for wages per person.
 #        4. 05/04/2024: Doing industry level analysis
 #        5. 07/23/2024: Created confidence interval graph for Dr. B's high-poverty regression
+#        5. 11/19/2024: Update confidence interval graph for Dr. B's high-poverty regression
 #================================================================================================================#
 
 # loading packages
@@ -823,10 +824,18 @@ plot_te(tes_ln_emp_unemp, title = "Visualization of Treatment Effects: Wages per
 #================================================================#
 
 # Creating the dataframe & plotting TEs for Wages outcome - with high levels of poverty - above 14% (Dr. B ran this, just plotting TEs here)
-conf_int_low <- c(-0.46, -0.52, -0.43, -0.36, -0.33, -0.37, -0.45, -0.35, -0.35, -0.29, -0.34, -0.26, -0.18)
-conf_int_high <- c(0.06, 0.10, 0.28, 0.11, 0.07, 0.13, -0.02, -0.01, -0.08, 0.02, 0.03, 0.02, 0.08)
-robust_coef <- c(-0.2, -0.21, -0.07, -0.13, -0.13, -0.12, -0.23, -0.18, -0.22, -0.14, -0.15, -0.12, -0.05)
-ord <- c(-3:-1, 1:10)
+# before 
+# conf_int_low <- c(-0.46, -0.52, -0.43, -0.36, -0.33, -0.37, -0.45, -0.35, -0.35, -0.29, -0.34, -0.26, -0.18)
+# conf_int_high <- c(0.06, 0.10, 0.28, 0.11, 0.07, 0.13, -0.02, -0.01, -0.08, 0.02, 0.03, 0.02, 0.08)
+# robust_coef <- c(-0.2, -0.21, -0.07, -0.13, -0.13, -0.12, -0.23, -0.18, -0.22, -0.14, -0.15, -0.12, -0.05)
+# ord <- c(-3:-1, 1:10)
+
+# now  (see Dr. B's email, 11/12/24 at 9:27am)
+conf_int_low <- c(-0.11, -0.24, -0.32, -0.28, -0.36, -0.33, -0.37, -0.45, -0.35, -0.35, -0.29, -0.34, -0.26, -0.18)
+conf_int_high <- c(0.22, 0.30, 0.26, 0.21, 0.11, 0.07, 0.13, -0.02, -0.01, -0.08, 0.02, 0.03, 0.02, 0.08)
+robust_coef <- c(0.052, 0.027, -0.032, -0.040, -0.13, -0.13, -0.12, -0.23, -0.18, -0.22, -0.14, -0.15, -0.12, -0.05)
+
+ord <- c(-3:10)
 
 tes_ln_emp_high_pov <- data.frame(conf_int_low, conf_int_high, robust_coef, ord)
 

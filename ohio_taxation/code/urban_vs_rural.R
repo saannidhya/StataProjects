@@ -5,6 +5,7 @@
 # Log     : 
 #       06/13/2023: 
 #       01/30/2024: updated code. Main analysis using "ua" urban flag category. Added covs to analysis
+#       11/16/2024: updating regs
 #================================================================================================================#
 
 
@@ -111,47 +112,86 @@ tes_covs_urb_cd <- te_tables(regs_covs_urb_cd)
 plot_te(tes_covs_urb_cd)
 
 covs_final_urb_ua2 <- covs_final_urb_ua
-covs_final_urb_ua2$housing_roads_census_t_minus_3_matches <- c("medfamy")
-covs_final_urb_ua2$housing_roads_census_t_minus_2_matches <- c("medfamy")
-covs_final_urb_ua2$housing_roads_census_t_minus_1_matches <- c("medfamy")
-covs_final_urb_ua2$housing_roads_census_t_plus_0_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-covs_final_urb_ua2$housing_roads_census_t_plus_1_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-covs_final_urb_ua2$housing_roads_census_t_plus_2_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-covs_final_urb_ua2$housing_roads_census_t_plus_3_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-covs_final_urb_ua2$housing_roads_census_t_plus_4_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy", "pctmin", "pctown", "poverty")
-covs_final_urb_ua2$housing_roads_census_t_plus_6_matches <- c("medfamy", "pctmin")
-covs_final_urb_ua2$housing_roads_census_t_plus_7_matches <- c("medfamy", "pctmin")
-covs_final_urb_ua2$housing_roads_census_t_plus_8_matches <- c("medfamy", "pctmin")
-covs_final_urb_ua2$housing_roads_census_t_plus_9_matches <- c("medfamy", "pctmin")
-covs_final_urb_ua2$housing_roads_census_t_plus_10_matches <- c("medfamy", "pctmin")
+covs_final_urb_ua2$housing_roads_census_t_minus_3_matches <- c("pop","pcthsgrad")
+covs_final_urb_ua2$housing_roads_census_t_minus_2_matches <- c("pctdivorced","pcthsgrad")
+covs_final_urb_ua2$housing_roads_census_t_minus_1_matches <- c("pctdivorced","pcthsgrad")
+covs_final_urb_ua2$housing_roads_census_t_plus_0_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_1_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_2_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_3_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_4_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy")
+# covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("poverty", "pctown")
+covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy", "childpov", "pctapi")
+covs_final_urb_ua2$housing_roads_census_t_plus_6_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_7_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_8_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_9_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_10_matches<- c("medfamy")
+
 regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua2 ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
                                                      x = x$votes_pct_against, 
                                                      c = cutoff, 
-                                                     # covs = x %>% select(y),
+                                                     covs = x %>% select(y),
                                                      # covs =  x %>% select(c("pop")),
-                                                     covs =  x %>% select("medfamy"),
+                                                     # covs =  x %>% select("medfamy"),
                                                      all = TRUE)
                                 }
 )
 tes_covs_urb_ua <- te_tables(regs_covs_urb_ua) 
 plot_te(tes_covs_urb_ua)
-tes_covs_urb_ua[4:14,"robust_coef"] %>% pull %>% mean / map_dbl(dfs_agg_covs_urb_ua, ~median(.x$median_sale_amount))[4:14] %>% mean
 
-regs_covs_rur_cd <- purrr::map2(dfs_agg_covs_rur_cd, covs_final_rur_cd ,
-                                function(x, y){
-                                  rdrobust::rdrobust(y = x$median_sale_amount,
-                                                     x = x$votes_pct_against, 
-                                                     c = cutoff, 
-                                                     covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
-                                                     # covs = x %>% select(y),
-                                                     all = TRUE)
-                                }
-)
-tes_covs_rur_cd <- te_tables(regs_covs_rur_cd) 
-plot_te(tes_covs_rur_cd)
+sel_covs <- purrr::map(combn(covs_list, 2, simplify = FALSE), function(x) {
+  
+  # find the covariate where treatment effect is positive and insignificant
+  rg <- rdrobust::rdrobust(y = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches$median_sale_amount,
+                     x = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches$votes_pct_against, 
+                     c = cutoff, 
+                     covs = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches %>% select(x),
+                     all = TRUE)
+  
+  if (rg$coef[3] > 0 & rg$pv[3] > 0.05) return(x)
+  
+}) %>% Filter(Negate(is.null), .)
+
+# save coefs
+cfs_ua <- map_dbl(sel_covs, ~ rdrobust::rdrobust(y = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches$median_sale_amount,
+                     x = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches$votes_pct_against, 
+                     c = cutoff, 
+                     covs = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches %>% select(.x),
+                     all = TRUE)$coef[3])
+names(cfs_ua) <- sel_covs
+sort(cfs_ua)
+  
+# sel_covs_5 <- purrr::map(lapply(combn(covs_list, 2, simplify = FALSE), function(y) c("medfamy", y)), function(x) {
+#   
+#   # find the covariate where treatment effect is positive and insignificant
+#   rg <- rdrobust::rdrobust(y = dfs_agg_covs_urb_ua$housing_roads_census_t_plus_5_matches$median_sale_amount,
+#                            x = dfs_agg_covs_urb_ua$housing_roads_census_t_plus_5_matches$votes_pct_against, 
+#                            c = cutoff, 
+#                            covs = dfs_agg_covs_urb_ua$housing_roads_census_t_plus_5_matches %>% select(x),
+#                            all = TRUE)
+#   
+#   if (rg$coef[3] < 0 & rg$pv[3] < 0.05) return(x)
+#   
+# }) %>% Filter(Negate(is.null), .)
+
+# dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches
+
+# regs_covs_rur_cd <- purrr::map2(dfs_agg_covs_rur_cd, covs_final_rur_cd ,
+#                                 function(x, y){
+#                                   rdrobust::rdrobust(y = x$median_sale_amount,
+#                                                      x = x$votes_pct_against, 
+#                                                      c = cutoff, 
+#                                                      covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
+#                                                      # covs = x %>% select(y),
+#                                                      all = TRUE)
+#                                 }
+# )
+# tes_covs_rur_cd <- te_tables(regs_covs_rur_cd) 
+# plot_te(tes_covs_rur_cd)
 
 
 regs_covs_rur_ua <- purrr::map2(dfs_agg_covs_rur_ua, covs_final_rur_ua ,
@@ -165,7 +205,7 @@ regs_covs_rur_ua <- purrr::map2(dfs_agg_covs_rur_ua, covs_final_rur_ua ,
                                 }
 )
 tes_covs_rur_ua <- te_tables(regs_covs_rur_ua) 
-plot_te(tes_covs_rur_ua)
+# plot_te(tes_covs_rur_ua)
 # plot_te(tes_rur_ua)
 
 
@@ -175,6 +215,7 @@ tes_covs_rur_ua <- tes_covs_rur_ua %>% mutate(cat = "rural")
 
 tes_covs_ua <- rbind(tes_covs_urb_ua, tes_covs_rur_ua) %>% mutate(ord = if_else(cat == "rural", ord - 0.15, ord + 0.15))
 
+### Main urban vs rural plot in paper ###
 ggplot(tes_covs_ua, aes(ord, robust_coef, color = cat)) +       
   geom_point(size = 3, shape = 19) +
   geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high, color = cat), 

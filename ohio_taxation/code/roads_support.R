@@ -1,4 +1,10 @@
-
+#==========================================================================================================#
+# Purpose : Support for paper and presentations
+# Name    : Saani Rawat
+# Created : 11/8/2024
+# Log     : 
+#           
+#==========================================================================================================#
 
 # specify the set up location
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
@@ -8,6 +14,11 @@ tables <- paste0(data,"/outputs/tables")
 plots <- paste0(data,"/outputs/plots")
 
 source(paste0(code,"/utility_functions.R"))
+
+
+#==========================================================================================================#
+# GDP Per Capita vs Road Quality
+#==========================================================================================================#
 
 # import excel file
 gdp_vs_road_quality_world_bank <- readxl::read_excel(paste0(data,"/gdp_vs_road_quality_world_bank.xlsx")) 
@@ -90,6 +101,10 @@ ggplot(data = pt$`2018`, aes(x = road_quality, y = log(gdp_per_cap))) +
 
 # ggsave(paste0(plots,"/gdp_vs_road_quality_world_bank.png"),width=10,height=7)
 
+#==========================================================================================================#
+# Observing individual cities, villages and townships
+#==========================================================================================================#
+
 
 # 2008 Waynesville voted for a cut, saw a decline in general fund exp of 35%
 roads_and_census %>% filter(tendigit_fips == 3903580990) %>% relocate(treated , .after = votesagainst)
@@ -165,3 +180,36 @@ compare_covariates <- function(data, city_col, covariates, city1, city2) {
 }
 
 compare_covariates(roads_and_census, "tendigit_fips", c("pop", "medfamy", "childpov"), 3900702064, 3900752066)
+
+
+roads_and_census %>% filter(between(votes_pct_against, cutoff - tes_bw, cutoff + tes_bw))
+
+
+#==========================================================================================================#
+# Identifying county subdivisions with the closest votes that failed
+#==========================================================================================================#
+
+
+tes_gs_bw <- mean(map_dbl(gs[4:length(gs)], ~ .x$bws[1,1]))
+
+# importing subdivision and county name
+cty_sub_names <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xlsx")) %>% janitor::clean_names() %>% 
+                    select(all_of(c("tendigit_fips", "name_note_if_split_between_two_counties", "county_name", "split_flag"))) %>% 
+                    rename(subdivision = name_note_if_split_between_two_counties, county = county_name) %>%
+                    mutate(subdivision = if_else(split_flag == 1,
+                               trimws(str_replace(subdivision, "(village|city).*", "\\1")),
+                               subdivision)) 
+
+
+# Find the county subdivisions with the closest votes that failed
+closest_votes <- roads_and_census %>%
+                      filter(between(votes_pct_against, cutoff - tes_gs_bw, cutoff + tes_gs_bw)) %>%
+                      arrange(votes_pct_against) %>% 
+                      group_by(tendigit_fips) %>%
+                      summarize(num_votes = n(), min_year = min(year), max_year = max(year), mean_vote_result = mean(votes_pct_against), num_failed = sum(treated), num_passed = num_votes - num_failed) %>% 
+                      arrange(desc(num_votes)) %>%
+                      left_join(cty_sub_names, by = "tendigit_fips")
+
+closest_votes %>% arrange(desc(num_failed)) %>%
+  readr::write_csv(paste0(data,"/outputs/tables/rd_fips_close_elections_gs_bw.csv"))
+

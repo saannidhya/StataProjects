@@ -6,6 +6,8 @@
 #           08/01/2022: First step of adding covariates to RDD
 #           06/17/2023: combined several previously made changes. See github repo for details
 #           10/25/2023: Ran RDD on dfs_agg_pure_covs (data uncontaminated by passed additional levies)
+#           10/18/2024: Adding House Price Growth outcome variable to RDD
+#           11/16/2024: regression updates
 #==========================================================================================================#
 
 # specify the set up location
@@ -29,6 +31,19 @@ source(paste0(code,"/roads_data_setup.R"))
 t_test_sig_level <- 0.05
 
 
+# fips_map <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xlsx")) %>%
+#   select(any_of(c("TENDIGIT_FIPS","name (note if split between two counties)"))) %>%
+#   rename(name = "name (note if split between two counties)") %>% janitor::clean_names()
+# 
+# roads_and_census %>% filter(between(votes_pct_against, 40, 60)) %>%
+#   filter(treated == 1) %>%
+#   select(tendigit_fips, year, votes_pct_against) %>%
+#   group_by(tendigit_fips) %>%
+#   summarise(min_year = min(year), max_year = max(year), count = n(), mean_votes_pct_against = mean(votes_pct_against)) %>%
+#   arrange(desc(count)) %>% 
+#   filter(max_year >= 2000) %>%
+#   left_join(fips_map, by = "tendigit_fips") %>% readr::write_csv(paste0(data,"/outputs/tables/rd_fips_close_elections_bw10_.csv"))
+# 
 #============================================================================================================#
 #     Introducing covariates (using median sale_amount for each county, vote and year)  into regression ---- 
 #============================================================================================================#
@@ -102,7 +117,21 @@ covs_final$housing_roads_census_t_plus_5_matches <- covs_final$housing_roads_cen
 covs_final$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches[!(covs_final$housing_roads_census_t_plus_8_matches %in% c("pctmin", "pctnokids"))]
 # covs_final$housing_roads_census_t_plus_10_matches <- covs_final$housing_roads_census_t_plus_10_matches[!(covs_final$housing_roads_census_t_plus_10_matches %in% c("pctnokids","pctmin"))]
 
+sel_covs_10 <- purrr::map(combn(covs_list, 6, simplify = FALSE), function(x) {
 
+  # find the covariate where treatment effect is positive and insignificant
+  rg <- rdrobust::rdrobust(y = dfs_agg_covs$housing_roads_census_t_plus_10_matches$median_sale_amount,
+                           x = dfs_agg_covs$housing_roads_census_t_plus_10_matches$votes_pct_against,
+                           c = cutoff,
+                           covs = dfs_agg_covs$housing_roads_census_t_plus_10_matches %>% select(x),
+                           all = TRUE)
+
+  if (rg$coef[3] < 0 & rg$pv[3] < 0.05) return(x)
+
+}) %>% Filter(Negate(is.null), .)
+beepr::beep("mario")
+# 
+# sel_covs_10
 # using forward selection function 
 # dfs_agg_covss <- map(dfs_agg_covs, ~ .x %>% 
 #                        mutate(treated = ifelse( votes_pct_against > cutoff, 1, 0),
@@ -552,3 +581,44 @@ purrr::walk2(g_p_regs, names(g_p_regs), ~print(paste0("Total Observations for ",
 
 # output for paper draft 
 # write.csv(tes_g_p, paste0(tables, "/tes_g_p.csv"), row.names = FALSE)
+
+
+#============================================================================================================#
+#     Outcome variable: Housing Price Growth ---- 
+#============================================================================================================#
+
+# housing price growth
+hs_agg_mgd$housing_roads_census_t_plus_1_matches
+
+hs_agg_mgd_ <- purrr::map(hs_agg_mgd, ~na.omit(.x))
+
+roads_and_census %>% filter(between(votes_pct_against, 40,60)) %>%
+  filter(year >= 2008) %>%
+  select(tendigit_fips) %>% unique() %>% nrow()
+
+# selecting the best set of covariates for each housing price growth period
+covs_final_gr <- purrr::map(hs_agg_mgd_, ~find_covs(.x, y = "median_sale_amount_growth", covs_list = covs_list))
+
+nrow(hs_agg_mgd_$housing_roads_census_t_plus_0_matches)
+
+roads_and_census %>% filter(between(votes_pc))
+
+map_dbl(hs_agg_mgd_, ~nrow(.x %>% filter(between(votes_pct_against, 40,60))))
+
+# run regressions
+
+
+
+# remove NAs from datasets
+hs_agg_mgd_ <- purrr::map(hs_agg_mgd, ~na.omit(.x))
+
+gs_gr <- purrr::map2(covs_final_gr, hs_agg_mgd, .f = function(x,y){
+  # print(paste0("Covariates list: ", deparse(substitute(y))))
+  # print(paste0("Covariates list: ", x))
+  rdrobust(  y = y$median_sale_amount_growth,
+             x = y$votes_pct_against,
+             c = cutoff,
+             covs = y %>%
+               select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})

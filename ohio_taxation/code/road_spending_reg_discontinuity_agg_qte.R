@@ -527,63 +527,79 @@ ggplot(q_results, aes(ord, robust_coef, color = quantile)) +
 # Running with covariates | Extracting only q2 and q8
 #--------------------------------------------------------------------------------;
 
+
 # Extracted values for each period
 
 # t_minus_3
 t_minus_3_q2_covs <- c(Coef = -680.9492, Std_Err = 12456.78, Lower_95_CI = -25095.79, Upper_95_CI = 23733.9)
 t_minus_3_q8_covs <- c(Coef = -9020, Std_Err = 15188.72, Lower_95_CI = -38789.34, Upper_95_CI = 20749.34)
+t_minus_3_q9_covs <- c(Coef = -20057, Std_Err = 20316.07, Lower_95_CI = -59875.76, Upper_95_CI = 19761.76)
 
 # t_minus_2
 t_minus_2_q2_covs <- c(Coef = 0, Std_Err = 12628.4, Lower_95_CI = -24751.22, Upper_95_CI = 24751.22)
-t_minus_2_q8_covs <- c(Coef = -31003, Std_Err = 16098.54, Lower_95_CI = -62555.57, Upper_95_CI = 549.568)
+# t_minus_2_q8_covs <- c(Coef = -31003, Std_Err = 16098.54, Lower_95_CI = -62555.57, Upper_95_CI = 549.568)
+t_minus_2_q8_covs <- c(Coef = -26848, Std_Err = 19559.48, Lower_95_CI = -65183.88, Upper_95_CI = 11487.88)
+t_minus_2_q9_covs <- c(Coef = -34680, Std_Err = 19575.22, Lower_95_CI = -73046.72, Upper_95_CI = 3686.72)
 
 # t_minus_1
 t_minus_1_q2_covs <- c(Coef = 0, Std_Err = 14963.71, Lower_95_CI = -29328.32, Upper_95_CI = 29328.32)
 t_minus_1_q8_covs <- c(Coef = -17810, Std_Err = 14925.45, Lower_95_CI = -47063.35, Upper_95_CI = 11443.35)
+t_minus_1_q9_covs <- c(Coef = -31377.5, Std_Err = 19727.05, Lower_95_CI = -70041.8, Upper_95_CI = 7286.8)
 
 # t_plus_0
 t_plus_0_q2_covs <- c(Coef = -9540, Std_Err = 11374.04, Lower_95_CI = -31832.7, Upper_95_CI = 12752.7)
 t_plus_0_q8_covs <- c(Coef = -17970, Std_Err = 14653.97, Lower_95_CI = -46691.24, Upper_95_CI = 10751.24)
+t_plus_0_q9_covs <- c(Coef = -33240, Std_Err = 22866.12, Lower_95_CI = -78056.77, Upper_95_CI = 11576.77)
 
 # t_plus_1
 t_plus_1_q2_covs <- c(Coef = -4464, Std_Err = 9766.189, Lower_95_CI = -23605.38, Upper_95_CI = 14677.38)
 t_plus_1_q8_covs <- c(Coef = -7806, Std_Err = 13103.15, Lower_95_CI = -33487.71, Upper_95_CI = 17875.71)
+t_plus_1_q9_covs <- c(Coef = -19180, Std_Err = 16814.19, Lower_95_CI = -52135.22, Upper_95_CI = 13775.22)
 
 # t_plus_2
 t_plus_2_q2_covs <- c(Coef = -4621.5, Std_Err = 12087.79, Lower_95_CI = -28313.14, Upper_95_CI = 19070.14)
 t_plus_2_q8_covs <- c(Coef = -6975, Std_Err = 17106.74, Lower_95_CI = -40503.6, Upper_95_CI = 26553.6)
+t_plus_2_q9_covs <- c(Coef = -28580.86, Std_Err = 22148.31, Lower_95_CI = -71990.76, Upper_95_CI = 14829.04)
 
 # t_plus_3
 t_plus_3_q2_covs <- c(Coef = -774.8008, Std_Err = 9091.019, Lower_95_CI = -18592.87, Upper_95_CI = 17043.27)
 t_plus_3_q8_covs <- c(Coef = -15932, Std_Err = 13781.57, Lower_95_CI = -42943.37, Upper_95_CI = 11079.37)
+t_plus_3_q9_covs <- c(Coef = -19705, Std_Err = 21481.33, Lower_95_CI = -61807.63, Upper_95_CI = 22397.63)
 
 # t_plus_4
 t_plus_4_q2_covs <- c(Coef = -5400, Std_Err = 8680.23, Lower_95_CI = -22412.94, Upper_95_CI = 11612.94)
 t_plus_4_q8_covs <- c(Coef = -28477.5, Std_Err = 15436.49, Lower_95_CI = -58732.46, Upper_95_CI = 1777.461)
+t_plus_4_q9_covs <- c(Coef = -51470.31, Std_Err = 19117.64, Lower_95_CI = -88940.21, Upper_95_CI = -14000.42)
 
 # t_plus_5
 t_plus_5_q2_covs <- c(Coef = -17065, Std_Err = 10237.68, Lower_95_CI = -37130.49, Upper_95_CI = 3000.493)
 t_plus_5_q8_covs <- c(Coef = -17656, Std_Err = 10120.69, Lower_95_CI = -37492.18, Upper_95_CI = 2180.181)
+t_plus_5_q9_covs <- c(Coef = -34604, Std_Err = 14422.06, Lower_95_CI = -62870.72, Upper_95_CI = -6337.283)
 
 # t_plus_6
 t_plus_6_q2_covs <- c(Coef = 4014.398, Std_Err = 12279.83, Lower_95_CI = -20053.63, Upper_95_CI = 28082.42)
 t_plus_6_q8_covs <- c(Coef = -38460, Std_Err = 16850.34, Lower_95_CI = -71486.07, Upper_95_CI = -5433.931)
+t_plus_6_q9_covs <- c(Coef = -38510, Std_Err = 22499.74, Lower_95_CI = -82608.68, Upper_95_CI = 5588.677)
 
 # t_plus_7
 t_plus_7_q2_covs <- c(Coef = -14682, Std_Err = 8006.845, Lower_95_CI = -30375.13, Upper_95_CI = 1011.128)
 t_plus_7_q8_covs <- c(Coef = -37470, Std_Err = 12707.57, Lower_95_CI = -62376.38, Upper_95_CI = -12563.62)
+t_plus_7_q9_covs <- c(Coef = -27039, Std_Err = 17647.21, Lower_95_CI = -61626.9, Upper_95_CI = 7548.899)
 
 # t_plus_8
 t_plus_8_q2_covs <- c(Coef = -15039.5, Std_Err = 6041.702, Lower_95_CI = -26881.02, Upper_95_CI = -3197.981)
 t_plus_8_q8_covs <- c(Coef = -28950, Std_Err = 12204.37, Lower_95_CI = -52870.13, Upper_95_CI = -5029.866)
+t_plus_8_q9_covs <- c(Coef = -29010, Std_Err = 22458.99, Lower_95_CI = -73028.82, Upper_95_CI = 15008.82)
 
 # t_plus_9
 t_plus_9_q2_covs <- c(Coef = -2191.5, Std_Err = 11031.8, Lower_95_CI = -23813.43, Upper_95_CI = 19430.43)
 t_plus_9_q8_covs <- c(Coef = -27800, Std_Err = 12157.61, Lower_95_CI = -51628.47, Upper_95_CI = -3971.53)
+t_plus_9_q9_covs <- c(Coef = -49093, Std_Err = 20970.46, Lower_95_CI = -90194.35, Upper_95_CI = -7991.649)
 
 # t_plus_10
 t_plus_10_q2_covs <- c(Coef = 1746.25, Std_Err = 9815.47, Lower_95_CI = -17491.72, Upper_95_CI = 20984.22)
 t_plus_10_q8_covs <- c(Coef = -18657.95, Std_Err = 12400.89, Lower_95_CI = -42963.26, Upper_95_CI = 5647.35)
+t_plus_10_q9_covs <- c(Coef = -32281.5, Std_Err = 18688.76, Lower_95_CI = -68910.8, Upper_95_CI = 4347.804)
 
 
 # Creating the tibble for q2
@@ -627,6 +643,28 @@ q8_results_covs <- tibble(
   ),
   cat = rep("q8", 14)
 )
+
+# Creating the tibble for q9
+q9_results_covs <- tibble(
+  robust_coef = c(t_minus_3_q9_covs["Coef"],t_minus_2_q9_covs["Coef"],t_minus_1_q9_covs["Coef"],t_plus_0_q9_covs["Coef"],t_plus_1_q9_covs["Coef"],t_plus_2_q9_covs["Coef"],t_plus_3_q9_covs["Coef"],t_plus_4_q9_covs["Coef"],t_plus_5_q9_covs["Coef"],t_plus_6_q9_covs["Coef"],t_plus_7_q9_covs["Coef"],t_plus_8_q9_covs["Coef"],t_plus_9_q9_covs["Coef"],t_plus_10_q9_covs["Coef"]),
+  se = c(t_minus_3_q9_covs["Std_Err"],t_minus_2_q9_covs["Std_Err"],t_minus_1_q9_covs["Std_Err"],t_plus_0_q9_covs["Std_Err"],t_plus_1_q9_covs["Std_Err"],t_plus_2_q9_covs["Std_Err"],t_plus_3_q9_covs["Std_Err"],t_plus_4_q9_covs["Std_Err"],t_plus_5_q9_covs["Std_Err"],t_plus_6_q9_covs["Std_Err"],t_plus_7_q9_covs["Std_Err"],t_plus_8_q9_covs["Std_Err"],t_plus_9_q9_covs["Std_Err"],t_plus_10_q9_covs["Std_Err"]),
+  conf_int_low = c(t_minus_3_q9_covs["Lower_95_CI"],t_minus_2_q9_covs["Lower_95_CI"],t_minus_1_q9_covs["Lower_95_CI"],t_plus_0_q9_covs["Lower_95_CI"],t_plus_1_q9_covs["Lower_95_CI"],t_plus_2_q9_covs["Lower_95_CI"],t_plus_3_q9_covs["Lower_95_CI"],t_plus_4_q9_covs["Lower_95_CI"],t_plus_5_q9_covs["Lower_95_CI"],t_plus_6_q9_covs["Lower_95_CI"],t_plus_7_q9_covs["Lower_95_CI"],t_plus_8_q9_covs["Lower_95_CI"],t_plus_9_q9_covs["Lower_95_CI"],t_plus_10_q9_covs["Lower_95_CI"]),
+  conf_int_high = c(t_minus_3_q9_covs["Upper_95_CI"],t_minus_2_q9_covs["Upper_95_CI"],t_minus_1_q9_covs["Upper_95_CI"],t_plus_0_q9_covs["Upper_95_CI"],t_plus_1_q9_covs["Upper_95_CI"],t_plus_2_q9_covs["Upper_95_CI"],t_plus_3_q9_covs["Upper_95_CI"],t_plus_4_q9_covs["Upper_95_CI"],t_plus_5_q9_covs["Upper_95_CI"],t_plus_6_q9_covs["Upper_95_CI"],t_plus_7_q9_covs["Upper_95_CI"],t_plus_8_q9_covs["Upper_95_CI"],t_plus_9_q9_covs["Upper_95_CI"],t_plus_10_q9_covs["Upper_95_CI"]),
+  year = c(
+    "t_minus_3", "t_minus_2", "t_minus_1", "t_plus_0",
+    "t_plus_1", "t_plus_2", "t_plus_3", "t_plus_4",
+    "t_plus_5", "t_plus_6", "t_plus_7", "t_plus_8",
+    "t_plus_9", "t_plus_10"
+  ),
+  ord = c(
+    -3, -2, -1, 0,
+    1, 2, 3, 4,
+    5, 6, 7, 8,
+    9, 10
+  ),
+  cat = rep("q9", 14)
+)
+
 
 # combining all the tibbles
 q_results_covs <- bind_rows(q2_results_covs, q8_results_covs)

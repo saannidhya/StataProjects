@@ -22,8 +22,8 @@ global shared "\\cobshares.uccob.uc.edu\economics$\Julia\roads"
 * assigning global macros for variables
 global Y median_sale_amount // median_sale_amount_per_sq_feet
 global ln_Y ln_median_sale_amount
-global X votes_pct_for
-global R votes_pct_for_cntr
+global X votes_pct_against
+global R votes_pct_against_cntr
 global prior_yrs_flg = 1
 global cutoff = 50
 scalar cutoff = 50
@@ -107,7 +107,7 @@ foreach t of numlist -3/10 {
 // 	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_full.png") replace
 	* plot within the bandwidth selected by rdrobust
 	gen log_Y = log($Y)
-	binscatter log_Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) nbins(10) linetype(lfit) ///
+	binscatter log_Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) nbins(80) linetype(lfit)  /// <- change nbins 
 	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')")  ///
 	savegraph("$plots/votes_pct_against/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
 

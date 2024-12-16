@@ -251,36 +251,36 @@ top10_cuts <- roads_and_census %>%
 #==================================================#
 
 # adding vote_year houses 
-r_c_h <- roads_and_census %>% 
-          left_join(hs_agg, by = c("tendigit_fips", "year")) %>% rename(num_houses_base = count) %>% 
-  mutate(yr_t_minus_3 = year - 3, 
-         yr_t_minus_2 = year - 2, 
-         yr_t_minus_1 = year - 1,
-         yr_t_plus_0 = year,
-         yr_t_plus_1 = year + 1,
-         yr_t_plus_2 = year + 2,
-         yr_t_plus_3 = year + 3,
-         yr_t_plus_4 = year + 4,
-         yr_t_plus_5 = year + 5,
-         yr_t_plus_6 = year + 6,
-         yr_t_plus_7 = year + 7,
-         yr_t_plus_8 = year + 8,
-         yr_t_plus_9 = year + 9,
-         yr_t_plus_10 = year + 10) %>%
-  select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
-  arrange(tendigit_fips, year)
-
-hs_agg_mgd <- purrr::map(yrs, function(y){
-  hs_agg %>% rename_with(~ y , year) %>% 
-    inner_join(r_c_h, by = c("tendigit_fips", y)) %>%
-    select(-starts_with("yr_t"), all_of(y)) %>%
-    relocate(y, .after = tendigit_fips) %>%
-    mutate(median_sale_amount_growth = (median_sale_amount.x - median_sale_amount.y)/median_sale_amount.y ,
-           mean_sale_amount_growth = (mean_sale_amount.x - mean_sale_amount.y)/mean_sale_amount.y,
-           ) %>%
-    relocate(median_sale_amount_growth, mean_sale_amount_growth, treated, votes_pct_against, .after = y) 
-})
-names(hs_agg_mgd) <- paste0(gsub("^yr", "housing_roads_census", yrs), "_matches")
-
-
-
+# r_c_h <- roads_and_census %>% 
+#           left_join(hs_agg, by = c("tendigit_fips", "year")) %>% rename(num_houses_base = count) %>% 
+#   mutate(yr_t_minus_3 = year - 3, 
+#          yr_t_minus_2 = year - 2, 
+#          yr_t_minus_1 = year - 1,
+#          yr_t_plus_0 = year,
+#          yr_t_plus_1 = year + 1,
+#          yr_t_plus_2 = year + 2,
+#          yr_t_plus_3 = year + 3,
+#          yr_t_plus_4 = year + 4,
+#          yr_t_plus_5 = year + 5,
+#          yr_t_plus_6 = year + 6,
+#          yr_t_plus_7 = year + 7,
+#          yr_t_plus_8 = year + 8,
+#          yr_t_plus_9 = year + 9,
+#          yr_t_plus_10 = year + 10) %>%
+#   select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
+#   arrange(tendigit_fips, year)
+# 
+# hs_agg_mgd <- purrr::map(yrs, function(y){
+#   hs_agg %>% rename_with(~ y , year) %>% 
+#     inner_join(r_c_h, by = c("tendigit_fips", y)) %>%
+#     select(-starts_with("yr_t"), all_of(y)) %>%
+#     relocate(y, .after = tendigit_fips) %>%
+#     mutate(median_sale_amount_growth = (median_sale_amount.x - median_sale_amount.y)/median_sale_amount.y ,
+#            mean_sale_amount_growth = (mean_sale_amount.x - mean_sale_amount.y)/mean_sale_amount.y,
+#            ) %>%
+#     relocate(year, median_sale_amount_growth, mean_sale_amount_growth, treated, votes_pct_against, .after = y)
+# })
+# names(hs_agg_mgd) <- paste0(gsub("^yr", "housing_roads_census", yrs), "_matches")
+# 
+# 
+# 
