@@ -8,6 +8,7 @@
 #           10/25/2023: Ran RDD on dfs_agg_pure_covs (data uncontaminated by passed additional levies)
 #           10/18/2024: Adding House Price Growth outcome variable to RDD
 #           11/16/2024: regression updates
+#           12/16/2024: Adding reference point for treatment effect estimates of t-1
 #==========================================================================================================#
 
 # specify the set up location
@@ -129,7 +130,7 @@ sel_covs_10 <- purrr::map(combn(covs_list, 6, simplify = FALSE), function(x) {
   if (rg$coef[3] < 0 & rg$pv[3] < 0.05) return(x)
 
 }) %>% Filter(Negate(is.null), .)
-beepr::beep("mario")
+# beepr::beep("mario")
 # 
 # sel_covs_10
 # using forward selection function 
@@ -158,7 +159,8 @@ purrr::walk2(names(gs), gs, .f = function(x, y) {
 })
 tes_gs <- te_tables(gs)
 plot_te(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
-# plot_te(tes, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+plot_te_recenter(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
 
 # get mean optimal bandwidth
 purrr::walk2(gs, names(gs), ~print(paste0("Eff. Bandwidth (h) for ", .y, ": " , round(.x$bws[1,],1))))
@@ -317,6 +319,8 @@ purrr::walk2(names(g_regs_w), g_regs_w, .f = function(x, y) {
 })
 tes_g_w <- te_tables(g_regs_w)
 plot_te(tes_g_w)
+
+plot_te_recenter(tes_g_w)
 
 # local randomization approach
 

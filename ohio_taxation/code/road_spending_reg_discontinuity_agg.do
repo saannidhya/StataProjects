@@ -106,8 +106,8 @@ foreach t of numlist -3/10 {
 // 	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')") title("Regression Discontinuity plot (Full)") ///
 // 	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_full.png") replace
 	* plot within the bandwidth selected by rdrobust
-	gen log_Y = log($Y)
-	binscatter log_Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) nbins(80) linetype(lfit)  /// <- change nbins 
+// 	gen log_Y = log($Y)
+	binscatter $Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) nbins(80) linetype(lfit)  /// <- change nbins 
 	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')")  ///
 	savegraph("$plots/votes_pct_against/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
 

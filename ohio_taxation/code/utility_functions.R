@@ -160,6 +160,30 @@ plot_te <- function(te_table, title = ggplot2::waiver(), subtitle = ggplot2::wai
     ) + scale_x_continuous(breaks = c(-3:10))
 }
 
+plot_te_recenter <- function(te_table, ref_year = -1, title = ggplot2::waiver(), subtitle = ggplot2::waiver(), caption = ggplot2::waiver()){
+  te_table_ <- te_table %>% mutate(conf_int_low  = if_else(ord == ref_year, robust_coef, conf_int_low),
+                                   conf_int_high = if_else(ord == ref_year, robust_coef, conf_int_high))
+  
+  ggplot(te_table_, aes(ord, robust_coef)) +       
+    geom_point(size = 3, shape = 19, color = "blue") +
+    geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
+                  width = 0.2, color = "grey50", linewidth = 0.7) +
+    geom_hline(yintercept = te_table_ %>% filter(ord == ref_year) %>% pull(robust_coef), linetype = "dashed", color = "red", size = 1) +
+    labs(
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
+      x = "Year",
+      y = "Treatment Effect",
+      color = "Position"
+    ) +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      legend.position = "bottom"
+    ) + scale_x_continuous(breaks = c(-3:10))
+}
+
 # Performs forward selection of covariates based on p-value cutoff for enhancing the model's explanatory power regarding treatment effect.
 forward_selection_covs <- function(df, y, x = "votes_pct_against", covs_list){
   cv_list <- NULL

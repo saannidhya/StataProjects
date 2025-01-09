@@ -5,6 +5,7 @@
 # Problem: 
 # Log     : 
 #       06/16/2023: 
+#       12/16/2024: updated the code to have t-1 as the reference point
 #================================================================================================================#
 
 
@@ -24,14 +25,15 @@ source(paste0(code,"/housing_data_setup.R"))
 #============================================================================================================#
 
 # computing the mean
+mean_mill <- purrr::map_dbl(dfs_agg_mill, ~ round(mean(as.numeric(.x$millagepercent), na.rm = TRUE),1))
 
-mean_mill <- purrr::map_dbl(dfs_agg_mill, ~ round(mean(.x$millage_percent),1))
+dfs_agg_mill_g_1.9 <- purrr::map2(dfs_agg_mill, mean_mill, ~ .x %>% filter(as.numeric(millagepercent)  > .y) %>% 
+                                    mutate(millagepercent = as.numeric(millagepercent) ) )
 
-dfs_agg_mill_g_1.9 <- purrr::map2(dfs_agg_mill, mean_mill, ~ .x %>% filter(millage_percent > .y))
+dfs_agg_mill_l_1.9 <- purrr::map2(dfs_agg_mill, mean_mill, ~ .x %>% filter(as.numeric(millagepercent)  <= .y) %>% 
+                                    mutate(millagepercent = as.numeric(millagepercent) ) )
 
-dfs_agg_mill_l_1.9 <- purrr::map2(dfs_agg_mill, mean_mill, ~ .x %>% filter(millage_percent <= .y))
-
-sort(unique(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millage_percent))
+sort(unique(dfs_agg_mill$housing_roads_census_t_plus_4_matches$millagepercent))
 
 #==================================================================================#
 # running regressions (aggregate) for millage size > 1.9 ----
@@ -64,16 +66,22 @@ dev.off()
 
 
 # append the two datasets regs_g_1.9 and regs_l_1.9
-tes_g_1.9 <- tes_g_1.9 %>% mutate(cat = "> mean tax levy")
-tes_l_1.9 <- tes_l_1.9 %>% mutate(cat = "<= mean tax levy")
-
+tes_g_1.9 <- tes_g_1.9 %>% mutate(cat = "> mean tax levy",
+                                  conf_int_low  = if_else(year == "t_minus_1", robust_coef, conf_int_low),
+                                  conf_int_high = if_else(year == "t_minus_1", robust_coef, conf_int_high) )
+tes_l_1.9 <- tes_l_1.9 %>% mutate(cat = "<= mean tax levy",
+                                  conf_int_low  = if_else(year == "t_minus_1", robust_coef, conf_int_low),
+                                  conf_int_high = if_else(year == "t_minus_1", robust_coef, conf_int_high) )
 tes_size <- rbind(tes_g_1.9, tes_l_1.9) %>% mutate(ord = if_else(cat == "> mean tax levy", ord - 0.15, ord + 0.15))
+
+
 
 ggplot(tes_size, aes(ord, robust_coef, color = cat)) +       
   geom_point(size = 3, shape = 19) +
   geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high, color = cat), 
                 width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  geom_hline(yintercept = tes_size %>% filter(cat == "> mean tax levy" & ord == -1.15) %>% pull(robust_coef), linetype = "dashed", color = "#1f77b4", size = 1) +
+  geom_hline(yintercept = tes_size %>% filter(cat == "<= mean tax levy" & ord == -0.85) %>% pull(robust_coef), linetype = "dashed", color = "#ff7f0e", size = 1) +  
   labs(
     x = "Year",
     y = "Treatment Effect",
@@ -90,7 +98,7 @@ ggplot(tes_size, aes(ord, robust_coef, color = cat)) +
     legend.title = element_blank()
   ) + 
   scale_x_continuous(breaks = c(-3:10)) +
-  scale_color_manual(values = c("> mean tax levy" = "#1f77b4", "<= mean tax levy" = "#ff7f0e")) # Replace with your category names and desired colors
+  scale_color_manual(values = c("> mean tax levy" = "#1f77b4", "<= mean tax levy" = "#ff7f0e")) 
 
 
 

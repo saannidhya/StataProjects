@@ -213,3 +213,24 @@ closest_votes <- roads_and_census %>%
 closest_votes %>% arrange(desc(num_failed)) %>%
   readr::write_csv(paste0(data,"/outputs/tables/rd_fips_close_elections_gs_bw.csv"))
 
+
+roads_and_census2 %>% 
+  # filter(tendigit_fips == 3915112000) %>% relocate(treated , .after = votesagainst) %>%
+  left_join(cty_sub_names, by = "tendigit_fips") %>% relocate(c(subdivision, county) , .after = tendigit_fips) %>% filter(pop > 10000) %>%
+  group_by(tendigit_fips, subdivision, county) %>% 
+  summarize(num_elections = n(), min_year = min(year), max_year = max(year), pop = mean(pop)) %>% 
+  arrange(desc(pop)) %>% View()
+
+
+  # filter(tolower(county) == "ashtabula" & year == 2012) %>% View()
+
+mm <- purrr::map(housing_dfs, ~ .x %>% filter(year > 1991 & !is.na(SALE_AMOUNT)) %>% 
+            summarize(mean = mean(SALE_AMOUNT), median = median(SALE_AMOUNT), sd = sd(SALE_AMOUNT)))
+
+mean(purrr::map_dbl(mm[4:14], ~ .x$mean))
+
+housing_dfs$housing_roads_census_t_plus_0_matches %>% 
+  filter(year > 1991 & !is.na(SALE_AMOUNT)) %>% 
+  summarize(mean = mean(SALE_AMOUNT), median = median(SALE_AMOUNT), sd = sd(SALE_AMOUNT))
+
+-16441/170000

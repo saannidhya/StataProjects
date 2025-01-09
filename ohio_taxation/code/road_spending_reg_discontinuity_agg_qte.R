@@ -484,7 +484,7 @@ q_results <- q_results %>%
     cat == "q9" ~ ord + 0.30,
     # cat == "q9" ~ ord + 0.45,
     TRUE ~ ord  # Default case if needed
-),
+  ),
   quantile = case_when(
     cat == "q1" ~ "10%",
     cat == "q2" ~ "20%",
@@ -494,7 +494,7 @@ q_results <- q_results %>%
     cat == "q9" ~ "90%",
     TRUE ~ "q1"
   )
-)
+  )
 
 # Display the jittered table
 print(q_results %>% filter(ord >= 4), n = 84)
@@ -521,7 +521,7 @@ ggplot(q_results, aes(ord, robust_coef, color = quantile)) +
   ) + 
   scale_x_continuous(
     breaks = c(-3:10)
-)
+  )
 
 #--------------------------------------------------------------------------------;
 # Running with covariates | Extracting only q2 and q8
@@ -538,12 +538,14 @@ t_minus_3_q9_covs <- c(Coef = -20057, Std_Err = 20316.07, Lower_95_CI = -59875.7
 # t_minus_2
 t_minus_2_q2_covs <- c(Coef = 0, Std_Err = 12628.4, Lower_95_CI = -24751.22, Upper_95_CI = 24751.22)
 # t_minus_2_q8_covs <- c(Coef = -31003, Std_Err = 16098.54, Lower_95_CI = -62555.57, Upper_95_CI = 549.568)
-t_minus_2_q8_covs <- c(Coef = -26848, Std_Err = 19559.48, Lower_95_CI = -65183.88, Upper_95_CI = 11487.88)
+# t_minus_2_q8_covs <- c(Coef = -26848, Std_Err = 19559.48, Lower_95_CI = -65183.88, Upper_95_CI = 11487.88)
+t_minus_2_q8_covs <- c(Coef = 0, Std_Err = 12628.4, Lower_95_CI = -24751.22, Upper_95_CI = 24751.22)
 t_minus_2_q9_covs <- c(Coef = -34680, Std_Err = 19575.22, Lower_95_CI = -73046.72, Upper_95_CI = 3686.72)
 
 # t_minus_1
 t_minus_1_q2_covs <- c(Coef = 0, Std_Err = 14963.71, Lower_95_CI = -29328.32, Upper_95_CI = 29328.32)
-t_minus_1_q8_covs <- c(Coef = -17810, Std_Err = 14925.45, Lower_95_CI = -47063.35, Upper_95_CI = 11443.35)
+# t_minus_1_q8_covs <- c(Coef = -17810, Std_Err = 14925.45, Lower_95_CI = -47063.35, Upper_95_CI = 11443.35)
+t_minus_1_q8_covs <- c(Coef = 0, Std_Err = 14925.45, Lower_95_CI = -47063.35, Upper_95_CI = 11443.35)
 t_minus_1_q9_covs <- c(Coef = -31377.5, Std_Err = 19727.05, Lower_95_CI = -70041.8, Upper_95_CI = 7286.8)
 
 # t_plus_0
@@ -696,6 +698,9 @@ q_results_covs <- q_results_covs %>%
 
 # Display the jittered table
 print(q_results_covs %>% filter(ord >= 4), n = 84)
+q_results_covs <- q_results_covs %>% mutate(conf_int_low  = if_else(year == "t_minus_1", robust_coef, conf_int_low),
+                                            conf_int_high = if_else(year == "t_minus_1", robust_coef, conf_int_high))
+
 
 ggplot(q_results_covs, aes(ord, robust_coef, color = quantile)) +       
   geom_point(size = 3, shape = 19) +

@@ -32,13 +32,14 @@ Each treatment effect estimate represents the discount in median sale price for 
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs.png}
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs.png}
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs_re.png}    
     \caption{Effect plot for Median Housing Price}
     \label{fig:tes_hp}
 \end{figure}
 
 Figure \ref{fig:tes_hp} provides an event-study plot that summarizes the treatment effects for each time period. In the graph, we include placebo years up to 3 years before the treatment to show that the median housing prices are statistically identical for cities above and below the threshold prior to the treatment. Each blue dot represents the treatment effect estimate for that year and the bar around it represents the 95\% confidence interval for that estimate. For year 0, which is the year of the vote, we see a slight decrease in the estimate. However, this effect is not statistically significant, as evidenced by the confidence interval containing the null effect. Up to year 3, we observe that the treatment effect estimates are fairly close to zero, and the confidence interval overlaps with zero. As stated previously and shown in Table \ref{tab:median_sale_amount}, we start to see a sizable increase in treatment effect from year 4 onwards and continue to observe it through year 9 after the vote. 
-
+ 
 \subsubsection{Heterogeneity Analysis} We show the results of our heterogeneity analysis, where we explore the differential impact of cutting road maintenance spending on house prices based on urban vs rural neighborhoods, the size of the tax levy and housing price quantiles.
 
 \vskip 0.5cm
@@ -48,7 +49,8 @@ Figure \ref{fig:tes_hp} provides an event-study plot that summarizes the treatme
 \begin{figure}[htbp]
     \centering
     % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_new.png}
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_clean.png}    
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_clean.png}    
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_re.png}        
     \caption{Median Housing Price in Urban and Rural Areas}
     \label{fig:tes_covs_ua}
 \end{figure}
@@ -61,7 +63,8 @@ As shown by Figure \ref{fig:tes_covs_ua}, we do not find any significant differe
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_size.png}
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_size.png}
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_size_re.png}    
     \caption{Median Housing Price based on Millage size}
     \label{fig:tes_covs_size}
 \end{figure}
@@ -102,7 +105,8 @@ All the years before the reduction in road spending have treatment effect estima
 \begin{figure}[htbp]
     \centering
     % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_qte_covs.png}
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_qte.png}    
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_qte.png}    
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_qte_re.png}    
     \caption{Median Housing Price based on Quantiles: 20\% and 80\%}
     \label{fig:tes_qte_covs}
 \end{figure}
@@ -179,7 +183,8 @@ Table \ref{tab:placebo_cutoffs} does not show consistently significant treatment
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w.png}
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w.png}
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w_re.png}    
     \caption{Median Housing Price after 1\% Winsorization}
     \label{fig:tes_g_w}
 \end{figure}
@@ -256,7 +261,8 @@ We find no effect of cutting road taxes and services on wages for the full sampl
 \begin{figure}[htbp]
     \centering
     % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_wages_per_emp_hp.png}
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_high_pov.png}    
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_high_pov.png}    
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_high_pov_re.png}    
     \caption{Effect plot: Wages per Worker in High-Poverty Cities}
     \label{fig:tes_g_emp_hp}
 \end{figure}

@@ -1,0 +1,141 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb,amsmath,amsfonts,eurosym,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,natbib,pdflscape,subfigure,array,hyperref}
+\usepackage{xcolor} 
+\definecolor{lightblue}{RGB}{100,149,237}
+\usepackage{longtable} 
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{amsmath}
+% \usepackage{amsthm}	
+\usepackage{amsfonts, amssymb, float, placeins, tabularx, array, longtable, booktabs, listings} 
+\usepackage{natbib}
+\usepackage{threeparttable}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\normalem
+
+\onehalfspacing
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}{Proposition}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newtheorem{hyp}{Hypothesis}
+\newtheorem{subhyp}{Hypothesis}[hyp]
+\renewcommand{\thesubhyp}{\thehyp\alph{subhyp}}
+
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+
+\geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in}
+
+\begin{document}
+
+\begin{titlepage}
+\title{The Effect of Cutting Renewal Road Tax Levies on House Values,  Wages, and Employment \thanks{Acknowledgements: We are grateful for comments from CK Tang, Guoyang Yang, Dan Boles, Eunjee Kwon, Gary Painter, Olivier Parent, Jeffrey Mills, Nayoung Lee, Matias Cattaneo, and Chris Bollinger, to CoreLogic® for leasing us the housing dataset, and to the Ohio Department of Jobs and Family Services (ODJFS) for providing us access to establishment-level employment data.}}
+\author{David Brasington \thanks{Professor, University of Cincinnati} \and Saani Rawat \thanks{PhD Student, University of Cincinnati}}
+\date{\today}
+\maketitle
+
+\noindent
+\begin{center}
+\textbf{\href{https://example.com/latest-draft}{\textcolor{lightblue}{Please click here for the latest draft.}}}
+\end{center}
+
+\begin{abstract}
+\noindent     We investigate the economic impact of cutting road maintenance spending in Ohio. Using a regression discontinuity design, we analyze city-level votes to renew road maintenance tax funding, which typically represents about 34\% of road funding. We compare housing sale prices, wages, and employment between similar cities that narrowly pass or fail road tax levies. Cities that cut road maintenance spending suffer an average decrease in housing prices of \$20,729 (12\%) relative to cities that renewed funding. High-poverty cities that cut road spending have 11\% lower levels of employment and 17.8\% lower wages than similar cities that maintained their spending. \\
+\vspace{0in}\\
+\noindent\textbf{Keywords:} Road Maintenance, Local Taxation, Housing values, Employment, Wage \\
+\vspace{0in}\\
+\noindent\textbf{JEL Codes:} R42, H71, J31, R11, R21 \\
+
+\bigskip
+\end{abstract}
+\setcounter{page}{0}
+\thispagestyle{empty}
+\end{titlepage}
+\pagebreak \newpage
+
+
+
+
+\doublespacing
+
+
+\section{Introduction} \label{sec:introduction}
+
+\input{intro.tex}
+
+\section{Literature Review} \label{sec:literature}
+
+\input{lit_review.tex}
+
+\section{Background \& Data} \label{sec:data}
+
+\input{data.tex}
+
+\section{Empirical Strategy} \label{sec:empirical}
+
+\input{emp_strategy.tex}
+
+\section{Results} \label{sec:result}
+
+\input{results.tex}
+
+% \section{Discussions} \label{sec:discussion}
+
+% \section{Conclusion} \label{sec:conclusion}
+
+\singlespacing
+\setlength\bibsep{0pt}
+\bibliographystyle{aea}
+% \bibliography{Placeholder}
+
+\bibliography{aej_references}
+
+\clearpage
+
+\appendix
+\section*{Appendix} \label{sec:appendix}
+\input{appendix.tex}
+
+
+
+\clearpage
+
+% \onehalfspacing
+
+% \section*{Tables} \label{sec:tab}
+% \addcontentsline{toc}{section}{Tables}
+
+
+% \section*{Figures} \label{sec:fig}
+% \addcontentsline{toc}{section}{Figures}
+
+%\begin{figure}[hp]
+%  \centering
+%  \includegraphics[width=.6\textwidth]{../fig/placeholder.pdf}
+%  \caption{Placeholder}
+%  \label{fig:placeholder}
+%\end{figure}
+
+
+
+
+\clearpage
+
+% \section*{Appendix A. Placeholder} \label{sec:appendixa}
+% \addcontentsline{toc}{section}{Appendix A}
+
+
+
+\end{document}

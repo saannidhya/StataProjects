@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3.31) (preloaded format=pdflatex 2024.4.6)  19 NOV 2024 13:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3.31) (preloaded format=pdflatex 2024.4.6)  16 DEC 2024 09:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -373,63 +373,648 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 LaTeX Font Info:    Trying to load font information for U+msb on input line 97.
  (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) (aej_body.tex
+) (aej_body.tex [1
 
-Package natbib Warning: Citation `currier2023' on page 1 undefined on input line 5.
+{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [2]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-Package natbib Warning: Citation `currier2023' on page 1 undefined on input line 5.
+ [3] [4]
+Overfull \hbox (25.87901pt too wide) in paragraph at lines 42--75
+ [] 
+ []
 
+<images/andover_township_14grandarmy_2007.png, id=25, 253.9305pt x 164.25pt>
+File: images/andover_township_14grandarmy_2007.png Graphic file (type png)
+<use images/andover_township_14grandarmy_2007.png>
+Package pdftex.def Info: images/andover_township_14grandarmy_2007.png  used on input line 83.
+(pdftex.def)             Requested size: 188.91418pt x 122.19722pt.
 
-Package natbib Warning: Citation `adukia2020' on page 1 undefined on input line 5.
-
-
-Package natbib Warning: Citation `adukia2020' on page 1 undefined on input line 5.
-
-
-Package natbib Warning: Citation `banerjee2020' on page 1 undefined on input line 5.
-
-
-Package natbib Warning: Citation `banerjee2020' on page 1 undefined on input line 5.
-
-
-Package natbib Warning: Citation `banerjee2020' on page 1 undefined on input line 5.
-
-
-Package natbib Warning: Citation `banerjee2020' on page 1 undefined on input line 5.
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 85.
+See the caption package documentation for explanation.
 
 
-Package natbib Warning: Citation `banerjee2020' on page 1 undefined on input line 5.
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 85.
+See the caption package documentation for explanation.
+
+<images/andover_township_14grandarmy_2022.png, id=27, 242.7615pt x 164.5785pt>
+File: images/andover_township_14grandarmy_2022.png Graphic file (type png)
+<use images/andover_township_14grandarmy_2022.png>
+Package pdftex.def Info: images/andover_township_14grandarmy_2022.png  used on input line 93.
+(pdftex.def)             Requested size: 188.91418pt x 128.07689pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 94.
+See the caption package documentation for explanation.
 
 
-Package natbib Warning: Citation `banerjee2020' on page 1 undefined on input line 5.
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 94.
+See the caption package documentation for explanation.
+
+<images/morgan_township_2801OH-45_2009.png, id=28, 264.4425pt x 178.3755pt>
+File: images/morgan_township_2801OH-45_2009.png Graphic file (type png)
+<use images/morgan_township_2801OH-45_2009.png>
+Package pdftex.def Info: images/morgan_township_2801OH-45_2009.png  used on input line 111.
+(pdftex.def)             Requested size: 188.91418pt x 127.42863pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 112.
+See the caption package documentation for explanation.
 
 
-Package natbib Warning: Citation `gibbons2019new' on page 1 undefined on input line 5.
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 112.
+See the caption package documentation for explanation.
+
+<images/morgan_township_2801OH-45_2018.png, id=29, 244.404pt x 174.762pt>
+File: images/morgan_township_2801OH-45_2018.png Graphic file (type png)
+<use images/morgan_township_2801OH-45_2018.png>
+Package pdftex.def Info: images/morgan_township_2801OH-45_2018.png  used on input line 121.
+(pdftex.def)             Requested size: 188.91418pt x 135.0898pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 122.
+See the caption package documentation for explanation.
 
 
-Package natbib Warning: Citation `hettige2006' on page 1 undefined on input line 5.
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 122.
+See the caption package documentation for explanation.
+
+[5] [6 <./images/andover_township_14grandarmy_2007.png> <./images/andover_township_14grandarmy_2022.png> <./images/morgan_township_2801OH-45_2009.png> <./images/morgan_township_2801OH-45_2018.png>]
+Underfull \vbox (badness 2818) has occurred while \output is active []
+
+ [7] [8]
+<images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png, id=47, 855.195pt x 622.325pt>
+File: images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png Graphic file (type png)
+<use images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png>
+Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png  used on input line 179.
+(pdftex.def)             Requested size: 185.05507pt x 134.66139pt.
 
 
-Package natbib Warning: Citation `asher2020' on page 1 undefined on input line 5.
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 180.
+See the caption package documentation for explanation.
 
-aej_body.tex:8: I can't write on file `AEJ-Article.pdf'.
-(Press Enter to retry, or Control-C to exit; default file extension is `.pdf')
-Please type another file name for output
-aej_body.tex:8: Emergency stop.
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.8 
-    
-*** (job aborted, file error in nonstop mode)
 
- 
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 180.
+See the caption package documentation for explanation.
+
+<images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png, id=48, 855.195pt x 622.325pt>
+File: images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png Graphic file (type png)
+<use images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png>
+Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png  used on input line 189.
+(pdftex.def)             Requested size: 185.05507pt x 134.66139pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 190.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 190.
+See the caption package documentation for explanation.
+
+<images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png, id=49, 855.195pt x 622.325pt>
+File: images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png Graphic file (type png)
+<use images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png>
+Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png  used on input line 201.
+(pdftex.def)             Requested size: 185.05507pt x 134.66139pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 202.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 202.
+See the caption package documentation for explanation.
+
+<images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png, id=50, 855.195pt x 622.325pt>
+File: images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png Graphic file (type png)
+<use images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png>
+Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png  used on input line 211.
+(pdftex.def)             Requested size: 185.05507pt x 134.66139pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 212.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 212.
+See the caption package documentation for explanation.
+
+<images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png, id=51, 855.195pt x 622.325pt>
+File: images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png Graphic file (type png)
+<use images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png>
+Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png  used on input line 226.
+(pdftex.def)             Requested size: 185.05507pt x 134.66139pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 227.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 227.
+See the caption package documentation for explanation.
+
+<images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png, id=52, 855.195pt x 622.325pt>
+File: images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png Graphic file (type png)
+<use images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png>
+Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png  used on input line 236.
+(pdftex.def)             Requested size: 185.05507pt x 134.66139pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 237.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 237.
+See the caption package documentation for explanation.
+
+<images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png, id=53, 855.195pt x 622.325pt>
+File: images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png Graphic file (type png)
+<use images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png>
+Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png  used on input line 248.
+(pdftex.def)             Requested size: 185.05507pt x 134.66139pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 249.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 249.
+See the caption package documentation for explanation.
+
+<images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png, id=54, 855.195pt x 622.325pt>
+File: images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png Graphic file (type png)
+<use images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png>
+Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png  used on input line 258.
+(pdftex.def)             Requested size: 185.05507pt x 134.66139pt.
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 259.
+See the caption package documentation for explanation.
+
+
+Package caption Warning: Cannot determine current font size.
+(caption)                Try setting it with `size=' explicitly on input line 259.
+See the caption package documentation for explanation.
+
+[9 <./images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png (PNG copy)> <./images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png (PNG copy)> <./images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png (PNG copy)> <./images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png (PNG copy)>] [10 <./images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png (PNG copy)> <./images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png (PNG copy)> <./images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png (PNG copy)> <./images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png (PNG copy)>]
+Overfull \hbox (109.52275pt too wide) in alignment at lines 284--291
+ [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (109.52275pt too wide) in alignment at lines 291--299
+ [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (109.52275pt too wide) in alignment at lines 299--302
+ [] [] [] [] [] [] [] 
+ []
+
+
+Overfull \hbox (109.52275pt too wide) in alignment at lines 302--305
+ [] [] [] [] [] [] [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 314--314
+[]|\OT1/cmr/m/n/10.95 % House-holds with
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 316--316
+[]|\OT1/cmr/m/n/10.95 % Less than High
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 332--332
+[]|\OT1/cmr/m/n/10.95 Income Het-ero-gene-ity
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 344--344
+[]|\OT1/cmr/m/n/10.95 Number of Ob-ser-va-
+ []
+
+
+Overfull \hbox (109.52275pt too wide) in alignment at lines 305--368
+ [] [] [] [] [] [] [] 
+ []
+
+[11] [12] [13]
+<images/votes_pct_against_histogram.png, id=72, 855.195pt x 622.325pt>
+File: images/votes_pct_against_histogram.png Graphic file (type png)
+<use images/votes_pct_against_histogram.png>
+Package pdftex.def Info: images/votes_pct_against_histogram.png  used on input line 384.
+(pdftex.def)             Requested size: 385.53484pt x 280.54694pt.
+ [14 <./images/votes_pct_against_histogram.png (PNG copy)>] [15]) (aej_results.tex
+Underfull \hbox (badness 10000) in paragraph at lines 15--15
+[]|\OT1/cmr/m/n/10.95 year rel-a-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 17--17
+[]|\OT1/cmr/m/n/10.95 Treatment
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--18
+[]|\OT1/cmr/m/n/10.95 Standard
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--19
+[]|\OT1/cmr/m/n/10.95 Effective
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 19--19
+\OT1/cmr/m/n/10.95 band-width
+ []
+
+
+Underfull \hbox (badness 2426) in paragraph at lines 20--20
+[]|\OT1/cmr/m/n/10.95 Bias band-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--21
+[]|\OT1/cmr/m/n/10.95 Effective
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--21
+\OT1/cmr/m/n/10.95 Ob-ser-va-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 22--22
+[]|\OT1/cmr/m/n/10.95 Total Ob-
+ []
+
+
+Overfull \hbox (5.83754pt too wide) in paragraph at lines 13--29
+ [] 
+ []
+
+<images/tes_gs_re.png, id=82, 581.92406pt x 401.24907pt>
+File: images/tes_gs_re.png Graphic file (type png)
+<use images/tes_gs_re.png>
+Package pdftex.def Info: images/tes_gs_re.png  used on input line 36.
+(pdftex.def)             Requested size: 385.53484pt x 265.84154pt.
+[16] [17] [18 <./images/tes_gs_re.png>]
+<images/tes_covs_ua_re.png, id=93, 581.92406pt x 401.24907pt>
+File: images/tes_covs_ua_re.png Graphic file (type png)
+<use images/tes_covs_ua_re.png>
+Package pdftex.def Info: images/tes_covs_ua_re.png  used on input line 53.
+(pdftex.def)             Requested size: 385.53484pt x 265.84154pt.
+
+Underfull \vbox (badness 2828) has occurred while \output is active []
+
+ [19 <./images/tes_covs_ua_re.png>]
+<images/tes_size_re.png, id=99, 581.92406pt x 401.24907pt>
+File: images/tes_size_re.png Graphic file (type png)
+<use images/tes_size_re.png>
+Package pdftex.def Info: images/tes_size_re.png  used on input line 67.
+(pdftex.def)             Requested size: 385.53484pt x 265.84154pt.
+ [20 <./images/tes_size_re.png>]
+Overfull \hbox (4.34506pt too wide) in paragraph at lines 85--85
+[]|\OT1/cmr/m/n/10.95 Percentile| 
+ []
+
+
+Overfull \hbox (25.67805pt too wide) in paragraph at lines 83--103
+ [][] 
+ []
+
+<images/tes_qte_re.png, id=104, 581.92406pt x 401.24907pt>
+File: images/tes_qte_re.png Graphic file (type png)
+<use images/tes_qte_re.png>
+Package pdftex.def Info: images/tes_qte_re.png  used on input line 109.
+(pdftex.def)             Requested size: 385.53484pt x 265.84154pt.
+[21] [22 <./images/tes_qte_re.png>]
+Underfull \hbox (badness 6725) in paragraph at lines 134--134
+[]|\OT1/cmr/m/n/10.95 Effective band-
+ []
+
+
+Underfull \hbox (badness 1325) in paragraph at lines 135--135
+[]|\OT1/cmr/m/n/10.95 Bias band-width
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 137--137
+[]|\OT1/cmr/m/n/10.95 Total Ob-ser-va-
+ []
+
+
+Overfull \hbox (38.33324pt too wide) in paragraph at lines 128--144
+ [] 
+ []
+
+[23]
+Underfull \hbox (badness 1783) in paragraph at lines 156--156
+[]|\OT1/cmr/m/n/10.95 Years af-ter
+ []
+
+<images/tes_g_w_re.png, id=115, 581.92406pt x 401.24907pt>
+File: images/tes_g_w_re.png Graphic file (type png)
+<use images/tes_g_w_re.png>
+Package pdftex.def Info: images/tes_g_w_re.png  used on input line 187.
+(pdftex.def)             Requested size: 385.53484pt x 265.84154pt.
+[24] [25 <./images/tes_g_w_re.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 206--206
+[]|\OT1/cmr/m/n/10.95 Year af-ter
+ []
+
+
+Overfull \hbox (96.34317pt too wide) in paragraph at lines 204--227
+ [] 
+ []
+
+[26]
+Underfull \hbox (badness 6725) in paragraph at lines 249--249
+[]|\OT1/cmr/m/n/10.95 Effective band-
+ []
+
+
+Underfull \hbox (badness 1325) in paragraph at lines 250--250
+[]|\OT1/cmr/m/n/10.95 Bias band-width
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 252--252
+[]|\OT1/cmr/m/n/10.95 Total Ob-ser-va-
+ []
+
+<images/tes_high_pov_re.png, id=127, 581.92406pt x 401.24907pt>
+File: images/tes_high_pov_re.png Graphic file (type png)
+<use images/tes_high_pov_re.png>
+Package pdftex.def Info: images/tes_high_pov_re.png  used on input line 265.
+(pdftex.def)             Requested size: 385.53484pt x 265.84154pt.
+[27] [28 <./images/tes_high_pov_re.png>] [29] [30]) (AEJ-Article.bbl [31] [32])
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [33] (aej_appx.tex
+Overfull \hbox (36.67564pt too wide) in paragraph at lines 11--34
+ [] 
+ []
+
+<images/tes_gs.png, id=151, 578.16pt x 346.29375pt>
+File: images/tes_gs.png Graphic file (type png)
+<use images/tes_gs.png>
+Package pdftex.def Info: images/tes_gs.png  used on input line 38.
+(pdftex.def)             Requested size: 385.53484pt x 230.91652pt.
+[34] [35 <./images/tes_gs.png>]
+Overfull \hbox (12.21222pt too wide) in paragraph at lines 53--76
+ [] 
+ []
+
+<images/tes_emp.png, id=159, 506.6428pt x 398.99063pt>
+File: images/tes_emp.png Graphic file (type png)
+<use images/tes_emp.png>
+Package pdftex.def Info: images/tes_emp.png  used on input line 82.
+(pdftex.def)             Requested size: 385.53484pt x 303.62567pt.
+
+Underfull \hbox (badness 2790) in paragraph at lines 93--93
+[]|\OT1/cmr/m/n/10.95 Year rel-a-tive to
+ []
+
+<images/tes_ln_emp.png, id=160, 506.6428pt x 398.99063pt>
+File: images/tes_ln_emp.png Graphic file (type png)
+<use images/tes_ln_emp.png>
+Package pdftex.def Info: images/tes_ln_emp.png  used on input line 118.
+(pdftex.def)             Requested size: 385.53484pt x 303.62567pt.
+[36
+
+] [37 <./images/tes_emp.png>] [38 <./images/tes_ln_emp.png>] [39]
+Underfull \hbox (badness 10000) in paragraph at lines 133--133
+[]|\OT1/cmr/m/n/10.95 Year rel-a-
+ []
+
+
+Overfull \hbox (6.15515pt too wide) in paragraph at lines 131--154
+ [] 
+ []
+
+<images/tes_wages.png, id=176, 506.6428pt x 398.99063pt>
+File: images/tes_wages.png Graphic file (type png)
+<use images/tes_wages.png>
+Package pdftex.def Info: images/tes_wages.png  used on input line 158.
+(pdftex.def)             Requested size: 385.53484pt x 303.62567pt.
+
+Underfull \hbox (badness 2790) in paragraph at lines 170--170
+[]|\OT1/cmr/m/n/10.95 Year rel-a-tive to
+ []
+
+<images/tes_ln_wages.png, id=177, 506.6428pt x 398.99063pt>
+File: images/tes_ln_wages.png Graphic file (type png)
+<use images/tes_ln_wages.png>
+Package pdftex.def Info: images/tes_ln_wages.png  used on input line 195.
+(pdftex.def)             Requested size: 385.53484pt x 303.62567pt.
+[40
+
+] [41 <./images/tes_wages.png>] [42 <./images/tes_ln_wages.png>] [43]
+<images/cov_smoothness_pctrent.png, id=193, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctrent.png Graphic file (type png)
+<use images/cov_smoothness_pctrent.png>
+Package pdftex.def Info: images/cov_smoothness_pctrent.png  used on input line 214.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_poverty.png, id=194, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_poverty.png Graphic file (type png)
+<use images/cov_smoothness_poverty.png>
+Package pdftex.def Info: images/cov_smoothness_poverty.png  used on input line 224.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pctwithkids.png, id=195, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctwithkids.png Graphic file (type png)
+<use images/cov_smoothness_pctwithkids.png>
+Package pdftex.def Info: images/cov_smoothness_pctwithkids.png  used on input line 236.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pctsinparhhld.png, id=196, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctsinparhhld.png Graphic file (type png)
+<use images/cov_smoothness_pctsinparhhld.png>
+Package pdftex.def Info: images/cov_smoothness_pctsinparhhld.png  used on input line 246.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pctlesshs.png, id=197, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctlesshs.png Graphic file (type png)
+<use images/cov_smoothness_pctlesshs.png>
+Package pdftex.def Info: images/cov_smoothness_pctlesshs.png  used on input line 258.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pctsomecoll.png, id=198, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctsomecoll.png Graphic file (type png)
+<use images/cov_smoothness_pctsomecoll.png>
+Package pdftex.def Info: images/cov_smoothness_pctsomecoll.png  used on input line 268.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pctblack.png, id=199, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctblack.png Graphic file (type png)
+<use images/cov_smoothness_pctblack.png>
+Package pdftex.def Info: images/cov_smoothness_pctblack.png  used on input line 280.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pop.png, id=200, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pop.png Graphic file (type png)
+<use images/cov_smoothness_pop.png>
+Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 290.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+
+
+LaTeX Warning: Float too large for page by 94.43095pt on input line 300.
+
+<images/cov_smoothness_pctmarried.png, id=201, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctmarried.png Graphic file (type png)
+<use images/cov_smoothness_pctmarried.png>
+Package pdftex.def Info: images/cov_smoothness_pctmarried.png  used on input line 308.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pctseparated.png, id=202, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctseparated.png Graphic file (type png)
+<use images/cov_smoothness_pctseparated.png>
+Package pdftex.def Info: images/cov_smoothness_pctseparated.png  used on input line 317.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_incherfindahl.png, id=203, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_incherfindahl.png Graphic file (type png)
+<use images/cov_smoothness_incherfindahl.png>
+Package pdftex.def Info: images/cov_smoothness_incherfindahl.png  used on input line 328.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_medfamy.png, id=204, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_medfamy.png Graphic file (type png)
+<use images/cov_smoothness_medfamy.png>
+Package pdftex.def Info: images/cov_smoothness_medfamy.png  used on input line 337.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pctlt5.png, id=205, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctlt5.png Graphic file (type png)
+<use images/cov_smoothness_pctlt5.png>
+Package pdftex.def Info: images/cov_smoothness_pctlt5.png  used on input line 348.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pct5to17.png, id=206, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pct5to17.png Graphic file (type png)
+<use images/cov_smoothness_pct5to17.png>
+Package pdftex.def Info: images/cov_smoothness_pct5to17.png  used on input line 357.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pct18to64.png, id=207, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pct18to64.png Graphic file (type png)
+<use images/cov_smoothness_pct18to64.png>
+Package pdftex.def Info: images/cov_smoothness_pct18to64.png  used on input line 368.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+<images/cov_smoothness_pctmin.png, id=208, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctmin.png Graphic file (type png)
+<use images/cov_smoothness_pctmin.png>
+Package pdftex.def Info: images/cov_smoothness_pctmin.png  used on input line 377.
+(pdftex.def)             Requested size: 185.05507pt x 134.659pt.
+
+LaTeX Warning: Float too large for page by 94.43095pt on input line 386.
+
+[44
+
+] [45 <./images/cov_smoothness_pctrent.png (PNG copy)> <./images/cov_smoothness_poverty.png (PNG copy)> <./images/cov_smoothness_pctwithkids.png (PNG copy)> <./images/cov_smoothness_pctsinparhhld.png (PNG copy)> <./images/cov_smoothness_pctlesshs.png (PNG copy)> <./images/cov_smoothness_pctsomecoll.png (PNG copy)> <./images/cov_smoothness_pctblack.png (PNG copy)> <./images/cov_smoothness_pop.png (PNG copy)>] [46 <./images/cov_smoothness_pctmarried.png (PNG copy)> <./images/cov_smoothness_pctseparated.png (PNG copy)> <./images/cov_smoothness_incherfindahl.png (PNG copy)> <./images/cov_smoothness_medfamy.png (PNG copy)> <./images/cov_smoothness_pctlt5.png (PNG copy)> <./images/cov_smoothness_pct5to17.png (PNG copy)> <./images/cov_smoothness_pct18to64.png (PNG copy)> <./images/cov_smoothness_pctmin.png (PNG copy)>]
+Underfull \hbox (badness 10000) in paragraph at lines 402--402
+[]|\OT1/cmr/m/n/10.95 Poverty
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 403--403
+[]|\OT1/cmr/m/n/10.95 % with
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 404--404
+[]|\OT1/cmr/m/n/10.95 % House-
+ []
+
+
+Underfull \hbox (badness 5533) in paragraph at lines 404--404
+\OT1/cmr/m/n/10.95 holds with
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 404--404
+\OT1/cmr/m/n/10.95 Chil-dren
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 406--406
+[]|\OT1/cmr/m/n/10.95 % Some
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 406--406
+\OT1/cmr/m/n/10.95 Col-lege
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 407--407
+[]|\OT1/cmr/m/n/10.95 % Un-em-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 407--407
+\OT1/cmr/m/n/10.95 ploy-ment
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 412--412
+[]|\OT1/cmr/m/n/10.95 % Sep-a-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 441--441
+[]|\OT1/cmr/m/n/10.95 Number of Ob-ser-va-
+ []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[47
+
+] [48]
+<images/waynesville_oh_1.png, id=224, 867.24pt x 1541.76pt>
+File: images/waynesville_oh_1.png Graphic file (type png)
+<use images/waynesville_oh_1.png>
+Package pdftex.def Info: images/waynesville_oh_1.png  used on input line 468.
+(pdftex.def)             Requested size: 138.79129pt x 246.73369pt.
+<images/waynesville_oh_2.png, id=225, 867.24pt x 1541.76pt>
+File: images/waynesville_oh_2.png Graphic file (type png)
+<use images/waynesville_oh_2.png>
+Package pdftex.def Info: images/waynesville_oh_2.png  used on input line 477.
+(pdftex.def)             Requested size: 138.79129pt x 246.73369pt.
+<images/waynesville_oh_3.png, id=226, 867.24pt x 1541.76pt>
+File: images/waynesville_oh_3.png Graphic file (type png)
+<use images/waynesville_oh_3.png>
+Package pdftex.def Info: images/waynesville_oh_3.png  used on input line 488.
+(pdftex.def)             Requested size: 138.79129pt x 246.73369pt.
+) [49
+
+] [50 <./images/waynesville_oh_1.png> <./images/waynesville_oh_2.png> <./images/waynesville_oh_3.png>] (AEJ-Article.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-03-14>
+ ***********
+ ) 
 Here is how much of TeX's memory you used:
- 7067 strings out of 474424
- 111624 string characters out of 5740796
- 1936496 words of memory out of 5000000
- 29337 multiletter control sequences out of 15000+600000
- 566967 words of font info for 68 fonts, out of 8000000 for 9000
+ 7596 strings out of 474424
+ 130136 string characters out of 5740796
+ 1974496 words of memory out of 5000000
+ 29853 multiletter control sequences out of 15000+600000
+ 567922 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 71i,6n,79p,2109b,265s stack positions out of 10000i,1000n,20000p,200000b,200000s
-aej_body.tex:8:  ==> Fatal error occurred, no output PDF file produced!
+ 71i,12n,79p,2441b,562s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0600.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcti1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0800.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on AEJ-Article.pdf (50 pages, 22216555 bytes).
+PDF statistics:
+ 301 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 216 words of extra memory for PDF output out of 10000 (max. 10000000)
+

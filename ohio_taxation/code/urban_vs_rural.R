@@ -237,7 +237,35 @@ ggplot(tes_covs_ua, aes(ord, robust_coef, color = cat)) +
     legend.title = element_blank()
   ) + 
   scale_x_continuous(breaks = c(-3:10)) +
-  ylim(c(NA, 50000)) # Add this line
+  ylim(c(NA, 50000)) 
+
+### Re-centered Main urban vs rural plot in paper ###
+tes_covs_ua_ <- tes_covs_ua %>% mutate(conf_int_low  = if_else(ord == -0.85, robust_coef, conf_int_low),
+                                       conf_int_high = if_else(ord == -0.85, robust_coef, conf_int_high))
+ggplot(tes_covs_ua_, aes(ord, robust_coef, color = cat)) +       
+  geom_point(size = 3, shape = 19) +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high, color = cat), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = tes_covs_ua_ %>% filter(cat == "urban" & ord == -0.85) %>% pull(robust_coef), linetype = "dashed", color = "green", size = 1) +
+  geom_hline(yintercept = tes_covs_ua_ %>% filter(cat == "rural" & ord == -1.15) %>% pull(robust_coef), linetype = "dashed", color = "orange", size = 1) +
+  labs(
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position",
+    title = "Treatment Effects: Urban vs Rural"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom",
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    panel.grid.minor.y = element_blank(),
+    legend.title = element_blank()
+  ) + 
+  scale_x_continuous(breaks = c(-3:10)) +
+  ylim(c(NA, 50000)) 
+
 
 
 #=================================================================================#
