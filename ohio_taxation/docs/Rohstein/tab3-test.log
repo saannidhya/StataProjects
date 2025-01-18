@@ -1,0 +1,2605 @@
+-----------------------------------------------------------------------------------
+       log:  C:\Documents and Settings\Steph Cellini\My Documents\Research\BondTest
+> \Stata\tab3-test.log
+  log type:  text
+ opened on:  11 Nov 2008, 21:40:58
+
+. 
+. ** This program updates Jesses' tab3-fiscal program to run with test scores;
+. 
+. ******************************;
+. *Program to estimate models for pre-election outcomes for Table 3;
+. 
+. *Static specifications for y_t-1 and (y_t-1 - y_t-2);
+. *Dynamic specifications with all controls, focusing on y_t-1;
+. ********************************;
+. 
+. #delimit;
+delimiter now ;
+. clear;
+
+. set mem 100m;
+
+Current memory allocation
+
+                    current                                 memory usage
+    settable          value     description                 (1M = 1024k)
+    --------------------------------------------------------------------
+    set maxvar         5000     max. variables allowed           1.733M
+    set memory          100M    max. data space                100.000M
+    set matsize         400     max. RHS vars in models          1.254M
+                                                            -----------
+                                                               102.987M
+
+. set more off;
+
+. local projectbase "C:\Documents and Settings\Steph Cellini\My Documents\Research\
+> BondTest\";
+
+. cd "C:\Documents and Settings\Steph Cellini\My Documents\Research\BondTest\";
+C:\Documents and Settings\Steph Cellini\My Documents\Research\BondTest
+
+. use "Data\test_shortpanel";
+
+. *Compute t-2 to t-1 change;
+. sort newleaid measnum dyear;
+
+. foreach v of varlist sstd_catread3 sstd_catmath3 {;
+  2.   by newleaid measnum: gen d`v'=`v'-`v'[_n-1] if dyear==dyear[_n-1]+1;
+  3. };
+(6092 missing values generated)
+(6092 missing values generated)
+
+. *Rename year 0 vars, to make them easy to exclude;
+. foreach v of varlist gobond_0 win_0 percent_0 percent2_0 percent3_0 req_0 {;
+  2.         rename `v' tmp_`v';
+  3.         };
+
+. tab year, gen(yrdums);
+
+ schoolyear |
+starting yr |
+   of elec. |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       1987 |        129        1.08        1.08
+       1988 |        171        1.43        2.51
+       1989 |        260        2.18        4.69
+       1990 |        323        2.70        7.39
+       1991 |        389        3.26       10.65
+       1992 |        444        3.72       14.37
+       1993 |        518        4.34       18.70
+       1994 |        547        4.58       23.28
+       1995 |        633        5.30       28.58
+       1996 |        684        5.73       34.31
+       1997 |        734        6.15       40.46
+       1998 |        726        6.08       46.53
+       1999 |        772        6.46       53.00
+       2000 |        805        6.74       59.74
+       2001 |        861        7.21       66.95
+       2002 |        882        7.38       74.33
+       2003 |        850        7.12       81.45
+       2004 |        827        6.92       88.37
+       2005 |        741        6.20       94.57
+       2006 |        648        5.43      100.00
+------------+-----------------------------------
+      Total |     11,944      100.00
+
+. tab dyear, gen(dydums);
+
+      dyear |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         -2 |      1,460       12.22       12.22
+         -1 |      1,508       12.63       24.85
+          0 |      1,554       13.01       37.86
+          1 |      1,443       12.08       49.94
+          2 |      1,400       11.72       61.66
+          3 |      1,305       10.93       72.59
+          4 |      1,193        9.99       82.58
+          5 |      1,095        9.17       91.74
+          6 |        986        8.26      100.00
+------------+-----------------------------------
+      Total |     11,944      100.00
+
+. tempfile shortpan;
+
+. save `shortpan';
+file C:\DOCUME~1\STEPHC~1\LOCALS~1\Temp\ST_05000027.tmp saved
+
+. *Now prepare long panel for dynamic regs;
+.  use "Data\test_fullpanel", clear;
+
+.  tab year, gen(yrdums);
+
+       year |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       1987 |        656        5.00        5.00
+       1988 |        656        5.00       10.00
+       1989 |        656        5.00       15.00
+       1990 |        656        5.00       20.00
+       1991 |        656        5.00       25.00
+       1992 |        656        5.00       30.00
+       1993 |        656        5.00       35.01
+       1994 |        656        5.00       40.01
+       1995 |        656        5.00       45.01
+       1996 |        656        5.00       50.01
+       1997 |        655        4.99       55.00
+       1998 |        656        5.00       60.00
+       1999 |        656        5.00       65.00
+       2000 |        655        4.99       70.00
+       2001 |        656        5.00       75.00
+       2002 |        656        5.00       80.00
+       2003 |        656        5.00       85.00
+       2004 |        656        5.00       90.00
+       2005 |        656        5.00       95.00
+       2006 |        656        5.00      100.00
+------------+-----------------------------------
+      Total |     13,118      100.00
+
+.  *Redefine win, percent variables to zero if GO bond is zero;
+.   foreach v in win percent percent2 percent3 req {;
+  2.     forvalues y=0/19 {;
+  3.            replace `v'_prev`y'=`v'_prev`y'*gobond_prev`y';
+  4.           };
+  5.     forvalues y=1/14 {;
+  6.            replace `v'_fut`y'=`v'_fut`y'*gobond_fut`y';
+  7.           };
+  8.   };
+(185 real changes made)
+(182 real changes made)
+(173 real changes made)
+(154 real changes made)
+(128 real changes made)
+(124 real changes made)
+(115 real changes made)
+(105 real changes made)
+(99 real changes made)
+(90 real changes made)
+(79 real changes made)
+(69 real changes made)
+(65 real changes made)
+(61 real changes made)
+(47 real changes made)
+(39 real changes made)
+(28 real changes made)
+(22 real changes made)
+(15 real changes made)
+(7 real changes made)
+(178 real changes made)
+(170 real changes made)
+(163 real changes made)
+(157 real changes made)
+(146 real changes made)
+(138 real changes made)
+(124 real changes made)
+(120 real changes made)
+(116 real changes made)
+(106 real changes made)
+(95 real changes made)
+(86 real changes made)
+(80 real changes made)
+(70 real changes made)
+(314 real changes made)
+(305 real changes made)
+(293 real changes made)
+(254 real changes made)
+(208 real changes made)
+(197 real changes made)
+(183 real changes made)
+(172 real changes made)
+(163 real changes made)
+(154 real changes made)
+(140 real changes made)
+(130 real changes made)
+(121 real changes made)
+(113 real changes made)
+(99 real changes made)
+(81 real changes made)
+(48 real changes made)
+(38 real changes made)
+(27 real changes made)
+(10 real changes made)
+(304 real changes made)
+(287 real changes made)
+(276 real changes made)
+(266 real changes made)
+(233 real changes made)
+(215 real changes made)
+(201 real changes made)
+(193 real changes made)
+(184 real changes made)
+(174 real changes made)
+(160 real changes made)
+(151 real changes made)
+(142 real changes made)
+(131 real changes made)
+(314 real changes made)
+(305 real changes made)
+(293 real changes made)
+(254 real changes made)
+(208 real changes made)
+(197 real changes made)
+(183 real changes made)
+(172 real changes made)
+(163 real changes made)
+(154 real changes made)
+(140 real changes made)
+(130 real changes made)
+(121 real changes made)
+(113 real changes made)
+(99 real changes made)
+(81 real changes made)
+(48 real changes made)
+(38 real changes made)
+(27 real changes made)
+(10 real changes made)
+(304 real changes made)
+(287 real changes made)
+(276 real changes made)
+(266 real changes made)
+(233 real changes made)
+(215 real changes made)
+(201 real changes made)
+(193 real changes made)
+(184 real changes made)
+(174 real changes made)
+(160 real changes made)
+(151 real changes made)
+(142 real changes made)
+(131 real changes made)
+(314 real changes made)
+(305 real changes made)
+(293 real changes made)
+(254 real changes made)
+(208 real changes made)
+(197 real changes made)
+(183 real changes made)
+(172 real changes made)
+(163 real changes made)
+(154 real changes made)
+(140 real changes made)
+(130 real changes made)
+(121 real changes made)
+(113 real changes made)
+(99 real changes made)
+(81 real changes made)
+(48 real changes made)
+(38 real changes made)
+(27 real changes made)
+(10 real changes made)
+(304 real changes made)
+(287 real changes made)
+(276 real changes made)
+(266 real changes made)
+(233 real changes made)
+(215 real changes made)
+(201 real changes made)
+(193 real changes made)
+(184 real changes made)
+(174 real changes made)
+(160 real changes made)
+(151 real changes made)
+(142 real changes made)
+(131 real changes made)
+(324 real changes made)
+(315 real changes made)
+(303 real changes made)
+(264 real changes made)
+(217 real changes made)
+(207 real changes made)
+(193 real changes made)
+(182 real changes made)
+(173 real changes made)
+(164 real changes made)
+(150 real changes made)
+(140 real changes made)
+(131 real changes made)
+(123 real changes made)
+(99 real changes made)
+(81 real changes made)
+(48 real changes made)
+(38 real changes made)
+(27 real changes made)
+(10 real changes made)
+(314 real changes made)
+(297 real changes made)
+(286 real changes made)
+(276 real changes made)
+(243 real changes made)
+(225 real changes made)
+(201 real changes made)
+(193 real changes made)
+(184 real changes made)
+(174 real changes made)
+(160 real changes made)
+(151 real changes made)
+(142 real changes made)
+(131 real changes made)
+
+. *Rename year-0 variables;
+.  foreach v of varlist *_prev0 {;
+  2.    rename `v' tmp_`v';
+  3.   };
+
+.  /*;
+> *Drop year-19 variables:  CCD only goes to 2005, so these are identically 0 in sa
+> mple;
+>   foreach v of varlist *_prev19 {;
+>     assert `v'==0 if ltdebt_pp<.;
+>     drop `v';
+>   };
+> */;
+.  tempfile longpan;
+
+.  save `longpan';
+file C:\DOCUME~1\STEPHC~1\LOCALS~1\Temp\ST_05000028.tmp saved
+
+. foreach v of varlist sstd_catread3 sstd_catmath3 {;
+  2.          if "`v'"=="sstd_catread3" {;
+  3.                 local apprep "replace";
+  4.          };
+  5.          else {;
+  6.                 local apprep "append";
+  7.          };
+  8. ** Static;
+.   use `shortpan';
+  9.   reg `v' yrdums* win req if dyear==-1 & gobond==1, robust cluster(newleaid);
+ 10.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel `apprep';
+ 11.   reg `v' yrdums* win req percent percent2 percent3 if dyear==-1 & gobond==1, 
+> robust cluster(newleaid);
+ 12.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 13.   reg `v' yrdums* dydums* win_? win_m? req_? req_m?
+>           percent_? percent2_? percent3_? percent_m? percent2_m? percent3_m?
+>           tmp_*
+>           if gobond==1, cluster(newleaid);
+ 14.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 15.   areg `v' yrdums* dydums* win_? win_m? req_? req_m?
+>            percent_? percent2_? percent3_? percent_m? percent2_m? percent3_m?
+>           if gobond==1, absorb(refid) cluster(newleaid);
+ 16.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 17.     reg d`v' yrdums* win req if dyear==-1 & gobond==1, robust cluster(newleaid
+> );
+ 18.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 19.   reg d`v' yrdums* win req percent percent2 percent3 if dyear==-1 & gobond==1,
+>  robust cluster(newleaid);
+ 20.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 21.   reg d`v' yrdums* dydums* win_? win_m? req_? req_m?
+>           percent_? percent2_? percent3_? percent_m? percent2_m? percent3_m?
+>           tmp_*
+>           if gobond==1, cluster(newleaid);
+ 22.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 23.   areg d`v' yrdums* dydums* win_? win_m? req_? req_m?
+>            percent_? percent2_? percent3_? percent_m? percent2_m? percent3_m?
+>           if gobond==1, absorb(refid) cluster(newleaid);
+ 24.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 25. ** Dynamic;
+.   use `longpan';
+ 26.   reg `v' gobond_prev* gobond_fut* req_prev* req_fut* win_prev* win_fut* yrdum
+> s*
+>            , cluster(newleaid);
+ 27.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 28.   reg `v' gobond_prev* gobond_fut* req_prev* req_fut* win_prev* win_fut* yrdum
+> s*
+>            percent_prev* percent_fut* percent2_prev* percent2_fut* percent3_prev*
+>  percent3_fut*
+>            tmp_*
+>            , cluster(newleaid);
+ 29.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 30.   areg `v' gobond_prev* gobond_fut* req_prev* req_fut* win_prev* win_fut* yrdu
+> ms*
+>            percent_prev* percent_fut* percent2_prev* percent2_fut* percent3_prev*
+>  percent3_fut*
+>            , absorb(newleaid) cluster(newleaid);
+ 31.      outreg using "Stata\tab3-test.txt", bdec(3) tdec(3) se coefast 3aster nol
+> abel append;
+ 32. };
+
+Linear regression                                      Number of obs =     630
+                                                       F( 12,   430) =    1.07
+                                                       Prob > F      =  0.3822
+                                                       R-squared     =  0.0184
+Number of clusters (newleaid) = 431                    Root MSE      =  .89841
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catre~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   .0984486   .1909843     0.52   0.606    -.2769304    .4738276
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .2113208   .1943607     1.09   0.278    -.1706945    .5933361
+    yrdums12 |   .0707814   .1858518     0.38   0.704    -.2945096    .4360724
+    yrdums13 |  -.0349273   .1926514    -0.18   0.856    -.4135829    .3437284
+    yrdums14 |    .350257   .2052066     1.71   0.089    -.0530758    .7535897
+    yrdums15 |    .299676   .2125741     1.41   0.159    -.1181377    .7174896
+    yrdums16 |   .1710129   .2266278     0.75   0.451    -.2744231    .6164489
+    yrdums17 |   .0373639   .2446285     0.15   0.879    -.4434525    .5181802
+    yrdums18 |   .4647329    .296254     1.57   0.117    -.1175531    1.047019
+    yrdums19 |   .3600783   .2277769     1.58   0.115    -.0876163    .8077729
+    yrdums20 |  (dropped)
+         win |  -.0398897   .0881234    -0.45   0.651    -.2130958    .1333164
+         req |   .0124875   .0144813     0.86   0.389    -.0159753    .0409504
+       _cons |  -.7616837   .9724126    -0.78   0.434    -2.672957     1.14959
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =     630
+                                                       F( 15,   430) =    1.42
+                                                       Prob > F      =  0.1318
+                                                       R-squared     =  0.0313
+Number of clusters (newleaid) = 431                    Root MSE      =  .89468
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catre~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   .1565109   .1937985     0.81   0.420    -.2243993    .5374211
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .2383637    .193897     1.23   0.220    -.1427402    .6194676
+    yrdums12 |   .1369574   .1889848     0.72   0.469    -.2344914    .5084062
+    yrdums13 |  -.0043033   .1938497    -0.02   0.982    -.3853142    .3767076
+    yrdums14 |   .3582828   .2050092     1.75   0.081     -.044662    .7612277
+    yrdums15 |   .3200045   .2160776     1.48   0.139    -.1046952    .7447042
+    yrdums16 |    .191039   .2280192     0.84   0.403    -.2571318    .6392098
+    yrdums17 |   .0906658   .2528016     0.36   0.720    -.4062147    .5875464
+    yrdums18 |   .4914387   .2996452     1.64   0.102    -.0975129     1.08039
+    yrdums19 |   .3661997   .2288952     1.60   0.110    -.0836929    .8160923
+    yrdums20 |  (dropped)
+         win |   .1470128   .1203173     1.22   0.222    -.0894704     .383496
+         req |    .016307   .0153419     1.06   0.288    -.0138474    .0464614
+     percent |   .0213529   .2712829     0.08   0.937    -.5118526    .5545584
+    percent2 |  -.0013624   .0044525    -0.31   0.760    -.0101136    .0073889
+    percent3 |   .0000114   .0000239     0.48   0.635    -.0000356    .0000584
+       _cons |   .0287176    5.64066     0.01   0.996    -11.05798    11.11541
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =    6084
+                                                       F( 64,   553) =    2.25
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0162
+Number of clusters (newleaid) = 554                    Root MSE      =  .86529
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catre~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   .0634422   .0448664     1.41   0.158    -.0246872    .1515717
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .1312003   .0545856     2.40   0.017     .0239797    .2384208
+    yrdums12 |   .1598509   .0590448     2.71   0.007     .0438714    .2758304
+    yrdums13 |   .0945566   .0675891     1.40   0.162    -.0382061    .2273193
+    yrdums14 |    .094209   .0737796     1.28   0.202    -.0507136    .2391316
+    yrdums15 |   .0442477   .0789189     0.56   0.575    -.1107697    .1992652
+    yrdums16 |   .0526733   .0838017     0.63   0.530    -.1119354     .217282
+    yrdums17 |   .0967328   .0898434     1.08   0.282    -.0797432    .2732089
+    yrdums18 |   .0925145   .0954883     0.97   0.333    -.0950497    .2800787
+    yrdums19 |   .0891223   .1061201     0.84   0.401    -.1193256    .2975701
+    yrdums20 |   .0932471   .1180439     0.79   0.430    -.1386223    .3251164
+     dydums1 |  (dropped)
+     dydums2 |   2.918692   3.641132     0.80   0.423    -4.233449    10.07083
+     dydums3 |   4.297591    3.88774     1.11   0.269    -3.338952    11.93413
+     dydums4 |   3.009084   4.168612     0.72   0.471    -5.179167    11.19733
+     dydums5 |    1.72812   4.562646     0.38   0.705    -7.234117    10.69036
+     dydums6 |   .9154061   4.599152     0.20   0.842    -8.118538     9.94935
+     dydums7 |   8.933097   4.441362     2.01   0.045     .2090951     17.6571
+     dydums8 |   6.362136   4.646963     1.37   0.172    -2.765721    15.48999
+     dydums9 |   .7814772   5.650505     0.14   0.890     -10.3176    11.88055
+       win_1 |   .1236206   .1155935     1.07   0.285    -.1034354    .3506767
+       win_2 |   .1766669   .1053573     1.68   0.094    -.0302825    .3836164
+       win_3 |   .2245676   .1057294     2.12   0.034     .0168874    .4322479
+       win_4 |   .0283016    .124113     0.23   0.820     -.215489    .2720922
+       win_5 |  -.0331288   .1286509    -0.26   0.797     -.285833    .2195754
+       win_6 |   .0575888   .1246271     0.46   0.644    -.1872117    .3023893
+      win_m1 |    .184826   .1168194     1.58   0.114     -.044638      .41429
+      win_m2 |   .1875331   .1210728     1.55   0.122    -.0502858     .425352
+       req_1 |   .0009753   .0087242     0.11   0.911    -.0161614    .0181119
+       req_2 |   .0105954   .0091829     1.15   0.249    -.0074423    .0286331
+       req_3 |   .0089501   .0100377     0.89   0.373    -.0107665    .0286668
+       req_4 |  -.0033911   .0120077    -0.28   0.778    -.0269773    .0201952
+       req_5 |   .0003359   .0153922     0.02   0.983    -.0298984    .0305701
+       req_6 |    .020371   .0526838     0.39   0.699    -.0831138    .1238559
+      req_m1 |   .0030438   .0095024     0.32   0.749    -.0156214    .0217089
+      req_m2 |   .0054811    .009844     0.56   0.578    -.0138552    .0248174
+   percent_1 |  -.0343093   .1186779    -0.29   0.773    -.2674239    .1988053
+   percent_2 |   .0072804   .0261157     0.28   0.781    -.0440177    .0585785
+   percent_3 |   .0582425   .0284637     2.05   0.041     .0023322    .1141528
+   percent_4 |  -.2976269   .2370091    -1.26   0.210    -.7631752    .1679214
+   percent_5 |  -.2402841   .1632617    -1.47   0.142    -.5609731    .0804049
+   percent_6 |  -.0249981   .1083387    -0.23   0.818    -.2378039    .1878077
+  percent2_1 |   .0001324     .00207     0.06   0.949    -.0039336    .0041984
+  percent2_2 |  -.0006496   .0006819    -0.95   0.341     -.001989    .0006897
+  percent2_3 |  -.0015677   .0007263    -2.16   0.031    -.0029943   -.0001411
+  percent2_4 |   .0040138    .003886     1.03   0.302    -.0036194     .011647
+  percent2_5 |   .0037626   .0028253     1.33   0.183    -.0017869    .0093122
+  percent2_6 |   .0003513   .0019769     0.18   0.859    -.0035319    .0042345
+  percent3_1 |   9.31e-07   .0000116     0.08   0.936    -.0000218    .0000237
+  percent3_2 |   5.63e-06   4.81e-06     1.17   0.243    -3.83e-06    .0000151
+  percent3_3 |   .0000109   5.13e-06     2.12   0.035     7.84e-07    .0000209
+  percent3_4 |  -.0000168   .0000206    -0.82   0.415    -.0000573    .0000237
+  percent3_5 |   -.000018   .0000156    -1.15   0.250    -.0000486    .0000126
+  percent3_6 |  -9.78e-07   .0000114    -0.09   0.932    -.0000234    .0000214
+  percent_m1 |    .014557   .2591893     0.06   0.955    -.4945589    .5236729
+  percent_m2 |   .1333806   .2346469     0.57   0.570    -.3275276    .5942887
+ percent2_m1 |  -.0013124   .0042671    -0.31   0.759    -.0096941    .0070693
+ percent2_m2 |  -.0029756   .0039458    -0.75   0.451    -.0107262     .004775
+ percent3_m1 |   .0000112    .000023     0.49   0.627     -.000034    .0000563
+ percent3_m2 |   .0000188   .0000217     0.87   0.385    -.0000237    .0000614
+tmp_perc~t_0 |  -.0747097   .1873266    -0.40   0.690    -.4426684     .293249
+tmp_perc~2_0 |     .00067   .0030963     0.22   0.829    -.0054119    .0067519
+tmp_perc~3_0 |  -1.10e-06   .0000166    -0.07   0.947    -.0000338    .0000316
+   tmp_win_0 |   .1100556   .1072732     1.03   0.305    -.1006571    .3207683
+   tmp_req_0 |  -.0052921   .0089627    -0.59   0.555    -.0228972    .0123131
+tmp_gobond_0 |  (dropped)
+       _cons |  -1.685138   4.666014    -0.36   0.718    -10.85042    7.480141
+------------------------------------------------------------------------------
+
+Linear regression, absorbing indicators                Number of obs =    6084
+                                                       F( 58,   553) =    2.63
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.9332
+                                                       Adj R-squared =  0.9180
+                                                       Root MSE      =  .24847
+
+                             (Std. Err. adjusted for 554 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catre~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  -.0329567   .0384757    -0.86   0.392    -.1085332    .0426198
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .0158242   .0337461     0.47   0.639     -.050462    .0821104
+    yrdums12 |   .0570348   .0328178     1.74   0.083     -.007428    .1214977
+    yrdums13 |  -.0276982    .032761    -0.85   0.398    -.0920495    .0366531
+    yrdums14 |  -.0373096   .0325008    -1.15   0.251    -.1011497    .0265306
+    yrdums15 |  -.0755623   .0319797    -2.36   0.018    -.1383788   -.0127459
+    yrdums16 |   -.009757   .0289625    -0.34   0.736     -.066647    .0471331
+    yrdums17 |   .0067928   .0272138     0.25   0.803    -.0466623    .0602478
+    yrdums18 |   .0124037   .0248855     0.50   0.618    -.0364781    .0612854
+    yrdums19 |   .0212724   .0225829     0.94   0.347    -.0230864    .0656313
+    yrdums20 |  (dropped)
+     dydums1 |   2.067181   2.241642     0.92   0.357    -2.335993    6.470354
+     dydums2 |   3.384456   2.401603     1.41   0.159    -1.332924    8.101836
+     dydums3 |   2.781273   1.811382     1.54   0.125     -.776758    6.339304
+     dydums4 |    2.78922   1.297671     2.15   0.032     .2402523    5.338188
+     dydums5 |   2.380496   1.176501     2.02   0.044     .0695387    4.691453
+     dydums6 |   1.067172   1.161065     0.92   0.358    -1.213466     3.34781
+     dydums7 |    2.99881   1.550537     1.93   0.054    -.0468519    6.044473
+     dydums8 |   2.456974   1.353656     1.82   0.070    -.2019626     5.11591
+     dydums9 |  (dropped)
+       win_1 |   .0257303   .0510483     0.50   0.614    -.0745421    .1260027
+       win_2 |   .0065096   .0540435     0.12   0.904     -.099646    .1126652
+       win_3 |   .0597199   .0551226     1.08   0.279    -.0485554    .1679952
+       win_4 |   .0113596   .0655802     0.17   0.863    -.1174572    .1401765
+       win_5 |   .0742093   .0656474     1.13   0.259    -.0547396    .2031581
+       win_6 |   .1499674   .0664768     2.26   0.024     .0193895    .2805453
+      win_m1 |  -.0102529    .054244    -0.19   0.850    -.1168025    .0962966
+      win_m2 |   .0014903   .0604496     0.02   0.980    -.1172486    .1202293
+       req_1 |   .0066411   .0034713     1.91   0.056    -.0001774    .0134596
+       req_2 |   .0047403   .0037028     1.28   0.201     -.002533    .0120137
+       req_3 |   .0086034   .0041353     2.08   0.038     .0004805    .0167263
+       req_4 |   .0076161   .0051875     1.47   0.143    -.0025735    .0178056
+       req_5 |   .0115201   .0053877     2.14   0.033     .0009371     .022103
+       req_6 |   .0176407   .0064171     2.75   0.006     .0050358    .0302457
+      req_m1 |   .0044742   .0034838     1.28   0.200     -.002369    .0113173
+      req_m2 |  -.0009555    .003757    -0.25   0.799    -.0083353    .0064244
+   percent_1 |   .0014551   .0639083     0.02   0.982    -.1240777    .1269878
+   percent_2 |   .0225577   .0647494     0.35   0.728     -.104627    .1497425
+   percent_3 |   .0727741   .0656094     1.11   0.268       -.0561    .2016483
+   percent_4 |  -.0142464   .0794233    -0.18   0.858    -.1702546    .1417617
+   percent_5 |  -.0076355   .0894901    -0.09   0.932    -.1834177    .1681467
+   percent_6 |   .1022404   .0871975     1.17   0.241    -.0690384    .2735192
+  percent2_1 |  -.0002802   .0010532    -0.27   0.790    -.0023489    .0017885
+  percent2_2 |  -.0005655   .0010728    -0.53   0.598    -.0026727    .0015417
+  percent2_3 |  -.0013098   .0010844    -1.21   0.228    -.0034398    .0008202
+  percent2_4 |   .0000115   .0013112     0.01   0.993    -.0025641    .0025872
+  percent2_5 |    .000022   .0014914     0.01   0.988    -.0029074    .0029515
+  percent2_6 |  -.0018055   .0014685    -1.23   0.219    -.0046901    .0010791
+  percent3_1 |   2.36e-06   5.61e-06     0.42   0.674    -8.66e-06    .0000134
+  percent3_2 |   3.77e-06   5.76e-06     0.65   0.513    -7.55e-06    .0000151
+  percent3_3 |   7.12e-06   5.80e-06     1.23   0.219    -4.26e-06    .0000185
+  percent3_4 |   7.29e-07   7.01e-06     0.10   0.917     -.000013    .0000145
+  percent3_5 |  -7.71e-08   8.03e-06    -0.01   0.992    -.0000158    .0000157
+  percent3_6 |   9.43e-06   7.92e-06     1.19   0.235    -6.14e-06     .000025
+  percent_m1 |    -.02444   .1028358    -0.24   0.812    -.2264365    .1775565
+  percent_m2 |   .0440181   .0936757     0.47   0.639    -.1399855    .2280217
+ percent2_m1 |   .0001802   .0016665     0.11   0.914    -.0030933    .0034537
+ percent2_m2 |  -.0007611   .0015247    -0.50   0.618     -.003756    .0022338
+ percent3_m1 |  -1.86e-07   8.85e-06    -0.02   0.983    -.0000176    .0000172
+ percent3_m2 |   4.03e-06   8.09e-06     0.50   0.619    -.0000119    .0000199
+       _cons |  -2.596096   1.809728    -1.43   0.152    -6.150877    .9586856
+-------------+----------------------------------------------------------------
+       refid |   absorbed                                    (1069 categories)
+
+Linear regression                                      Number of obs =     527
+                                                       F( 10,   384) =    1.90
+                                                       Prob > F      =  0.0433
+                                                       R-squared     =  0.0300
+Number of clusters (newleaid) = 385                    Root MSE      =  .32064
+
+------------------------------------------------------------------------------
+             |               Robust
+dsstd_catr~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  (dropped)
+    yrdums12 |   .0354748   .0909583     0.39   0.697     -.143364    .2143135
+    yrdums13 |  -.0797242   .0904564    -0.88   0.379     -.257576    .0981276
+    yrdums14 |  -.0166353   .0949172    -0.18   0.861    -.2032578    .1699873
+    yrdums15 |  -.0256189   .0952459    -0.27   0.788    -.2128877    .1616499
+    yrdums16 |   .1137837   .1031073     1.10   0.270    -.0889418    .3165093
+    yrdums17 |  -.0593948   .1228767    -0.48   0.629    -.3009902    .1822006
+    yrdums18 |  -.0545284   .1055166    -0.52   0.606     -.261991    .1529341
+    yrdums19 |  -.0081133   .0987345    -0.08   0.935    -.2022412    .1860147
+    yrdums20 |  (dropped)
+         win |  -.0219991   .0341191    -0.64   0.519    -.0890828    .0450846
+         req |   .0034864   .0034076     1.02   0.307    -.0032136    .0101864
+       _cons |  -.1795119   .2499831    -0.72   0.473    -.6710188     .311995
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =     527
+                                                       F( 13,   384) =    1.59
+                                                       Prob > F      =  0.0855
+                                                       R-squared     =  0.0315
+Number of clusters (newleaid) = 385                    Root MSE      =  .32133
+
+------------------------------------------------------------------------------
+             |               Robust
+dsstd_catr~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  (dropped)
+    yrdums12 |    .032144   .0913446     0.35   0.725    -.1474542    .2117421
+    yrdums13 |  -.0825271   .0901427    -0.92   0.360    -.2597623     .094708
+    yrdums14 |  -.0230718   .0947555    -0.24   0.808    -.2093764    .1632328
+    yrdums15 |  -.0338485   .0950532    -0.36   0.722    -.2207383    .1530414
+    yrdums16 |   .1110942    .103108     1.08   0.282    -.0916327    .3138211
+    yrdums17 |  -.0696607   .1251716    -0.56   0.578    -.3157682    .1764467
+    yrdums18 |  -.0561497   .1052449    -0.53   0.594    -.2630781    .1507786
+    yrdums19 |  -.0111421    .098584    -0.11   0.910    -.2049741    .1826898
+    yrdums20 |  (dropped)
+         win |  -.0321752   .0580165    -0.55   0.580     -.146245    .0818946
+         req |   .0025399   .0039042     0.65   0.516    -.0051364    .0102161
+     percent |  -.0658541   .0928088    -0.71   0.478     -.248331    .1166229
+    percent2 |   .0009999   .0014997     0.67   0.505    -.0019487    .0039485
+    percent3 |  -4.90e-06   7.91e-06    -0.62   0.536    -.0000205    .0000107
+       _cons |   1.286054   1.918031     0.67   0.503    -2.485104    5.057212
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =    4776
+                                                       F( 56,   546) =    4.62
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0317
+Number of clusters (newleaid) = 547                    Root MSE      =  .31047
+
+------------------------------------------------------------------------------
+             |               Robust
+dsstd_catr~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  (dropped)
+    yrdums12 |   .0651449   .0395067     1.65   0.100    -.0124588    .1427486
+    yrdums13 |  -.0682333   .0391623    -1.74   0.082    -.1451605    .0086939
+    yrdums14 |    .009262   .0386576     0.24   0.811    -.0666737    .0851978
+    yrdums15 |  -.0180243   .0398424    -0.45   0.651    -.0962875     .060239
+    yrdums16 |   .0882484   .0419077     2.11   0.036     .0059283    .1705685
+    yrdums17 |   .0392441   .0416054     0.94   0.346    -.0424821    .1209704
+    yrdums18 |   .0087187   .0425443     0.20   0.838    -.0748518    .0922893
+    yrdums19 |   .0225826   .0412688     0.55   0.584    -.0584825    .1036477
+    yrdums20 |  -.0032786   .0438365    -0.07   0.940    -.0893874    .0828303
+     dydums1 |  (dropped)
+     dydums2 |    1.69042   2.482191     0.68   0.496    -3.185393    6.566233
+     dydums3 |  (dropped)
+     dydums4 |   .9127008   2.172984     0.42   0.675    -3.355732    5.181134
+     dydums5 |  -.4180281    1.83429    -0.23   0.820    -4.021158    3.185102
+     dydums6 |  -.6894972   1.796695    -0.38   0.701    -4.218777    2.839783
+     dydums7 |   1.370621   2.434418     0.56   0.574    -3.411351    6.152592
+     dydums8 |  (dropped)
+     dydums9 |  -2.048027   2.317609    -0.88   0.377    -6.600549    2.504495
+       win_1 |   .0569926   .0485339     1.17   0.241    -.0383435    .1523287
+       win_2 |  -.0271714   .0460116    -0.59   0.555    -.1175528      .06321
+       win_3 |   .0749142   .0455667     1.64   0.101    -.0145933    .1644217
+       win_4 |   .0098698   .0499601     0.20   0.843    -.0882677    .1080073
+       win_5 |   .0732597   .0483951     1.51   0.131    -.0218036     .168323
+       win_6 |   .0539515   .0471978     1.14   0.254      -.03876    .1466629
+      win_m1 |  -.0216507   .0570155    -0.38   0.704    -.1336474    .0903459
+      win_m2 |  (dropped)
+       req_1 |   .0092842   .0032131     2.89   0.004     .0029726    .0155958
+       req_2 |  -.0028721   .0028167    -1.02   0.308     -.008405    .0026608
+       req_3 |   .0035183   .0029257     1.20   0.230    -.0022286    .0092653
+       req_4 |   .0001992   .0032921     0.06   0.952    -.0062675     .006666
+       req_5 |   .0029672   .0045421     0.65   0.514     -.005955    .0118893
+       req_6 |   .0073479   .0038854     1.89   0.059    -.0002844    .0149801
+      req_m1 |   .0041006   .0032466     1.26   0.207    -.0022768    .0104781
+      req_m2 |  (dropped)
+   percent_1 |    -.01484   .0617377    -0.24   0.810    -.1361126    .1064325
+   percent_2 |   .0586046   .0404652     1.45   0.148     -.020882    .1380912
+   percent_3 |   .0559258   .0109232     5.12   0.000     .0344692    .0773823
+   percent_4 |  -.0259005   .0751829    -0.34   0.731    -.1735837    .1217827
+   percent_5 |   .0159391   .0853305     0.19   0.852    -.1516772    .1835554
+   percent_6 |    .114411   .0611138     1.87   0.062     -.005636    .2344579
+  percent2_1 |  -.0000682   .0010047    -0.07   0.946    -.0020418    .0019054
+  percent2_2 |  -.0009076   .0006835    -1.33   0.185    -.0022501    .0004349
+  percent2_3 |    -.00088   .0002815    -3.13   0.002    -.0014329   -.0003272
+  percent2_4 |   .0002827   .0012103     0.23   0.815    -.0020947    .0026601
+  percent2_5 |  -.0001502   .0013959    -0.11   0.914    -.0028922    .0025919
+  percent2_6 |  -.0018652   .0010137    -1.84   0.066    -.0038564    .0001261
+  percent3_1 |   1.39e-06   5.28e-06     0.26   0.793    -8.99e-06    .0000118
+  percent3_2 |   4.75e-06   3.72e-06     1.28   0.202    -2.55e-06     .000012
+  percent3_3 |   4.22e-06   1.97e-06     2.14   0.033     3.41e-07    8.09e-06
+  percent3_4 |  -8.66e-07   6.32e-06    -0.14   0.891    -.0000133    .0000115
+  percent3_5 |   6.10e-08   7.34e-06     0.01   0.993    -.0000143    .0000145
+  percent3_6 |   9.61e-06   5.41e-06     1.78   0.076    -1.01e-06    .0000202
+  percent_m1 |  -.0576602   .0925426    -0.62   0.534    -.2394433    .1241229
+  percent_m2 |  (dropped)
+ percent2_m1 |   .0008637   .0014969     0.58   0.564    -.0020766    .0038041
+ percent2_m2 |  (dropped)
+ percent3_m1 |  -4.24e-06   7.91e-06    -0.54   0.592    -.0000198    .0000113
+ percent3_m2 |  (dropped)
+tmp_perc~t_0 |  -.0181356    .090052    -0.20   0.840    -.1950264    .1587552
+tmp_perc~2_0 |   .0005055   .0014738     0.34   0.732    -.0023896    .0034006
+tmp_perc~3_0 |  -3.39e-06   7.89e-06    -0.43   0.668    -.0000189    .0000121
+   tmp_win_0 |   .0007049   .0521228     0.01   0.989    -.1016809    .1030906
+   tmp_req_0 |  -.0042847    .003511    -1.22   0.223    -.0111813     .002612
+tmp_gobond_0 |   .8980068   2.448541     0.37   0.714    -3.911707    5.707721
+       _cons |  -.6697813   1.749083    -0.38   0.702    -4.105537    2.765974
+------------------------------------------------------------------------------
+
+Linear regression, absorbing indicators                Number of obs =    4776
+                                                       F( 50,   546) =    2.36
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.1827
+                                                       Adj R-squared = -0.0631
+                                                       Root MSE      =  .32341
+
+                             (Std. Err. adjusted for 547 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+dsstd_catr~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  (dropped)
+    yrdums12 |   .0403367   .0398433     1.01   0.312    -.0379283    .1186016
+    yrdums13 |  -.0921974   .0370859    -2.49   0.013     -.165046   -.0193489
+    yrdums14 |  -.0042675   .0350603    -0.12   0.903    -.0731371    .0646021
+    yrdums15 |  -.0295126   .0331347    -0.89   0.373    -.0945997    .0355744
+    yrdums16 |   .0799269   .0359716     2.22   0.027     .0092672    .1505867
+    yrdums17 |   .0398406   .0283694     1.40   0.161     -.015886    .0955671
+    yrdums18 |   .0067552   .0381608     0.18   0.860    -.0682046    .0817151
+    yrdums19 |   .0216641   .0333782     0.65   0.517    -.0439012    .0872295
+    yrdums20 |  (dropped)
+     dydums1 |  (dropped)
+     dydums2 |    2.20494   3.526546     0.63   0.532    -4.722319    9.132199
+     dydums3 |   1.320566   3.556848     0.37   0.711    -5.666215    8.307347
+     dydums4 |   .3485009   2.724591     0.13   0.898    -5.003463    5.700465
+     dydums5 |  -2.266946   3.052251    -0.74   0.458    -8.262539    3.728648
+     dydums6 |   2.827897   3.040344     0.93   0.353    -3.144306      8.8001
+     dydums7 |    .692082   2.953068     0.23   0.815    -5.108683    6.492847
+     dydums8 |  -.5575947   3.296622    -0.17   0.866     -7.03321     5.91802
+     dydums9 |  (dropped)
+       win_1 |   .0978984   .1013521     0.97   0.335    -.1011894    .2969862
+       win_2 |  -.0092953   .0836843    -0.11   0.912    -.1736779    .1550873
+       win_3 |   .0626586    .080884     0.77   0.439    -.0962234    .2215406
+       win_4 |   .0501263   .0929702     0.54   0.590    -.1324969    .2327494
+       win_5 |   .0676759   .0852147     0.79   0.427     -.099713    .2350648
+       win_6 |   .0388752   .0894748     0.43   0.664    -.1368819    .2146322
+      win_m1 |     .00229   .0954604     0.02   0.981    -.1852246    .1898047
+      win_m2 |  (dropped)
+       req_1 |   .0169084   .0067972     2.49   0.013     .0035565    .0302603
+       req_2 |    .004222   .0051488     0.82   0.413    -.0058918    .0143358
+       req_3 |   .0094429   .0052611     1.79   0.073    -.0008915    .0197773
+       req_4 |   .0071032   .0055674     1.28   0.203     -.003833    .0180393
+       req_5 |   .0072794   .0064391     1.13   0.259    -.0053691    .0199279
+       req_6 |   .0116355   .0063659     1.83   0.068    -.0008693    .0241402
+      req_m1 |   .0091989   .0062512     1.47   0.142    -.0030805    .0214782
+      req_m2 |  (dropped)
+   percent_1 |   .0406218   .1385454     0.29   0.769    -.2315255    .3127691
+   percent_2 |   .1803796    .138361     1.30   0.193    -.0914055    .4521647
+   percent_3 |  -.0776868   .1416815    -0.55   0.584    -.3559945    .2006208
+   percent_4 |   .0380187   .1561133     0.24   0.808    -.2686376     .344675
+   percent_5 |   .0849918   .1430432     0.59   0.553    -.1959907    .3659742
+   percent_6 |   .0590233   .1699962     0.35   0.729    -.2749034    .3929499
+  percent2_1 |  -.0011491   .0022987    -0.50   0.617    -.0056644    .0033662
+  percent2_2 |  -.0030585   .0022235    -1.38   0.170    -.0074262    .0013091
+  percent2_3 |   .0009789   .0023674     0.41   0.679    -.0036715    .0056293
+  percent2_4 |   -.000939   .0025385    -0.37   0.712    -.0059254    .0040475
+  percent2_5 |  -.0014983   .0023449    -0.64   0.523    -.0061044    .0031078
+  percent2_6 |  -.0012701   .0027725    -0.46   0.647    -.0067163     .004176
+  percent3_1 |   7.57e-06   .0000123     0.61   0.539    -.0000166    .0000318
+  percent3_2 |   .0000165   .0000117     1.41   0.159    -6.49e-06    .0000396
+  percent3_3 |  -4.47e-06   .0000128    -0.35   0.727    -.0000296    .0000206
+  percent3_4 |   6.04e-06   .0000135     0.45   0.654    -.0000204    .0000325
+  percent3_5 |   7.93e-06   .0000124     0.64   0.524    -.0000165    .0000323
+  percent3_6 |   7.55e-06   .0000146     0.52   0.606    -.0000212    .0000363
+  percent_m1 |  -.0428511   .1848499    -0.23   0.817    -.4059552     .320253
+  percent_m2 |  (dropped)
+ percent2_m1 |   .0003627   .0029612     0.12   0.903    -.0054541    .0061794
+ percent2_m2 |  (dropped)
+ percent3_m1 |  -7.03e-07   .0000155    -0.05   0.964    -.0000312    .0000298
+ percent3_m2 |  (dropped)
+       _cons |  -1.333617    3.55712    -0.37   0.708    -8.320933    5.653698
+-------------+----------------------------------------------------------------
+       refid |   absorbed                                    (1055 categories)
+
+Linear regression                                      Number of obs =    6730
+                                                       F( 97,   579) =    3.72
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0215
+Number of clusters (newleaid) = 580                    Root MSE      =  .87083
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catre~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+gobond_prev1 |  -.0789298   .4128481    -0.19   0.848    -.8897922    .7319325
+gobond_prev2 |  -.6351555   .4187392    -1.52   0.130    -1.457589    .1872775
+gobond_prev3 |  -.6250379   .4739917    -1.32   0.188    -1.555991    .3059147
+gobond_prev4 |  -.5000731   .5564606    -0.90   0.369       -1.593    .5928542
+gobond_prev5 |  -1.130845   .7952469    -1.42   0.156    -2.692765    .4310752
+gobond_prev6 |  -2.011491   3.125965    -0.64   0.520    -8.151104    4.128122
+gobond_prev7 |  (dropped)
+gobond_prev8 |  (dropped)
+gobond_prev9 |  (dropped)
+gobond_pr~10 |  (dropped)
+gobond_pr~11 |  (dropped)
+gobond_pr~12 |  (dropped)
+gobond_pr~13 |  (dropped)
+gobond_pr~14 |  (dropped)
+gobond_pr~15 |  (dropped)
+gobond_pr~16 |  (dropped)
+gobond_pr~17 |  (dropped)
+gobond_pr~18 |  (dropped)
+gobond_pr~19 |  (dropped)
+ gobond_fut1 |   .1735328   .4594037     0.38   0.706     -.728768    1.075834
+ gobond_fut2 |   .1116586    .480748     0.23   0.816     -.832564    1.055881
+ gobond_fut3 |  -.4196863    .471168    -0.89   0.373    -1.345093    .5057205
+ gobond_fut4 |  -.2995001   .4653244    -0.64   0.520     -1.21343    .6144294
+ gobond_fut5 |   .3152955   .5511665     0.57   0.568    -.7672339    1.397825
+ gobond_fut6 |   .2065037   .6204827     0.33   0.739    -1.012168    1.425175
+ gobond_fut7 |   .2889735   .6844347     0.42   0.673    -1.055304    1.633251
+ gobond_fut8 |   .8393269   .6791974     1.24   0.217     -.494664    2.173318
+ gobond_fut9 |   .1786844   .8217669     0.22   0.828    -1.435323    1.792692
+gobond_fut10 |   1.011282   1.597463     0.63   0.527    -2.126247    4.148811
+gobond_fut11 |   .2853307   1.793962     0.16   0.874    -3.238135    3.808797
+gobond_fut12 |   4.476254   1.206949     3.71   0.000     2.105721    6.846786
+gobond_fut13 |   2.286689   3.218697     0.71   0.478    -4.035056    8.608433
+gobond_fut14 |   -5.77333   4.599947    -1.26   0.210    -14.80795    3.261286
+   req_prev1 |   .0003686   .0064283     0.06   0.954     -.012257    .0129942
+   req_prev2 |   .0099006     .00648     1.53   0.127    -.0028265    .0226277
+   req_prev3 |   .0087082   .0072874     1.19   0.233    -.0056048    .0230213
+   req_prev4 |   .0068898   .0084774     0.81   0.417    -.0097604      .02354
+   req_prev5 |   .0146431   .0120707     1.21   0.226    -.0090645    .0383507
+   req_prev6 |   .0287687   .0467949     0.61   0.539    -.0631398    .1206771
+   req_prev7 |  -.0005267   .0006578    -0.80   0.424    -.0018188    .0007653
+   req_prev8 |  -.0000229   .0006751    -0.03   0.973    -.0013488    .0013029
+   req_prev9 |  -.0001223   .0007163    -0.17   0.865    -.0015292    .0012846
+  req_prev10 |  -.0003651   .0007902    -0.46   0.644    -.0019172    .0011869
+  req_prev11 |  -.0006788   .0008164    -0.83   0.406    -.0022823    .0009247
+  req_prev12 |  -.0013801   .0008396    -1.64   0.101    -.0030291     .000269
+  req_prev13 |  -.0020336   .0008506    -2.39   0.017    -.0037042    -.000363
+  req_prev14 |  -.0018034   .0009534    -1.89   0.059    -.0036759    .0000691
+  req_prev15 |  -.0000299   .0010268    -0.03   0.977    -.0020466    .0019868
+  req_prev16 |   -.001221   .0014547    -0.84   0.402    -.0040781    .0016361
+  req_prev17 |  -.0026367   .0017289    -1.53   0.128    -.0060323    .0007589
+  req_prev18 |   -.002921   .0021535    -1.36   0.176    -.0071507    .0013086
+  req_prev19 |  -.0012751    .003485    -0.37   0.715    -.0081198    .0055697
+    req_fut1 |  -.0028646   .0071728    -0.40   0.690    -.0169526    .0112233
+    req_fut2 |   -.002136   .0075362    -0.28   0.777    -.0169375    .0126656
+    req_fut3 |   .0070354    .007605     0.93   0.355    -.0079014    .0219721
+    req_fut4 |   .0066572   .0075795     0.88   0.380    -.0082295    .0215439
+    req_fut5 |   -.003303   .0089012    -0.37   0.711    -.0207856    .0141796
+    req_fut6 |  -.0059194   .0099776    -0.59   0.553    -.0255162    .0136773
+    req_fut7 |  -.0073956   .0109328    -0.68   0.499    -.0288684    .0140773
+    req_fut8 |  -.0130367   .0112527    -1.16   0.247    -.0351379    .0090644
+    req_fut9 |    .001876   .0140982     0.13   0.894    -.0258139    .0295659
+   req_fut10 |  -.0141739   .0267554    -0.53   0.596    -.0667234    .0383756
+   req_fut11 |  -.0085701   .0328782    -0.26   0.794    -.0731453     .056005
+   req_fut12 |   -.082397    .021286    -3.87   0.000    -.1242041   -.0405899
+   req_fut13 |  -.0387859   .0571637    -0.68   0.498    -.1510594    .0734876
+   req_fut14 |   .1085555   .0832866     1.30   0.193    -.0550251    .2721362
+   win_prev1 |  -.0044074   .0703683    -0.06   0.950    -.1426156    .1338008
+   win_prev2 |   .0400711   .0624223     0.64   0.521    -.0825306    .1626729
+   win_prev3 |   .1176321   .0618449     1.90   0.058    -.0038356    .2390998
+   win_prev4 |   .1215622    .064124     1.90   0.058    -.0043818    .2475062
+   win_prev5 |   .2232899   .0682078     3.27   0.001      .089325    .3572549
+   win_prev6 |   .1412216   .0709366     1.99   0.047     .0018973     .280546
+   win_prev7 |   .0713218   .0723146     0.99   0.324     -.070709    .2133526
+   win_prev8 |   .0356943   .0778236     0.46   0.647    -.1171567    .1885454
+   win_prev9 |   .0434607   .0855903     0.51   0.612    -.1246445    .2115659
+  win_prev10 |   .0811191   .0903798     0.90   0.370    -.0963931    .2586313
+  win_prev11 |   .1262746   .0952107     1.33   0.185    -.0607258     .313275
+  win_prev12 |   .0834839   .0999366     0.84   0.404    -.1127986    .2797663
+  win_prev13 |   .1334916   .1091651     1.22   0.222    -.0809163    .3478994
+  win_prev14 |   .1059482   .1185551     0.89   0.372    -.1269023    .3387987
+  win_prev15 |    .029924    .127479     0.23   0.814    -.2204537    .2803016
+  win_prev16 |   .1364686   .1625641     0.84   0.402    -.1828187    .4557559
+  win_prev17 |   .0112557   .1923685     0.06   0.953    -.3665694    .3890808
+  win_prev18 |    .109241   .2320696     0.47   0.638    -.3465598    .5650417
+  win_prev19 |  -.1075418   .3025497    -0.36   0.722    -.7017705    .4866868
+    win_fut1 |  -.0785785    .082659    -0.95   0.342    -.2409266    .0837695
+    win_fut2 |  -.0315601   .0824017    -0.38   0.702    -.1934028    .1302826
+    win_fut3 |  -.0343912   .0842567    -0.41   0.683    -.1998771    .1310948
+    win_fut4 |  -.1655537   .0867507    -1.91   0.057     -.335938    .0048306
+    win_fut5 |  -.2477681   .0937231    -2.64   0.008    -.4318468   -.0636893
+    win_fut6 |  -.0333035   .0998481    -0.33   0.739    -.2294122    .1628052
+    win_fut7 |   .0210416   .1246379     0.17   0.866    -.2237559    .2658392
+    win_fut8 |  -.1111839   .1219109    -0.91   0.362    -.3506253    .1282575
+    win_fut9 |  -.3400581   .1296923    -2.62   0.009    -.5947827   -.0853334
+   win_fut10 |   -.436169   .2207984    -1.98   0.049    -.8698325   -.0025056
+   win_fut11 |  -.1197124   .2259647    -0.53   0.596    -.5635228     .324098
+   win_fut12 |  -.1149849   .2743682    -0.42   0.675    -.6538632    .4238933
+   win_fut13 |  -.2967793   .2080595    -1.43   0.154    -.7054228    .1118641
+   win_fut14 |  -.3680455     .18809    -1.96   0.051    -.7374673    .0013763
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  -.0446704   .0326205    -1.37   0.171    -.1087394    .0193986
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  -.0139932    .063122    -0.22   0.825    -.1379691    .1099828
+    yrdums12 |   .0431644    .069037     0.63   0.532    -.0924291     .178758
+    yrdums13 |   -.036921   .0749285    -0.49   0.622    -.1840859    .1102438
+    yrdums14 |  -.0549695   .0807418    -0.68   0.496     -.213552     .103613
+    yrdums15 |  -.1027602   .0849147    -1.21   0.227    -.2695385    .0640181
+    yrdums16 |  -.0394056   .0888014    -0.44   0.657    -.2138178    .1350065
+    yrdums17 |  -.0264953    .094737    -0.28   0.780    -.2125653    .1595747
+    yrdums18 |  -.0022979   .1003564    -0.02   0.982    -.1994049    .1948092
+    yrdums19 |   .0188386   .1068964     0.18   0.860    -.1911134    .2287907
+    yrdums20 |   .0034197   .1130061     0.03   0.976    -.2185321    .2253715
+       _cons |   .2973191   .0900241     3.30   0.001     .1205055    .4741327
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =    6643
+                                                       F(205,   570) =   11.94
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0662
+Number of clusters (newleaid) = 571                    Root MSE      =  .85836
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catre~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+gobond_prev1 |   .8374809   2.158455     0.39   0.698    -3.402015    5.076977
+gobond_prev2 |   -.227495   .7720874    -0.29   0.768    -1.743979    1.288988
+gobond_prev3 |  -.6536381    .818308    -0.80   0.425    -2.260905     .953629
+gobond_prev4 |   6.335992   4.676912     1.35   0.176    -2.850092    15.52208
+gobond_prev5 |   3.542561   3.298988     1.07   0.283    -2.937095    10.02222
+gobond_prev6 |  -.7075257   4.402057    -0.16   0.872    -9.353758    7.938706
+gobond_prev7 |  (dropped)
+gobond_prev8 |  (dropped)
+gobond_prev9 |  (dropped)
+gobond_pr~10 |  (dropped)
+gobond_pr~11 |  (dropped)
+gobond_pr~12 |  (dropped)
+gobond_pr~13 |  (dropped)
+gobond_pr~14 |  (dropped)
+gobond_pr~15 |  (dropped)
+gobond_pr~16 |  (dropped)
+gobond_pr~17 |  (dropped)
+gobond_pr~18 |  (dropped)
+gobond_pr~19 |  (dropped)
+ gobond_fut1 |   .6599806   5.136017     0.13   0.898    -9.427848    10.74781
+ gobond_fut2 |  -2.662732   4.691692    -0.57   0.571    -11.87785    6.552383
+ gobond_fut3 |  -2.832237   4.892557    -0.58   0.563    -12.44188    6.777403
+ gobond_fut4 |   5.389676   7.041592     0.77   0.444    -8.440959    19.22031
+ gobond_fut5 |   2.436524   7.705481     0.32   0.752    -12.69808    17.57113
+ gobond_fut6 |  -3.365429   13.56852    -0.25   0.804    -30.01583    23.28498
+ gobond_fut7 |   22.52793   15.29501     1.47   0.141    -7.513521    52.56938
+ gobond_fut8 |   2.491442   6.794557     0.37   0.714    -10.85398    15.83687
+ gobond_fut9 |  -7.571897   4.917916    -1.54   0.124    -17.23135    2.087552
+gobond_fut10 |   5.353858   11.35061     0.47   0.637    -16.94026    27.64798
+gobond_fut11 |  -17.03792   23.27366    -0.73   0.464    -62.75052    28.67467
+gobond_fut12 |   31.95896   38.86235     0.82   0.411    -44.37193    108.2898
+gobond_fut13 |  -25.47596   36.83135    -0.69   0.489    -97.81769    46.86577
+gobond_fut14 |  -18.24294   34.59934    -0.53   0.598     -86.2007    49.71483
+   req_prev1 |   .0022633   .0077562     0.29   0.771    -.0129709    .0174975
+   req_prev2 |   .0115532   .0077684     1.49   0.138     -.003705    .0268114
+   req_prev3 |   .0123562   .0084926     1.45   0.146    -.0043245    .0290369
+   req_prev4 |   .0018653   .0105981     0.18   0.860    -.0189508    .0226814
+   req_prev5 |   .0021312   .0143673     0.15   0.882    -.0260882    .0303506
+   req_prev6 |   .0110998   .0614603     0.18   0.857    -.1096164     .131816
+   req_prev7 |   .0041098    .002865     1.43   0.152    -.0015174     .009737
+   req_prev8 |   .0048044   .0031434     1.53   0.127    -.0013698    .0109785
+   req_prev9 |  -.0010417   .0061217    -0.17   0.865    -.0130655    .0109822
+  req_prev10 |   .0038656   .0046785     0.83   0.409    -.0053236    .0130548
+  req_prev11 |   .0037262   .0033193     1.12   0.262    -.0027933    .0102458
+  req_prev12 |   .0059006   .0030804     1.92   0.056    -.0001497    .0119509
+  req_prev13 |     .00559   .0029571     1.89   0.059    -.0002181    .0113981
+  req_prev14 |   .0058932    .003314     1.78   0.076    -.0006159    .0124023
+  req_prev15 |   .0090952   .0038404     2.37   0.018     .0015522    .0166382
+  req_prev16 |   .0076023   .0040925     1.86   0.064     -.000436    .0156405
+  req_prev17 |   .0379622   .0772072     0.49   0.623    -.1136832    .1896075
+  req_prev18 |   .0524654   .0949865     0.55   0.581    -.1341008    .2390316
+  req_prev19 |   .3568924   .1247138     2.86   0.004     .1119377    .6018472
+    req_fut1 |   .0058089   .0081504     0.71   0.476    -.0101995    .0218173
+    req_fut2 |   .0068944   .0087353     0.79   0.430    -.0102629    .0240517
+    req_fut3 |   .0097678   .0091956     1.06   0.289    -.0082937    .0278292
+    req_fut4 |   .0113611   .0093008     1.22   0.222     -.006907    .0296292
+    req_fut5 |   .0061892   .0101689     0.61   0.543    -.0137839    .0261623
+    req_fut6 |   .0062432   .0115194     0.54   0.588    -.0163825    .0288689
+    req_fut7 |   .0094805    .013915     0.68   0.496    -.0178506    .0368115
+    req_fut8 |  -.0298407    .014487    -2.06   0.040    -.0582951   -.0013864
+    req_fut9 |    .002339   .0160858     0.15   0.884    -.0292557    .0339337
+   req_fut10 |  -.0055645   .0295916    -0.19   0.851    -.0636864    .0525573
+   req_fut11 |   .0011288   .0277414     0.04   0.968    -.0533589    .0556166
+   req_fut12 |  -.0739609   .0214356    -3.45   0.001    -.1160633   -.0318586
+   req_fut13 |  -.0771248   .0417433    -1.85   0.065    -.1591143    .0048646
+   req_fut14 |   .1037182    .074401     1.39   0.164    -.0424154    .2498519
+   win_prev1 |   .0879109    .123901     0.71   0.478    -.1554474    .3312692
+   win_prev2 |   .1580424   .1125833     1.40   0.161    -.0630864    .3791711
+   win_prev3 |   .2300188   .1051555     2.19   0.029     .0234792    .4365584
+   win_prev4 |   .0322949   .1219326     0.26   0.791     -.207197    .2717868
+   win_prev5 |  -.0057707   .1272467    -0.05   0.964    -.2557004     .244159
+   win_prev6 |    .066575    .126692     0.53   0.599    -.1822651    .3154151
+   win_prev7 |  -.0127131   .1157397    -0.11   0.913    -.2400414    .2146153
+   win_prev8 |  -.1109074   .1146301    -0.97   0.334    -.3360565    .1142416
+   win_prev9 |  -.1075853   .1305746    -0.82   0.410    -.3640514    .1488807
+  win_prev10 |  -.1736595   .1424043    -1.22   0.223    -.4533608    .1060418
+  win_prev11 |  -.2202159   .1477276    -1.49   0.137    -.5103727    .0699409
+  win_prev12 |  -.1519379   .1588169    -0.96   0.339    -.4638757    .1599999
+  win_prev13 |    -.27405   .1782782    -1.54   0.125    -.6242124    .0761123
+  win_prev14 |  -.2500318   .1993336    -1.25   0.210    -.6415499    .1414863
+  win_prev15 |   -.116935    .213011    -0.55   0.583    -.5353172    .3014472
+  win_prev16 |  -.0823352   .2498518    -0.33   0.742    -.5730777    .4084073
+  win_prev17 |   -.367763   .3137137    -1.17   0.242    -.9839389    .2484129
+  win_prev18 |  -.9519393   .4233641    -2.25   0.025    -1.783483   -.1203953
+  win_prev19 |   -2.13664   .4380376    -4.88   0.000    -2.997005   -1.276275
+    win_fut1 |    .166971   .1243611     1.34   0.180    -.0772909    .4112329
+    win_fut2 |   .1879447   .1213128     1.55   0.122      -.05033    .4262193
+    win_fut3 |   .1276159    .130216     0.98   0.327    -.1281459    .3833777
+    win_fut4 |  -.0237443   .1425646    -0.17   0.868    -.3037604    .2562718
+    win_fut5 |   -.019817   .1569443    -0.13   0.900    -.3280766    .2884427
+    win_fut6 |   .2815698   .1587812     1.77   0.077    -.0302979    .5934376
+    win_fut7 |    .340123    .177402     1.92   0.056    -.0083184    .6885645
+    win_fut8 |   -.346394   .2027066    -1.71   0.088     -.744537    .0517491
+    win_fut9 |  -.2331271   .2125361    -1.10   0.273    -.6505765    .1843223
+   win_fut10 |  -.0930959   .3564807    -0.26   0.794     -.793272    .6070802
+   win_fut11 |   .2209118   .4138296     0.53   0.594    -.5919052    1.033729
+   win_fut12 |    .097683   .4624925     0.21   0.833    -.8107144     1.00608
+   win_fut13 |  -.6569676   .3452568    -1.90   0.058    -1.335098    .0211632
+   win_fut14 |  -.1563212   .4120778    -0.38   0.705    -.9656975    .6530551
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  -.0350368   .0332586    -1.05   0.293    -.1003612    .0302875
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .0098154   .0621233     0.16   0.875    -.1122031    .1318339
+    yrdums12 |   .0610972    .068287     0.89   0.371    -.0730276     .195222
+    yrdums13 |  -.0151521   .0750147    -0.20   0.840     -.162491    .1321868
+    yrdums14 |  -.0404076   .0813331    -0.50   0.620    -.2001568    .1193416
+    yrdums15 |  -.0894902   .0872807    -1.03   0.306    -.2609213     .081941
+    yrdums16 |  -.0198388   .0908549    -0.22   0.827    -.1982901    .1586125
+    yrdums17 |  -.0648323   .0972865    -0.67   0.505    -.2559161    .1262515
+    yrdums18 |  -.0191503   .1035235    -0.18   0.853    -.2224844    .1841839
+    yrdums19 |   .0287833   .1106156     0.26   0.795    -.1884805    .2460471
+    yrdums20 |   .0069892    .118032     0.06   0.953    -.2248414    .2388199
+percent_p~v1 |  -.0207577   .1093763    -0.19   0.850    -.2355875    .1940721
+percent_p~v2 |   .0156418   .0340284     0.46   0.646    -.0511945    .0824781
+percent_p~v3 |   .0364317   .0351311     1.04   0.300    -.0325705    .1054339
+percent_p~v4 |   -.275542   .2224394    -1.24   0.216     -.712443    .1613589
+percent_p~v5 |  -.1922079   .1588079    -1.21   0.227    -.5041279    .1197121
+percent_p~v6 |  -.0070799   .1033373    -0.07   0.945    -.2100483    .1958886
+percent_p~v7 |  -.0198753   .0228562    -0.87   0.385     -.064768    .0250175
+percent_p~v8 |  -.0202949   .0246848    -0.82   0.411    -.0687791    .0281893
+percent_p~v9 |  -.0088415   .0360285    -0.25   0.806    -.0796063    .0619233
+percent_p~10 |  -.0116432   .0280707    -0.41   0.678    -.0667779    .0434915
+percent_p~11 |    .000533   .0232109     0.02   0.982    -.0450563    .0461223
+percent_p~12 |   -.013629   .0243363    -0.56   0.576    -.0614289    .0341708
+percent_p~13 |  -.0221183    .024379    -0.91   0.365    -.0700019    .0257653
+percent_p~14 |  -.0287512   .0290414    -0.99   0.323    -.0857924      .02829
+percent_p~15 |  -.0231492   .0359527    -0.64   0.520    -.0937652    .0474669
+percent_p~16 |   .0084727    .038331     0.22   0.825    -.0668146      .08376
+percent_p~17 |  -.0817602   .3002244    -0.27   0.785    -.6714414    .5079209
+percent_p~18 |  -.1964449   .3553908    -0.55   0.581    -.8944802    .5015904
+percent_p~19 |   -1.37137   .5006362    -2.74   0.006    -2.354687   -.3880534
+percent_fut1 |   .0203527   .2531463     0.08   0.936    -.4768608    .5175661
+percent_fut2 |   .1665793   .2338511     0.71   0.477    -.2927357    .6258944
+percent_fut3 |   .1670449   .2399284     0.70   0.487    -.3042068    .6382966
+percent_fut4 |  -.2680265   .3504804    -0.76   0.445    -.9564171    .4203641
+percent_fut5 |  -.1006401      .3865    -0.26   0.795    -.8597781    .6584979
+percent_fut6 |   .2433054   .6433565     0.38   0.705    -1.020333    1.506944
+percent_fut7 |  -.9851823   .7102568    -1.39   0.166    -2.380222    .4098577
+percent_fut8 |  -.0430784   .3316984    -0.13   0.897    -.6945788     .608422
+percent_fut9 |   .3954301   .2575256     1.54   0.125    -.1103849    .9012451
+percent_f~10 |  -.2726677   .5632889    -0.48   0.629    -1.379043    .8337074
+percent_f~11 |    .771746   1.118372     0.69   0.490    -1.424886    2.968378
+percent_f~12 |  -1.325769   1.803577    -0.74   0.463    -4.868237    2.216699
+percent_f~13 |   1.405536   1.809213     0.78   0.438    -2.148002    4.959075
+percent_f~14 |   .7095634   1.740263     0.41   0.684    -2.708548    4.127675
+percent2_~v1 |  -.0000296   .0019394    -0.02   0.988    -.0038389    .0037797
+percent2_~v2 |  -.0007714   .0007466    -1.03   0.302    -.0022379    .0006951
+percent2_~v3 |  -.0011877   .0007735    -1.54   0.125    -.0027069    .0003315
+percent2_~v4 |   .0037292   .0036282     1.03   0.304     -.003397    .0108554
+percent2_~v5 |   .0029822   .0027433     1.09   0.277    -.0024061    .0083704
+percent2_~v6 |   .0000978   .0018921     0.05   0.959    -.0036186    .0038142
+percent2_~v7 |   .0003279   .0006175     0.53   0.596    -.0008849    .0015406
+percent2_~v8 |     .00032   .0006493     0.49   0.622    -.0009553    .0015953
+percent2_~v9 |   .0002305      .0009     0.26   0.798    -.0015373    .0019982
+percent2_p~0 |  -.0000232   .0007099    -0.03   0.974    -.0014176    .0013712
+percent2~v11 |  -.0005161   .0006168    -0.84   0.403    -.0017276    .0006955
+percent2~v12 |  -.0000851    .000643    -0.13   0.895    -.0013481    .0011779
+percent2~v13 |   .0000762    .000647     0.12   0.906    -.0011945    .0013469
+percent2~v14 |    .000303   .0008086     0.37   0.708    -.0012852    .0018912
+percent2_~15 |   .0001889   .0009668     0.20   0.845    -.0017099    .0020878
+percent2_~16 |  -.0008671   .0010489    -0.83   0.409    -.0029273    .0011931
+percent2_~17 |   .0002729   .0053524     0.05   0.959      -.01024    .0107858
+percent2_~18 |   .0025549   .0061262     0.42   0.677    -.0094777    .0145875
+percent2_~19 |   .0235125   .0093389     2.52   0.012     .0051695    .0418554
+percent2_~t1 |  -.0012372   .0041613    -0.30   0.766    -.0094105    .0069362
+percent2_~t2 |  -.0033968   .0039205    -0.87   0.387    -.0110973    .0043036
+percent2_~t3 |  -.0034915   .0039936    -0.87   0.382    -.0113355    .0043524
+percent2_~t4 |     .00398   .0058169     0.68   0.494    -.0074451    .0154052
+percent2_f~5 |   .0012306   .0064502     0.19   0.849    -.0114383    .0138996
+percent2_f~6 |  -.0052389   .0100101    -0.52   0.601       -.0249    .0144223
+percent2_f~7 |   .0137731   .0108413     1.27   0.204    -.0075206    .0350668
+percent2_f~8 |    .000746   .0054658     0.14   0.891    -.0099896    .0114816
+percent2_f~9 |  -.0065907   .0047132    -1.40   0.163     -.015848    .0026665
+percent2_f~0 |   .0052511   .0098046     0.54   0.592    -.0140064    .0245085
+percent2~t11 |  -.0113458   .0175692    -0.65   0.519    -.0458541    .0231625
+percent2~t12 |   .0207701   .0273795     0.76   0.448    -.0330069    .0745471
+percent2~t13 |  -.0218017   .0296965    -0.73   0.463    -.0801296    .0365261
+percent2~t14 |  -.0128899   .0283742    -0.45   0.650    -.0686207    .0428409
+percent3_~v1 |   1.45e-06    .000011     0.13   0.895    -.0000202    .0000231
+percent3_~v2 |   6.02e-06   4.94e-06     1.22   0.224    -3.69e-06    .0000157
+percent3_~v3 |   8.60e-06   5.20e-06     1.65   0.099    -1.62e-06    .0000188
+percent3_~v4 |  -.0000159   .0000192    -0.83   0.407    -.0000536    .0000217
+percent3_~v5 |  -.0000141   .0000151    -0.93   0.353    -.0000437    .0000156
+percent3_~v6 |  -1.61e-07    .000011    -0.01   0.988    -.0000217    .0000214
+percent3_~v7 |  -1.35e-06   4.58e-06    -0.29   0.768    -.0000103    7.65e-06
+percent3_~v8 |  -1.07e-06   4.76e-06    -0.23   0.822    -.0000104    8.27e-06
+percent3_~v9 |  -9.78e-07   6.58e-06    -0.15   0.882    -.0000139    .0000119
+percent3_p~0 |   2.45e-06   5.30e-06     0.46   0.644    -7.96e-06    .0000129
+percent3~v11 |   7.07e-06   4.66e-06     1.52   0.130    -2.08e-06    .0000162
+percent3~v12 |   3.00e-06   4.80e-06     0.63   0.532    -6.42e-06    .0000124
+percent3~v13 |   2.77e-06   4.82e-06     0.57   0.566    -6.70e-06    .0000122
+percent3~v14 |   8.18e-07   6.34e-06     0.13   0.897    -.0000116    .0000133
+percent3_~15 |   5.70e-07   7.17e-06     0.08   0.937    -.0000135    .0000147
+percent3_~16 |   9.32e-06   7.80e-06     1.20   0.232    -5.99e-06    .0000246
+percent3_~17 |   5.50e-06   .0000298     0.18   0.854     -.000053     .000064
+percent3_~18 |  -5.15e-06   .0000329    -0.16   0.876    -.0000697    .0000594
+percent3_~19 |   -.000121   .0000554    -2.18   0.029    -.0002298   -.0000121
+percent3_~t1 |   9.81e-06   .0000224     0.44   0.661    -.0000341    .0000537
+percent3_~t2 |   .0000203   .0000214     0.95   0.344    -.0000218    .0000624
+percent3_~t3 |   .0000218   .0000217     1.00   0.316    -.0000208    .0000644
+percent3_~t4 |  -.0000199   .0000316    -0.63   0.529    -.0000818    .0000421
+percent3_f~5 |  -5.52e-06   .0000351    -0.16   0.875    -.0000745    .0000634
+percent3_f~6 |   .0000323   .0000514     0.63   0.530    -.0000687    .0001333
+percent3_f~7 |  -.0000644   .0000546    -1.18   0.239    -.0001716    .0000428
+percent3_f~8 |  -3.05e-06   .0000294    -0.10   0.918    -.0000609    .0000548
+percent3_f~9 |   .0000356   .0000276     1.29   0.198    -.0000187    .0000899
+percent3_f~0 |  -.0000346   .0000557    -0.62   0.534    -.0001439    .0000747
+percent3~t11 |   .0000525   .0000915     0.57   0.566    -.0001271    .0002322
+percent3~t12 |   -.000108   .0001377    -0.78   0.433    -.0003785    .0001625
+percent3~t13 |   .0001129   .0001614     0.70   0.484    -.0002041    .0004298
+percent3~t14 |   .0000758   .0001531     0.50   0.620    -.0002248    .0003765
+tmp_ismeas~0 |   .5628882   .1824162     3.09   0.002     .2045982    .9211783
+tmp_~t_prev0 |  -.0198353   .2064117    -0.10   0.923    -.4252557    .3855852
+tmp_win_pr~0 |   .1017457   .1328127     0.77   0.444    -.1591163    .3626078
+tmp_fakewi~0 |  -.0697345   .1182366    -0.59   0.556     -.301967     .162498
+tmp_req_pr~0 |  -.0025055   .0077213    -0.32   0.746    -.0176711    .0126601
+tmp_numele~0 |     .26267    .104967     2.50   0.013     .0565007    .4688394
+tmp_gobond~0 |   .1670429   4.051474     0.04   0.967    -7.790596    8.124682
+tmp_~2_prev0 |  -.0000579   .0034903    -0.02   0.987    -.0069133    .0067975
+tmp_~3_prev0 |   2.14e-06   .0000189     0.11   0.910     -.000035    .0000393
+       _cons |   .2378323   .0966397     2.46   0.014     .0480189    .4276456
+------------------------------------------------------------------------------
+
+Linear regression, absorbing indicators                Number of obs =    6652
+                                                       F(196,   579) =   13.34
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.8826
+                                                       Adj R-squared =  0.8671
+                                                       Root MSE      =  .31871
+
+                             (Std. Err. adjusted for 580 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catre~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+gobond_prev1 |  -.4157932   1.358781    -0.31   0.760    -3.084534    2.252947
+gobond_prev2 |  -.8466279    1.45667    -0.58   0.561    -3.707629    2.014373
+gobond_prev3 |  -2.194949   1.505412    -1.46   0.145    -5.151683    .7617842
+gobond_prev4 |   .9575204   1.827383     0.52   0.600    -2.631587    4.546627
+gobond_prev5 |  -.8429457   1.736615    -0.49   0.628    -4.253779    2.567888
+gobond_prev6 |  -3.544693   1.731587    -2.05   0.041     -6.94565   -.1437361
+gobond_prev7 |  (dropped)
+gobond_prev8 |  (dropped)
+gobond_prev9 |  (dropped)
+gobond_pr~10 |  (dropped)
+gobond_pr~11 |  (dropped)
+gobond_pr~12 |  (dropped)
+gobond_pr~13 |  (dropped)
+gobond_pr~14 |  (dropped)
+gobond_pr~15 |  (dropped)
+gobond_pr~16 |  (dropped)
+gobond_pr~17 |  (dropped)
+gobond_pr~18 |  (dropped)
+gobond_pr~19 |  (dropped)
+ gobond_fut1 |   .9898867    2.20762     0.45   0.654    -3.346032    5.325806
+ gobond_fut2 |   .4768916   2.150478     0.22   0.825    -3.746797     4.70058
+ gobond_fut3 |  -.7291347   2.155748    -0.34   0.735    -4.963173    3.504904
+ gobond_fut4 |   2.189393   4.386907     0.50   0.618    -6.426798    10.80558
+ gobond_fut5 |   1.378849   4.459576     0.31   0.757     -7.38007    10.13777
+ gobond_fut6 |  -2.025463   7.427601    -0.27   0.785    -16.61379    12.56286
+ gobond_fut7 |   8.561856   6.715951     1.27   0.203    -4.628739    21.75245
+ gobond_fut8 |   .6677668   3.808289     0.18   0.861    -6.811979    8.147512
+ gobond_fut9 |  -3.640532   2.892035    -1.26   0.209     -9.32069    2.039627
+gobond_fut10 |  -7.062025    5.19293    -1.36   0.174     -17.2613    3.137252
+gobond_fut11 |  -2.403276   14.75186    -0.16   0.871    -31.37695     26.5704
+gobond_fut12 |   78.98555   25.91493     3.05   0.002     28.08682    129.8843
+gobond_fut13 |  -16.93648   20.83093    -0.81   0.417    -57.84987    23.97692
+gobond_fut14 |     6.6484   19.90762     0.33   0.739    -32.45154    45.74834
+   req_prev1 |   .0049339   .0035028     1.41   0.160    -.0019459    .0118137
+   req_prev2 |   .0035937   .0035933     1.00   0.318    -.0034637    .0106512
+   req_prev3 |   .0111697   .0038615     2.89   0.004     .0035854    .0187541
+   req_prev4 |   .0086969   .0048031     1.81   0.071    -.0007367    .0181306
+   req_prev5 |   .0147301   .0049491     2.98   0.003     .0050097    .0244506
+   req_prev6 |   .0115133    .006622     1.74   0.083    -.0014927    .0245193
+   req_prev7 |  -.0182491   .0210314    -0.87   0.386    -.0595563    .0230581
+   req_prev8 |  -.0196684   .0211852    -0.93   0.354    -.0612777    .0219409
+   req_prev9 |  -.0211878     .02176    -0.97   0.331    -.0639259    .0215503
+  req_prev10 |  -.0176901   .0216187    -0.82   0.414    -.0601506    .0247705
+  req_prev11 |  -.0178121   .0213455    -0.83   0.404    -.0597362     .024112
+  req_prev12 |  -.0166294   .0213471    -0.78   0.436    -.0585565    .0252977
+  req_prev13 |  -.0167338   .0211966    -0.79   0.430    -.0583653    .0248977
+  req_prev14 |  -.0189379   .0212643    -0.89   0.374    -.0607024    .0228266
+  req_prev15 |  -.0157413   .0212416    -0.74   0.459    -.0574613    .0259788
+  req_prev16 |  -.0171951   .0214428    -0.80   0.423    -.0593103    .0249201
+  req_prev17 |  -.0332559    .033595    -0.99   0.323    -.0992388    .0327271
+  req_prev18 |  -.0759836   .0588261    -1.29   0.197    -.1915222    .0395549
+  req_prev19 |  -.0980866   .0565001    -1.74   0.083    -.2090567    .0128835
+    req_fut1 |    .005615   .0035271     1.59   0.112    -.0013124    .0125425
+    req_fut2 |   .0008137   .0037569     0.22   0.829    -.0065651    .0081925
+    req_fut3 |   .0036358   .0044563     0.82   0.415    -.0051167    .0123883
+    req_fut4 |   .0093975   .0050989     1.84   0.066    -.0006172    .0194122
+    req_fut5 |   .0004745   .0051628     0.09   0.927    -.0096656    .0106145
+    req_fut6 |   .0069598   .0063097     1.10   0.270    -.0054329    .0193525
+    req_fut7 |   .0120538   .0059848     2.01   0.044     .0002993    .0238082
+    req_fut8 |  -.0096505   .0083051    -1.16   0.246    -.0259623    .0066612
+    req_fut9 |  -.0085981   .0095091    -0.90   0.366    -.0272747    .0100784
+   req_fut10 |   .0073804   .0178563     0.41   0.680    -.0276907    .0424515
+   req_fut11 |    .016457   .0158383     1.04   0.299    -.0146505    .0475645
+   req_fut12 |   .0013114   .0134667     0.10   0.922    -.0251381    .0277608
+   req_fut13 |  -.0260133   .0198779    -1.31   0.191    -.0650549    .0130282
+   req_fut14 |   .0148569   .0221948     0.67   0.504    -.0287352     .058449
+   win_prev1 |  -.0315514   .0527754    -0.60   0.550    -.1352059     .072103
+   win_prev2 |   -.031451   .0567439    -0.55   0.580       -.1429     .079998
+   win_prev3 |   .0509725   .0566753     0.90   0.369    -.0603417    .1622867
+   win_prev4 |  -.0312538   .0649019    -0.48   0.630    -.1587257    .0962181
+   win_prev5 |   .0414161   .0653952     0.63   0.527    -.0870246    .1698568
+   win_prev6 |   .1121166   .0657854     1.70   0.089    -.0170905    .2413237
+   win_prev7 |  -.0088224   .0617999    -0.14   0.887    -.1302017    .1125569
+   win_prev8 |  -.0245769   .0642994    -0.38   0.702    -.1508654    .1017116
+   win_prev9 |  -.0231775   .0778946    -0.30   0.766     -.176168     .129813
+  win_prev10 |  -.0441941   .0801455    -0.55   0.582    -.2016054    .1132172
+  win_prev11 |  -.0567851   .0881446    -0.64   0.520    -.2299073    .1163371
+  win_prev12 |    .037893   .0967578     0.39   0.695     -.152146     .227932
+  win_prev13 |   .0307361   .0982175     0.31   0.754    -.1621699    .2236421
+  win_prev14 |  -.0270048   .0996668    -0.27   0.787    -.2227574    .1687477
+  win_prev15 |   .0734228   .1123486     0.65   0.514    -.1472377    .2940833
+  win_prev16 |   .0174371   .1277203     0.14   0.891    -.2334144    .2682886
+  win_prev17 |   .0459865   .1360575     0.34   0.735      -.22124     .313213
+  win_prev18 |  -.0221688   .1604646    -0.14   0.890    -.3373324    .2929948
+  win_prev19 |  -.2849954   .1701769    -1.67   0.095    -.6192348    .0492439
+    win_fut1 |  -.0101556   .0551429    -0.18   0.854    -.1184602     .098149
+    win_fut2 |   .0073256   .0595566     0.12   0.902    -.1096477    .1242988
+    win_fut3 |   .0356331   .0707817     0.50   0.615    -.1033871    .1746533
+    win_fut4 |   .0351986   .0762688     0.46   0.645    -.1145987    .1849959
+    win_fut5 |  -.1155454   .0807551    -1.43   0.153     -.274154    .0430632
+    win_fut6 |   .0860183   .0942588     0.91   0.362    -.0991126    .2711491
+    win_fut7 |   .0820084   .1073573     0.76   0.445    -.1288489    .2928656
+    win_fut8 |  -.0984269   .1212932    -0.81   0.417    -.3366552    .1398015
+    win_fut9 |   .0356065   .1121121     0.32   0.751    -.1845895    .2558026
+   win_fut10 |  -.0864756   .2246493    -0.38   0.700    -.5277024    .3547512
+   win_fut11 |   .1417797   .2415658     0.59   0.557    -.3326723    .6162318
+   win_fut12 |   .3183356   .2902127     1.10   0.273    -.2516624    .8883336
+   win_fut13 |  -.0586081   .2306639    -0.25   0.800     -.511648    .3944319
+   win_fut14 |   .1430245   .2702709     0.53   0.597    -.3878064    .6738553
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  -.0085481   .0272213    -0.31   0.754    -.0620127    .0449164
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .1067676   .0386027     2.77   0.006     .0309493    .1825859
+    yrdums12 |   .1737098   .0408323     4.25   0.000     .0935123    .2539073
+    yrdums13 |   .1126593   .0422112     2.67   0.008     .0297535    .1955651
+    yrdums14 |   .0996217   .0422347     2.36   0.019     .0166698    .1825736
+    yrdums15 |   .0784759   .0446015     1.76   0.079    -.0091245    .1660764
+    yrdums16 |   .1576692   .0458109     3.44   0.001     .0676934    .2476449
+    yrdums17 |   .1748569      .0474     3.69   0.000       .08176    .2679538
+    yrdums18 |   .1983056   .0477438     4.15   0.000     .1045334    .2920777
+    yrdums19 |   .2382967    .050716     4.70   0.000      .138687    .3379063
+    yrdums20 |   .2245699   .0512478     4.38   0.000     .1239157    .3252241
+percent_p~v1 |   .0207441   .0664493     0.31   0.755    -.1097669    .1512552
+percent_p~v2 |   .0415444   .0699375     0.59   0.553    -.0958177    .1789065
+percent_p~v3 |   .0885158    .074073     1.19   0.233    -.0569687    .2340003
+percent_p~v4 |  -.0601836   .0867339    -0.69   0.488     -.230535    .1101678
+percent_p~v5 |  -.0043225   .0857179    -0.05   0.960    -.1726785    .1640335
+percent_p~v6 |   .1506465    .082676     1.82   0.069    -.0117349    .3130279
+percent_p~v7 |   .0653186   .0715292     0.91   0.362    -.0751697    .2058069
+percent_p~v8 |   .0726442   .0723106     1.00   0.316    -.0693789    .2146672
+percent_p~v9 |   .0650609   .0766972     0.85   0.397    -.0855778    .2156996
+percent_p~10 |   .0583937    .074456     0.78   0.433    -.0878431    .2046304
+percent_p~11 |   .0642163   .0724488     0.89   0.376    -.0780781    .2065107
+percent_p~12 |   .0634371   .0732349     0.87   0.387    -.0804013    .2072756
+percent_p~13 |     .05757   .0724287     0.79   0.427    -.0846851    .1998251
+percent_p~14 |   .0692189   .0734975     0.94   0.347    -.0751354    .2135732
+percent_p~15 |   .0729532   .0737956     0.99   0.323    -.0719866    .2178929
+percent_p~16 |   .0746312   .0761356     0.98   0.327    -.0749045    .2241669
+percent_p~17 |   .1417522   .1204937     1.18   0.240    -.0949058    .3784102
+percent_p~18 |   .2662287   .1989432     1.34   0.181    -.1245095    .6569669
+percent_p~19 |   .4008095    .226447     1.77   0.077    -.0439482    .8455671
+percent_fut1 |   -.052319   .1074968    -0.49   0.627    -.2634503    .1588122
+percent_fut2 |  -.0270088     .10466    -0.26   0.796    -.2325683    .1785508
+percent_fut3 |   .0264809   .1069578     0.25   0.805    -.1835917    .2365534
+percent_fut4 |  -.1315886   .2242548    -0.59   0.558    -.5720405    .3088633
+percent_fut5 |  -.0844999   .2307175    -0.37   0.714    -.5376453    .3686454
+percent_fut6 |   .0845948   .3517118     0.24   0.810    -.6061917    .7753813
+percent_fut7 |  -.4248666   .3116056    -1.36   0.173    -1.036882    .1871484
+percent_fut8 |  -.0207282   .1856512    -0.11   0.911    -.3853601    .3439037
+percent_fut9 |   .1961173    .143596     1.37   0.173    -.0859153    .4781499
+percent_f~10 |   .3312204   .2610142     1.27   0.205    -.1814297    .8438705
+percent_f~11 |    .080299   .7025213     0.11   0.909    -1.299502      1.4601
+percent_f~12 |  -3.632876   1.205518    -3.01   0.003    -6.000598   -1.265155
+percent_f~13 |   .8528956   1.010585     0.84   0.399    -1.131963    2.837754
+percent_f~14 |  -.3760348    .980759    -0.38   0.702    -2.302314    1.550244
+percent2_~v1 |  -.0004915   .0011092    -0.44   0.658      -.00267    .0016869
+percent2_~v2 |  -.0007845   .0011433    -0.69   0.493    -.0030301    .0014611
+percent2_~v3 |  -.0015663   .0012303    -1.27   0.203    -.0039827    .0008501
+percent2_~v4 |   .0007975   .0014077     0.57   0.571    -.0019673    .0035622
+percent2_~v5 |   .0000846   .0014316     0.06   0.953    -.0027272    .0028963
+percent2_~v6 |  -.0024801   .0013804    -1.80   0.073    -.0051913     .000231
+percent2_~v7 |  -.0010273   .0011885    -0.86   0.388    -.0033615    .0013069
+percent2_~v8 |  -.0011319   .0012092    -0.94   0.350    -.0035068     .001243
+percent2_~v9 |  -.0008245   .0013382    -0.62   0.538    -.0034529    .0018039
+percent2_p~0 |  -.0008097   .0012569    -0.64   0.520    -.0032783     .001659
+percent2~v11 |  -.0010462   .0012094    -0.87   0.387    -.0034216    .0013292
+percent2~v12 |  -.0010193   .0012355    -0.83   0.410    -.0034459    .0014073
+percent2~v13 |  -.0008752   .0012211    -0.72   0.474    -.0032735    .0015232
+percent2~v14 |  -.0011546   .0012602    -0.92   0.360    -.0036297    .0013205
+percent2_~15 |  -.0012927    .001267    -1.02   0.308    -.0037812    .0011957
+percent2_~16 |   -.001337   .0013594    -0.98   0.326    -.0040069    .0013329
+percent2_~17 |  -.0025907   .0020612    -1.26   0.209    -.0066391    .0014576
+percent2_~18 |  -.0044548   .0032593    -1.37   0.172    -.0108562    .0019467
+percent2_~19 |    -.00753   .0042341    -1.78   0.076    -.0158461    .0007861
+percent2_~t1 |   .0007295   .0017543     0.42   0.678    -.0027161    .0041751
+percent2_~t2 |   .0004949   .0016984     0.29   0.771    -.0028408    .0038307
+percent2_~t3 |  -.0004537   .0017658    -0.26   0.797    -.0039219    .0030145
+percent2_~t4 |   .0021025   .0037588     0.56   0.576    -.0052801    .0094851
+percent2_f~5 |   .0016268   .0039043     0.42   0.677    -.0060415    .0092951
+percent2_f~6 |  -.0014457   .0054533    -0.27   0.791    -.0121563    .0092648
+percent2_f~7 |   .0064012   .0047487     1.35   0.178    -.0029255     .015728
+percent2_f~8 |   .0006166   .0029368     0.21   0.834    -.0051515    .0063847
+percent2_f~9 |  -.0029644   .0024374    -1.22   0.224    -.0077517    .0018229
+percent2_f~0 |  -.0052282   .0047939    -1.09   0.276    -.0146438    .0041873
+percent2~t11 |  -.0013301   .0110915    -0.12   0.905    -.0231147    .0204544
+percent2~t12 |    .054779   .0182772     3.00   0.003     .0188813    .0906767
+percent2~t13 |  -.0131546   .0160004    -0.82   0.411    -.0445806    .0182714
+percent2~t14 |   .0060088   .0155929     0.39   0.700    -.0246168    .0366344
+percent3_~v1 |   3.11e-06   5.96e-06     0.52   0.602    -8.59e-06    .0000148
+percent3_~v2 |   4.61e-06   6.07e-06     0.76   0.448    -7.31e-06    .0000165
+percent3_~v3 |   8.47e-06   6.62e-06     1.28   0.201    -4.52e-06    .0000215
+percent3_~v4 |  -3.47e-06   7.43e-06    -0.47   0.641    -.0000181    .0000111
+percent3_~v5 |  -7.77e-07   7.70e-06    -0.10   0.920    -.0000159    .0000144
+percent3_~v6 |   .0000126   7.41e-06     1.69   0.091    -2.01e-06    .0000271
+percent3_~v7 |   4.85e-06   6.40e-06     0.76   0.449    -7.72e-06    .0000174
+percent3_~v8 |   5.15e-06   6.57e-06     0.78   0.433    -7.75e-06    .0000181
+percent3_~v9 |   2.63e-06   7.65e-06     0.34   0.731    -.0000124    .0000177
+percent3_p~0 |   3.20e-06   6.90e-06     0.46   0.643    -.0000103    .0000167
+percent3~v11 |   5.35e-06   6.58e-06     0.81   0.417    -7.57e-06    .0000183
+percent3~v12 |   4.70e-06   6.76e-06     0.69   0.487    -8.58e-06     .000018
+percent3~v13 |   3.86e-06   6.71e-06     0.58   0.565    -9.31e-06     .000017
+percent3~v14 |   6.00e-06   7.06e-06     0.85   0.396    -7.86e-06    .0000199
+percent3_~15 |   6.40e-06   7.06e-06     0.91   0.365    -7.47e-06    .0000203
+percent3_~16 |   7.18e-06   7.84e-06     0.92   0.360    -8.21e-06    .0000226
+percent3_~17 |   .0000141   .0000112     1.26   0.207    -7.83e-06    .0000361
+percent3_~18 |   .0000239   .0000171     1.40   0.162    -9.64e-06    .0000575
+percent3_~19 |   .0000451   .0000252     1.79   0.074    -4.38e-06    .0000946
+percent3_~t1 |  -3.60e-06   9.36e-06    -0.38   0.701     -.000022    .0000148
+percent3_~t2 |  -3.08e-06   9.00e-06    -0.34   0.732    -.0000207    .0000146
+percent3_~t3 |   2.52e-06   9.53e-06     0.26   0.792    -.0000162    .0000212
+percent3_~t4 |  -.0000111   .0000206    -0.54   0.589    -.0000516    .0000293
+percent3_f~5 |  -9.68e-06   .0000215    -0.45   0.653    -.0000519    .0000326
+percent3_f~6 |   7.82e-06    .000028     0.28   0.780    -.0000472    .0000628
+percent3_f~7 |  -.0000319    .000024    -1.33   0.184    -.0000789    .0000152
+percent3_f~8 |  -4.35e-06   .0000154    -0.28   0.778    -.0000346    .0000259
+percent3_f~9 |   .0000144   .0000135     1.06   0.288    -.0000122     .000041
+percent3_f~0 |   .0000267   .0000281     0.95   0.343    -.0000286     .000082
+percent3~t11 |   6.59e-06   .0000579     0.11   0.909    -.0001071    .0001203
+percent3~t12 |  -.0002724   .0000919    -2.96   0.003    -.0004529   -.0000919
+percent3~t13 |   .0000677   .0000841     0.81   0.421    -.0000974    .0002328
+percent3~t14 |  -.0000309   .0000821    -0.38   0.706    -.0001923    .0001304
+       _cons |   .0678334   .0432349     1.57   0.117    -.0170829    .1527497
+-------------+----------------------------------------------------------------
+    newleaid |   absorbed                                     (580 categories)
+
+Linear regression                                      Number of obs =     630
+                                                       F( 12,   430) =    1.06
+                                                       Prob > F      =  0.3958
+                                                       R-squared     =  0.0178
+Number of clusters (newleaid) = 431                    Root MSE      =  .85986
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catma~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   .1548946   .1978385     0.78   0.434    -.2339563    .5437455
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .0971708   .1960593     0.50   0.620    -.2881829    .4825245
+    yrdums12 |   .0482921   .1912781     0.25   0.801    -.3276643    .4242484
+    yrdums13 |  -.0750313   .1928245    -0.39   0.697    -.4540271    .3039645
+    yrdums14 |   .3381531   .2006393     1.69   0.093    -.0562027    .7325088
+    yrdums15 |   .1737341   .2098704     0.83   0.408    -.2387653    .5862335
+    yrdums16 |   .0907079   .2204599     0.41   0.681    -.3426051     .524021
+    yrdums17 |   -.033053   .2394851    -0.14   0.890    -.5037602    .4376541
+    yrdums18 |   .2843046   .2818267     1.01   0.314    -.2696248     .838234
+    yrdums19 |   .2521361   .2224766     1.13   0.258    -.1851408     .689413
+    yrdums20 |  (dropped)
+         win |   .0418164   .0885485     0.47   0.637    -.1322254    .2158582
+         req |   .0142508   .0134458     1.06   0.290    -.0121768    .0406785
+       _cons |  -.9198981    .906648    -1.01   0.311    -2.701911    .8621151
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =     630
+                                                       F( 15,   430) =    1.50
+                                                       Prob > F      =  0.1014
+                                                       R-squared     =  0.0321
+Number of clusters (newleaid) = 431                    Root MSE      =  .85564
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catma~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   .2070541   .1962331     1.06   0.292    -.1786414    .5927496
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .1102053   .1954408     0.56   0.573    -.2739328    .4943434
+    yrdums12 |   .0983038   .1930048     0.51   0.611    -.2810465    .4776541
+    yrdums13 |  -.0574712   .1927454    -0.30   0.766    -.4363116    .3213691
+    yrdums14 |   .3385221   .1993861     1.70   0.090    -.0533704    .7304147
+    yrdums15 |   .1871393   .2110591     0.89   0.376    -.2276966    .6019753
+    yrdums16 |   .1051329   .2204151     0.48   0.634    -.3280921    .5383579
+    yrdums17 |  -.0027458   .2477531    -0.01   0.991    -.4897036     .484212
+    yrdums18 |   .3082743   .2825841     1.09   0.276    -.2471437    .8636922
+    yrdums19 |   .2520998     .22178     1.14   0.256    -.1838081    .6880076
+    yrdums20 |  (dropped)
+         win |   .1799092   .1115022     1.61   0.107     -.039248    .3990665
+         req |   .0155293   .0142654     1.09   0.277    -.0125092    .0435679
+     percent |   .0745544   .2527832     0.29   0.768    -.4222901    .5713989
+    percent2 |  -.0022399    .004142    -0.54   0.589     -.010381    .0059012
+    percent3 |   .0000164   .0000222     0.74   0.463    -.0000274    .0000601
+       _cons |  -1.060075   5.273654    -0.20   0.841    -11.42542    9.305272
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =    6084
+                                                       F( 64,   553) =    1.98
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0189
+Number of clusters (newleaid) = 554                    Root MSE      =  .82413
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catma~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   .0950978   .0355267     2.68   0.008      .025314    .1648815
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .0462763   .0528342     0.88   0.381    -.0575039    .1500565
+    yrdums12 |   .0545253   .0555425     0.98   0.327    -.0545747    .1636253
+    yrdums13 |  -.0052088   .0629004    -0.08   0.934    -.1287618    .1183441
+    yrdums14 |   .0145768   .0698669     0.21   0.835    -.1226602    .1518138
+    yrdums15 |  -.0486525   .0744274    -0.65   0.514    -.1948475    .0975425
+    yrdums16 |    -.03917   .0794684    -0.49   0.622    -.1952669    .1169269
+    yrdums17 |   .0060373   .0846417     0.07   0.943    -.1602213    .1722959
+    yrdums18 |  -.0152519   .0908441    -0.17   0.867    -.1936937    .1631898
+    yrdums19 |  -.0398617    .099292    -0.40   0.688    -.2348973    .1551738
+    yrdums20 |  -.0595363   .1136346    -0.52   0.601    -.2827444    .1636719
+     dydums1 |  (dropped)
+     dydums2 |   .8878071   3.269743     0.27   0.786    -5.534829    7.310443
+     dydums3 |   2.669663   3.447401     0.77   0.439     -4.10194    9.441266
+     dydums4 |   2.141771   3.746492     0.57   0.568    -5.217326    9.500868
+     dydums5 |   .6604999   3.905552     0.17   0.866    -7.011031    8.332031
+     dydums6 |   .9929838   3.947579     0.25   0.801      -6.7611    8.747068
+     dydums7 |   8.509272   4.089369     2.08   0.038     .4766755    16.54187
+     dydums8 |   4.803087   4.327803     1.11   0.268    -3.697857    13.30403
+     dydums9 |   .0768825   5.085565     0.02   0.988    -9.912505    10.06627
+       win_1 |   .1334119   .1113684     1.20   0.231     -.085345    .3521688
+       win_2 |   .1587497   .1047396     1.52   0.130    -.0469864    .3644857
+       win_3 |   .2178188   .1048356     2.08   0.038     .0118942    .4237434
+       win_4 |   .1018921   .1167928     0.87   0.383    -.1275196    .3313038
+       win_5 |   .0276597   .1216413     0.23   0.820    -.2112758    .2665952
+       win_6 |   .1517889   .1190637     1.27   0.203    -.0820835    .3856613
+      win_m1 |   .2137668   .1094747     1.95   0.051    -.0012703    .4288038
+      win_m2 |   .1620602   .1193154     1.36   0.175    -.0723068    .3964271
+       req_1 |  -.0007491   .0082878    -0.09   0.928    -.0170285    .0155303
+       req_2 |   .0065043   .0089018     0.73   0.465    -.0109812    .0239897
+       req_3 |   .0044127   .0098785     0.45   0.655    -.0149912    .0238167
+       req_4 |  -.0063379   .0113119    -0.56   0.576    -.0285575    .0158818
+       req_5 |  -.0080745   .0150868    -0.54   0.593     -.037709    .0215599
+       req_6 |   .0135864    .050423     0.27   0.788    -.0854578    .1126305
+      req_m1 |   .0034275    .008978     0.38   0.703    -.0142076    .0210626
+      req_m2 |   .0048784   .0092745     0.53   0.599    -.0133391     .023096
+   percent_1 |  -.0361909   .1079696    -0.34   0.738    -.2482715    .1758898
+   percent_2 |   .0149736   .0247124     0.61   0.545    -.0335681    .0635153
+   percent_3 |   .0079349    .025425     0.31   0.755    -.0420065    .0578764
+   percent_4 |  -.3207334    .227564    -1.41   0.159    -.7677289    .1262621
+   percent_5 |  -.1813725    .175445    -1.03   0.302    -.5259927    .1632477
+   percent_6 |   .0010162   .1016382     0.01   0.992     -.198628    .2006604
+  percent2_1 |   .0002914   .0018673     0.16   0.876    -.0033765    .0039594
+  percent2_2 |  -.0005434   .0006579    -0.83   0.409    -.0018356    .0007488
+  percent2_3 |  -.0004675   .0006616    -0.71   0.480     -.001767     .000832
+  percent2_4 |   .0045944   .0037089     1.24   0.216    -.0026908    .0118796
+  percent2_5 |   .0029264   .0030414     0.96   0.336    -.0030476    .0089004
+  percent2_6 |  -.0001293    .001856    -0.07   0.944    -.0037749    .0035163
+  percent3_1 |  -1.72e-07   .0000104    -0.02   0.987    -.0000205    .0000202
+  percent3_2 |   4.36e-06   4.66e-06     0.94   0.350    -4.79e-06    .0000135
+  percent3_3 |   4.00e-06   4.69e-06     0.85   0.394    -5.22e-06    .0000132
+  percent3_4 |  -.0000209   .0000196    -1.07   0.286    -.0000593    .0000175
+  percent3_5 |  -.0000141   .0000168    -0.84   0.402    -.0000472     .000019
+  percent3_6 |   1.61e-06   .0000107     0.15   0.881    -.0000194    .0000226
+  percent_m1 |   .0739329   .2407627     0.31   0.759    -.3989885    .5468542
+  percent_m2 |   .0806127   .2039459     0.40   0.693    -.3199908    .4812161
+ percent2_m1 |  -.0022836   .0039608    -0.58   0.564    -.0100637    .0054964
+ percent2_m2 |  -.0019427   .0034572    -0.56   0.574    -.0087335    .0048481
+ percent3_m1 |   .0000166   .0000214     0.78   0.436    -.0000253    .0000586
+ percent3_m2 |    .000013   .0000191     0.68   0.496    -.0000245    .0000506
+tmp_perc~t_0 |  -.0269537    .154329    -0.17   0.861    -.3300965    .2761892
+tmp_perc~2_0 |  -.0000606   .0025561    -0.02   0.981    -.0050814    .0049602
+tmp_perc~3_0 |   3.00e-06   .0000137     0.22   0.827     -.000024      .00003
+   tmp_win_0 |   .0799835   .1040694     0.77   0.442    -.1244361    .2844032
+   tmp_req_0 |  -.0090887   .0085453    -1.06   0.288    -.0258738    .0076964
+tmp_gobond_0 |  (dropped)
+       _cons |  -.9389065   4.009391    -0.23   0.815    -8.814405    6.936591
+------------------------------------------------------------------------------
+
+Linear regression, absorbing indicators                Number of obs =    6084
+                                                       F( 58,   553) =    1.64
+                                                       Prob > F      =  0.0028
+                                                       R-squared     =  0.9019
+                                                       Adj R-squared =  0.8796
+                                                       Root MSE      =  .28723
+
+                             (Std. Err. adjusted for 554 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catma~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   .0313563   .0292048     1.07   0.283    -.0260096    .0887222
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |   .0002114    .033153     0.01   0.995    -.0649099    .0653326
+    yrdums12 |   .0314195   .0331431     0.95   0.344    -.0336822    .0965213
+    yrdums13 |  -.0432634   .0330473    -1.31   0.191     -.108177    .0216503
+    yrdums14 |  -.0200024   .0337401    -0.59   0.554    -.0862769     .046272
+    yrdums15 |   -.064539   .0333419    -1.94   0.053    -.1300312    .0009532
+    yrdums16 |   .0021896   .0295267     0.07   0.941    -.0558086    .0601878
+    yrdums17 |   .0301107   .0281567     1.07   0.285    -.0251964    .0854179
+    yrdums18 |    .026163   .0272266     0.96   0.337    -.0273172    .0796432
+    yrdums19 |   .0177474   .0229767     0.77   0.440    -.0273849    .0628798
+    yrdums20 |  (dropped)
+     dydums1 |   2.363629   2.423867     0.98   0.330    -2.397483     7.12474
+     dydums2 |   1.478001   2.831552     0.52   0.602    -4.083912    7.039914
+     dydums3 |   1.782379     2.6574     0.67   0.503    -3.437454    7.002212
+     dydums4 |   3.041824   1.915667     1.59   0.113    -.7210498    6.804697
+     dydums5 |   3.178649   1.765043     1.80   0.072    -.2883602    6.645657
+     dydums6 |   3.101343   1.745925     1.78   0.076    -.3281123    6.530798
+     dydums7 |    5.04327   2.028929     2.49   0.013     1.057919    9.028622
+     dydums8 |   2.423585   1.793318     1.35   0.177    -1.098963    5.946134
+     dydums9 |  (dropped)
+       win_1 |   .0588581   .0618551     0.95   0.342    -.0626416    .1803577
+       win_2 |   .0145386   .0670235     0.22   0.828    -.1171133    .1461904
+       win_3 |    .063161   .0738555     0.86   0.393    -.0819107    .2082326
+       win_4 |   .0587217   .0786601     0.75   0.456    -.0957875    .2132308
+       win_5 |   .1052237     .08276     1.27   0.204    -.0573388    .2677862
+       win_6 |   .2042693    .084934     2.41   0.016     .0374367     .371102
+      win_m1 |   .0537254   .0622439     0.86   0.388     -.068538    .1759887
+      win_m2 |   .0150076   .0675476     0.22   0.824    -.1176737    .1476889
+       req_1 |   .0069313   .0038987     1.78   0.076    -.0007268    .0145894
+       req_2 |   .0047114   .0044316     1.06   0.288    -.0039934    .0134162
+       req_3 |   .0074592   .0048171     1.55   0.122    -.0020029    .0169213
+       req_4 |   .0084301   .0055523     1.52   0.130    -.0024761    .0193363
+       req_5 |   .0120165    .006587     1.82   0.069    -.0009221    .0249552
+       req_6 |   .0268528   .0160989     1.67   0.096    -.0047697    .0584753
+      req_m1 |   .0092558   .0041463     2.23   0.026     .0011114    .0174002
+      req_m2 |   .0043926   .0044051     1.00   0.319    -.0042602    .0130455
+   percent_1 |  -.0708982   .0809357    -0.88   0.381    -.2298773    .0880809
+   percent_2 |  -.0839333   .1002541    -0.84   0.403    -.2808586     .112992
+   percent_3 |  -.0924814   .1042791    -0.89   0.376    -.2973129    .1123501
+   percent_4 |  -.1893641    .127498    -1.49   0.138    -.4398038    .0610756
+   percent_5 |  -.0831601   .1427333    -0.58   0.560    -.3635258    .1972055
+   percent_6 |   .0098998   .1196231     0.08   0.934    -.2250715    .2448711
+  percent2_1 |   .0010212   .0013303     0.77   0.443    -.0015918    .0036341
+  percent2_2 |    .001392   .0016465     0.85   0.398    -.0018421    .0046261
+  percent2_3 |   .0016204   .0017464     0.93   0.354    -.0018099    .0050507
+  percent2_4 |   .0031404   .0021143     1.49   0.138    -.0010127    .0072934
+  percent2_5 |   .0015945    .002395     0.67   0.506    -.0031099    .0062989
+  percent2_6 |  -.0001329   .0020084    -0.07   0.947     -.004078    .0038121
+  percent3_1 |  -5.18e-06   7.08e-06    -0.73   0.464    -.0000191    8.73e-06
+  percent3_2 |  -7.68e-06   8.81e-06    -0.87   0.384     -.000025    9.63e-06
+  percent3_3 |  -9.60e-06   9.53e-06    -1.01   0.314    -.0000283    9.11e-06
+  percent3_4 |  -.0000174   .0000114    -1.53   0.127    -.0000397    4.94e-06
+  percent3_5 |  -.0000101    .000013    -0.78   0.438    -.0000357    .0000155
+  percent3_6 |  -5.03e-07   .0000109    -0.05   0.963    -.0000219    .0000209
+  percent_m1 |   .0156754   .1269276     0.12   0.902    -.2336438    .2649945
+  percent_m2 |  -.0402368   .1097025    -0.37   0.714    -.2557214    .1752478
+ percent2_m1 |   -.000574   .0020371    -0.28   0.778    -.0045754    .0034273
+ percent2_m2 |   .0006891   .0018235     0.38   0.706    -.0028927    .0042709
+ percent3_m1 |   4.07e-06   .0000107     0.38   0.704     -.000017    .0000251
+ percent3_m2 |  -4.12e-06   9.88e-06    -0.42   0.677    -.0000235    .0000153
+       _cons |  -1.663419   2.656881    -0.63   0.532    -6.882233    3.555394
+-------------+----------------------------------------------------------------
+       refid |   absorbed                                    (1069 categories)
+
+Linear regression                                      Number of obs =     527
+                                                       F( 10,   384) =    2.43
+                                                       Prob > F      =  0.0082
+                                                       R-squared     =  0.0451
+Number of clusters (newleaid) = 385                    Root MSE      =  .36592
+
+------------------------------------------------------------------------------
+             |               Robust
+dsstd_catm~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  (dropped)
+    yrdums12 |  -.0240254   .0767146    -0.31   0.754    -.1748586    .1268078
+    yrdums13 |  -.1463951   .0655362    -2.23   0.026    -.2752499   -.0175404
+    yrdums14 |  -.0012053    .077692    -0.02   0.988    -.1539602    .1515496
+    yrdums15 |  -.1370503   .0759349    -1.80   0.072    -.2863505      .01225
+    yrdums16 |   .0776307   .0881127     0.88   0.379     -.095613    .2508744
+    yrdums17 |  -.0701669   .1125154    -0.62   0.533    -.2913903    .1510564
+    yrdums18 |  -.1022343     .09213    -1.11   0.268    -.2833767     .078908
+    yrdums19 |  -.0782152   .0847412    -0.92   0.357      -.24483    .0883996
+    yrdums20 |  (dropped)
+         win |  -.0544579   .0391603    -1.39   0.165    -.1314534    .0225376
+         req |   .0041556   .0044122     0.94   0.347    -.0045196    .0128307
+       _cons |  -.1395535   .3062996    -0.46   0.649    -.7417878    .4626808
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =     527
+                                                       F( 13,   384) =    2.33
+                                                       Prob > F      =  0.0054
+                                                       R-squared     =  0.0521
+Number of clusters (newleaid) = 385                    Root MSE      =  .36563
+
+------------------------------------------------------------------------------
+             |               Robust
+dsstd_catm~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  (dropped)
+    yrdums12 |  -.0223727   .0779554    -0.29   0.774    -.1756455    .1309001
+    yrdums13 |  -.1576225   .0669309    -2.36   0.019    -.2892195   -.0260255
+    yrdums14 |  -.0152631   .0789041    -0.19   0.847    -.1704012    .1398751
+    yrdums15 |  -.1466487   .0758913    -1.93   0.054    -.2958632    .0025657
+    yrdums16 |   .0685934   .0894081     0.77   0.443    -.1071973    .2443842
+    yrdums17 |  -.0732684   .1147517    -0.64   0.524    -.2988886    .1523519
+    yrdums18 |  -.1104861   .0931077    -1.19   0.236    -.2935509    .0725787
+    yrdums19 |  -.0934484   .0862645    -1.08   0.279    -.2630582    .0761614
+    yrdums20 |  (dropped)
+         win |  -.0018091   .0588404    -0.03   0.975    -.1174989    .1138806
+         req |   .0051214   .0045993     1.11   0.266    -.0039216    .0141645
+     percent |   .0406832   .0907679     0.45   0.654    -.1377812    .2191476
+    percent2 |  -.0009825   .0015145    -0.65   0.517    -.0039602    .0019953
+    percent3 |   6.57e-06   8.19e-06     0.80   0.423    -9.54e-06    .0000227
+       _cons |  -.5468949   1.841813    -0.30   0.767    -4.168196    3.074406
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =    4776
+                                                       F( 56,   546) =    2.05
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0252
+Number of clusters (newleaid) = 547                    Root MSE      =   .3571
+
+------------------------------------------------------------------------------
+             |               Robust
+dsstd_catm~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  (dropped)
+    yrdums12 |  -.0040045   .0332459    -0.12   0.904      -.06931    .0613011
+    yrdums13 |  -.1014079   .0324554    -3.12   0.002    -.1651606   -.0376552
+    yrdums14 |  -.0099064   .0318342    -0.31   0.756    -.0724389    .0526261
+    yrdums15 |  -.0700115    .032577    -2.15   0.032    -.1340031   -.0060198
+    yrdums16 |   .0424171   .0354184     1.20   0.232    -.0271558    .1119901
+    yrdums17 |  -.0025735   .0345828    -0.07   0.941    -.0705051    .0653581
+    yrdums18 |  -.0522511   .0373718    -1.40   0.163    -.1256612     .021159
+    yrdums19 |  -.0431744   .0341661    -1.26   0.207    -.1102874    .0239386
+    yrdums20 |  -.0545008   .0371236    -1.47   0.143    -.1274233    .0184217
+     dydums1 |  (dropped)
+     dydums2 |  -.1448376    2.67398    -0.05   0.957    -5.397385     5.10771
+     dydums3 |  (dropped)
+     dydums4 |    2.21124   2.610454     0.85   0.397    -2.916523    7.339002
+     dydums5 |   1.029409   1.842985     0.56   0.577      -2.5908    4.649618
+     dydums6 |   .7449048   1.846963     0.40   0.687    -2.883118    4.372927
+     dydums7 |   2.917763   2.972739     0.98   0.327    -2.921642    8.757169
+     dydums8 |  (dropped)
+     dydums9 |  -1.385225   2.666744    -0.52   0.604    -6.623559     3.85311
+       win_1 |   .0522226   .0589538     0.89   0.376    -.0635815    .1680267
+       win_2 |   -.060732   .0527211    -1.15   0.250    -.1642931    .0428291
+       win_3 |   .0736714   .0510228     1.44   0.149    -.0265537    .1738965
+       win_4 |   .0298728   .0599717     0.50   0.619    -.0879306    .1476763
+       win_5 |   .0625325   .0515446     1.21   0.226    -.0387175    .1637824
+       win_6 |   .1021515   .0589387     1.73   0.084    -.0136229    .2179259
+      win_m1 |   .0035053   .0555625     0.06   0.950    -.1056371    .1126476
+      win_m2 |  (dropped)
+       req_1 |   .0070994   .0036284     1.96   0.051    -.0000278    .0142267
+       req_2 |  -.0046583   .0033674    -1.38   0.167    -.0112729    .0019564
+       req_3 |    .001887   .0033513     0.56   0.574     -.004696      .00847
+       req_4 |    .001242    .003403     0.36   0.715    -.0054425    .0079265
+       req_5 |   .0031365   .0047998     0.65   0.514    -.0062919    .0125649
+       req_6 |   .0067198   .0078322     0.86   0.391    -.0086652    .0221048
+      req_m1 |   .0064608   .0035487     1.82   0.069    -.0005099    .0134315
+      req_m2 |  (dropped)
+   percent_1 |   -.074697   .0738734    -1.01   0.312    -.2198079     .070414
+   percent_2 |  -.0128139   .0355083    -0.36   0.718    -.0825634    .0569356
+   percent_3 |  -.0000791   .0094515    -0.01   0.993    -.0186448    .0184867
+   percent_4 |  -.1011874   .0837924    -1.21   0.228    -.2657824    .0634076
+   percent_5 |    .027448   .0885877     0.31   0.757    -.1465664    .2014624
+   percent_6 |   .1058451   .0667718     1.59   0.114     -.025316    .2370061
+  percent2_1 |   .0010136    .001214     0.83   0.404    -.0013711    .0033983
+  percent2_2 |   .0004061   .0006464     0.63   0.530    -.0008637    .0016759
+  percent2_3 |   8.53e-06   .0002627     0.03   0.974    -.0005076    .0005246
+  percent2_4 |   .0015184   .0013291     1.14   0.254    -.0010925    .0041292
+  percent2_5 |  -.0004077   .0014465    -0.28   0.778     -.003249    .0024336
+  percent2_6 |  -.0019054    .001131    -1.68   0.093    -.0041271    .0003162
+  percent3_1 |  -4.77e-06   6.45e-06    -0.74   0.459    -.0000174    7.89e-06
+  percent3_2 |  -2.83e-06   3.71e-06    -0.76   0.445    -.0000101    4.45e-06
+  percent3_3 |  -4.61e-07   1.87e-06    -0.25   0.805    -4.13e-06    3.21e-06
+  percent3_4 |  -7.55e-06   6.86e-06    -1.10   0.272     -.000021    5.93e-06
+  percent3_5 |   1.84e-06   7.60e-06     0.24   0.809    -.0000131    .0000168
+  percent3_6 |   .0000104   6.12e-06     1.70   0.089    -1.60e-06    .0000225
+  percent_m1 |   .0528132   .0892796     0.59   0.554    -.1225604    .2281868
+  percent_m2 |  (dropped)
+ percent2_m1 |  -.0011674   .0014879    -0.78   0.433    -.0040902    .0017553
+ percent2_m2 |  (dropped)
+ percent3_m1 |   7.46e-06   8.04e-06     0.93   0.354    -8.33e-06    .0000233
+ percent3_m2 |  (dropped)
+tmp_perc~t_0 |  -.0100763   .1243369    -0.08   0.935    -.2543135     .234161
+tmp_perc~2_0 |   .0006039   .0019575     0.31   0.758    -.0032412     .004449
+tmp_perc~3_0 |  -4.76e-06   .0000101    -0.47   0.639    -.0000247    .0000151
+   tmp_win_0 |  -.0707129   .0588356    -1.20   0.230    -.1862847    .0448588
+   tmp_req_0 |  -.0098772   .0041065    -2.41   0.016    -.0179437   -.0018108
+tmp_gobond_0 |   .8612199   2.920568     0.29   0.768    -4.875706    6.598146
+       _cons |  -.7689174   1.842588    -0.42   0.677    -4.388347    2.850512
+------------------------------------------------------------------------------
+
+Linear regression, absorbing indicators                Number of obs =    4776
+                                                       F( 50,   546) =    1.43
+                                                       Prob > F      =  0.0315
+                                                       R-squared     =  0.1369
+                                                       Adj R-squared = -0.1226
+                                                       Root MSE      =  .38097
+
+                             (Std. Err. adjusted for 547 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+dsstd_catm~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  (dropped)
+    yrdums12 |   .0081637   .0368028     0.22   0.825    -.0641287    .0804561
+    yrdums13 |  -.0855336   .0343064    -2.49   0.013    -.1529223   -.0181449
+    yrdums14 |   .0150758   .0339146     0.44   0.657    -.0515433    .0816948
+    yrdums15 |  -.0372709   .0339399    -1.10   0.273    -.1039396    .0293978
+    yrdums16 |   .0807545   .0400976     2.01   0.045       .00199    .1595189
+    yrdums17 |   .0433841   .0291139     1.49   0.137    -.0138049    .1005732
+    yrdums18 |  -.0080656    .043423    -0.19   0.853    -.0933622     .077231
+    yrdums19 |   .0088608   .0356213     0.25   0.804    -.0611108    .0788324
+    yrdums20 |  (dropped)
+     dydums1 |  (dropped)
+     dydums2 |   .4027298   3.915289     0.10   0.918    -7.288145    8.093604
+     dydums3 |   .9511199   4.879926     0.19   0.846    -8.634609    10.53685
+     dydums4 |   2.255813   3.517304     0.64   0.522    -4.653291    9.164917
+     dydums5 |   1.151259   4.070426     0.28   0.777    -6.844354    9.146871
+     dydums6 |   .7953496   4.249626     0.19   0.852    -7.552268    9.142967
+     dydums7 |   3.324313   3.189825     1.04   0.298     -2.94152    9.590145
+     dydums8 |   2.015607   4.183685     0.48   0.630    -6.202482     10.2337
+     dydums9 |  (dropped)
+       win_1 |    .127379   .1194997     1.07   0.287    -.1073565    .3621145
+       win_2 |   .0288903   .1009119     0.29   0.775    -.1693327    .2271134
+       win_3 |   .1571822   .0920389     1.71   0.088    -.0236115    .3379759
+       win_4 |   .1146058   .1048506     1.09   0.275    -.0913541    .3205657
+       win_5 |   .1343811   .0965842     1.39   0.165     -.055341    .3241033
+       win_6 |   .1339584   .1094237     1.22   0.221    -.0809847    .3489015
+      win_m1 |   .0809586   .1081033     0.75   0.454    -.1313907    .2933079
+      win_m2 |  (dropped)
+       req_1 |   .0196888   .0079941     2.46   0.014     .0039859    .0353918
+       req_2 |   .0082097   .0062938     1.30   0.193    -.0041533    .0205727
+       req_3 |   .0133464   .0063426     2.10   0.036     .0008875    .0258052
+       req_4 |   .0113268   .0063859     1.77   0.077    -.0012172    .0238708
+       req_5 |   .0123261   .0071033     1.74   0.083     -.001627    .0262792
+       req_6 |   .0100922   .0094182     1.07   0.284    -.0084081    .0285926
+      req_m1 |   .0166904    .007432     2.25   0.025     .0020916    .0312892
+      req_m2 |  (dropped)
+   percent_1 |  -.0709908   .2038705    -0.35   0.728    -.4714573    .3294756
+   percent_2 |   -.017909   .1805209    -0.10   0.921    -.3725096    .3366915
+   percent_3 |   .0089056   .1938317     0.05   0.963    -.3718415    .3896526
+   percent_4 |  -.1134998   .1871675    -0.61   0.544    -.4811563    .2541567
+   percent_5 |  -.0569166   .1684865    -0.34   0.736    -.3878776    .2740445
+   percent_6 |   .0707806    .227507     0.31   0.756    -.3761157    .5176768
+  percent2_1 |    .000528   .0032341     0.16   0.870    -.0058248    .0068809
+  percent2_2 |   .0001142   .0028177     0.04   0.968    -.0054207    .0056491
+  percent2_3 |  -.0005986    .003083    -0.19   0.846    -.0066545    .0054573
+  percent2_4 |   .0013457   .0029767     0.45   0.651    -.0045014    .0071928
+  percent2_5 |   .0005053   .0026982     0.19   0.852    -.0047948    .0058054
+  percent2_6 |  -.0017798    .003624    -0.49   0.624    -.0088985    .0053389
+  percent3_1 |  -7.56e-07   .0000168    -0.05   0.964    -.0000337    .0000322
+  percent3_2 |  -8.90e-08   .0000145    -0.01   0.995    -.0000285    .0000283
+  percent3_3 |   4.35e-06    .000016     0.27   0.786    -.0000272    .0000359
+  percent3_4 |  -5.38e-06   .0000155    -0.35   0.729    -.0000359    .0000251
+  percent3_5 |  -1.30e-06   .0000141    -0.09   0.926     -.000029    .0000264
+  percent3_6 |   .0000115   .0000188     0.61   0.541    -.0000254    .0000483
+  percent_m1 |   .0409021   .2233275     0.18   0.855    -.3977841    .4795884
+  percent_m2 |  (dropped)
+ percent2_m1 |  -.0014373   .0035334    -0.41   0.684    -.0083779    .0055034
+ percent2_m2 |  (dropped)
+ percent3_m1 |   .0000105   .0000183     0.58   0.565    -.0000254    .0000465
+ percent3_m2 |  (dropped)
+       _cons |  -.9824863   4.878136    -0.20   0.840     -10.5647    8.599726
+-------------+----------------------------------------------------------------
+       refid |   absorbed                                    (1055 categories)
+
+Linear regression                                      Number of obs =    6730
+                                                       F( 97,   579) =    2.16
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0268
+Number of clusters (newleaid) = 580                    Root MSE      =  .84303
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catma~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+gobond_prev1 |  -.0392047   .3841594    -0.10   0.919    -.7937205     .715311
+gobond_prev2 |  -.4576211   .3975475    -1.15   0.250    -1.238432    .3231899
+gobond_prev3 |  -.3395328    .448229    -0.76   0.449    -1.219886    .5408201
+gobond_prev4 |  -.1438124   .5188633    -0.28   0.782    -1.162896    .8752712
+gobond_prev5 |  -.4444208   .7693395    -0.58   0.564    -1.955457    1.066615
+gobond_prev6 |  -1.819227   2.756208    -0.66   0.509    -7.232612    3.594157
+gobond_prev7 |  (dropped)
+gobond_prev8 |  (dropped)
+gobond_prev9 |  (dropped)
+gobond_pr~10 |  (dropped)
+gobond_pr~11 |  (dropped)
+gobond_pr~12 |  (dropped)
+gobond_pr~13 |  (dropped)
+gobond_pr~14 |  (dropped)
+gobond_pr~15 |  (dropped)
+gobond_pr~16 |  (dropped)
+gobond_pr~17 |  (dropped)
+gobond_pr~18 |  (dropped)
+gobond_pr~19 |  (dropped)
+ gobond_fut1 |   .0725816   .4391999     0.17   0.869    -.7900376    .9352009
+ gobond_fut2 |  -.0562538   .4642929    -0.12   0.904    -.9681573    .8556497
+ gobond_fut3 |  -.7696588   .4599179    -1.67   0.095     -1.67297     .133652
+ gobond_fut4 |  -.0756718   .4441174    -0.17   0.865    -.9479494    .7966057
+ gobond_fut5 |   .5344784   .5565702     0.96   0.337    -.5586642    1.627621
+ gobond_fut6 |   .2361525     .65144     0.36   0.717    -1.043321    1.515626
+ gobond_fut7 |   .7708478   .6738856     1.14   0.253    -.5527104    2.094406
+ gobond_fut8 |   .3432409   .6885028     0.50   0.618    -1.009027    1.695508
+ gobond_fut9 |  -.6470145   .9507492    -0.68   0.496    -2.514352    1.220323
+gobond_fut10 |   .5566902   1.477297     0.38   0.706    -2.344824    3.458204
+gobond_fut11 |   .4695123   1.576084     0.30   0.766    -2.626027    3.565052
+gobond_fut12 |   2.661408   1.553958     1.71   0.087    -.3906734     5.71349
+gobond_fut13 |   1.187806   3.313195     0.36   0.720    -5.319539    7.695152
+gobond_fut14 |  -6.190795   7.046548    -0.88   0.380    -20.03071    7.649116
+   req_prev1 |  -.0002864   .0060057    -0.05   0.962    -.0120819    .0115091
+   req_prev2 |   .0068563   .0061444     1.12   0.265    -.0052118    .0189244
+   req_prev3 |    .004258   .0069029     0.62   0.538    -.0092997    .0178157
+   req_prev4 |   .0008804   .0079145     0.11   0.911    -.0146643    .0164251
+   req_prev5 |   .0041798    .011674     0.36   0.720    -.0187487    .0271083
+   req_prev6 |   .0257289   .0412471     0.62   0.533    -.0552832     .106741
+   req_prev7 |  -.0003077   .0006033    -0.51   0.610    -.0014927    .0008773
+   req_prev8 |  -.0002502   .0006327    -0.40   0.693    -.0014928    .0009924
+   req_prev9 |  -.0003855   .0006625    -0.58   0.561    -.0016868    .0009158
+  req_prev10 |  -.0004669   .0007553    -0.62   0.537    -.0019504    .0010166
+  req_prev11 |  -.0007452   .0007881    -0.95   0.345    -.0022931    .0008027
+  req_prev12 |  -.0014858   .0007624    -1.95   0.052    -.0029832    .0000116
+  req_prev13 |  -.0024089   .0008073    -2.98   0.003    -.0039945   -.0008234
+  req_prev14 |  -.0018972   .0008842    -2.15   0.032    -.0036338   -.0001607
+  req_prev15 |   .0001349   .0009233     0.15   0.884    -.0016785    .0019484
+  req_prev16 |  -.0009645   .0012458    -0.77   0.439    -.0034112    .0014823
+  req_prev17 |  -.0028319   .0014767    -1.92   0.056    -.0057322    .0000683
+  req_prev18 |  -.0018901   .0018733    -1.01   0.313    -.0055693    .0017891
+  req_prev19 |  -.0004734   .0032153    -0.15   0.883    -.0067885    .0058418
+    req_fut1 |    -.00144   .0068363    -0.21   0.833     -.014867     .011987
+    req_fut2 |   .0004583   .0073114     0.06   0.950    -.0139017    .0148184
+    req_fut3 |   .0126232   .0074319     1.70   0.090    -.0019735    .0272199
+    req_fut4 |    .001762   .0072759     0.24   0.809    -.0125284    .0160524
+    req_fut5 |  -.0066908   .0088919    -0.75   0.452    -.0241552    .0107736
+    req_fut6 |  -.0058146    .010439    -0.56   0.578    -.0263176    .0146883
+    req_fut7 |  -.0150756   .0104501    -1.44   0.150    -.0356003     .005449
+    req_fut8 |  -.0055666   .0112223    -0.50   0.620    -.0276079    .0164748
+    req_fut9 |   .0171973   .0164178     1.05   0.295    -.0150485    .0494431
+   req_fut10 |  -.0066424   .0241321    -0.28   0.783    -.0540396    .0407547
+   req_fut11 |   -.014935   .0292982    -0.51   0.610    -.0724787    .0426087
+   req_fut12 |  -.0439958   .0272796    -1.61   0.107    -.0975748    .0095832
+   req_fut13 |   -.017153   .0588739    -0.29   0.771    -.1327855    .0984795
+   req_fut14 |   .1185143   .1277487     0.93   0.354     -.132393    .3694216
+   win_prev1 |   .0892044   .0660162     1.35   0.177     -.040456    .2188649
+   win_prev2 |   .1224537   .0611976     2.00   0.046     .0022574      .24265
+   win_prev3 |   .1882573   .0591574     3.18   0.002      .072068    .3044466
+   win_prev4 |   .2117709    .060689     3.49   0.001     .0925734    .3309684
+   win_prev5 |   .3014411   .0644693     4.68   0.000      .174819    .4280632
+   win_prev6 |   .2191518    .066968     3.27   0.001      .087622    .3506815
+   win_prev7 |    .145282   .0679668     2.14   0.033     .0117905    .2787735
+   win_prev8 |   .1406813   .0735688     1.91   0.056    -.0038131    .2851756
+   win_prev9 |   .1691347   .0806107     2.10   0.036     .0108096    .3274598
+  win_prev10 |   .1586553   .0860659     1.84   0.066    -.0103841    .3276948
+  win_prev11 |   .1807567   .0909193     1.99   0.047     .0021848    .3593285
+  win_prev12 |   .1399979    .091031     1.54   0.125    -.0387932    .3187891
+  win_prev13 |   .2142963   .1035729     2.07   0.039      .010872    .4177206
+  win_prev14 |   .1199047   .1121455     1.07   0.285    -.1003569    .3401664
+  win_prev15 |   .0402959    .117737     0.34   0.732    -.1909478    .2715396
+  win_prev16 |   .0994698   .1519927     0.65   0.513    -.1990545    .3979942
+  win_prev17 |   .0913919   .1681088     0.54   0.587    -.2387855    .4215694
+  win_prev18 |   .1007552   .2127542     0.47   0.636    -.3171088    .5186192
+  win_prev19 |  -.1788975   .2696371    -0.66   0.507    -.7084836    .3506886
+    win_fut1 |   .0137599   .0809286     0.17   0.865    -.1451894    .1727092
+    win_fut2 |   .0544228   .0803167     0.68   0.498    -.1033248    .2121704
+    win_fut3 |   .0563269    .089534     0.63   0.530    -.1195241    .2321779
+    win_fut4 |   -.076365   .0864776    -0.88   0.378    -.2462131     .093483
+    win_fut5 |  -.2437853   .1000762    -2.44   0.015    -.4403419   -.0472287
+    win_fut6 |  -.0160413   .1059947    -0.15   0.880    -.2242222    .1921397
+    win_fut7 |  -.0075746   .1275885    -0.06   0.953    -.2581673    .2430181
+    win_fut8 |  -.0205833   .1359875    -0.15   0.880    -.2876723    .2465056
+    win_fut9 |  -.3893646   .1582052    -2.46   0.014    -.7000906   -.0786386
+   win_fut10 |  -.4629731   .2510032    -1.84   0.066    -.9559609    .0300146
+   win_fut11 |  -.0729041     .21915    -0.33   0.740    -.5033299    .3575217
+   win_fut12 |  -.4595524   .3229564    -1.42   0.155    -1.093861    .1747565
+   win_fut13 |  -.3883225   .2249769    -1.73   0.085    -.8301929    .0535478
+   win_fut14 |  -.4499958   .2560002    -1.76   0.079    -.9527981    .0528065
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   -.019506   .0300108    -0.65   0.516    -.0784493    .0394372
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  -.1428249   .0590218    -2.42   0.016    -.2587479    -.026902
+    yrdums12 |  -.1231469   .0633443    -1.94   0.052    -.2475595    .0012658
+    yrdums13 |  -.2088518   .0694636    -3.01   0.003    -.3452832   -.0724204
+    yrdums14 |  -.2002642   .0753269    -2.66   0.008    -.3482114    -.052317
+    yrdums15 |  -.2610724   .0792029    -3.30   0.001    -.4166324   -.1055124
+    yrdums16 |  -.2179456   .0830818    -2.62   0.009    -.3811241   -.0547672
+    yrdums17 |  -.2010204   .0874149    -2.30   0.022    -.3727094   -.0293314
+    yrdums18 |  -.2049462   .0937454    -2.19   0.029    -.3890687   -.0208238
+    yrdums19 |  -.2140249   .0994362    -2.15   0.032    -.4093246   -.0187252
+    yrdums20 |  -.2434054   .1061413    -2.29   0.022    -.4518744   -.0349364
+       _cons |   .3016502    .088179     3.42   0.001     .1284605      .47484
+------------------------------------------------------------------------------
+
+Linear regression                                      Number of obs =    6643
+                                                       F(205,   570) =   12.05
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0709
+Number of clusters (newleaid) = 571                    Root MSE      =  .83276
+
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catma~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+gobond_prev1 |   .5025754   2.073249     0.24   0.809    -3.569565    4.574716
+gobond_prev2 |  -.6167214   .7755152    -0.80   0.427    -2.139938    .9064948
+gobond_prev3 |  -.1175993   .8720447    -0.13   0.893    -1.830412    1.595214
+gobond_prev4 |   6.893128   4.402912     1.57   0.118    -1.754784    15.54104
+gobond_prev5 |    2.72933   3.439607     0.79   0.428    -4.026521    9.485181
+gobond_prev6 |  -.5182292   3.976603    -0.13   0.896    -8.328813    7.292354
+gobond_prev7 |  (dropped)
+gobond_prev8 |  (dropped)
+gobond_prev9 |  (dropped)
+gobond_pr~10 |  (dropped)
+gobond_pr~11 |  (dropped)
+gobond_pr~12 |  (dropped)
+gobond_pr~13 |  (dropped)
+gobond_pr~14 |  (dropped)
+gobond_pr~15 |  (dropped)
+gobond_pr~16 |  (dropped)
+gobond_pr~17 |  (dropped)
+gobond_pr~18 |  (dropped)
+gobond_pr~19 |  (dropped)
+ gobond_fut1 |  -1.257749   4.652185    -0.27   0.787    -10.39526    7.879768
+ gobond_fut2 |  -2.100764   3.993663    -0.53   0.599    -9.944855    5.743327
+ gobond_fut3 |  -3.723656   4.668608    -0.80   0.425    -12.89343    5.446118
+ gobond_fut4 |   5.115549   6.209164     0.82   0.410    -7.080084    17.31118
+ gobond_fut5 |   4.256001   5.149529     0.83   0.409    -5.858366    14.37037
+ gobond_fut6 |   8.942704   11.48928     0.78   0.437    -13.62379     31.5092
+ gobond_fut7 |    9.38122   16.68402     0.56   0.574    -23.38844    42.15088
+ gobond_fut8 |  -.7459081   7.466744    -0.10   0.920     -15.4116    13.91978
+ gobond_fut9 |  -2.267675   7.209931    -0.31   0.753    -16.42895     11.8936
+gobond_fut10 |   14.42891   11.68438     1.23   0.217    -8.520797    37.37861
+gobond_fut11 |   -15.3626    22.7538    -0.68   0.500    -60.05412    29.32893
+gobond_fut12 |  -24.60388   38.64667    -0.64   0.525    -100.5111    51.30339
+gobond_fut13 |  -8.298455   43.52824    -0.19   0.849    -93.79377    77.19686
+gobond_fut14 |   -36.5668   39.63582    -0.92   0.357    -114.4169    41.28329
+   req_prev1 |   .0006136   .0074257     0.08   0.934    -.0139715    .0151986
+   req_prev2 |   .0074517   .0075626     0.99   0.325    -.0074023    .0223057
+   req_prev3 |   .0068145   .0083827     0.81   0.417    -.0096502    .0232793
+   req_prev4 |  -.0012187   .0097633    -0.12   0.901    -.0203952    .0179578
+   req_prev5 |  -.0063108     .01384    -0.46   0.649    -.0334944    .0208727
+   req_prev6 |   .0069682   .0559764     0.12   0.901     -.102977    .1169133
+   req_prev7 |   .0024896   .0033483     0.74   0.457     -.004087    .0090662
+   req_prev8 |   .0083397   .0033347     2.50   0.013     .0017899    .0148895
+   req_prev9 |   .0017139    .006039     0.28   0.777    -.0101476    .0135754
+  req_prev10 |   .0035682   .0038761     0.92   0.358    -.0040449    .0111813
+  req_prev11 |   .0041954   .0028657     1.46   0.144    -.0014331     .009824
+  req_prev12 |   .0032888   .0028218     1.17   0.244    -.0022536    .0088312
+  req_prev13 |   .0017113   .0029338     0.58   0.560     -.004051    .0074736
+  req_prev14 |   .0053335   .0029975     1.78   0.076    -.0005539     .011221
+  req_prev15 |   .0072491    .003277     2.21   0.027     .0008126    .0136857
+  req_prev16 |   .0067398   .0037248     1.81   0.071    -.0005762    .0140558
+  req_prev17 |   .0161459   .0737777     0.22   0.827    -.1287633    .1610551
+  req_prev18 |   .0836777   .0994986     0.84   0.401    -.1117508    .2791063
+  req_prev19 |   .3263235   .1139405     2.86   0.004     .1025291     .550118
+    req_fut1 |   .0061189   .0077102     0.79   0.428     -.009025    .0212629
+    req_fut2 |   .0070678   .0082979     0.85   0.395    -.0092304     .023366
+    req_fut3 |    .011835   .0089065     1.33   0.184    -.0056585    .0293285
+    req_fut4 |   .0024764   .0090473     0.27   0.784    -.0152937    .0202466
+    req_fut5 |   .0021456     .00999     0.21   0.830    -.0174762    .0217674
+    req_fut6 |   .0047748   .0111913     0.43   0.670    -.0172063    .0267559
+    req_fut7 |   .0036676    .012789     0.29   0.774    -.0214518    .0287869
+    req_fut8 |  -.0226311   .0146888    -1.54   0.124    -.0514818    .0062196
+    req_fut9 |   .0143738   .0191215     0.75   0.453    -.0231833     .051931
+   req_fut10 |   .0119147   .0238771     0.50   0.618    -.0349832    .0588125
+   req_fut11 |  -.0048626   .0254785    -0.19   0.849    -.0549059    .0451806
+   req_fut12 |  -.0446215   .0281201    -1.59   0.113    -.0998532    .0106101
+   req_fut13 |  -.0448097   .0448488    -1.00   0.318    -.1328989    .0432794
+   req_fut14 |   .1049752   .0934629     1.12   0.262    -.0785986     .288549
+   win_prev1 |   .1544587   .1195576     1.29   0.197    -.0803686     .389286
+   win_prev2 |   .1999552   .1098719     1.82   0.069    -.0158481    .4157585
+   win_prev3 |   .2623935   .1052869     2.49   0.013     .0555959    .4691911
+   win_prev4 |   .1600441   .1154177     1.39   0.166    -.0666519    .3867401
+   win_prev5 |   .0857614   .1216154     0.71   0.481    -.1531075    .3246303
+   win_prev6 |   .1901954   .1231489     1.54   0.123    -.0516857    .4320765
+   win_prev7 |   .0673573   .1099505     0.61   0.540    -.1486003     .283315
+   win_prev8 |  -.0813971    .108953    -0.75   0.455    -.2953954    .1326013
+   win_prev9 |  -.0252817   .1229436    -0.21   0.837    -.2667594    .2161961
+  win_prev10 |  -.1266427   .1368237    -0.93   0.355    -.3953827    .1420974
+  win_prev11 |  -.2442806   .1437404    -1.70   0.090    -.5266061    .0380448
+  win_prev12 |  -.0961082   .1481834    -0.65   0.517    -.3871604     .194944
+  win_prev13 |  -.2057599   .1725013    -1.19   0.233    -.5445757     .133056
+  win_prev14 |  -.2302916   .1856483    -1.24   0.215    -.5949299    .1343468
+  win_prev15 |  -.1772507   .1980634    -0.89   0.371    -.5662739    .2117724
+  win_prev16 |  -.2471629   .2292775    -1.08   0.281    -.6974947    .2031689
+  win_prev17 |   -.463252   .2953677    -1.57   0.117    -1.043394    .1168898
+  win_prev18 |  -.9583018   .4410155    -2.17   0.030    -1.824516   -.0920879
+  win_prev19 |  -1.873093   .4734312    -3.96   0.000    -2.802975   -.9432102
+    win_fut1 |   .2260067   .1146673     1.97   0.049     .0007847    .4512288
+    win_fut2 |   .1983034   .1172592     1.69   0.091    -.0320095    .4286164
+    win_fut3 |   .1412891   .1347376     1.05   0.295    -.1233537    .4059319
+    win_fut4 |  -.0297305   .1415031    -0.21   0.834    -.3076617    .2482006
+    win_fut5 |  -.0339038    .157291    -0.22   0.829    -.3428445    .2750368
+    win_fut6 |   .2656337   .1559942     1.70   0.089      -.04076    .5720274
+    win_fut7 |   .2984029   .1771371     1.68   0.093    -.0495181    .6463239
+    win_fut8 |  -.2791511   .2069399    -1.35   0.178    -.6856089    .1273067
+    win_fut9 |   -.168431   .2414192    -0.70   0.486    -.6426107    .3057488
+   win_fut10 |   .2442044   .3379338     0.72   0.470     -.419543    .9079518
+   win_fut11 |   .3536289   .3743871     0.94   0.345    -.3817177    1.088976
+   win_fut12 |  -.2462261    .434593    -0.57   0.571    -1.099825    .6073731
+   win_fut13 |  -.5037914   .3545218    -1.42   0.156     -1.20012    .1925371
+   win_fut14 |  -.0404077   .4553208    -0.09   0.929     -.934719    .8539035
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  -.0088124   .0316321    -0.28   0.781    -.0709422    .0533173
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  -.1179409   .0560569    -2.10   0.036    -.2280441   -.0078376
+    yrdums12 |  -.1064497   .0615965    -1.73   0.084    -.2274334    .0145341
+    yrdums13 |  -.1838316   .0686727    -2.68   0.008    -.3187139   -.0489493
+    yrdums14 |  -.1770872    .074725    -2.37   0.018    -.3238571   -.0303173
+    yrdums15 |  -.2425266   .0806793    -3.01   0.003    -.4009916   -.0840616
+    yrdums16 |  -.1939251   .0846206    -2.29   0.022    -.3601313    -.027719
+    yrdums17 |  -.2288089   .0897464    -2.55   0.011    -.4050828    -.052535
+    yrdums18 |  -.2076569   .0964506    -2.15   0.032    -.3970989   -.0182149
+    yrdums19 |   -.191407   .1027708    -1.86   0.063    -.3932627    .0104488
+    yrdums20 |  -.2281021   .1107685    -2.06   0.040    -.4456663   -.0105379
+percent_p~v1 |  -.0066014   .1035181    -0.06   0.949    -.2099249    .1967222
+percent_p~v2 |   .0321281   .0344961     0.93   0.352    -.0356268     .099883
+percent_p~v3 |   .0055927   .0366091     0.15   0.879    -.0663124    .0774978
+percent_p~v4 |  -.3083484   .2092176    -1.47   0.141    -.7192799    .1025831
+percent_p~v5 |  -.1334461   .1691845    -0.79   0.431    -.4657471     .198855
+percent_p~v6 |   .0037748   .0985612     0.04   0.969    -.1898127    .1973624
+percent_p~v7 |  -.0189119   .0228386    -0.83   0.408    -.0637699    .0259461
+percent_p~v8 |  -.0323223   .0238939    -1.35   0.177    -.0792531    .0146086
+percent_p~v9 |  -.0203178   .0307591    -0.66   0.509    -.0807328    .0400971
+percent_p~10 |  -.0017507   .0241762    -0.07   0.942    -.0492361    .0457348
+percent_p~11 |  -.0045916    .021946    -0.21   0.834    -.0476964    .0385133
+percent_p~12 |  -.0053672   .0219035    -0.25   0.807    -.0483887    .0376543
+percent_p~13 |  -.0117592   .0227867    -0.52   0.606    -.0565153     .032997
+percent_p~14 |  -.0250176   .0262594    -0.95   0.341    -.0765945    .0265593
+percent_p~15 |  -.0388269   .0301482    -1.29   0.198    -.0980421    .0203883
+percent_p~16 |   .0066577   .0317292     0.21   0.834    -.0556628    .0689782
+percent_p~17 |  -.0455045   .2721471    -0.17   0.867     -.580038     .489029
+percent_p~18 |  -.3293394   .3740461    -0.88   0.379    -1.064016    .4053374
+percent_p~19 |  -1.325663    .461746    -2.87   0.004    -2.232594   -.4187317
+percent_fut1 |   .1162015   .2294081     0.51   0.613    -.3343869      .56679
+percent_fut2 |   .1259839   .2019975     0.62   0.533    -.2707663    .5227341
+percent_fut3 |   .2008451   .2315639     0.87   0.386    -.2539776    .6556677
+percent_fut4 |   -.241033   .3088072    -0.78   0.435    -.8475719    .3655059
+percent_fut5 |  -.1743451   .2459093    -0.71   0.479    -.6573441    .3086539
+percent_fut6 |  -.3485154   .5507603    -0.63   0.527    -1.430283    .7332521
+percent_fut7 |  -.3921884   .7744674    -0.51   0.613    -1.913347     1.12897
+percent_fut8 |   .0806861   .3667265     0.22   0.826     -.639614    .8009863
+percent_fut9 |    .134538   .3618187     0.37   0.710    -.5761226    .8451987
+percent_f~10 |  -.7177221   .5857404    -1.23   0.221    -1.868195    .4327509
+percent_f~11 |   .7258343    1.10563     0.66   0.512    -1.445772     2.89744
+percent_f~12 |   1.239839   1.800762     0.69   0.491    -2.297099    4.776777
+percent_f~13 |   .5600501   2.139245     0.26   0.794    -3.641715    4.761815
+percent_f~14 |   1.716203   2.012438     0.85   0.394    -2.236495    5.668901
+percent2_~v1 |  -.0001851    .001816    -0.10   0.919     -.003752    .0033819
+percent2_~v2 |  -.0008581   .0007318    -1.17   0.241    -.0022954    .0005792
+percent2_~v3 |  -.0004069   .0007589    -0.54   0.592    -.0018976    .0010837
+percent2_~v4 |   .0044722   .0033971     1.32   0.189    -.0022001    .0111445
+percent2_~v5 |   .0021709   .0029235     0.74   0.458    -.0035712     .007913
+percent2_~v6 |  -.0001584   .0018116    -0.09   0.930    -.0037166    .0033997
+percent2_~v7 |   .0003873   .0005951     0.65   0.515    -.0007815    .0015561
+percent2_~v8 |   .0004457   .0006253     0.71   0.476    -.0007825    .0016738
+percent2_~v9 |   .0004064   .0007373     0.55   0.582    -.0010418    .0018547
+percent2_p~0 |  -.0003503   .0006238    -0.56   0.575    -.0015756     .000875
+percent2~v11 |  -.0004254   .0005939    -0.72   0.474    -.0015918    .0007411
+percent2~v12 |  -.0001925    .000578    -0.33   0.739    -.0013278    .0009427
+percent2~v13 |   -.000075   .0006065    -0.12   0.902    -.0012662    .0011163
+percent2~v14 |   .0002064   .0007123     0.29   0.772    -.0011927    .0016055
+percent2_~15 |   .0007204   .0008143     0.88   0.377     -.000879    .0023197
+percent2_~16 |  -.0008394   .0008562    -0.98   0.327    -.0025211    .0008423
+percent2_~17 |   .0001201   .0047064     0.03   0.980    -.0091239     .009364
+percent2_~18 |   .0051791   .0065286     0.79   0.428     -.007644    .0180022
+percent2_~19 |   .0239926   .0086057     2.79   0.005     .0070899    .0408954
+percent2_~t1 |  -.0028511   .0037703    -0.76   0.450    -.0102565    .0045542
+percent2_~t2 |  -.0026114   .0034259    -0.76   0.446    -.0093402    .0041175
+percent2_~t3 |  -.0040257   .0038791    -1.04   0.300    -.0116448    .0035934
+percent2_~t4 |   .0036373   .0051264     0.71   0.478    -.0064316    .0137062
+percent2_f~5 |   .0023613   .0039647     0.60   0.552    -.0054258    .0101484
+percent2_f~6 |   .0041448   .0086687     0.48   0.633    -.0128817    .0211714
+percent2_f~7 |   .0052792   .0118085     0.45   0.655    -.0179142    .0284727
+percent2_f~8 |  -.0010724   .0059913    -0.18   0.858    -.0128401    .0106954
+percent2_f~9 |  -.0028987   .0062465    -0.46   0.643    -.0151678    .0093703
+percent2_f~0 |    .011649   .0101077     1.15   0.250    -.0082039    .0315018
+percent2~t11 |  -.0110714   .0175105    -0.63   0.527    -.0454643    .0233216
+percent2~t12 |  -.0184298   .0272741    -0.68   0.499    -.0719998    .0351402
+percent2~t13 |  -.0094681   .0348466    -0.27   0.786    -.0779116    .0589753
+percent2~t14 |  -.0307791    .033047    -0.93   0.352    -.0956878    .0341296
+percent3_~v1 |   2.15e-06   .0000102     0.21   0.833    -.0000179    .0000222
+percent3_~v2 |   5.88e-06   4.76e-06     1.24   0.217    -3.46e-06    .0000152
+percent3_~v3 |   3.37e-06   4.96e-06     0.68   0.496    -6.37e-06    .0000131
+percent3_~v4 |   -.000021   .0000179    -1.17   0.241    -.0000561    .0000141
+percent3_~v5 |  -.0000105   .0000162    -0.65   0.517    -.0000422    .0000213
+percent3_~v6 |   1.39e-06   .0000105     0.13   0.895    -.0000193    .0000221
+percent3_~v7 |  -2.03e-06   4.34e-06    -0.47   0.640    -.0000105    6.49e-06
+percent3_~v8 |  -1.03e-06   4.58e-06    -0.23   0.822      -.00001    7.96e-06
+percent3_~v9 |  -1.64e-06   5.28e-06    -0.31   0.757     -.000012    8.73e-06
+percent3_p~0 |   5.13e-06   4.67e-06     1.10   0.273    -4.05e-06    .0000143
+percent3~v11 |   6.88e-06   4.45e-06     1.55   0.123    -1.86e-06    .0000156
+percent3~v12 |   3.32e-06   4.29e-06     0.77   0.439    -5.10e-06    .0000117
+percent3~v13 |   3.51e-06   4.38e-06     0.80   0.423    -5.09e-06    .0000121
+percent3~v14 |   1.49e-06   5.39e-06     0.28   0.782    -9.10e-06    .0000121
+percent3_~15 |  -3.25e-06   6.11e-06    -0.53   0.595    -.0000152    8.75e-06
+percent3_~16 |   9.72e-06   6.37e-06     1.53   0.128    -2.79e-06    .0000222
+percent3_~17 |   4.92e-06   .0000256     0.19   0.848    -.0000453    .0000551
+percent3_~18 |  -.0000213   .0000356    -0.60   0.550    -.0000913    .0000487
+percent3_~19 |  -.0001315   .0000506    -2.60   0.010    -.0002308   -.0000321
+percent3_~t1 |   .0000189   .0000203     0.93   0.352     -.000021    .0000587
+percent3_~t2 |   .0000159   .0000189     0.84   0.400    -.0000213    .0000531
+percent3_~t3 |   .0000249   .0000212     1.18   0.240    -.0000167    .0000666
+percent3_~t4 |  -.0000181   .0000278    -0.65   0.516    -.0000726    .0000365
+percent3_f~5 |  -.0000111    .000021    -0.53   0.596    -.0000523      .00003
+percent3_f~6 |  -.0000162   .0000449    -0.36   0.718    -.0001045     .000072
+percent3_f~7 |  -.0000246   .0000594    -0.41   0.679    -.0001414    .0000921
+percent3_f~8 |   5.79e-06   .0000321     0.18   0.857    -.0000573    .0000688
+percent3_f~9 |   .0000184   .0000353     0.52   0.603     -.000051    .0000878
+percent3_f~0 |  -.0000657   .0000569    -1.15   0.249    -.0001774    .0000461
+percent3~t11 |   .0000533   .0000918     0.58   0.562    -.0001271    .0002336
+percent3~t12 |   .0000893    .000137     0.65   0.515    -.0001799    .0003584
+percent3~t13 |   .0000536   .0001882     0.28   0.776     -.000316    .0004233
+percent3~t14 |   .0001788   .0001797     0.99   0.320    -.0001743    .0005318
+tmp_ismeas~0 |   .6290624   .1812956     3.47   0.001     .2729735    .9851513
+tmp_~t_prev0 |    .035867    .171687     0.21   0.835    -.3013493    .3730833
+tmp_win_pr~0 |   .0880549   .1278227     0.69   0.491    -.1630061    .3391159
+tmp_fakewi~0 |  -.0920637     .10909    -0.84   0.399    -.3063311    .1222037
+tmp_req_pr~0 |  -.0054607    .007338    -0.74   0.457    -.0198736    .0089522
+tmp_numele~0 |   .1791905   .1090283     1.64   0.101    -.0349558    .3933369
+tmp_gobond~0 |  -.8582327   3.361969    -0.26   0.799    -7.461593    5.745127
+tmp_~2_prev0 |  -.0009201   .0029137    -0.32   0.752     -.006643    .0048028
+tmp_~3_prev0 |   6.95e-06   .0000158     0.44   0.660    -.0000241     .000038
+       _cons |   .2336149   .0941618     2.48   0.013     .0486684    .4185613
+------------------------------------------------------------------------------
+
+Linear regression, absorbing indicators                Number of obs =    6652
+                                                       F(196,   579) =   22.58
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.8453
+                                                       Adj R-squared =  0.8249
+                                                       Root MSE      =  .35592
+
+                             (Std. Err. adjusted for 580 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+sstd_catma~3 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+gobond_prev1 |   .9572078   1.829328     0.52   0.601    -2.635719    4.550135
+gobond_prev2 |   .5218666   2.213064     0.24   0.814    -3.824745    4.868478
+gobond_prev3 |   .3141947   2.235616     0.14   0.888    -4.076712    4.705101
+gobond_prev4 |   4.410285   2.713629     1.63   0.105    -.9194706    9.740041
+gobond_prev5 |   .6902044   2.750111     0.25   0.802    -4.711205    6.091614
+gobond_prev6 |  -1.468448   2.410559    -0.61   0.543    -6.202954    3.266057
+gobond_prev7 |  (dropped)
+gobond_prev8 |  (dropped)
+gobond_prev9 |  (dropped)
+gobond_pr~10 |  (dropped)
+gobond_pr~11 |  (dropped)
+gobond_pr~12 |  (dropped)
+gobond_pr~13 |  (dropped)
+gobond_pr~14 |  (dropped)
+gobond_pr~15 |  (dropped)
+gobond_pr~16 |  (dropped)
+gobond_pr~17 |  (dropped)
+gobond_pr~18 |  (dropped)
+gobond_pr~19 |  (dropped)
+ gobond_fut1 |   .0373995   2.796821     0.01   0.989    -5.455751     5.53055
+ gobond_fut2 |    2.50913   2.585348     0.97   0.332    -2.568673    7.586934
+ gobond_fut3 |   .7016865   3.269373     0.21   0.830    -5.719589    7.122962
+ gobond_fut4 |   4.919191   4.997707     0.98   0.325    -4.896652    14.73503
+ gobond_fut5 |   5.196171   3.762584     1.38   0.168    -2.193805    12.58615
+ gobond_fut6 |   9.738016   6.727115     1.45   0.148    -3.474507    22.95054
+ gobond_fut7 |  -4.602593   10.04227    -0.46   0.647    -24.32632    15.12113
+ gobond_fut8 |   -1.24898   3.389311    -0.37   0.713    -7.905824    5.407864
+ gobond_fut9 |   4.324053   4.888464     0.88   0.377    -5.277231    13.92534
+gobond_fut10 |   9.531854   6.158983     1.55   0.122    -2.564817    21.62852
+gobond_fut11 |   7.974775   13.59948     0.59   0.558    -18.73556    34.68511
+gobond_fut12 |   8.871254   24.68805     0.36   0.719    -39.61779     57.3603
+gobond_fut13 |   12.68627   21.29837     0.60   0.552    -29.14522    54.51776
+gobond_fut14 |   2.754376    19.2511     0.14   0.886    -35.05612    40.56487
+   req_prev1 |   .0065509   .0038558     1.70   0.090    -.0010221    .0141239
+   req_prev2 |    .004749    .004344     1.09   0.275     -.003783     .013281
+   req_prev3 |   .0100115   .0045957     2.18   0.030     .0009852    .0190377
+   req_prev4 |   .0103066   .0050769     2.03   0.043     .0003352    .0202779
+   req_prev5 |   .0137937   .0061827     2.23   0.026     .0016504     .025937
+   req_prev6 |   .0190698   .0099036     1.93   0.055    -.0003816    .0385212
+   req_prev7 |   .0170505   .0326365     0.52   0.602    -.0470499    .0811509
+   req_prev8 |   .0213119   .0330378     0.65   0.519    -.0435766    .0862005
+   req_prev9 |   .0191011   .0334493     0.57   0.568    -.0465957    .0847979
+  req_prev10 |   .0191543   .0329574     0.58   0.561    -.0455763     .083885
+  req_prev11 |    .019971   .0328341     0.61   0.543    -.0445174    .0844594
+  req_prev12 |   .0182868   .0329812     0.55   0.579    -.0464905    .0830641
+  req_prev13 |   .0165006   .0329539     0.50   0.617    -.0482232    .0812245
+  req_prev14 |   .0177658   .0328468     0.54   0.589    -.0467475    .0822792
+  req_prev15 |   .0190096   .0327839     0.58   0.562    -.0453804    .0833995
+  req_prev16 |   .0193577   .0332589     0.58   0.561    -.0459651    .0846806
+  req_prev17 |   -.039784   .0592994    -0.67   0.503    -.1562522    .0766841
+  req_prev18 |  -.0325408    .068715    -0.47   0.636    -.1675018    .1024202
+  req_prev19 |   -.081845   .0723889    -1.13   0.259    -.2240218    .0603317
+    req_fut1 |   .0100164   .0041127     2.44   0.015     .0019388    .0180939
+    req_fut2 |   .0071118   .0044322     1.60   0.109    -.0015933     .015817
+    req_fut3 |   .0132709   .0054928     2.42   0.016     .0024828    .0240591
+    req_fut4 |   .0050691   .0059346     0.85   0.393    -.0065868     .016725
+    req_fut5 |    .001722   .0059551     0.29   0.773    -.0099744    .0134183
+    req_fut6 |   .0093182   .0070522     1.32   0.187    -.0045328    .0231692
+    req_fut7 |   .0103041   .0073515     1.40   0.162    -.0041348     .024743
+    req_fut8 |   .0030582   .0075391     0.41   0.685    -.0117491    .0178655
+    req_fut9 |   .0060629   .0108025     0.56   0.575    -.0151539    .0272798
+   req_fut10 |   .0126924   .0120309     1.05   0.292    -.0109372     .036322
+   req_fut11 |   .0139601   .0176274     0.79   0.429    -.0206614    .0485816
+   req_fut12 |   .0372036   .0133475     2.79   0.005     .0109882    .0634191
+   req_fut13 |   .0330212   .0181507     1.82   0.069     -.002628    .0686705
+   req_fut14 |   .0537186   .0264524     2.03   0.043     .0017642     .105673
+   win_prev1 |   .0267311   .0604691     0.44   0.659    -.0920345    .1454966
+   win_prev2 |   .0131032   .0661514     0.20   0.843    -.1168227    .1430291
+   win_prev3 |   .0691603    .072293     0.96   0.339    -.0728283    .2111488
+   win_prev4 |   .0576815   .0752851     0.77   0.444    -.0901836    .2055466
+   win_prev5 |   .0937582   .0810382     1.16   0.248    -.0654063    .2529228
+   win_prev6 |   .1919417   .0843065     2.28   0.023     .0263579    .3575255
+   win_prev7 |   .0267077   .0831966     0.32   0.748    -.1366962    .1901116
+   win_prev8 |  -.0345346   .0823407    -0.42   0.675    -.1962575    .1271883
+   win_prev9 |   .0244746   .0888635     0.28   0.783    -.1500594    .1990086
+  win_prev10 |  -.0272676   .0959974    -0.28   0.776    -.2158132    .1612781
+  win_prev11 |  -.0985479    .098749    -1.00   0.319    -.2924977     .095402
+  win_prev12 |   .0483749    .103978     0.47   0.642    -.1558451    .2525948
+  win_prev13 |   .0499601   .1106834     0.45   0.652    -.1674299      .26735
+  win_prev14 |  -.0273706   .1097864    -0.25   0.803    -.2429988    .1882576
+  win_prev15 |  -.0082032   .1202807    -0.07   0.946     -.244443    .2280365
+  win_prev16 |  -.1348164    .157397    -0.86   0.392    -.4439551    .1743222
+  win_prev17 |  -.0146192    .139887    -0.10   0.917     -.289367    .2601287
+  win_prev18 |  -.0277433   .1744961    -0.16   0.874    -.3704658    .3149793
+  win_prev19 |  -.1523119   .2550537    -0.60   0.551    -.6532551    .3486313
+    win_fut1 |   .0400383   .0602264     0.66   0.506    -.0782506    .1583271
+    win_fut2 |   .0338551   .0653902     0.52   0.605    -.0945758    .1622859
+    win_fut3 |   .0546888    .080645     0.68   0.498    -.1037037    .2130813
+    win_fut4 |   .0273583   .0849262     0.32   0.747    -.1394426    .1941592
+    win_fut5 |  -.0936461    .090591    -1.03   0.302    -.2715731    .0842809
+    win_fut6 |   .1251294   .0956334     1.31   0.191    -.0627013    .3129601
+    win_fut7 |   .0868373   .1221261     0.71   0.477     -.153027    .3267015
+    win_fut8 |  -.0349887   .1065271    -0.33   0.743    -.2442154     .174238
+    win_fut9 |   .0622611   .1324771     0.47   0.639    -.1979331    .3224553
+   win_fut10 |   .1431259   .1770982     0.81   0.419    -.2047072     .490959
+   win_fut11 |   .4043129   .2802819     1.44   0.150    -.1461803    .9548061
+   win_fut12 |   .1864661   .2117784     0.88   0.379    -.2294814    .6024137
+   win_fut13 |   .2797452   .1579239     1.77   0.077    -.0304284    .5899187
+   win_fut14 |   .3601604   .2522383     1.43   0.154    -.1352533    .8555741
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |   .0167625   .0256899     0.65   0.514    -.0336942    .0672191
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  (dropped)
+    yrdums11 |  -.0298079   .0392131    -0.76   0.447    -.1068252    .0472094
+    yrdums12 |  -.0080519   .0410749    -0.20   0.845    -.0887259    .0726222
+    yrdums13 |  -.0736999   .0446771    -1.65   0.100     -.161449    .0140491
+    yrdums14 |  -.0627223   .0460185    -1.36   0.173    -.1531059    .0276613
+    yrdums15 |  -.1109177   .0470075    -2.36   0.019    -.2032438   -.0185916
+    yrdums16 |  -.0508394   .0474209    -1.07   0.284    -.1439774    .0422986
+    yrdums17 |  -.0377506   .0493458    -0.77   0.445    -.1346692     .059168
+    yrdums18 |  -.0369453   .0507521    -0.73   0.467    -.1366259    .0627354
+    yrdums19 |  -.0322021   .0529481    -0.61   0.543    -.1361957    .0717916
+    yrdums20 |  -.0605718   .0552807    -1.10   0.274     -.169147    .0480034
+percent_p~v1 |  -.0587017   .0891097    -0.66   0.510    -.2337194     .116316
+percent_p~v2 |  -.0435401   .1075292    -0.40   0.686    -.2547349    .1676546
+percent_p~v3 |  -.0532646   .1109737    -0.48   0.631    -.2712247    .1646954
+percent_p~v4 |   -.250399   .1314593    -1.90   0.057    -.5085941    .0077961
+percent_p~v5 |  -.0920649    .137645    -0.67   0.504    -.3624091    .1782794
+percent_p~v6 |   .0189497   .1150692     0.16   0.869    -.2070542    .2449536
+percent_p~v7 |  -.0638012   .1083516    -0.59   0.556    -.2766113    .1490088
+percent_p~v8 |  -.0735433   .1108692    -0.66   0.507    -.2912982    .1442116
+percent_p~v9 |  -.0811509   .1136896    -0.71   0.476    -.3044451    .1421434
+percent_p~10 |  -.0637856   .1105496    -0.58   0.564    -.2809126    .1533415
+percent_p~11 |  -.0710476   .1095125    -0.65   0.517    -.2861378    .1440425
+percent_p~12 |  -.0628191   .1104138    -0.57   0.570    -.2796795    .1540414
+percent_p~13 |  -.0647645   .1100183    -0.59   0.556    -.2808481    .1513191
+percent_p~14 |  -.0582634   .1088785    -0.54   0.593    -.2721084    .1555816
+percent_p~15 |  -.0763562   .1107854    -0.69   0.491    -.2939465     .141234
+percent_p~16 |  -.0605478   .1126208    -0.54   0.591     -.281743    .1606473
+percent_p~17 |   .1275205   .1942014     0.66   0.512    -.2539046    .5089456
+percent_p~18 |   .0884211   .2260933     0.39   0.696    -.3556419    .5324842
+percent_p~19 |   .2701458   .2717466     0.99   0.321    -.2635835    .8038752
+percent_fut1 |  -.0064608   .1341475    -0.05   0.962    -.2699358    .2570143
+percent_fut2 |  -.1499608   .1271756    -1.18   0.239    -.3997426     .099821
+percent_fut3 |  -.0737832   .1564051    -0.47   0.637    -.3809738    .2334074
+percent_fut4 |   -.264773    .251393    -1.05   0.293    -.7585263    .2289803
+percent_fut5 |  -.2640927   .1800761    -1.47   0.143    -.6177747    .0895893
+percent_fut6 |  -.4714921   .3240061    -1.46   0.146    -1.107863    .1648784
+percent_fut7 |   .1722556   .4653149     0.37   0.711    -.7416553    1.086167
+percent_fut8 |   .0249421   .1667771     0.15   0.881    -.3026198     .352504
+percent_fut9 |  -.1996309   .2385424    -0.84   0.403    -.6681449     .268883
+percent_f~10 |  -.4729743   .3014509    -1.57   0.117    -1.065045    .1190961
+percent_f~11 |  -.3663904   .6357171    -0.58   0.565    -1.614983    .8822023
+percent_f~12 |  -.4445166   1.127222    -0.39   0.693     -2.65846    1.769427
+percent_f~13 |  -.6269375   1.038965    -0.60   0.546    -2.667537    1.413662
+percent_f~14 |  -.1308259    .948621    -0.14   0.890    -1.993984    1.732332
+percent2_~v1 |   .0008949   .0014605     0.61   0.540    -.0019736    .0037635
+percent2_~v2 |   .0008022   .0017446     0.46   0.646    -.0026244    .0042287
+percent2_~v3 |   .0010548   .0018363     0.57   0.566    -.0025519    .0046614
+percent2_~v4 |   .0041159   .0021259     1.94   0.053    -.0000595    .0082913
+percent2_~v5 |   .0017399   .0022877     0.76   0.447    -.0027533    .0062331
+percent2_~v6 |  -.0002624   .0019083    -0.14   0.891    -.0040104    .0034857
+percent2_~v7 |   .0012793    .001778     0.72   0.472    -.0022129    .0047714
+percent2_~v8 |   .0013546   .0018408     0.74   0.462    -.0022609      .00497
+percent2_~v9 |   .0017256   .0019202     0.90   0.369    -.0020458     .005497
+percent2_p~0 |   .0011623   .0018385     0.63   0.528    -.0024487    .0047733
+percent2~v11 |   .0012555   .0018124     0.69   0.489    -.0023042    .0048152
+percent2~v12 |   .0011888   .0018386     0.65   0.518    -.0024223    .0047999
+percent2~v13 |   .0012604   .0018321     0.69   0.492     -.002338    .0048588
+percent2~v14 |   .0009811   .0018071     0.54   0.587    -.0025683    .0045304
+percent2_~15 |   .0015832   .0018646     0.85   0.396    -.0020789    .0052453
+percent2_~16 |   .0009756   .0019131     0.51   0.610    -.0027819    .0047331
+percent2_~17 |  -.0019199   .0031144    -0.62   0.538    -.0080368     .004197
+percent2_~18 |  -.0011659   .0036454    -0.32   0.749    -.0083257    .0059939
+percent2_~19 |  -.0041799   .0048613    -0.86   0.390    -.0137279    .0053681
+percent2_~t1 |  -.0001687   .0021582    -0.08   0.938    -.0044075    .0040701
+percent2_~t2 |   .0025474   .0020785     1.23   0.221     -.001535    .0066298
+percent2_~t3 |   .0012037   .0024879     0.48   0.629    -.0036826    .0060901
+percent2_~t4 |   .0043524   .0041632     1.05   0.296    -.0038245    .0125293
+percent2_f~5 |   .0043834   .0028731     1.53   0.128    -.0012595    .0100263
+percent2_f~6 |   .0071097   .0051028     1.39   0.164    -.0029126     .017132
+percent2_f~7 |  -.0023209   .0070858    -0.33   0.743     -.016238    .0115962
+percent2_f~8 |   .0000604     .00271     0.02   0.982    -.0052623     .005383
+percent2_f~9 |   .0028664   .0038823     0.74   0.461    -.0047587    .0104916
+percent2_f~0 |   .0074048   .0050895     1.45   0.146    -.0025914    .0174009
+percent2~t11 |   .0048993    .009836     0.50   0.619    -.0144193    .0242179
+percent2~t12 |     .00591   .0168971     0.35   0.727     -.027277    .0390971
+percent2~t13 |   .0087223   .0166542     0.52   0.601    -.0239876    .0414322
+percent2~t14 |  -.0003252   .0153192    -0.02   0.983    -.0304131    .0297627
+percent3_~v1 |  -4.82e-06   7.77e-06    -0.62   0.535    -.0000201    .0000104
+percent3_~v2 |  -4.91e-06   9.26e-06    -0.53   0.596    -.0000231    .0000133
+percent3_~v3 |  -7.01e-06   9.94e-06    -0.71   0.481    -.0000265    .0000125
+percent3_~v4 |  -.0000225   .0000112    -2.00   0.046    -.0000446   -4.36e-07
+percent3_~v5 |  -.0000108   .0000124    -0.87   0.385    -.0000351    .0000135
+percent3_~v6 |   1.81e-07   .0000103     0.02   0.986      -.00002    .0000204
+percent3_~v7 |  -8.45e-06   9.54e-06    -0.89   0.376    -.0000272    .0000103
+percent3_~v8 |  -8.29e-06     .00001    -0.83   0.408     -.000028    .0000114
+percent3_~v9 |  -.0000116   .0000107    -1.09   0.277    -.0000326    9.34e-06
+percent3_p~0 |  -7.07e-06     .00001    -0.70   0.482    -.0000268    .0000127
+percent3~v11 |  -6.98e-06   9.86e-06    -0.71   0.479    -.0000263    .0000124
+percent3~v12 |  -7.73e-06   .0000101    -0.76   0.445    -.0000276    .0000121
+percent3~v13 |  -8.01e-06   .0000101    -0.80   0.426    -.0000278    .0000117
+percent3~v14 |  -5.56e-06   9.89e-06    -0.56   0.574     -.000025    .0000139
+percent3_~15 |  -.0000106   .0000103    -1.02   0.306    -.0000308    9.67e-06
+percent3_~16 |  -5.03e-06   .0000107    -0.47   0.639    -.0000261     .000016
+percent3_~17 |   9.11e-06   .0000162     0.56   0.575    -.0000228     .000041
+percent3_~18 |   5.12e-06   .0000191     0.27   0.789    -.0000323    .0000426
+percent3_~19 |   .0000209   .0000278     0.75   0.452    -.0000337    .0000756
+percent3_~t1 |   1.71e-06   .0000114     0.15   0.881    -.0000207    .0000241
+percent3_~t2 |  -.0000144   .0000111    -1.29   0.197    -.0000362    7.46e-06
+percent3_~t3 |  -6.56e-06    .000013    -0.50   0.615    -.0000321     .000019
+percent3_~t4 |  -.0000234   .0000226    -1.04   0.301    -.0000678     .000021
+percent3_f~5 |  -.0000239   .0000152    -1.58   0.115    -.0000537    5.84e-06
+percent3_f~6 |  -.0000357   .0000265    -1.35   0.179    -.0000878    .0000164
+percent3_f~7 |   9.20e-06   .0000357     0.26   0.797    -.0000609    .0000792
+percent3_f~8 |  -2.68e-06   .0000145    -0.19   0.853    -.0000311    .0000257
+percent3_f~9 |  -.0000142   .0000209    -0.68   0.498    -.0000552    .0000269
+percent3_f~0 |  -.0000399   .0000281    -1.42   0.156    -.0000951    .0000153
+percent3~t11 |  -.0000225   .0000505    -0.44   0.657    -.0001217    .0000768
+percent3~t12 |  -.0000266   .0000838    -0.32   0.751    -.0001912    .0001381
+percent3~t13 |  -.0000399   .0000886    -0.45   0.652    -.0002139     .000134
+percent3~t14 |   .0000137   .0000818     0.17   0.867    -.0001469    .0001743
+       _cons |   .1508483   .0480329     3.14   0.002     .0565084    .2451882
+-------------+----------------------------------------------------------------
+    newleaid |   absorbed                                     (580 categories)
+
+. 
+end of do-file
+
+. exit, clear

@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex JMP-Article"] 1735388284.85765 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1735388651.48443 0
+["bibtex JMP-Article"] 1736720731.35113 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1736720736.54938 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
   "./aej_references.bib" 1726175914 8455 9a4bbc9b0edef2400dcd19b9bd7ee28b ""
-  "JMP-Article.aux" 1735388649 21697 d3ec0890c4bf44530c254699b105a192 "pdflatex"
+  "JMP-Article.aux" 1736720735 22039 a6be6767fcae3d702194dbb29a3a58f6 "pdflatex"
   (generated)
   "JMP-Article.bbl"
   "JMP-Article.blg"
   (rewritten before read)
-["pdflatex"] 1735388644.35285 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1735388651.48566 0
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1735192779 82884 7092ddb3c99bcfd42463d1f7c0bda804 ""
+["pdflatex"] 1736720731.91475 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1736720736.5508 0
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1736297131 82884 7092ddb3c99bcfd42463d1f7c0bda804 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0700.pk" 1735192784 8268 774008aca8ba98ff4d56672685a6e4e5 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1735192786 11548 020924449c634beab4de91be6577df30 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1095.pk" 1712334597 12668 fd7cc1e973b58329a7ba77a808efa57e ""
@@ -43,6 +43,7 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy10.tfm" 1136765053 1124 6c73e740cf17375f03eec0ee63599741 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy6.tfm" 1136765053 1116 933a60c408fc0a863a92debe84b2d294 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy8.tfm" 1136765053 1120 8b7d695260f3cff42e636090a8002094 ""
+  "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmti10.tfm" 1136765053 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmti12.tfm" 1136765053 1484 ed72f8f5cf654cda15ecc8e32bfcbee5 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/public/latex-fonts/lasy6.tfm" 1136765053 520 4889cce2180234b97cad636b6039c722 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1247596666 34811 78b52f49e893bcba91bd7581cdc144c0 ""
@@ -55,6 +56,7 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1247596666 32362 bc3f3eec7ab7d65fe700963d4017d32c ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1247596667 32726 39f0f9e62e84beb801509898a605dbd5 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1247596667 32569 5e5ddc8df908dea60932f3c484a54c0d ""
+  "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1247596667 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb" 1247596667 36118 fad905eba93cff5bce1e185fe980a177 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb" 1247596673 34694 870c211f62cb72718a00e353f14f254d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/context/base/mkii/supp-pdf.mkii" 1580390158 71627 94eb9990bed73c364d7f53f960cc8c5b ""
@@ -142,11 +144,11 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "JMP-Article.aux" 1735388649 21697 d3ec0890c4bf44530c254699b105a192 "pdflatex"
-  "JMP-Article.bbl" 1735388285 6515 5ba81cc7e8111320a2cf0d5647d7134d "bibtex JMP-Article"
-  "JMP-Article.out" 1735388649 5549 bd640fccfa4be21f6b6f473afb546d70 "pdflatex"
+  "JMP-Article.aux" 1736720735 22039 a6be6767fcae3d702194dbb29a3a58f6 "pdflatex"
+  "JMP-Article.bbl" 1736720731 6515 5ba81cc7e8111320a2cf0d5647d7134d "bibtex JMP-Article"
+  "JMP-Article.out" 1736720735 5834 4b92ea0c16e9bd3c4a7190b8ed233732 "pdflatex"
   "JMP-Article.tex" 1735388641 4354 cd06f8897c3146208f719cbe6a815a10 ""
-  "appendix.tex" 1735388278 18550 42bc1a17422828af566e344900337320 ""
+  "appendix.tex" 1736720725 19755 d638be84aac285a47d9973a68a2905b9 ""
   "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1735388641 4354 cd06f8897c3146208f719cbe6a815a10 ""
   "data.tex" 1735386913 27943 e56e52b41def56346c207d2b25ff60d2 ""
   "emp_strategy.tex" 1735195954 4299 1a587fbd0ff740eb770ff056de896b39 ""

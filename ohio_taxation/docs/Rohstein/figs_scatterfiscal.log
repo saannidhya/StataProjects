@@ -1,0 +1,1922 @@
+------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\parentor\OneDrive - University of Cincinnati\workingpapers\RD\codes\Rohstein\figs_scatterfiscal.log
+  log type:  text
+ opened on:  16 Jul 2024, 12:00:34
+
+. 
+. /* figs_scatterfiscal.do
+> *  Program to make figures of outcomes by vote share relative to threshold,
+> *  pooling 66 and 55% thresholds.
+> */
+. 
+. #delimit;
+delimiter now ;
+. clear;
+
+. set mem 100m;
+set memory ignored.
+    Memory no longer needs to be set in modern Statas; memory adjustments are performed on the fly automatically.
+
+. set scheme s2mono;
+
+. *use ../tables/programs/recursivepanel;
+. use recursivepanel;
+
+. *use c:\temp\shortpanel_v9;
+. keep if gobond==1;
+(6,480 observations deleted)
+
+. gen mv=percent-req;
+
+. gen mvbin=(ceil(abs(percent-req))-0.5)*sign(percent-req);
+
+. replace mvbin=0.5 if percent==req & percent<.;
+(100 real changes made)
+
+. gen mvbin2=(2*ceil(abs(percent-req)/2) - 1)*sign(percent-req);
+
+. replace mvbin2=1 if percent==req & percent<.;
+(100 real changes made)
+
+.  gen bondonballot=isgobond;
+
+.  gen winbond=bondonballot*iswin;
+(8 missing values generated)
+
+.  replace winbond=0 if bondonballot==0 & iswin==.;
+(8 real changes made)
+
+. keep if v33>50;
+(6 observations deleted)
+
+. tempfile basedat;
+
+. save `basedat';
+file C:\Users\parentor\AppData\Local\Temp\ST_b04_000001.tmp saved
+
+. *Regress outcomes on year dummies and bin dummies, separately by relative year;
+.  tab year, gen(yrdums);
+
+ schoolyear |
+starting yr |
+   of elec. |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       1987 |      1,230        5.00        5.00
+       1988 |      1,230        5.00       10.00
+       1989 |      1,230        5.00       15.00
+       1990 |      1,230        5.00       20.00
+       1991 |      1,230        5.00       25.01
+       1992 |      1,230        5.00       30.01
+       1993 |      1,230        5.00       35.01
+       1994 |      1,230        5.00       40.01
+       1995 |      1,230        5.00       45.01
+       1996 |      1,226        4.98       50.00
+       1997 |      1,230        5.00       55.00
+       1998 |      1,230        5.00       60.00
+       1999 |      1,230        5.00       65.00
+       2000 |      1,230        5.00       70.00
+       2001 |      1,230        5.00       75.00
+       2002 |      1,229        5.00       80.00
+       2003 |      1,229        5.00       85.00
+       2004 |      1,230        5.00       90.00
+       2005 |      1,230        5.00       95.00
+       2006 |      1,230        5.00      100.00
+------------+-----------------------------------
+      Total |     24,594      100.00
+
+.  tab mvbin2, gen(bin2dums);
+
+     mvbin2 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        -67 |         20        0.08        0.08
+        -45 |         20        0.08        0.16
+        -37 |         40        0.16        0.33
+        -35 |         20        0.08        0.41
+        -33 |         40        0.16        0.57
+        -29 |         80        0.33        0.89
+        -27 |         80        0.33        1.22
+        -25 |        120        0.49        1.71
+        -23 |        100        0.41        2.11
+        -21 |        100        0.41        2.52
+        -19 |        140        0.57        3.09
+        -17 |        200        0.81        3.90
+        -15 |        200        0.81        4.72
+        -13 |        540        2.20        6.91
+        -11 |        639        2.60        9.51
+         -9 |        840        3.42       12.93
+         -7 |        800        3.25       16.18
+         -5 |      1,300        5.29       21.46
+         -3 |      1,279        5.20       26.67
+         -1 |      1,540        6.26       32.93
+          1 |      2,019        8.21       41.14
+          3 |      1,960        7.97       49.11
+          5 |      2,180        8.86       57.97
+          7 |      2,200        8.95       66.91
+          9 |      1,860        7.56       74.48
+         11 |      1,659        6.75       81.22
+         13 |      1,559        6.34       87.56
+         15 |      1,200        4.88       92.44
+         17 |        660        2.68       95.12
+         19 |        600        2.44       97.56
+         21 |        219        0.89       98.45
+         23 |        260        1.06       99.51
+         25 |        100        0.41       99.92
+         29 |         20        0.08      100.00
+------------+-----------------------------------
+      Total |     24,594      100.00
+
+.  forvalues b=1/34 {;
+  2.          su mvbin2 if bin2dums`b'==1, meanonly;
+  3.          local mv`b'=r(mean);
+  4.         };
+
+.  *Drop bin for -1;
+.   gen binm1=(mvbin2==-1);
+
+.   assert bin2dums20==binm1;
+
+.   drop bin2dums20;
+
+.  foreach v in totalexp tcapout /*ltdebt tcapout tcurinst */ {;
+  2.          matrix ests_`v'=J(34, 9, 0);
+  3.    forvalues col=1/9 {;
+  4.                  reg `v'_pp yrdums* bin2dums* if dyear==`col'-3;
+  5.                  forvalues b=1/34 {;
+  6.                          if `b'~=20 {;
+  7.                                  local est=_b[bin2dums`b'];
+  8.                                  matrix ests_`v'[`b', `col']=`est';
+  9.                          };
+ 10.                  };
+ 11.          };
+ 12.          matrix colnames ests_`v'=rym2 rym1 ry0 ry1 ry2 ry3 ry4 ry5 ry6;
+ 13.          matrix coleq ests_`v'=`v';
+ 14.  };
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums17 omitted because of collinearity
+note: yrdums19 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+note: bin2dums6 omitted because of collinearity
+note: bin2dums12 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       780
+-------------+----------------------------------   F(36, 743)      =      9.56
+       Model |   921868366        36  25607454.6   Prob > F        =    0.0000
+    Residual |  1.9905e+09       743  2678958.44   R-squared       =    0.3165
+-------------+----------------------------------   Adj R-squared   =    0.2834
+       Total |  2.9123e+09       779  3738555.19   Root MSE        =    1636.8
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -3772.552   336.4753   -11.21   0.000    -4433.107   -3111.997
+    yrdums10 |  -3525.854   355.5983    -9.92   0.000    -4223.951   -2827.757
+    yrdums11 |  -3522.042   352.6146    -9.99   0.000    -4214.282   -2829.803
+    yrdums12 |  -2556.169   359.6627    -7.11   0.000    -3262.245   -1850.093
+    yrdums13 |   -2867.43   344.8638    -8.31   0.000    -3544.454   -2190.407
+    yrdums14 |  -2355.079   347.6376    -6.77   0.000    -3037.547    -1672.61
+    yrdums15 |  -1837.497   364.4308    -5.04   0.000    -2552.934    -1122.06
+    yrdums16 |  -1085.481   380.5476    -2.85   0.004    -1832.557   -338.4041
+    yrdums17 |          0  (omitted)
+    yrdums18 |  -1441.249   340.8643    -4.23   0.000    -2110.421   -772.0774
+    yrdums19 |          0  (omitted)
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -411.1207   1666.513    -0.25   0.805    -3682.756    2860.514
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |          0  (omitted)
+   bin2dums7 |   397.8224   1666.586     0.24   0.811    -2873.955      3669.6
+   bin2dums8 |  -998.1308   1191.215    -0.84   0.402    -3336.679    1340.417
+   bin2dums9 |  -168.9953   1664.029    -0.10   0.919    -3435.754    3097.764
+  bin2dums10 |  -310.3421    1190.76    -0.26   0.794    -2647.997    2027.313
+  bin2dums11 |   89.13426   860.6218     0.10   0.918    -1600.406    1778.674
+  bin2dums12 |          0  (omitted)
+  bin2dums13 |   819.6869   716.4999     1.14   0.253    -586.9184    2226.292
+  bin2dums14 |   240.4995   610.6791     0.39   0.694    -958.3625    1439.361
+  bin2dums15 |   373.2547   488.8824     0.76   0.445    -586.5007     1333.01
+  bin2dums16 |   132.1741   523.6676     0.25   0.801    -895.8702    1160.219
+  bin2dums17 |   614.7144   449.8614     1.37   0.172    -268.4364    1497.865
+  bin2dums18 |   430.4255   367.0537     1.17   0.241    -290.1604    1151.011
+  bin2dums19 |  -64.39915   355.0377    -0.18   0.856    -761.3956    632.5974
+  bin2dums21 |   154.4298   342.1365     0.45   0.652    -517.2395    826.0991
+  bin2dums22 |  -154.8083    331.101    -0.47   0.640    -804.8132    495.1966
+  bin2dums23 |  -29.24838   326.0647    -0.09   0.929    -669.3662    610.8694
+  bin2dums24 |  -2.041066   322.8809    -0.01   0.995    -635.9087    631.8265
+  bin2dums25 |  -104.3822   329.7381    -0.32   0.752    -751.7116    542.9472
+  bin2dums26 |   323.6931   326.0563     0.99   0.321    -316.4083    963.7945
+  bin2dums27 |   505.1684   331.1331     1.53   0.128    -144.8995    1155.236
+  bin2dums28 |   536.3258   338.9326     1.58   0.114    -129.0538    1201.705
+  bin2dums29 |   325.6364   419.8861     0.78   0.438    -498.6681    1149.941
+  bin2dums30 |   655.3309   413.1358     1.59   0.113    -155.7216    1466.383
+  bin2dums31 |   153.1993   604.9849     0.25   0.800    -1034.484    1340.883
+  bin2dums32 |   216.3083   564.7535     0.38   0.702    -892.3943    1325.011
+  bin2dums33 |   518.4101   782.1845     0.66   0.508    -1017.145    2053.965
+  bin2dums34 |   -177.481   1666.513    -0.11   0.915    -3449.116    3094.154
+       _cons |   9424.706   387.8529    24.30   0.000     8663.288    10186.12
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums17 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+note: bin2dums6 omitted because of collinearity
+note: bin2dums12 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       844
+-------------+----------------------------------   F(37, 806)      =     11.18
+       Model |  1.0273e+09        37  27765631.7   Prob > F        =    0.0000
+    Residual |  2.0015e+09       806  2483219.07   R-squared       =    0.3392
+-------------+----------------------------------   Adj R-squared   =    0.3089
+       Total |  3.0288e+09       843  3592886.05   Root MSE        =    1575.8
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -2091.844   302.9703    -6.90   0.000    -2686.548    -1497.14
+    yrdums10 |  -2349.602     272.48    -8.62   0.000    -2884.456   -1814.748
+    yrdums11 |   -1723.91   291.6148    -5.91   0.000    -2296.324   -1151.496
+    yrdums12 |  -1666.583   287.5781    -5.80   0.000    -2231.073   -1102.093
+    yrdums13 |  -1076.148   298.0398    -3.61   0.000    -1661.174   -491.1218
+    yrdums14 |  -771.2941   279.0655    -2.76   0.006    -1319.075   -223.5131
+    yrdums15 |  -408.5022   280.6472    -1.46   0.146    -959.3877    142.3834
+    yrdums16 |   142.9925   297.5043     0.48   0.631    -440.9822    726.9672
+    yrdums17 |          0  (omitted)
+    yrdums18 |    1572.42   367.3939     4.28   0.000     851.2577    2293.581
+    yrdums19 |    308.935    274.064     1.13   0.260    -229.0284    846.8985
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |   583.7165   1602.119     0.36   0.716    -2561.102    3728.535
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |          0  (omitted)
+   bin2dums7 |    403.635   1602.264     0.25   0.801    -2741.468    3548.738
+   bin2dums8 |  -1108.409   1143.692    -0.97   0.333    -3353.376    1136.558
+   bin2dums9 |   -153.468   1599.674    -0.10   0.924    -3293.486     2986.55
+  bin2dums10 |  -590.0848   1143.159    -0.52   0.606    -2834.005    1653.835
+  bin2dums11 |  -68.86462   824.3289    -0.08   0.933    -1686.949     1549.22
+  bin2dums12 |          0  (omitted)
+  bin2dums13 |   651.9718   684.8416     0.95   0.341    -692.3118    1996.255
+  bin2dums14 |   112.4188   533.8598     0.21   0.833    -935.5008    1160.338
+  bin2dums15 |   49.39344   433.2739     0.11   0.909    -801.0849    899.8718
+  bin2dums16 |  -268.0357    458.147    -0.59   0.559    -1167.338    631.2663
+  bin2dums17 |   360.4529   424.6965     0.85   0.396    -473.1888    1194.095
+  bin2dums18 |   126.3289   335.5746     0.38   0.707    -532.3744    785.0322
+  bin2dums19 |  -208.0481   329.2149    -0.63   0.528    -854.2678    438.1715
+  bin2dums21 |  -63.24519   313.5274    -0.20   0.840    -678.6718    552.1815
+  bin2dums22 |  -224.0226   299.4027    -0.75   0.455    -811.7235    363.6784
+  bin2dums23 |  -51.97733   291.4929    -0.18   0.859    -624.1522    520.1975
+  bin2dums24 |  -164.9076   291.0772    -0.57   0.571    -736.2664    406.4512
+  bin2dums25 |  -253.7458   300.1435    -0.85   0.398    -842.9011    335.4094
+  bin2dums26 |   171.3962   301.0802     0.57   0.569    -419.5976      762.39
+  bin2dums27 |   394.4957   302.2684     1.31   0.192    -198.8304    987.8218
+  bin2dums28 |   322.3764   312.0737     1.03   0.302    -290.1968    934.9495
+  bin2dums29 |    399.323   395.6031     1.01   0.313    -377.2109    1175.857
+  bin2dums30 |     406.56   378.7517     1.07   0.283     -336.896    1150.016
+  bin2dums31 |   81.19664   550.8555     0.15   0.883    -1000.084    1162.477
+  bin2dums32 |   440.8741   537.1071     0.82   0.412    -613.4197    1495.168
+  bin2dums33 |  -125.6711   748.2925    -0.17   0.867    -1594.503    1343.161
+  bin2dums34 |  -708.4886   1602.119    -0.44   0.658    -3853.307    2436.329
+       _cons |   8081.778   317.5947    25.45   0.000     7458.368    8705.188
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums18 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       807
+-------------+----------------------------------   F(39, 767)      =     10.37
+       Model |   919444258        39  23575493.8   Prob > F        =    0.0000
+    Residual |  1.7432e+09       767  2272704.72   R-squared       =    0.3453
+-------------+----------------------------------   Adj R-squared   =    0.3120
+       Total |  2.6626e+09       806  3303484.84   Root MSE        =    1507.5
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -2274.125   295.1896    -7.70   0.000    -2853.601    -1694.65
+    yrdums10 |   -2263.07   290.4491    -7.79   0.000    -2833.239   -1692.901
+    yrdums11 |  -2156.321   261.0697    -8.26   0.000    -2668.817   -1643.825
+    yrdums12 |  -1517.537    279.584    -5.43   0.000    -2066.377   -968.6962
+    yrdums13 |   -1753.67   275.7905    -6.36   0.000    -2295.063   -1212.276
+    yrdums14 |  -878.4052   285.6146    -3.08   0.002    -1439.084   -317.7262
+    yrdums15 |  -345.1431   267.1382    -1.29   0.197    -869.5519    179.2658
+    yrdums16 |  -482.0168   268.8118    -1.79   0.073    -1009.711    45.67737
+    yrdums17 |  -213.4812    284.892    -0.75   0.454    -772.7418    345.7794
+    yrdums18 |          0  (omitted)
+    yrdums19 |   1472.853   351.8406     4.19   0.000     782.1679    2163.537
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -849.4814   1532.651    -0.55   0.580    -3858.169    2159.206
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |  -432.1477   1101.724    -0.39   0.695    -2594.899    1730.604
+   bin2dums7 |   499.5249   1532.724     0.33   0.745    -2509.306    3508.356
+   bin2dums8 |   379.2207   900.9323     0.42   0.674    -1389.365    2147.806
+   bin2dums9 |   50.63587   1530.132     0.03   0.974    -2953.108    3054.379
+  bin2dums10 |  -108.2509   900.8601    -0.12   0.904    -1876.695    1660.193
+  bin2dums11 |  -7.895229   710.6456    -0.01   0.991    -1402.936    1387.146
+  bin2dums12 |   449.0152   913.7894     0.49   0.623     -1344.81     2242.84
+  bin2dums13 |   900.3338   610.7711     1.47   0.141    -298.6476    2099.315
+  bin2dums14 |   224.1238   491.4798     0.46   0.649    -740.6814    1188.929
+  bin2dums15 |  -199.7819   391.4987    -0.51   0.610    -968.3181    568.7542
+  bin2dums16 |   5.216244   490.7342     0.01   0.992    -958.1254    968.5578
+  bin2dums17 |   237.4782   397.9619     0.60   0.551    -543.7456    1018.702
+  bin2dums18 |   175.5478   330.0148     0.53   0.595    -472.2917    823.3873
+  bin2dums19 |   340.3875   324.3087     1.05   0.294    -296.2505    977.0255
+  bin2dums21 |   283.8051   295.7946     0.96   0.338     -296.858    864.4682
+  bin2dums22 |   197.9739   291.0883     0.68   0.497    -373.4504    769.3983
+  bin2dums23 |   194.1433   278.2652     0.70   0.486    -352.1085    740.3952
+  bin2dums24 |   77.45805   281.2372     0.28   0.783    -474.6279     629.544
+  bin2dums25 |   74.41055   290.9589     0.26   0.798    -496.7598    645.5808
+  bin2dums26 |   289.0197   289.7355     1.00   0.319     -279.749    857.7884
+  bin2dums27 |   725.6506   295.8317     2.45   0.014     144.9146    1306.387
+  bin2dums28 |   739.8633    307.362     2.41   0.016     136.4927    1343.234
+  bin2dums29 |   458.9974    377.277     1.22   0.224    -281.6206    1199.615
+  bin2dums30 |     1094.2   386.8942     2.83   0.005     334.7031    1853.697
+  bin2dums31 |   566.1571   526.6609     1.07   0.283    -467.7108    1600.025
+  bin2dums32 |   825.1321   535.3746     1.54   0.124    -225.8412    1876.105
+  bin2dums33 |    306.989   715.6682     0.43   0.668    -1097.912     1711.89
+  bin2dums34 |  -354.6352   1532.651    -0.23   0.817    -3363.323    2654.052
+       _cons |   7921.974   303.8745    26.07   0.000      7325.45    8518.499
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums19 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       825
+-------------+----------------------------------   F(39, 785)      =      7.81
+       Model |   747131535        39  19157218.9   Prob > F        =    0.0000
+    Residual |  1.9253e+09       785  2452645.15   R-squared       =    0.2796
+-------------+----------------------------------   Adj R-squared   =    0.2438
+       Total |  2.6725e+09       824  3243274.25   Root MSE        =    1566.1
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -2137.776   333.3758    -6.41   0.000    -2792.189   -1483.362
+    yrdums10 |  -2387.979   305.8419    -7.81   0.000    -2988.344   -1787.614
+    yrdums11 |  -2031.528   301.3176    -6.74   0.000    -2623.012   -1440.045
+    yrdums12 |  -1702.972   270.8953    -6.29   0.000    -2234.737   -1171.207
+    yrdums13 |  -1374.535   289.8111    -4.74   0.000    -1943.432   -805.6389
+    yrdums14 |  -1110.011   285.2371    -3.89   0.000    -1669.929    -550.093
+    yrdums15 |  -286.9932   296.3595    -0.97   0.333     -868.744    294.7577
+    yrdums16 |  -216.5127   277.3782    -0.78   0.435    -761.0035    327.9781
+    yrdums17 |  -729.7286   279.0939    -2.61   0.009    -1277.587   -181.8698
+    yrdums18 |  -145.2951   295.8708    -0.49   0.624    -726.0866    435.4964
+    yrdums19 |          0  (omitted)
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -644.7997   1590.858    -0.41   0.685    -3767.638    2478.039
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |  -586.9503   1142.783    -0.51   0.608    -2830.222    1656.321
+   bin2dums7 |  -507.1263   1135.514    -0.45   0.655     -2736.13    1721.877
+   bin2dums8 |  -660.6887    933.816    -0.71   0.479    -2493.761    1172.383
+   bin2dums9 |   1279.771   1588.149     0.81   0.421     -1837.75    4397.292
+  bin2dums10 |  -162.0039   933.7321    -0.17   0.862    -1994.911    1670.903
+  bin2dums11 |    590.144   735.6422     0.80   0.423    -853.9146    2034.203
+  bin2dums12 |  -28.97167    823.203    -0.04   0.972    -1644.911    1586.968
+  bin2dums13 |   162.7514   631.4378     0.26   0.797    -1076.755    1402.258
+  bin2dums14 |  -31.39957   451.1588    -0.07   0.945      -917.02    854.2209
+  bin2dums15 |  -159.8376   382.7254    -0.42   0.676    -911.1239    591.4488
+  bin2dums16 |  -79.82947   425.0702    -0.19   0.851    -914.2382    754.5793
+  bin2dums17 |   160.3335   400.9719     0.40   0.689    -626.7705    947.4375
+  bin2dums18 |   112.7559    330.752     0.34   0.733    -536.5072    762.0191
+  bin2dums19 |  -43.74712   323.1323    -0.14   0.892    -678.0529    590.5586
+  bin2dums21 |   650.7993   303.9994     2.14   0.033     54.05132    1247.547
+  bin2dums22 |   135.0669   291.5272     0.46   0.643    -437.1983     707.332
+  bin2dums23 |   265.1562   282.3842     0.94   0.348    -289.1613    819.4736
+  bin2dums24 |   266.5436   282.8336     0.94   0.346    -288.6561    821.7433
+  bin2dums25 |   185.5766   292.2784     0.63   0.526    -388.1631    759.3163
+  bin2dums26 |   605.7156   299.1278     2.02   0.043     18.53046    1192.901
+  bin2dums27 |   962.2197   302.9041     3.18   0.002     367.6218    1556.818
+  bin2dums28 |   881.9107   319.8583     2.76   0.006     254.0318     1509.79
+  bin2dums29 |   543.8726   380.9546     1.43   0.154    -203.9376    1291.683
+  bin2dums30 |   1481.805   403.4227     3.67   0.000     689.8898     2273.72
+  bin2dums31 |   866.9956   543.5134     1.60   0.111     -199.916    1933.907
+  bin2dums32 |   573.8842   552.5744     1.04   0.299    -510.8141    1658.582
+  bin2dums33 |   314.5524   740.7759     0.42   0.671    -1139.584    1768.689
+  bin2dums34 |   608.9049   1590.858     0.38   0.702    -2513.934    3731.743
+       _cons |   7936.119   309.5919    25.63   0.000     7328.393    8543.845
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums10 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       812
+-------------+----------------------------------   F(40, 771)      =      7.67
+       Model |   918537383        40  22963434.6   Prob > F        =    0.0000
+    Residual |  2.3080e+09       771  2993547.74   R-squared       =    0.2847
+-------------+----------------------------------   Adj R-squared   =    0.2476
+       Total |  3.2266e+09       811     3978499   Root MSE        =    1730.2
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |   243.5486   378.1037     0.64   0.520    -498.6862    985.7834
+    yrdums10 |          0  (omitted)
+    yrdums11 |   339.8625   344.4552     0.99   0.324    -336.3187    1016.044
+    yrdums12 |   812.9442   339.3642     2.40   0.017     146.7568    1479.132
+    yrdums13 |    621.267   310.5359     2.00   0.046     11.67077    1230.863
+    yrdums14 |   1569.706   328.9387     4.77   0.000     923.9843    2215.428
+    yrdums15 |   1849.935   325.0063     5.69   0.000     1211.933    2487.938
+    yrdums16 |    2233.62    335.997     6.65   0.000     1574.043    2893.198
+    yrdums17 |    2009.45   326.9911     6.15   0.000     1367.552    2651.349
+    yrdums18 |   1811.366   329.9634     5.49   0.000     1163.632    2459.099
+    yrdums19 |   2354.238    345.626     6.81   0.000     1675.759    3032.718
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -609.7398   1758.154    -0.35   0.729    -4061.077    2841.598
+   bin2dums5 |  -69.86765   1768.804    -0.04   0.969     -3542.11    3402.375
+   bin2dums6 |  -799.2099   1262.725    -0.63   0.527    -3277.996    1679.576
+   bin2dums7 |  -715.3896   1254.747    -0.57   0.569    -3178.515    1747.736
+   bin2dums8 |  -770.4275   903.0051    -0.85   0.394    -2543.068    1002.213
+   bin2dums9 |  -188.5018     1045.6    -0.18   0.857    -2241.063     1864.06
+  bin2dums10 |   619.8031   903.0579     0.69   0.493    -1152.941    2392.547
+  bin2dums11 |  -223.2971   813.3466    -0.27   0.784    -1819.934    1373.339
+  bin2dums12 |   74.10178   819.5485     0.09   0.928    -1534.709    1682.913
+  bin2dums13 |   43.37874   698.3581     0.06   0.950     -1327.53    1414.287
+  bin2dums14 |  -24.12497   461.1956    -0.05   0.958     -929.473    881.2231
+  bin2dums15 |  -284.0742   418.3248    -0.68   0.497    -1105.265    537.1164
+  bin2dums16 |  -276.0458   439.6625    -0.63   0.530    -1139.123    587.0316
+  bin2dums17 |  -79.95692   444.3703    -0.18   0.857    -952.2761    792.3622
+  bin2dums18 |  -199.5523   369.6684    -0.54   0.589    -925.2282    526.1235
+  bin2dums19 |  -35.68108   358.4832    -0.10   0.921    -739.3999    668.0377
+  bin2dums21 |   1184.979   337.4509     3.51   0.000     522.5476    1847.411
+  bin2dums22 |   683.0963   323.9038     2.11   0.035     47.25828    1318.934
+  bin2dums23 |   664.8855   312.0416     2.13   0.033     52.33369    1277.437
+  bin2dums24 |   701.9279    313.434     2.24   0.025     86.64276    1317.213
+  bin2dums25 |   537.6185   323.5791     1.66   0.097    -97.58207    1172.819
+  bin2dums26 |   1111.653   333.5749     3.33   0.001     456.8307    1766.476
+  bin2dums27 |   1534.152   342.4128     4.48   0.000     861.9806    2206.324
+  bin2dums28 |    1072.35   366.2795     2.93   0.004      353.327    1791.374
+  bin2dums29 |   1149.916    465.476     2.47   0.014     236.1659    2063.667
+  bin2dums30 |   1823.233   488.9347     3.73   0.000     863.4319    2783.034
+  bin2dums31 |   1608.337   660.3285     2.44   0.015     312.0818    2904.592
+  bin2dums32 |   1718.226   758.0732     2.27   0.024     230.0937    3206.358
+  bin2dums33 |   234.4723   1033.563     0.23   0.821    -1794.459    2263.404
+  bin2dums34 |   1247.446   1758.154     0.71   0.478    -2203.891    4698.784
+       _cons |   5814.876   336.3231    17.29   0.000     5154.658    6475.093
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums9 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       792
+-------------+----------------------------------   F(41, 750)      =      5.99
+       Model |  1.0616e+09        41  25891954.7   Prob > F        =    0.0000
+    Residual |  3.2419e+09       750  4322551.93   R-squared       =    0.2467
+-------------+----------------------------------   Adj R-squared   =    0.2055
+       Total |  4.3035e+09       791  5440561.43   Root MSE        =    2079.1
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |          0  (omitted)
+    yrdums10 |  -341.0144   461.3303    -0.74   0.460    -1246.667    564.6379
+    yrdums11 |  -16.32793   448.3134    -0.04   0.971    -896.4263    863.7705
+    yrdums12 |   299.2983   416.0531     0.72   0.472    -517.4688    1116.065
+    yrdums13 |    306.141   420.0228     0.73   0.466    -518.4192    1130.701
+    yrdums14 |   946.9868   377.3551     2.51   0.012     206.1889    1687.785
+    yrdums15 |   1931.698   405.0013     4.77   0.000     1136.627    2726.769
+    yrdums16 |   1821.183   401.8747     4.53   0.000      1032.25    2610.117
+    yrdums17 |   1936.097   413.9169     4.68   0.000     1123.524    2748.671
+    yrdums18 |   1832.525   400.9251     4.57   0.000     1045.456    2619.594
+    yrdums19 |   1612.955    406.998     3.96   0.000     813.9644    2411.946
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |  -153.3403   2123.792    -0.07   0.942    -4322.625    4015.944
+   bin2dums4 |  -956.1945   2112.936    -0.45   0.651    -5104.167    3191.778
+   bin2dums5 |   562.1468   2125.144     0.26   0.791    -3609.791    4734.085
+   bin2dums6 |  -735.5181   1096.076    -0.67   0.502    -2887.261    1416.225
+   bin2dums7 |  -419.0613   1243.441    -0.34   0.736      -2860.1    2021.977
+   bin2dums8 |   370.6564   1085.098     0.34   0.733    -1759.534    2500.847
+   bin2dums9 |    995.649   1095.989     0.91   0.364    -1155.922     3147.22
+  bin2dums10 |   2130.606   979.9018     2.17   0.030     206.9291    4054.282
+  bin2dums11 |  -186.7363   900.4885    -0.21   0.836    -1954.514    1581.041
+  bin2dums12 |   436.1216   984.6221     0.44   0.658    -1496.822    2369.065
+  bin2dums13 |   1380.356     839.24     1.64   0.100    -267.1826    3027.895
+  bin2dums14 |   68.88457   520.5619     0.13   0.895    -953.0472    1090.816
+  bin2dums15 |  -139.1771   516.6725    -0.27   0.788    -1153.473    875.1192
+  bin2dums16 |   33.50326   512.6219     0.07   0.948    -972.8413    1039.848
+  bin2dums17 |   257.0477   534.3467     0.48   0.631    -791.9454    1306.041
+  bin2dums18 |    416.263   450.4505     0.92   0.356    -468.0308    1300.557
+  bin2dums19 |   89.91321   430.7506     0.21   0.835    -755.7071    935.5335
+  bin2dums21 |   1466.559   399.8728     3.67   0.000     681.5559    2251.562
+  bin2dums22 |    1117.57   390.4767     2.86   0.004     351.0129    1884.127
+  bin2dums23 |   1052.119   374.0536     2.81   0.005     317.8028    1786.436
+  bin2dums24 |   1245.668   382.5879     3.26   0.001     494.5977    1996.739
+  bin2dums25 |   1139.766   399.8198     2.85   0.004     354.8673    1924.665
+  bin2dums26 |   1428.564   404.5568     3.53   0.000     634.3657    2222.763
+  bin2dums27 |   2261.151    422.091     5.36   0.000     1432.531    3089.771
+  bin2dums28 |   1688.709   456.6818     3.70   0.000      792.182    2585.235
+  bin2dums29 |   2003.799   581.9979     3.44   0.001     861.2598    3146.337
+  bin2dums30 |   1358.976   616.4199     2.20   0.028     148.8626     2569.09
+  bin2dums31 |   2073.256   841.0894     2.46   0.014     422.0864    3724.425
+  bin2dums32 |   2274.356   1096.138     2.07   0.038     122.4926     4426.22
+  bin2dums33 |   733.3458   1242.153     0.59   0.555    -1705.164    3171.856
+  bin2dums34 |    1892.21   2112.936     0.90   0.371    -2255.763    6040.183
+       _cons |   6171.272   433.5227    14.24   0.000      5320.21    7022.335
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums11 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums4 omitted because of collinearity
+note: bin2dums34 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       758
+-------------+----------------------------------   F(40, 717)      =      6.38
+       Model |  1.0942e+09        40  27354665.4   Prob > F        =    0.0000
+    Residual |  3.0751e+09       717  4288863.01   R-squared       =    0.2624
+-------------+----------------------------------   Adj R-squared   =    0.2213
+       Total |  4.1693e+09       757  5507663.67   Root MSE        =      2071
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -857.4642   440.3415    -1.95   0.052    -1721.977    7.048647
+    yrdums10 |  -730.0825   459.0845    -1.59   0.112    -1631.393     171.228
+    yrdums11 |          0  (omitted)
+    yrdums12 |   88.93693    450.661     0.20   0.844    -795.8358    973.7097
+    yrdums13 |  -123.2657   424.5086    -0.29   0.772    -956.6941    710.1626
+    yrdums14 |   200.2143   422.9734     0.47   0.636    -630.2001    1030.629
+    yrdums15 |    897.226   385.3037     2.33   0.020     140.7676    1653.684
+    yrdums16 |   1391.553   409.9951     3.39   0.001     586.6189    2196.488
+    yrdums17 |   1155.913   407.5197     2.84   0.005     355.8387    1955.988
+    yrdums18 |   1420.498   418.8301     3.39   0.001     598.2179    2242.778
+    yrdums19 |   1135.125   407.0955     2.79   0.005      335.883    1934.366
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |  -948.3512   2109.059    -0.45   0.653     -5089.02    3192.317
+   bin2dums3 |  -652.0473   2114.773    -0.31   0.758    -4803.935     3499.84
+   bin2dums4 |          0  (omitted)
+   bin2dums5 |  -541.5527   2116.033    -0.26   0.798    -4695.914    3612.809
+   bin2dums6 |  -1038.887   1090.489    -0.95   0.341    -3179.819    1102.046
+   bin2dums7 |  -901.3688   1237.431    -0.73   0.467     -3330.79    1528.053
+   bin2dums8 |   62.22464   898.3219     0.07   0.945    -1701.431     1825.88
+   bin2dums9 |   4.603921   1090.282     0.00   0.997    -2135.923    2145.131
+  bin2dums10 |   2441.644   974.6168     2.51   0.012     528.2004    4355.088
+  bin2dums11 |  -555.1302   895.4922    -0.62   0.536     -2313.23     1202.97
+  bin2dums12 |  -693.4675   899.7077    -0.77   0.441    -2459.844    1072.909
+  bin2dums13 |  -486.4194   750.8681    -0.65   0.517    -1960.582    987.7435
+  bin2dums14 |  -173.2631   515.5075    -0.34   0.737    -1185.348    838.8214
+  bin2dums15 |   -446.679   504.3952    -0.89   0.376    -1436.947    543.5891
+  bin2dums16 |  -233.8355   478.0634    -0.49   0.625    -1172.407     704.736
+  bin2dums17 |  -160.9162   520.9942    -0.31   0.758    -1183.773    861.9403
+  bin2dums18 |  -99.51927   451.6976    -0.22   0.826    -986.3273    787.2888
+  bin2dums19 |   -462.617   430.7824    -1.07   0.283    -1308.363    383.1286
+  bin2dums21 |   1322.451   389.5906     3.39   0.001     557.5768    2087.326
+  bin2dums22 |   597.6543   382.1657     1.56   0.118    -152.6433    1347.952
+  bin2dums23 |   813.8028   369.4581     2.20   0.028     88.45385    1539.152
+  bin2dums24 |   859.4984   376.6172     2.28   0.023      120.094    1598.903
+  bin2dums25 |   837.1388   405.8354     2.06   0.039     40.37113    1633.907
+  bin2dums26 |   1058.206   421.0773     2.51   0.012     231.5146    1884.898
+  bin2dums27 |    2435.51   454.0779     5.36   0.000     1544.028    3326.991
+  bin2dums28 |   1709.531   472.9264     3.61   0.000     781.0447    2638.017
+  bin2dums29 |   1651.047   605.8961     2.72   0.007     461.5043    2840.589
+  bin2dums30 |   1881.931   645.9636     2.91   0.004     613.7253    3150.138
+  bin2dums31 |   1588.135   895.7107     1.77   0.077    -170.3937    3346.665
+  bin2dums32 |   3011.419   2102.495     1.43   0.152    -1116.364    7139.203
+  bin2dums33 |  -249.9673   1499.459    -0.17   0.868    -3193.822    2693.887
+  bin2dums34 |          0  (omitted)
+       _cons |   7059.947    434.435    16.25   0.000     6207.031    7912.864
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums12 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums4 omitted because of collinearity
+note: bin2dums32 omitted because of collinearity
+note: bin2dums34 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       697
+-------------+----------------------------------   F(40, 656)      =      4.97
+       Model |   797001512        40  19925037.8   Prob > F        =    0.0000
+    Residual |  2.6274e+09       656  4005190.71   R-squared       =    0.2327
+-------------+----------------------------------   Adj R-squared   =    0.1860
+       Total |  3.4244e+09       696  4920124.45   Root MSE        =    2001.3
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -1201.489   489.4453    -2.45   0.014    -2162.558   -240.4209
+    yrdums10 |  -1357.749   425.1978    -3.19   0.001    -2192.662   -522.8365
+    yrdums11 |  -699.3184   443.8399    -1.58   0.116    -1570.837    172.1998
+    yrdums12 |          0  (omitted)
+    yrdums13 |  -191.2872   435.2265    -0.44   0.660    -1045.892    663.3179
+    yrdums14 |   251.4509   409.6524     0.61   0.540    -552.9371    1055.839
+    yrdums15 |   259.0477   408.6893     0.63   0.526    -543.4492    1061.545
+    yrdums16 |   743.9187   372.5932     2.00   0.046     12.29971    1475.538
+    yrdums17 |   1208.802   396.0492     3.05   0.002     431.1245    1986.478
+    yrdums18 |   904.9776   393.4834     2.30   0.022     132.3388    1677.616
+    yrdums19 |   1158.735   405.4753     2.86   0.004     362.5485    1954.921
+    yrdums20 |          0  (omitted)
+   bin2dums1 |  -1048.337   2051.977    -0.51   0.610    -5077.573    2980.898
+   bin2dums2 |  -759.4556   2038.483    -0.37   0.710    -4762.194    3243.283
+   bin2dums3 |  -1202.913   2044.012    -0.59   0.556    -5216.508    2810.681
+   bin2dums4 |          0  (omitted)
+   bin2dums5 |  -910.6733   2045.129    -0.45   0.656    -4926.461    3105.114
+   bin2dums6 |  -1296.193   1054.563    -1.23   0.219     -3366.92    774.5336
+   bin2dums7 |  -789.6066   1196.378    -0.66   0.509    -3138.799    1559.586
+   bin2dums8 |   357.5546   945.1676     0.38   0.705    -1498.364    2213.473
+   bin2dums9 |   -72.7642   950.1429    -0.08   0.939    -1938.452    1792.924
+  bin2dums10 |  -732.4838   1045.733    -0.70   0.484    -2785.872    1320.904
+  bin2dums11 |  -1145.119   941.4365    -1.22   0.224    -2993.711    703.4733
+  bin2dums12 |  -440.0989   870.2729    -0.51   0.613    -2148.955    1268.758
+  bin2dums13 |  -703.6726   726.6936    -0.97   0.333    -2130.599    723.2535
+  bin2dums14 |  -358.2465   492.1354    -0.73   0.467    -1324.597    608.1041
+  bin2dums15 |  -864.4149   495.9413    -1.74   0.082    -1838.239    109.4089
+  bin2dums16 |  -523.5174   448.9765    -1.17   0.244    -1405.122     358.087
+  bin2dums17 |  -46.66061   497.1389    -0.09   0.925    -1022.836    929.5148
+  bin2dums18 |   239.4426    428.489     0.56   0.576    -601.9328    1080.818
+  bin2dums19 |  -586.6941     415.05    -1.41   0.158    -1401.681    228.2926
+  bin2dums21 |   417.0072   382.7572     1.09   0.276    -334.5699    1168.584
+  bin2dums22 |   213.7426   379.6849     0.56   0.574    -531.8016    959.2868
+  bin2dums23 |   470.1025   367.9761     1.28   0.202    -252.4505    1192.655
+  bin2dums24 |    419.178   376.7328     1.11   0.266    -320.5696    1158.926
+  bin2dums25 |   40.14925   408.5733     0.10   0.922    -762.1198    842.4183
+  bin2dums26 |   528.1264   431.4907     1.22   0.221    -319.1431    1375.396
+  bin2dums27 |   1458.303   466.4231     3.13   0.002     542.4412    2374.166
+  bin2dums28 |   1658.487   541.2082     3.06   0.002      595.778    2721.196
+  bin2dums29 |   893.4042   587.2493     1.52   0.129    -259.7108    2046.519
+  bin2dums30 |   44.00812   694.4339     0.06   0.949    -1319.573    1407.589
+  bin2dums31 |   376.2609   1041.299     0.36   0.718    -1668.421    2420.943
+  bin2dums32 |          0  (omitted)
+  bin2dums33 |  -1734.609   2029.688    -0.85   0.393    -5720.078    2250.861
+  bin2dums34 |          0  (omitted)
+       _cons |   7666.945   421.1416    18.21   0.000     6839.997    8493.893
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums9 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums4 omitted because of collinearity
+note: bin2dums34 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       653
+-------------+----------------------------------   F(41, 611)      =      4.48
+       Model |   746449258        41  18206079.5   Prob > F        =    0.0000
+    Residual |  2.4826e+09       611  4063236.67   R-squared       =    0.2312
+-------------+----------------------------------   Adj R-squared   =    0.1796
+       Total |  3.2291e+09       652  4952587.21   Root MSE        =    2015.7
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |          0  (omitted)
+    yrdums10 |   402.0081   573.6443     0.70   0.484    -724.5456    1528.562
+    yrdums11 |   514.5095   516.8868     1.00   0.320    -500.5808      1529.6
+    yrdums12 |   1473.055   532.2712     2.77   0.006     427.7518    2518.358
+    yrdums13 |   1278.433   538.6797     2.37   0.018     220.5448    2336.321
+    yrdums14 |    2058.79   525.5918     3.92   0.000     1026.605    3090.976
+    yrdums15 |   2126.026   500.3356     4.25   0.000      1143.44    3108.612
+    yrdums16 |   1985.401   502.7898     3.95   0.000     997.9949    2972.807
+    yrdums17 |   2430.914   471.5403     5.16   0.000     1504.877     3356.95
+    yrdums18 |   2785.163   491.1236     5.67   0.000     1820.668    3749.658
+    yrdums19 |   2620.631   489.0399     5.36   0.000     1660.228    3581.034
+    yrdums20 |          0  (omitted)
+   bin2dums1 |  -1240.337   2067.555    -0.60   0.549    -5300.713    2820.039
+   bin2dums2 |  -473.6022   2054.003    -0.23   0.818    -4507.365    3560.161
+   bin2dums3 |  -1048.804   2059.534    -0.51   0.611    -5093.428     2995.82
+   bin2dums4 |          0  (omitted)
+   bin2dums5 |  -818.0971   2060.677    -0.40   0.692    -4864.967    3228.772
+   bin2dums6 |  -885.4995   1063.557    -0.83   0.405    -2974.171    1203.172
+   bin2dums7 |  -420.5859   1058.204    -0.40   0.691    -2498.744    1657.572
+   bin2dums8 |  -303.7232   953.5664    -0.32   0.750    -2176.389    1568.942
+   bin2dums9 |  -512.2856   958.6465    -0.53   0.593    -2394.927    1370.356
+  bin2dums10 |  -585.3394   1054.751    -0.55   0.579    -2656.717    1486.039
+  bin2dums11 |  -478.3018   877.2545    -0.55   0.586    -2201.102    1244.498
+  bin2dums12 |  -409.4114   779.3881    -0.53   0.600    -1940.016    1121.193
+  bin2dums13 |  -1364.353   772.5094    -1.77   0.078    -2881.449    152.7424
+  bin2dums14 |  -749.3923   506.0125    -1.48   0.139    -1743.127    244.3424
+  bin2dums15 |  -884.1086   534.3872    -1.65   0.099    -1933.567    165.3499
+  bin2dums16 |  -661.8044   469.7569    -1.41   0.159    -1584.338    260.7296
+  bin2dums17 |   315.3235   498.1145     0.63   0.527    -662.9009    1293.548
+  bin2dums18 |   106.5899    439.023     0.24   0.808    -755.5873    968.7671
+  bin2dums19 |   -662.111   430.4238    -1.54   0.124      -1507.4    183.1785
+  bin2dums21 |  -246.2196    396.262    -0.62   0.535     -1024.42    531.9811
+  bin2dums22 |   10.80865   390.3404     0.03   0.978     -755.763    777.3803
+  bin2dums23 |  -117.5635   382.0049    -0.31   0.758    -867.7655    632.6384
+  bin2dums24 |   291.4373   389.3929     0.75   0.454    -473.2734    1056.148
+  bin2dums25 |  -293.7689   423.4912    -0.69   0.488    -1125.444    537.9061
+  bin2dums26 |   603.3338   460.7112     1.31   0.191    -301.4359    1508.103
+  bin2dums27 |   1229.285   501.8658     2.45   0.015     243.6934    2214.876
+  bin2dums28 |    1411.99    559.254     2.52   0.012     313.6969    2510.284
+  bin2dums29 |   397.6805   628.3234     0.63   0.527     -836.255    1631.616
+  bin2dums30 |   733.8245   770.6239     0.95   0.341    -779.5685    2247.217
+  bin2dums31 |   1957.873    1050.27     1.86   0.063    -104.7036    4020.449
+  bin2dums32 |  -1132.339   2082.484    -0.54   0.587    -5222.033    2957.355
+  bin2dums33 |   -2872.87   2045.188    -1.40   0.161    -6889.322    1143.581
+  bin2dums34 |          0  (omitted)
+       _cons |   6208.173   522.9734    11.87   0.000     5181.129    7235.216
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums17 omitted because of collinearity
+note: yrdums19 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+note: bin2dums6 omitted because of collinearity
+note: bin2dums12 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       780
+-------------+----------------------------------   F(36, 743)      =      2.55
+       Model |  95660668.3        36  2657240.79   Prob > F        =    0.0000
+    Residual |   774191076       743  1041979.91   R-squared       =    0.1100
+-------------+----------------------------------   Adj R-squared   =    0.0668
+       Total |   869851745       779  1116626.12   Root MSE        =    1020.8
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -1101.136   209.8456    -5.25   0.000    -1513.097   -689.1752
+    yrdums10 |  -1167.322   221.7718    -5.26   0.000    -1602.696   -731.9481
+    yrdums11 |  -1116.926    219.911    -5.08   0.000    -1548.647    -685.205
+    yrdums12 |  -746.9072   224.3066    -3.33   0.001    -1187.257    -306.557
+    yrdums13 |  -693.0021   215.0772    -3.22   0.001    -1115.233   -270.7708
+    yrdums14 |  -448.9776    216.807    -2.07   0.039    -874.6049   -23.35025
+    yrdums15 |  -631.3657   227.2803    -2.78   0.006    -1077.554   -185.1777
+    yrdums16 |  -460.4763   237.3317    -1.94   0.053    -926.3968    5.444244
+    yrdums17 |          0  (omitted)
+    yrdums18 |   -366.122   212.5828    -1.72   0.085    -783.4565     51.2125
+    yrdums19 |          0  (omitted)
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -364.5324   1039.335    -0.35   0.726    -2404.915     1675.85
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |          0  (omitted)
+   bin2dums7 |  -174.0803    1039.38    -0.17   0.867    -2214.551    1866.391
+   bin2dums8 |   -557.848   742.9111    -0.75   0.453    -2016.303    900.6069
+   bin2dums9 |  -458.4457   1037.786    -0.44   0.659    -2495.787    1578.896
+  bin2dums10 |   -526.312   742.6274    -0.71   0.479     -1984.21     931.586
+  bin2dums11 |   -466.294   536.7339    -0.87   0.385     -1519.99    587.4016
+  bin2dums12 |          0  (omitted)
+  bin2dums13 |   109.8226   446.8511     0.25   0.806    -767.4184    987.0637
+  bin2dums14 |  -94.62095   380.8551    -0.25   0.804    -842.3011    653.0592
+  bin2dums15 |   158.0445   304.8956     0.52   0.604    -440.5148    756.6039
+  bin2dums16 |  -140.6314   326.5897    -0.43   0.667    -781.7798     500.517
+  bin2dums17 |   16.47667   280.5598     0.06   0.953    -534.3076     567.261
+  bin2dums18 |   162.2133   228.9161     0.71   0.479    -287.1861    611.6126
+  bin2dums19 |   -150.621   221.4222    -0.68   0.497    -585.3086    284.0667
+  bin2dums21 |  -299.6165   213.3762    -1.40   0.161    -718.5086    119.2756
+  bin2dums22 |  -227.9249   206.4939    -1.10   0.270    -633.3058    177.4561
+  bin2dums23 |  -210.3744   203.3529    -1.03   0.301    -609.5891    188.8404
+  bin2dums24 |  -227.2094   201.3674    -1.13   0.260    -622.5261    168.1074
+  bin2dums25 |  -348.7384   205.6439    -1.70   0.090    -752.4507    54.97392
+  bin2dums26 |  -69.69792   203.3477    -0.34   0.732    -468.9024    329.5066
+  bin2dums27 |   -310.306   206.5139    -1.50   0.133    -715.7262    95.11426
+  bin2dums28 |  -223.7573   211.3781    -1.06   0.290    -638.7268    191.2122
+  bin2dums29 |  -49.70788   261.8654    -0.19   0.850    -563.7922    464.3764
+  bin2dums30 |   -306.716   257.6555    -1.19   0.234    -812.5356    199.1036
+  bin2dums31 |  -113.8769   377.3038    -0.30   0.763    -854.5854    626.8317
+  bin2dums32 |  -310.4658   352.2132    -0.88   0.378    -1001.917    380.9857
+  bin2dums33 |   -157.448   487.8158    -0.32   0.747    -1115.109    800.2135
+  bin2dums34 |  -667.4853   1039.335    -0.64   0.521    -2707.867    1372.897
+       _cons |   1773.937   241.8877     7.33   0.000     1299.073    2248.802
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums17 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+note: bin2dums6 omitted because of collinearity
+note: bin2dums12 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       844
+-------------+----------------------------------   F(37, 806)      =      3.24
+       Model |   123440203        37   3336221.7   Prob > F        =    0.0000
+    Residual |   830913957       806  1030910.62   R-squared       =    0.1293
+-------------+----------------------------------   Adj R-squared   =    0.0894
+       Total |   954354160       843  1132092.72   Root MSE        =    1015.3
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -222.9688   195.2105    -1.14   0.254    -606.1497     160.212
+    yrdums10 |  -349.7563   175.5649    -1.99   0.047    -694.3747   -5.137966
+    yrdums11 |  -93.95336   187.8938    -0.50   0.617    -462.7723    274.8656
+    yrdums12 |  -144.1867   185.2929    -0.78   0.437    -507.9003    219.5269
+    yrdums13 |   108.2857   192.0336     0.56   0.573    -268.6593    485.2308
+    yrdums14 |   400.9587   179.8081     2.23   0.026     48.01131     753.906
+    yrdums15 |   449.6104   180.8271     2.49   0.013      94.6627    804.5581
+    yrdums16 |    449.361   191.6886     2.34   0.019     73.09327    825.6288
+    yrdums17 |          0  (omitted)
+    yrdums18 |   990.7071     236.72     4.19   0.000     526.0466    1455.368
+    yrdums19 |   578.4983   176.5855     3.28   0.001     231.8766      925.12
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |   803.6159   1032.281     0.78   0.437     -1222.66    2829.891
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |          0  (omitted)
+   bin2dums7 |  -70.76045   1032.374    -0.07   0.945     -2097.22    1955.699
+   bin2dums8 |  -659.1872   736.9063    -0.89   0.371    -2105.669    787.2947
+   bin2dums9 |  -275.6108   1030.705    -0.27   0.789    -2298.794    1747.572
+  bin2dums10 |   -388.367   736.5625    -0.53   0.598    -1834.174     1057.44
+  bin2dums11 |  -389.6257   531.1333    -0.73   0.463    -1432.193     652.942
+  bin2dums12 |          0  (omitted)
+  bin2dums13 |  -97.40561   441.2586    -0.22   0.825    -963.5571    768.7459
+  bin2dums14 |   -316.689   343.9776    -0.92   0.357    -991.8867    358.5087
+  bin2dums15 |  -170.0728   279.1679    -0.61   0.543    -718.0547    377.9092
+  bin2dums16 |  -362.4949   295.1942    -1.23   0.220     -941.935    216.9453
+  bin2dums17 |  -214.9484   273.6413    -0.79   0.432    -752.0821    322.1853
+  bin2dums18 |  -117.2227   216.2181    -0.54   0.588    -541.6398    307.1943
+  bin2dums19 |  -257.6806   212.1204    -1.21   0.225    -674.0541     158.693
+  bin2dums21 |  -402.3066   202.0126    -1.99   0.047    -798.8396   -5.773629
+  bin2dums22 |  -352.4795   192.9117    -1.83   0.068    -731.1482    26.18913
+  bin2dums23 |  -249.1569   187.8153    -1.33   0.185    -617.8218     119.508
+  bin2dums24 |  -339.9896   187.5474    -1.81   0.070    -708.1286    28.14947
+  bin2dums25 |  -453.4096   193.3891    -2.34   0.019    -833.0153   -73.80389
+  bin2dums26 |  -232.9734   193.9926    -1.20   0.230    -613.7637     147.817
+  bin2dums27 |  -404.1122   194.7582    -2.07   0.038    -786.4053    -21.8191
+  bin2dums28 |  -291.0707    201.076    -1.45   0.148    -685.7651    103.6236
+  bin2dums29 |  -41.71988   254.8958    -0.16   0.870    -542.0578     458.618
+  bin2dums30 |  -561.2785   244.0381    -2.30   0.022    -1040.304   -82.25338
+  bin2dums31 |  -338.7228   354.9283    -0.95   0.340    -1035.416    357.9701
+  bin2dums32 |  -144.8909   346.0699    -0.42   0.676    -824.1956    534.4138
+  bin2dums33 |  -564.2288   482.1414    -1.17   0.242     -1510.63    382.1721
+  bin2dums34 |  -957.1873   1032.281    -0.93   0.354    -2983.463    1069.088
+       _cons |   1043.053   204.6333     5.10   0.000     641.3762     1444.73
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums18 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       807
+-------------+----------------------------------   F(39, 767)      =      2.55
+       Model |  79486246.7        39  2038108.89   Prob > F        =    0.0000
+    Residual |   614065683       767  800607.149   R-squared       =    0.1146
+-------------+----------------------------------   Adj R-squared   =    0.0696
+       Total |   693551930       806  860486.265   Root MSE        =    894.77
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -545.6132   175.2021    -3.11   0.002    -889.5457   -201.6807
+    yrdums10 |  -558.3487   172.3885    -3.24   0.001    -896.7579   -219.9395
+    yrdums11 |  -462.6005   154.9511    -2.99   0.003     -766.779   -158.4219
+    yrdums12 |  -416.9576   165.9398    -2.51   0.012    -742.7076   -91.20753
+    yrdums13 |  -492.8406   163.6882    -3.01   0.003    -814.1707   -171.5105
+    yrdums14 |  -206.8037   169.5191    -1.22   0.223    -539.5801    125.9727
+    yrdums15 |   181.8463   158.5529     1.15   0.252    -129.4029    493.0955
+    yrdums16 |  -132.2955   159.5462    -0.83   0.407    -445.4946    180.9036
+    yrdums17 |  -331.4447   169.0902    -1.96   0.050    -663.3792    .4898804
+    yrdums18 |          0  (omitted)
+    yrdums19 |   476.1206   208.8258     2.28   0.023     66.18272    886.0586
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -435.8092   909.6647    -0.48   0.632    -2221.537    1349.919
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |  -233.3666   653.8994    -0.36   0.721    -1517.011    1050.278
+   bin2dums7 |   342.5382   909.7081     0.38   0.707    -1443.275    2128.351
+   bin2dums8 |   207.4307   534.7249     0.39   0.698    -842.2672    1257.129
+   bin2dums9 |  -194.7393     908.17    -0.21   0.830    -1977.533    1588.054
+  bin2dums10 |   -317.522    534.682    -0.59   0.553    -1367.136    732.0917
+  bin2dums11 |  -225.5012   421.7852    -0.53   0.593    -1053.491    602.4891
+  bin2dums12 |   334.9878   542.3559     0.62   0.537    -729.6903    1399.666
+  bin2dums13 |   304.5857   362.5073     0.84   0.401    -407.0384     1016.21
+  bin2dums14 |  -195.5065    291.705    -0.67   0.503    -768.1415    377.1285
+  bin2dums15 |  -308.2208   232.3639    -1.33   0.185    -764.3654    147.9237
+  bin2dums16 |  -238.7788   291.2625    -0.82   0.413    -810.5451    332.9874
+  bin2dums17 |  -278.1336   236.1999    -1.18   0.239    -741.8086    185.5415
+  bin2dums18 |   56.96822   195.8717     0.29   0.771      -327.54    441.4765
+  bin2dums19 |   171.7422    192.485     0.89   0.373    -206.1176    549.6021
+  bin2dums21 |   -85.5791   175.5612    -0.49   0.626    -430.2165    259.0583
+  bin2dums22 |   9.473112   172.7679     0.05   0.956    -329.6809    348.6271
+  bin2dums23 |  -97.73014   165.1571    -0.59   0.554    -421.9437    226.4834
+  bin2dums24 |  -206.7366    166.921    -1.24   0.216    -534.4129    120.9396
+  bin2dums25 |  -60.16611   172.6911    -0.35   0.728    -399.1693    278.8371
+  bin2dums26 |   18.85646    171.965     0.11   0.913    -318.7214    356.4343
+  bin2dums27 |  -142.5041   175.5832    -0.81   0.417    -487.1848    202.1766
+  bin2dums28 |    29.8394   182.4267     0.16   0.870    -328.2755    387.9543
+  bin2dums29 |  -56.28553   223.9229    -0.25   0.802      -495.86    383.2889
+  bin2dums30 |  -176.0381   229.6309    -0.77   0.444    -626.8178    274.7416
+  bin2dums31 |  -102.0264   312.5859    -0.33   0.744    -715.6517    511.5989
+  bin2dums32 |   479.7067   317.7576     1.51   0.132    -144.0711    1103.485
+  bin2dums33 |  -230.4208   424.7662    -0.54   0.588    -1064.263    603.4215
+  bin2dums34 |  -482.7266   909.6647    -0.53   0.596    -2268.455    1303.001
+       _cons |    1105.01   180.3568     6.13   0.000     750.9581    1459.061
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums19 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       825
+-------------+----------------------------------   F(39, 785)      =      1.67
+       Model |  55529449.3        39  1423832.03   Prob > F        =    0.0069
+    Residual |   668560330       785  851669.211   R-squared       =    0.0767
+-------------+----------------------------------   Adj R-squared   =    0.0308
+       Total |   724089780       824  878749.733   Root MSE        =    922.86
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -324.9628   196.4501    -1.65   0.098    -710.5925    60.66691
+    yrdums10 |  -461.1723    180.225    -2.56   0.011    -814.9524   -107.3922
+    yrdums11 |  -269.9464    177.559    -1.52   0.129     -618.493     78.6001
+    yrdums12 |  -134.4314   159.6318    -0.84   0.400    -447.7872    178.9243
+    yrdums13 |  -143.8231   170.7785    -0.84   0.400    -479.0596    191.4135
+    yrdums14 |  -20.43186   168.0831    -0.12   0.903    -350.3775    309.5138
+    yrdums15 |   58.88552   174.6373     0.34   0.736    -283.9258    401.6968
+    yrdums16 |   163.6842   163.4521     1.00   0.317    -157.1706    484.5391
+    yrdums17 |  -221.7353   164.4631    -1.35   0.178    -544.5749    101.1042
+    yrdums18 |   132.7283   174.3493     0.76   0.447    -209.5177    474.9743
+    yrdums19 |          0  (omitted)
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -129.1837   937.4528    -0.14   0.890    -1969.395    1711.027
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |  -187.3732   673.4133    -0.28   0.781    -1509.277    1134.531
+   bin2dums7 |  -314.7434   669.1302    -0.47   0.638     -1628.24    998.7529
+   bin2dums8 |  -419.6675   550.2745    -0.76   0.446    -1499.851    660.5162
+   bin2dums9 |   -401.107   935.8566    -0.43   0.668    -2238.185    1435.971
+  bin2dums10 |   -291.708   550.2251    -0.53   0.596    -1371.795    788.3787
+  bin2dums11 |   39.11662   433.4956     0.09   0.928    -811.8312    890.0644
+  bin2dums12 |  -119.2174   485.0931    -0.25   0.806    -1071.451    833.0158
+  bin2dums13 |  -216.3555   372.0906    -0.58   0.561    -946.7658    514.0548
+  bin2dums14 |  -116.2344   265.8567    -0.44   0.662    -638.1085    405.6397
+  bin2dums15 |  -143.4735   225.5306    -0.64   0.525    -586.1878    299.2409
+  bin2dums16 |  -65.33904   250.4833    -0.26   0.794    -557.0354    426.3573
+  bin2dums17 |  -171.9834   236.2828    -0.73   0.467    -635.8042    291.8374
+  bin2dums18 |   113.5245    194.904     0.58   0.560    -269.0701    496.1192
+  bin2dums19 |  -21.79155   190.4139    -0.11   0.909    -395.5722    351.9891
+  bin2dums21 |    395.739   179.1393     2.21   0.027     44.09027    747.3878
+  bin2dums22 |   56.06128   171.7897     0.33   0.744    -281.1603    393.2829
+  bin2dums23 |    114.896    166.402     0.69   0.490    -211.7495    441.5415
+  bin2dums24 |   69.64001   166.6668     0.42   0.676    -257.5253    396.8054
+  bin2dums25 |   127.3203   172.2324     0.74   0.460    -210.7702    465.4109
+  bin2dums26 |   276.3513   176.2686     1.57   0.117    -69.66228    622.3649
+  bin2dums27 |   109.7177   178.4939     0.61   0.539    -240.6641    460.0995
+  bin2dums28 |    220.936   188.4846     1.17   0.241    -149.0574    590.9294
+  bin2dums29 |    197.475   224.4871     0.88   0.379    -243.1909     638.141
+  bin2dums30 |   526.9684    237.727     2.22   0.027     60.31262    993.6243
+  bin2dums31 |   374.8395   320.2789     1.17   0.242     -253.865    1003.544
+  bin2dums32 |   310.6984   325.6183     0.95   0.340    -328.4873    949.8841
+  bin2dums33 |  -34.68585   436.5208    -0.08   0.937    -891.5721    822.2004
+  bin2dums34 |   317.3011   937.4528     0.34   0.735     -1522.91    2157.512
+       _cons |   822.8182   182.4348     4.51   0.000     464.7004    1180.936
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums10 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       812
+-------------+----------------------------------   F(40, 771)      =      2.88
+       Model |   153027570        40  3825689.24   Prob > F        =    0.0000
+    Residual |  1.0238e+09       771  1327854.83   R-squared       =    0.1300
+-------------+----------------------------------   Adj R-squared   =    0.0849
+       Total |  1.1768e+09       811  1451052.58   Root MSE        =    1152.3
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |    208.301   251.8217     0.83   0.408    -286.0364    702.6385
+    yrdums10 |          0  (omitted)
+    yrdums11 |   347.8237   229.4113     1.52   0.130    -102.5213    798.1686
+    yrdums12 |   461.0552   226.0207     2.04   0.042     17.36625    904.7442
+    yrdums13 |   332.7764   206.8207     1.61   0.108    -73.22218    738.7749
+    yrdums14 |   634.9725   219.0772     2.90   0.004     204.9139    1065.031
+    yrdums15 |   694.5932   216.4582     3.21   0.001      269.676    1119.511
+    yrdums16 |   485.5143   223.7781     2.17   0.030     46.22766    924.8009
+    yrdums17 |   588.6371   217.7801     2.70   0.007     161.1249    1016.149
+    yrdums18 |   640.8318   219.7597     2.92   0.004     209.4336     1072.23
+    yrdums19 |   720.3604   230.1911     3.13   0.002     268.4847    1172.236
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |   293.6705   1170.952     0.25   0.802    -2004.962    2592.303
+   bin2dums5 |  -236.3243   1178.045    -0.20   0.841     -2548.88    2076.232
+   bin2dums6 |  -398.1637   840.9901    -0.47   0.636    -2049.066    1252.738
+   bin2dums7 |  -378.4727   835.6768    -0.45   0.651    -2018.944    1261.999
+   bin2dums8 |  -8.125082   601.4124    -0.01   0.989    -1188.725    1172.475
+   bin2dums9 |   35.75228   696.3827     0.05   0.959    -1331.279    1402.783
+  bin2dums10 |   403.4417   601.4476     0.67   0.503    -777.2274    1584.111
+  bin2dums11 |  -414.5242   541.6988    -0.77   0.444    -1477.904    648.8551
+  bin2dums12 |   209.8008   545.8293     0.38   0.701     -861.687    1281.289
+  bin2dums13 |   -391.342    465.115    -0.84   0.400    -1304.384       521.7
+  bin2dums14 |  -17.80794   307.1619    -0.06   0.954    -620.7808    585.1649
+  bin2dums15 |  -227.6219   278.6094    -0.82   0.414    -774.5448    319.3011
+  bin2dums16 |  -156.5178   292.8206    -0.53   0.593    -731.3379    418.3023
+  bin2dums17 |  -76.88277   295.9561    -0.26   0.795     -657.858    504.0925
+  bin2dums18 |  -148.1489   246.2036    -0.60   0.548    -631.4579    335.1601
+  bin2dums19 |    172.656   238.7542     0.72   0.470    -296.0293    641.3413
+  bin2dums21 |   881.3875   224.7464     3.92   0.000     440.1999    1322.575
+  bin2dums22 |   592.3142   215.7239     2.75   0.006     168.8383     1015.79
+  bin2dums23 |   525.9311   207.8235     2.53   0.012     117.9642    933.8981
+  bin2dums24 |   515.1828   208.7509     2.47   0.014     105.3954    924.9703
+  bin2dums25 |   441.9155   215.5077     2.05   0.041     18.86412    864.9669
+  bin2dums26 |   720.3646    222.165     3.24   0.001     284.2447    1156.485
+  bin2dums27 |   742.3247   228.0511     3.26   0.001       294.65    1189.999
+  bin2dums28 |   603.1859   243.9466     2.47   0.014     124.3075    1082.064
+  bin2dums29 |    681.104   310.0127     2.20   0.028     72.53494    1289.673
+  bin2dums30 |   1012.069   325.6365     3.11   0.002     372.8296    1651.308
+  bin2dums31 |   1018.145   439.7869     2.32   0.021     154.8235    1881.467
+  bin2dums32 |   344.3312   504.8861     0.68   0.495    -646.7832    1335.446
+  bin2dums33 |  -55.39794   688.3656    -0.08   0.936    -1406.691    1295.895
+  bin2dums34 |    1152.25   1170.952     0.98   0.325    -1146.383    3450.883
+       _cons |   387.8299   223.9953     1.73   0.084    -51.88298    827.5429
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums9 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       792
+-------------+----------------------------------   F(41, 750)      =      3.00
+       Model |   263509484        41  6427060.59   Prob > F        =    0.0000
+    Residual |  1.6071e+09       750  2142777.98   R-squared       =    0.1409
+-------------+----------------------------------   Adj R-squared   =    0.0939
+       Total |  1.8706e+09       791  2364845.73   Root MSE        =    1463.8
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |          0  (omitted)
+    yrdums10 |  -235.8475   324.8108    -0.73   0.468    -873.4941     401.799
+    yrdums11 |   147.9035   315.6459     0.47   0.640    -471.7511    767.5582
+    yrdums12 |   193.3737   292.9323     0.66   0.509    -381.6911    768.4384
+    yrdums13 |   157.4393   295.7273     0.53   0.595    -423.1123    737.9909
+    yrdums14 |   552.4733    265.686     2.08   0.038     30.89654     1074.05
+    yrdums15 |   718.5724    285.151     2.52   0.012     158.7833    1278.361
+    yrdums16 |   478.0483   282.9497     1.69   0.092     -77.4193    1033.516
+    yrdums17 |   357.7357   291.4282     1.23   0.220    -214.3764    929.8478
+    yrdums18 |    789.196   282.2811     2.80   0.005      235.041    1343.351
+    yrdums19 |   558.7088   286.5568     1.95   0.052    -3.840103    1121.258
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |  -173.0855   1495.308    -0.12   0.908    -3108.572    2762.401
+   bin2dums4 |  -806.4542   1487.664    -0.54   0.588    -3726.935    2114.027
+   bin2dums5 |  -35.36974   1496.259    -0.02   0.981    -2972.724    2901.984
+   bin2dums6 |  -315.4105   771.7192    -0.41   0.683    -1830.397    1199.576
+   bin2dums7 |  -283.6717   875.4747    -0.32   0.746    -2002.344    1435.001
+   bin2dums8 |   358.4967   763.9895     0.47   0.639    -1141.316    1858.309
+   bin2dums9 |   307.2729   771.6576     0.40   0.691    -1207.593    1822.139
+  bin2dums10 |   849.3832   689.9236     1.23   0.219     -505.028    2203.794
+  bin2dums11 |  -285.2568   634.0108    -0.45   0.653    -1529.904      959.39
+  bin2dums12 |   411.9677   693.2471     0.59   0.553    -948.9678    1772.903
+  bin2dums13 |   408.4003   590.8873     0.69   0.490    -751.5894     1568.39
+  bin2dums14 |  -161.3246   366.5143    -0.44   0.660    -880.8405    558.1913
+  bin2dums15 |  -282.3987   363.7758    -0.78   0.438    -996.5387    431.7413
+  bin2dums16 |   18.35686   360.9239     0.05   0.959    -690.1844    726.8982
+  bin2dums17 |   -264.379   376.2198    -0.70   0.482    -1002.948    474.1901
+  bin2dums18 |  -68.22103   317.1506    -0.22   0.830    -690.8296    554.3875
+  bin2dums19 |      148.7   303.2804     0.49   0.624    -446.6794    744.0795
+  bin2dums21 |   1074.559   281.5401     3.82   0.000     521.8584    1627.259
+  bin2dums22 |   781.0956   274.9246     2.84   0.005     241.3824    1320.809
+  bin2dums23 |   723.1478   263.3615     2.75   0.006     206.1344    1240.161
+  bin2dums24 |   815.8012   269.3703     3.03   0.003     286.9917    1344.611
+  bin2dums25 |    813.757   281.5028     2.89   0.004     261.1298    1366.384
+  bin2dums26 |   807.7012    284.838     2.84   0.005     248.5265    1366.876
+  bin2dums27 |   1207.375   297.1834     4.06   0.000     623.9652    1790.786
+  bin2dums28 |   791.0974   321.5379     2.46   0.014     159.8761    1422.319
+  bin2dums29 |   1070.437   409.7697     2.61   0.009     266.0046    1874.869
+  bin2dums30 |    542.807   434.0054     1.25   0.211    -309.2029    1394.817
+  bin2dums31 |   1239.966   592.1894     2.09   0.037     77.41996    2402.512
+  bin2dums32 |   208.2215   771.7625     0.27   0.787     -1306.85    1723.293
+  bin2dums33 |  -58.57371   874.5677    -0.07   0.947    -1775.466    1658.318
+  bin2dums34 |   1534.389   1487.664     1.03   0.303    -1386.092    4454.869
+       _cons |   697.3417   305.2322     2.28   0.023     98.13063    1296.553
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums11 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums4 omitted because of collinearity
+note: bin2dums34 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       758
+-------------+----------------------------------   F(40, 717)      =      3.01
+       Model |   259150362        40  6478759.04   Prob > F        =    0.0000
+    Residual |  1.5429e+09       717  2151820.57   R-squared       =    0.1438
+-------------+----------------------------------   Adj R-squared   =    0.0960
+       Total |  1.8020e+09       757  2380456.69   Root MSE        =    1466.9
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -629.1299   311.9045    -2.02   0.044    -1241.485   -16.77472
+    yrdums10 |  -897.4244   325.1805    -2.76   0.006    -1535.844   -259.0045
+    yrdums11 |          0  (omitted)
+    yrdums12 |  -311.5534    319.214    -0.98   0.329    -938.2592    315.1524
+    yrdums13 |  -407.4311   300.6896    -1.35   0.176    -997.7684    182.9062
+    yrdums14 |  -416.9572   299.6022    -1.39   0.164     -1005.16    171.2453
+    yrdums15 |   -168.239   272.9199    -0.62   0.538    -704.0566    367.5786
+    yrdums16 |  -311.8016   290.4093    -1.07   0.283    -881.9559    258.3527
+    yrdums17 |  -274.7345    288.656    -0.95   0.342    -841.4465    291.9774
+    yrdums18 |  -135.8593   296.6674    -0.46   0.647    -718.2999    446.5813
+    yrdums19 |  -74.03479   288.3555    -0.26   0.797    -640.1568    492.0873
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |  -622.9526   1493.897    -0.42   0.677    -3555.887    2309.982
+   bin2dums3 |  -227.9023   1497.944    -0.15   0.879    -3168.784    2712.979
+   bin2dums4 |          0  (omitted)
+   bin2dums5 |  -1207.894   1498.837    -0.81   0.421    -4150.528     1734.74
+   bin2dums6 |  -568.7456   772.4192    -0.74   0.462    -2085.219    947.7282
+   bin2dums7 |  -723.4715   876.5021    -0.83   0.409    -2444.289    997.3458
+   bin2dums8 |  -624.7563   636.3029    -0.98   0.327    -1873.996    624.4833
+   bin2dums9 |  -950.8526    772.273    -1.23   0.219    -2467.039    565.3341
+  bin2dums10 |   1656.354   690.3444     2.40   0.017     301.0161    3011.692
+  bin2dums11 |  -356.2286   634.2986    -0.56   0.575    -1601.533     889.076
+  bin2dums12 |  -715.1901   637.2845    -1.12   0.262    -1966.357    535.9766
+  bin2dums13 |  -368.7361   531.8579    -0.69   0.488    -1412.921    675.4488
+  bin2dums14 |  -115.1646   365.1463    -0.32   0.753    -832.0484    601.7192
+  bin2dums15 |   -529.839   357.2752    -1.48   0.139     -1231.27    171.5916
+  bin2dums16 |   -294.341   338.6238    -0.87   0.385    -959.1537    370.4717
+  bin2dums17 |   -541.284   369.0327    -1.47   0.143    -1265.798    183.2297
+  bin2dums18 |  -222.3752   319.9482    -0.70   0.487    -850.5226    405.7722
+  bin2dums19 |  -299.5313   305.1335    -0.98   0.327    -898.5932    299.5306
+  bin2dums21 |   948.8132   275.9563     3.44   0.001     407.0342    1490.592
+  bin2dums22 |   325.8285   270.6971     1.20   0.229    -205.6252    857.2823
+  bin2dums23 |   548.3116    261.696     2.10   0.037     34.52952    1062.094
+  bin2dums24 |   426.6041    266.767     1.60   0.110    -97.13371     950.342
+  bin2dums25 |      620.1   287.4629     2.16   0.031     55.73038     1184.47
+  bin2dums26 |    484.875   298.2591     1.63   0.104    -100.6906    1070.441
+  bin2dums27 |   1213.372   321.6343     3.77   0.000     581.9142    1844.829
+  bin2dums28 |   732.3909   334.9851     2.19   0.029       74.722     1390.06
+  bin2dums29 |   479.0575   429.1707     1.12   0.265     -363.524    1321.639
+  bin2dums30 |   796.5196   457.5515     1.74   0.082    -101.7813     1694.82
+  bin2dums31 |   971.4482   634.4533     1.53   0.126    -274.1601    2217.057
+  bin2dums32 |  -338.3518   1489.248    -0.23   0.820     -3262.16    2585.456
+  bin2dums33 |  -96.48366   1062.103    -0.09   0.928    -2181.687    1988.719
+  bin2dums34 |          0  (omitted)
+       _cons |   1661.233   307.7207     5.40   0.000     1057.092    2265.374
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums12 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums4 omitted because of collinearity
+note: bin2dums32 omitted because of collinearity
+note: bin2dums34 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       697
+-------------+----------------------------------   F(40, 656)      =      1.58
+       Model |   118498456        40  2962461.39   Prob > F        =    0.0144
+    Residual |  1.2312e+09       656  1876810.95   R-squared       =    0.0878
+-------------+----------------------------------   Adj R-squared   =    0.0322
+       Total |  1.3497e+09       696  1939204.65   Root MSE        =      1370
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -877.0817   335.0448    -2.62   0.009    -1534.971   -219.1923
+    yrdums10 |  -915.8692   291.0648    -3.15   0.002      -1487.4   -344.3381
+    yrdums11 |   -633.495   303.8261    -2.09   0.037    -1230.084   -36.90616
+    yrdums12 |          0  (omitted)
+    yrdums13 |  -335.3723   297.9299    -1.13   0.261    -920.3835    249.6388
+    yrdums14 |  -100.0674   280.4233    -0.36   0.721    -650.7029    450.5682
+    yrdums15 |  -528.3364    279.764    -1.89   0.059    -1077.677    21.00464
+    yrdums16 |  -436.9459   255.0548    -1.71   0.087    -937.7681    63.87644
+    yrdums17 |  -310.1554   271.1114    -1.14   0.253    -842.5062    222.1954
+    yrdums18 |  -149.2955    269.355    -0.55   0.580    -678.1974    379.6064
+    yrdums19 |  -296.0522    277.564    -1.07   0.287    -841.0732    248.9687
+    yrdums20 |          0  (omitted)
+   bin2dums1 |  -732.4039    1404.66    -0.52   0.602    -3490.576    2025.768
+   bin2dums2 |  -466.8939   1395.423    -0.33   0.738    -3206.928     2273.14
+   bin2dums3 |  -902.9281   1399.207    -0.65   0.519    -3650.393    1844.537
+   bin2dums4 |          0  (omitted)
+   bin2dums5 |  -1335.149   1399.972    -0.95   0.341    -4084.115    1413.817
+   bin2dums6 |  -582.4806   721.8906    -0.81   0.420    -1999.975    835.0142
+   bin2dums7 |  -395.6355   818.9685    -0.48   0.629    -2003.751     1212.48
+   bin2dums8 |  -635.1645   647.0048    -0.98   0.327    -1905.615    635.2856
+   bin2dums9 |  -708.4754   650.4106    -1.09   0.276    -1985.613    568.6622
+  bin2dums10 |  -691.8227    715.846    -0.97   0.334    -2097.449    713.8031
+  bin2dums11 |  -899.1342   644.4507    -1.40   0.163    -2164.569    366.3006
+  bin2dums12 |   -242.245   595.7364    -0.41   0.684    -1412.025    927.5352
+  bin2dums13 |   -281.079   497.4507    -0.57   0.572    -1257.867    695.7086
+  bin2dums14 |  -286.8854   336.8862    -0.85   0.395    -948.3908      374.62
+  bin2dums15 |  -599.7858   339.4915    -1.77   0.078    -1266.407     66.8353
+  bin2dums16 |  -296.7243   307.3423    -0.97   0.335    -900.2175     306.769
+  bin2dums17 |  -390.7198   340.3113    -1.15   0.251    -1058.951     277.511
+  bin2dums18 |   170.5606   293.3178     0.58   0.561    -405.3943    746.5155
+  bin2dums19 |  -193.2186   284.1182    -0.68   0.497    -751.1094    364.6722
+  bin2dums21 |   324.4918   262.0125     1.24   0.216    -189.9926    838.9762
+  bin2dums22 |   140.9783   259.9094     0.54   0.588    -369.3763    651.3329
+  bin2dums23 |   389.7371   251.8942     1.55   0.122    -104.8791    884.3533
+  bin2dums24 |    198.661   257.8886     0.77   0.441    -307.7256    705.0477
+  bin2dums25 |   122.1023   279.6846     0.44   0.663    -427.0828    671.2874
+  bin2dums26 |   137.5967   295.3725     0.47   0.641     -442.393    717.5863
+  bin2dums27 |   366.4412   319.2851     1.15   0.252    -260.5028    993.3853
+  bin2dums28 |   606.0743   370.4785     1.64   0.102    -121.3923    1333.541
+  bin2dums29 |  -113.6728   401.9955    -0.28   0.777    -903.0258    675.6803
+  bin2dums30 |  -96.25026   475.3676    -0.20   0.840    -1029.676    837.1753
+  bin2dums31 |   184.3794   712.8109     0.26   0.796    -1215.287    1584.045
+  bin2dums32 |          0  (omitted)
+  bin2dums33 |  -993.4942   1389.402    -0.72   0.475    -3721.706    1734.718
+  bin2dums34 |          0  (omitted)
+       _cons |   1812.891   288.2882     6.29   0.000     1246.812    2378.969
+------------------------------------------------------------------------------
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums9 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums4 omitted because of collinearity
+note: bin2dums34 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       653
+-------------+----------------------------------   F(41, 611)      =      1.53
+       Model |   117794340        41  2873032.68   Prob > F        =    0.0199
+    Residual |  1.1456e+09       611  1874966.16   R-squared       =    0.0932
+-------------+----------------------------------   Adj R-squared   =    0.0324
+       Total |  1.2634e+09       652  1937728.01   Root MSE        =    1369.3
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |          0  (omitted)
+    yrdums10 |   3.684375   389.6757     0.01   0.992    -761.5819    768.9506
+    yrdums11 |   361.6242   351.1204     1.03   0.303    -327.9252    1051.174
+    yrdums12 |   623.5876    361.571     1.72   0.085     -86.4851     1333.66
+    yrdums13 |    786.049   365.9243     2.15   0.032     67.42704    1504.671
+    yrdums14 |   1040.929   357.0337     2.92   0.004     339.7667    1742.091
+    yrdums15 |   850.1443   339.8772     2.50   0.013      182.675    1517.614
+    yrdums16 |   379.7842   341.5444     1.11   0.267    -290.9592    1050.528
+    yrdums17 |   587.2039   320.3167     1.83   0.067    -41.85126    1216.259
+    yrdums18 |   892.1131   333.6196     2.67   0.008      236.933    1547.293
+    yrdums19 |   900.9879   332.2041     2.71   0.007     248.5875    1553.388
+    yrdums20 |          0  (omitted)
+   bin2dums1 |  -712.1912   1404.487    -0.51   0.612    -3470.398    2046.016
+   bin2dums2 |  -172.5464   1395.281    -0.12   0.902    -2912.675    2567.583
+   bin2dums3 |  -152.3709   1399.038    -0.11   0.913    -2899.878    2595.136
+   bin2dums4 |          0  (omitted)
+   bin2dums5 |  -1219.678   1399.815    -0.87   0.384    -3968.711    1529.354
+   bin2dums6 |  -212.9821   722.4729    -0.29   0.768    -1631.814    1205.849
+   bin2dums7 |  -31.59562   718.8364    -0.04   0.965    -1443.285    1380.094
+   bin2dums8 |  -980.8515   647.7563    -1.51   0.130     -2252.95    291.2473
+   bin2dums9 |  -869.6785   651.2071    -1.34   0.182    -2148.554    409.1973
+  bin2dums10 |   -522.493   716.4911    -0.73   0.466    -1929.577    884.5909
+  bin2dums11 |  -581.3239   595.9176    -0.98   0.330    -1751.619    588.9714
+  bin2dums12 |  -161.5658   529.4372    -0.31   0.760    -1201.303    878.1716
+  bin2dums13 |  -947.7088   524.7645    -1.81   0.071     -1978.27    82.85207
+  bin2dums14 |  -595.1513   343.7335    -1.73   0.084    -1270.194    79.89118
+  bin2dums15 |   -751.342   363.0084    -2.07   0.039    -1464.238   -38.44634
+  bin2dums16 |  -386.7302   319.1051    -1.21   0.226    -1013.406    239.9458
+  bin2dums17 |   78.06232   338.3685     0.23   0.818     -586.444    742.5686
+  bin2dums18 |   206.4642   298.2277     0.69   0.489    -379.2115    792.1398
+  bin2dums19 |  -356.2637   292.3862    -1.22   0.224    -930.4676    217.9401
+  bin2dums21 |  -286.2735   269.1802    -1.06   0.288    -814.9041    242.3571
+  bin2dums22 |   -225.318   265.1577    -0.85   0.396     -746.049     295.413
+  bin2dums23 |  -167.8034   259.4954    -0.65   0.518    -677.4145    341.8076
+  bin2dums24 |   17.72362    264.514     0.07   0.947    -501.7433    537.1905
+  bin2dums25 |  -211.9676    287.677    -0.74   0.462    -776.9232    352.9879
+  bin2dums26 |  -222.6205   312.9605    -0.71   0.477    -837.2292    391.9882
+  bin2dums27 |   319.7426   340.9167     0.94   0.349     -349.768    989.2533
+  bin2dums28 |   514.6259   379.9004     1.35   0.176    -231.4431    1260.695
+  bin2dums29 |    -360.24   426.8191    -0.84   0.399    -1198.451    477.9705
+  bin2dums30 |    507.214   523.4836     0.97   0.333    -520.8315     1535.26
+  bin2dums31 |   1093.265   713.4466     1.53   0.126      -307.84     2494.37
+  bin2dums32 |  -546.8433   1414.628    -0.39   0.699    -3324.966     2231.28
+  bin2dums33 |  -1299.137   1389.293    -0.94   0.350    -4027.506    1429.233
+  bin2dums34 |          0  (omitted)
+       _cons |   885.8865   355.2551     2.49   0.013     188.2174    1583.556
+------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. reg totalexp_pp yrdums* bin2dums* if dyear==`col'-3
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums16 omitted because of collinearity
+note: yrdums18 omitted because of collinearity
+note: yrdums19 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+note: bin2dums6 omitted because of collinearity
+note: bin2dums9 omitted because of collinearity
+note: bin2dums12 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       661
+-------------+----------------------------------   F(34, 626)      =      8.01
+       Model |   807899956        34  23761763.4   Prob > F        =    0.0000
+    Residual |  1.8574e+09       626  2967038.65   R-squared       =    0.3031
+-------------+----------------------------------   Adj R-squared   =    0.2653
+       Total |  2.6653e+09       660  4038282.05   Root MSE        =    1722.5
+
+------------------------------------------------------------------------------
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -3622.932    375.983    -9.64   0.000    -4361.273   -2884.591
+    yrdums10 |  -3998.886   372.8442   -10.73   0.000    -4731.062   -3266.709
+    yrdums11 |  -3153.862   379.9102    -8.30   0.000    -3899.914   -2407.809
+    yrdums12 |  -3171.527   364.3958    -8.70   0.000    -3887.113   -2455.941
+    yrdums13 |  -3363.808    367.174    -9.16   0.000     -4084.85   -2642.766
+    yrdums14 |  -2390.543   385.0259    -6.21   0.000    -3146.642   -1634.444
+    yrdums15 |  -1457.347   402.3599    -3.62   0.000    -2247.485    -667.208
+    yrdums16 |          0  (omitted)
+    yrdums17 |  -1679.773   359.8616    -4.67   0.000    -2386.455   -973.0905
+    yrdums18 |          0  (omitted)
+    yrdums19 |          0  (omitted)
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -511.7135   1755.606    -0.29   0.771    -3959.304    2935.877
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |          0  (omitted)
+   bin2dums7 |  -78.37242   1755.621    -0.04   0.964    -3525.991    3369.247
+   bin2dums8 |   -1192.51   1255.965    -0.95   0.343    -3658.924    1273.904
+   bin2dums9 |          0  (omitted)
+  bin2dums10 |  -355.7289   1754.224    -0.20   0.839    -3800.605    3089.148
+  bin2dums11 |  -420.0568     1252.3    -0.34   0.737    -2879.274     2039.16
+  bin2dums12 |          0  (omitted)
+  bin2dums13 |   991.0029   820.9515     1.21   0.228    -621.1494    2603.155
+  bin2dums14 |  -557.9859   913.1193    -0.61   0.541    -2351.134    1235.162
+  bin2dums15 |   301.3125   578.7991     0.52   0.603    -835.3104    1437.935
+  bin2dums16 |  -113.5877   556.1212    -0.20   0.838    -1205.677    978.5013
+  bin2dums17 |  -56.13013   555.5103    -0.10   0.920     -1147.02    1034.759
+  bin2dums18 |   130.6386   410.7906     0.32   0.751    -676.0559    937.3331
+  bin2dums19 |  -637.0158   402.5003    -1.58   0.114     -1427.43    153.3985
+  bin2dums21 |    -79.902   388.9134    -0.21   0.837    -843.6348    683.8308
+  bin2dums22 |  -288.0082     366.71    -0.79   0.433    -1008.139    432.1224
+  bin2dums23 |  -185.7924   363.6786    -0.51   0.610    -899.9702    528.3855
+  bin2dums24 |    -333.34   362.3563    -0.92   0.358    -1044.921     378.241
+  bin2dums25 |  -343.0731   366.0499    -0.94   0.349    -1061.908    375.7613
+  bin2dums26 |  -193.4439   362.3413    -0.53   0.594    -904.9955    518.1076
+  bin2dums27 |   419.2777   362.7537     1.16   0.248    -293.0838    1131.639
+  bin2dums28 |   328.9765   375.4158     0.88   0.381    -408.2504    1066.203
+  bin2dums29 |  -272.1333   448.1602    -0.61   0.544    -1152.213    607.9461
+  bin2dums30 |   521.3584   452.4853     1.15   0.250    -367.2145    1409.931
+  bin2dums31 |  -506.3792   673.1636    -0.75   0.452    -1828.311     815.553
+  bin2dums32 |  -73.52678   599.2612    -0.12   0.902    -1250.332    1103.279
+  bin2dums33 |   1286.717   915.0888     1.41   0.160    -510.2985    3083.732
+  bin2dums34 |   88.60977   1755.606     0.05   0.960    -3358.981      3536.2
+       _cons |   9926.647   415.9422    23.87   0.000     9109.836    10743.46
+------------------------------------------------------------------------------
+
+. reg tcapout_pp yrdums* bin2dums* if dyear==`col'-3
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums16 omitted because of collinearity
+note: yrdums18 omitted because of collinearity
+note: yrdums19 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums1 omitted because of collinearity
+note: bin2dums2 omitted because of collinearity
+note: bin2dums3 omitted because of collinearity
+note: bin2dums5 omitted because of collinearity
+note: bin2dums6 omitted because of collinearity
+note: bin2dums9 omitted because of collinearity
+note: bin2dums12 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       661
+-------------+----------------------------------   F(34, 626)      =      2.98
+       Model |   104912620        34   3085665.3   Prob > F        =    0.0000
+    Residual |   648689914       626  1036245.87   R-squared       =    0.1392
+-------------+----------------------------------   Adj R-squared   =    0.0925
+       Total |   753602534       660  1141822.02   Root MSE        =      1018
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |  -1407.421   222.1969    -6.33   0.000    -1843.762   -971.0792
+    yrdums10 |  -1571.572   220.3419    -7.13   0.000     -2004.27   -1138.873
+    yrdums11 |  -1175.577   224.5178    -5.24   0.000    -1616.476   -734.6778
+    yrdums12 |  -1042.425   215.3492    -4.84   0.000     -1465.32    -619.531
+    yrdums13 |  -1210.203    216.991    -5.58   0.000    -1636.322   -784.0846
+    yrdums14 |  -990.0042   227.5411    -4.35   0.000     -1436.84    -543.168
+    yrdums15 |  -516.0222    237.785    -2.17   0.030    -982.9751   -49.06937
+    yrdums16 |          0  (omitted)
+    yrdums17 |  -876.0452   212.6696    -4.12   0.000    -1293.677    -458.413
+    yrdums18 |          0  (omitted)
+    yrdums19 |          0  (omitted)
+    yrdums20 |          0  (omitted)
+   bin2dums1 |          0  (omitted)
+   bin2dums2 |          0  (omitted)
+   bin2dums3 |          0  (omitted)
+   bin2dums4 |  -345.9314   1037.521    -0.33   0.739    -2383.375    1691.512
+   bin2dums5 |          0  (omitted)
+   bin2dums6 |          0  (omitted)
+   bin2dums7 |  -529.8607    1037.53    -0.51   0.610    -2567.321    1507.599
+   bin2dums8 |  -521.7179   742.2449    -0.70   0.482    -1979.309    935.8734
+   bin2dums9 |          0  (omitted)
+  bin2dums10 |   185.1277   1036.704     0.18   0.858    -1850.711    2220.967
+  bin2dums11 |  -556.5032   740.0791    -0.75   0.452    -2009.842     896.835
+  bin2dums12 |          0  (omitted)
+  bin2dums13 |     185.38   485.1626     0.38   0.703    -767.3632    1138.123
+  bin2dums14 |  -572.9295   539.6316    -1.06   0.289    -1632.637    486.7778
+  bin2dums15 |  -8.840662   342.0563    -0.03   0.979    -680.5575    662.8761
+  bin2dums16 |  -464.7167   328.6543    -1.41   0.158    -1110.115    180.6817
+  bin2dums17 |  -340.1386   328.2932    -1.04   0.301     -984.828    304.5508
+  bin2dums18 |   34.57573   242.7674     0.14   0.887    -442.1613    511.3128
+  bin2dums19 |  -469.4285    237.868    -1.97   0.049    -936.5443   -2.312643
+  bin2dums21 |  -437.4768   229.8385    -1.90   0.057    -888.8245    13.87098
+  bin2dums22 |  -278.3985   216.7168    -1.28   0.199    -703.9783    147.1814
+  bin2dums23 |  -306.1029   214.9253    -1.42   0.155    -728.1648     115.959
+  bin2dums24 |  -340.5622   214.1438    -1.59   0.112    -761.0895    79.96502
+  bin2dums25 |  -477.6049   216.3267    -2.21   0.028    -902.4188   -52.79106
+  bin2dums26 |  -351.5041    214.135    -1.64   0.101     -772.014    69.00573
+  bin2dums27 |  -326.6368   214.3787    -1.52   0.128    -747.6254    94.35172
+  bin2dums28 |  -293.5846   221.8617    -1.32   0.186    -729.2679    142.0987
+  bin2dums29 |  -492.4022   264.8519    -1.86   0.063    -1012.508    27.70355
+  bin2dums30 |  -362.2589   267.4079    -1.35   0.176    -887.3841    162.8663
+  bin2dums31 |  -672.0601   397.8235    -1.69   0.092     -1453.29    109.1701
+  bin2dums32 |  -482.7186   354.1489    -1.36   0.173    -1178.182    212.7452
+  bin2dums33 |   687.8539   540.7954     1.27   0.204    -374.1389    1749.847
+  bin2dums34 |   -434.728   1037.521    -0.42   0.675    -2472.171    1602.715
+       _cons |   2255.388   245.8119     9.18   0.000     1772.673    2738.104
+------------------------------------------------------------------------------
+
+. reg tcapout_pp yrdums* bin2dums* if dyear==6
+note: yrdums1 omitted because of collinearity
+note: yrdums2 omitted because of collinearity
+note: yrdums3 omitted because of collinearity
+note: yrdums4 omitted because of collinearity
+note: yrdums5 omitted because of collinearity
+note: yrdums6 omitted because of collinearity
+note: yrdums7 omitted because of collinearity
+note: yrdums8 omitted because of collinearity
+note: yrdums9 omitted because of collinearity
+note: yrdums20 omitted because of collinearity
+note: bin2dums4 omitted because of collinearity
+note: bin2dums34 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =       653
+-------------+----------------------------------   F(41, 611)      =      1.53
+       Model |   117794340        41  2873032.68   Prob > F        =    0.0199
+    Residual |  1.1456e+09       611  1874966.16   R-squared       =    0.0932
+-------------+----------------------------------   Adj R-squared   =    0.0324
+       Total |  1.2634e+09       652  1937728.01   Root MSE        =    1369.3
+
+------------------------------------------------------------------------------
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |          0  (omitted)
+     yrdums2 |          0  (omitted)
+     yrdums3 |          0  (omitted)
+     yrdums4 |          0  (omitted)
+     yrdums5 |          0  (omitted)
+     yrdums6 |          0  (omitted)
+     yrdums7 |          0  (omitted)
+     yrdums8 |          0  (omitted)
+     yrdums9 |          0  (omitted)
+    yrdums10 |   3.684375   389.6757     0.01   0.992    -761.5819    768.9506
+    yrdums11 |   361.6242   351.1204     1.03   0.303    -327.9252    1051.174
+    yrdums12 |   623.5876    361.571     1.72   0.085     -86.4851     1333.66
+    yrdums13 |    786.049   365.9243     2.15   0.032     67.42704    1504.671
+    yrdums14 |   1040.929   357.0337     2.92   0.004     339.7667    1742.091
+    yrdums15 |   850.1443   339.8772     2.50   0.013      182.675    1517.614
+    yrdums16 |   379.7842   341.5444     1.11   0.267    -290.9592    1050.528
+    yrdums17 |   587.2039   320.3167     1.83   0.067    -41.85126    1216.259
+    yrdums18 |   892.1131   333.6196     2.67   0.008      236.933    1547.293
+    yrdums19 |   900.9879   332.2041     2.71   0.007     248.5875    1553.388
+    yrdums20 |          0  (omitted)
+   bin2dums1 |  -712.1912   1404.487    -0.51   0.612    -3470.398    2046.016
+   bin2dums2 |  -172.5464   1395.281    -0.12   0.902    -2912.675    2567.583
+   bin2dums3 |  -152.3709   1399.038    -0.11   0.913    -2899.878    2595.136
+   bin2dums4 |          0  (omitted)
+   bin2dums5 |  -1219.678   1399.815    -0.87   0.384    -3968.711    1529.354
+   bin2dums6 |  -212.9821   722.4729    -0.29   0.768    -1631.814    1205.849
+   bin2dums7 |  -31.59562   718.8364    -0.04   0.965    -1443.285    1380.094
+   bin2dums8 |  -980.8515   647.7563    -1.51   0.130     -2252.95    291.2473
+   bin2dums9 |  -869.6785   651.2071    -1.34   0.182    -2148.554    409.1973
+  bin2dums10 |   -522.493   716.4911    -0.73   0.466    -1929.577    884.5909
+  bin2dums11 |  -581.3239   595.9176    -0.98   0.330    -1751.619    588.9714
+  bin2dums12 |  -161.5658   529.4372    -0.31   0.760    -1201.303    878.1716
+  bin2dums13 |  -947.7088   524.7645    -1.81   0.071     -1978.27    82.85207
+  bin2dums14 |  -595.1513   343.7335    -1.73   0.084    -1270.194    79.89118
+  bin2dums15 |   -751.342   363.0084    -2.07   0.039    -1464.238   -38.44634
+  bin2dums16 |  -386.7302   319.1051    -1.21   0.226    -1013.406    239.9458
+  bin2dums17 |   78.06232   338.3685     0.23   0.818     -586.444    742.5686
+  bin2dums18 |   206.4642   298.2277     0.69   0.489    -379.2115    792.1398
+  bin2dums19 |  -356.2637   292.3862    -1.22   0.224    -930.4676    217.9401
+  bin2dums21 |  -286.2735   269.1802    -1.06   0.288    -814.9041    242.3571
+  bin2dums22 |   -225.318   265.1577    -0.85   0.396     -746.049     295.413
+  bin2dums23 |  -167.8034   259.4954    -0.65   0.518    -677.4145    341.8076
+  bin2dums24 |   17.72362    264.514     0.07   0.947    -501.7433    537.1905
+  bin2dums25 |  -211.9676    287.677    -0.74   0.462    -776.9232    352.9879
+  bin2dums26 |  -222.6205   312.9605    -0.71   0.477    -837.2292    391.9882
+  bin2dums27 |   319.7426   340.9167     0.94   0.349     -349.768    989.2533
+  bin2dums28 |   514.6259   379.9004     1.35   0.176    -231.4431    1260.695
+  bin2dums29 |    -360.24   426.8191    -0.84   0.399    -1198.451    477.9705
+  bin2dums30 |    507.214   523.4836     0.97   0.333    -520.8315     1535.26
+  bin2dums31 |   1093.265   713.4466     1.53   0.126      -307.84     2494.37
+  bin2dums32 |  -546.8433   1414.628    -0.39   0.699    -3324.966     2231.28
+  bin2dums33 |  -1299.137   1389.293    -0.94   0.350    -4027.506    1429.233
+  bin2dums34 |          0  (omitted)
+       _cons |   885.8865   355.2551     2.49   0.013     188.2174    1583.556
+------------------------------------------------------------------------------
+
+. clear all
+
+. use "H:\Julia\dynamic_RDD\fire_tax_levies_1991_2021.dta"
+
+. collapse (median) millage_percent duration votes_for votes_agains pop medfamy, by(TENDIGIT_FIPS description year)
+type mismatch
+r(109);
+
+. collapse (median) millage_percent, by(TENDIGIT_FIPS year)
+
+. clear all
+
+. use "H:\Julia\dynamic_RDD\fire_tax_levies_1991_2021.dta"
+
+. collapse (median) millage_percent, by(TENDIGIT_FIPS description year)
+
+. clear all
+
+. use "H:\Julia\dynamic_RDD\fire_tax_levies_1991_2021.dta"
+
+. sort TENDIGIT_FIPS
+
+. collapse (median) millage_percent, by(TENDIGIT_FIPS description year)
+
+. clear all
+
+. 
+. 
+. do "C:\Users\parentor\AppData\Local\Temp\STDb04_000000.tmp"
+
+. 
+. clear all
+
+.  use "H:\Julia\dynamic_RDD\fire_tax_levies_1991_2021.dta"
+
+. collapse (median) millage_percent duration votes_for votes_against pop medfamy, by(TENDIGIT_FIPS description year)
+type mismatch
+r(109);
+
+end of do-file
+
+r(109);
+
+. do "C:\Users\parentor\AppData\Local\Temp\STDb04_000000.tmp"
+
+. collapse (median) millage_percent duration vote_for vote_against pop medfamy, by(TENDIGIT_FIPS description year)
+variable vote_for not found
+r(111);
+
+end of do-file
+
+r(111);
+
+. do "C:\Users\parentor\AppData\Local\Temp\STDb04_000000.tmp"
+
+. collapse (median) millage_percent duration votes_for votes_against pop medfamy, by(TENDIGIT_FIPS description year)
+type mismatch
+r(109);
+
+end of do-file
+
+r(109);
+
+. do "C:\Users\parentor\AppData\Local\Temp\STDb04_000000.tmp"
+
+. collapse (median) millage_percent duration votes_for votes_against, by(TENDIGIT_FIPS description year)
+type mismatch
+r(109);
+
+end of do-file
+
+r(109);
+
+. exit, clear

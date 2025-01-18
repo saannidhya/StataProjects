@@ -54,12 +54,12 @@ roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
 # storing all housing dfs as a list
 dataset_names <- stringr::str_remove(list.files(paste0(shared),
                                                 pattern = "matches",
-                                                recursive = TRUE),
+                                                recursive = FALSE),
                                      paste0(".", "dta")) 
 # import data
 housing_dfs <- purrr::map(list.files(paste0(shared),
                                      pattern = "matches",
-                                     recursive = TRUE,
+                                     recursive = FALSE,
                                      full.names = TRUE),
                           haven::read_dta) 
 # assign names to housing dfs
@@ -93,14 +93,8 @@ dfs_agg <- purrr::map2(.x = dfs, .y = yr_t_names, ~ .x %>%
                          group_by(tendigit_fips, eval(parse(text = .y)), year, votes_pct_against) %>%
                          rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
                          summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
-                                   median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE))              
+                                   median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE)) 
 )
-
-# datasets with covariates
-dfs_agg_covs <- purrr::map(.x = dfs_agg, ~ .x %>% 
-                                  dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
-                                  ungroup()
-                           )
 
 # creating a dataset with sale_amount_per_sq_feet separately.
 # Reasoning: for sale_amount_per_sq_feet, both variables (sale_amount and universal_building_square_feet) have to be non missing.

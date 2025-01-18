@@ -1,0 +1,137 @@
+------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\parentor\OneDrive - University of Cincinnati\workingpapers\RD\codes\Rohstein\fig_histograms.log
+  log type:  text
+ opened on:  16 Jul 2024, 11:15:29
+
+. 
+. #delimit;
+delimiter now ;
+. clear;
+
+. set mem 32m;
+set memory ignored.
+    Memory no longer needs to be set in modern Statas; memory adjustments are performed on the fly automatically.
+
+. set scheme s2mono;
+
+. *use ../houseprices/fromfernando/referenda_newleaids_capital;
+. use referenda_newleaids_capital;
+
+.  rename year yearref;
+
+.  *note: we are replacing calendar year with schoolyear;
+.   clonevar year=yearref;
+
+.   replace yearref = yearref - 1 if month<5;
+(598 real changes made)
+
+.  *change req threshold and type in one election, look at :\\coauthor\referenda_graphing_RDD.do for details;
+.   replace req="M" if newleaid=="0615180" & yearref==1992;
+(1 real change made)
+
+.   replace election_type="Other" if newleaid=="0615180" & yearref==1992;
+(1 real change made)
+
+.  *Select sample;
+.   *Keep only measures since 1995;
+.    *keep if yearref>=1995;
+.   *Keep only measures since 1987;
+.    keep if yearref>=1987;
+(72 observations deleted)
+
+.   *Keep only GO Bonds and parcel taxes;
+.    keep if election_type== "GO Bond"  | election_type=="Parcel Tax";
+(88 observations deleted)
+
+.    gen gobond=(election_type=="GO Bond");
+
+.    gen parcel_cap=(capitaloutlays=="Y")*(gobond==0);
+
+.   *Identify measures where percent, passfail, and req dont all match;
+.    gen mv=percent-req_num;
+(11 missing values generated)
+
+.    gen badobs=(mv>=0 & mv<. & passfail=="F");
+
+.    replace badobs=1 if mv<0 & passfail=="P";
+(1 real change made)
+
+.    replace badobs=1 if mv==.;
+(11 real changes made)
+
+.    count if badobs==1 & percent<.;
+  1
+
+.    assert r(N)==1;
+
+.    count if badobs==1 & percent==.;
+  11
+
+.    replace percent=. if badobs==1;
+(1 real change made, 1 to missing)
+
+.    label var mv "voteshare-based MARGIN of VICTORY";
+
+.   *If there are multiple measures that meet these criteria, keep winning over losing measures
+>   *and then keep only the highest vote share.  Break ties by (1) lowest requirement (2) GO over parcel.;
+.    gen win=(passfail=="P");
+
+.    gsort newleaid yearref badobs -gobond -win -percent req_num ;
+
+.    by newleaid yearref: gen numelec=_N;
+
+.    by newleaid yearref: gen numbad=sum(badobs);
+
+.    by newleaid yearref: replace badobs=(numbad[_N]>0);
+(1 real change made)
+
+.    by newleaid yearref: keep if _n==1;
+(128 observations deleted)
+
+.    label var numelec "# of GO/parcel elecs in same year";
+
+.    gen fakewin=(percent>=66.7) if percent<. & req_num<=56;
+(1,168 missing values generated)
+
+.    replace fakewin=(percent>=55) if percent<. & req_num>=66 & req_num<.;
+(1,158 real changes made)
+
+.    assert req_num<=56 | req_num>=66;
+
+.    label var fakewin "Indicator for pass at counterfactual threshold";
+
+.  *We only need a few variables;
+.   keep newleaid yearref percent win req_num numelec gobond parcel_cap fakewin;
+
+.   rename req_num req;
+
+. *Keep on GO Bonds;
+. keep if gobond==1;
+(324 observations deleted)
+
+. gen percent_cens=min(max(percent, 40.5), 89.5);
+
+. twoway histogram percent_cens if req<60, width(3.3333333) start(38.3333333) xline(55)
+>           xtitle("Vote share in favor")
+>           title("55% threshold (N=382)") name(panel55, replace) nodraw freq;
+
+. twoway histogram percent_cens if req>60, width(3.3333333) start(40) xline(66.666667)
+>           xtitle("Vote share in favor")
+>           title("66.7% threshold (N=848)") name(panel67, replace) nodraw freq;
+
+. graph combine panel55 panel67, xcommon ycommon
+>       title("Distribution of measures by vote share and threshold")
+>       saving(fig1.gph, replace);
+(file fig1.gph saved)
+
+. graph combine panel55 panel67, xcommon ycommon
+>       saving(fig1_notitle.gph, replace);
+(file fig1_notitle.gph saved)
+
+. log close;
+      name:  <unnamed>
+       log:  C:\Users\parentor\OneDrive - University of Cincinnati\workingpapers\RD\codes\Rohstein\fig_histograms.log
+  log type:  text
+ closed on:  16 Jul 2024, 11:15:33
+------------------------------------------------------------------------------------------------------------------------------------

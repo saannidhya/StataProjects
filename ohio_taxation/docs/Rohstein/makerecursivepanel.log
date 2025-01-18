@@ -1,0 +1,2390 @@
+------------------------------------------------------------
+       log:  C:\Documents and Settings\Jesse Rothstein\My Do
+> cuments\projects\caelections\archive\makerecursivepanel.lo
+> g
+  log type:  text
+ opened on:   6 Mar 2010, 13:35:13
+
+. 
+. # delimit;
+delimiter now ;
+. version 9.2;
+
+. set more off;
+
+. clear;
+
+. /*********************************************************
+> ***
+> * makeshortpanel.do
+> * Jesse Rothstein
+> * April 28, 2008
+> *
+> * Prepare data for the "short panel" analysis, treating ea
+> ch
+> * measure as a separate event and analyzing data for sever
+> al years
+> * before and after (ignoring overlap in the windows)
+> *
+> * Modified, June 26, 2008:
+> *    1) Extend measures data back to 1987 (there are a cou
+> ple in 1986,
+> *       but it looks as if most are missing).
+> *    2) Modify "bad observation" processing to deal with a
+>  couple of
+> *       measures where "percent" is missing or "req" is in
+> correct in
+> *       early years.
+> *    3) Change code to select GO Bonds over parcel taxes a
+> s a higher
+> *       priority than selecting on the vote share when mul
+> tiple measures
+> *       occur in the same year.
+> *
+> * HISTORY:
+> * Based on:
+> * graphs.do
+> *    By Francisco Perez Arce Novaro
+> *    July 31, 2007
+> *
+> *    Generates scatter plots of vote share and financial v
+> ariables, as well as enrollment.
+> *    Uses data created by newleaidsforleafinancepanel.do (
+> in this directory)
+> *    the dataset used is "newleaidsforleafinancepanel.dta 
+> (in this directory)
+> *    Creates gphs, stored in a subfolder of this directory
+>  (raw)
+> *    to run this program: place this do file in the same d
+> irectory as "newleaidsforleafinancepanel.dta
+> *    and open two subfolders in this directory with names:
+>  "raw" and "graphs"
+> * prepdata.do (in spending\march2008 directory)
+> *    Updated:
+> *    8/1/2007, by fpan:  added these comments
+> *    8/2/2007, by fpan: created cumulative variables and c
+> umulative graphs
+> *    8/8/2007, by fpan: changed censors for some variables
+> ;
+> *    8/13/2007 by fpan: changed censors for some variables
+> ;
+> *    8/20/2007 by fpan: created `v'_to for year==-2;
+> *
+> 
+> **********************************************************
+> ****/
+> 
+> 
+> 
+> 
+> set mem 100m;
+
+Current memory allocation
+
+                    current                                 
+> memory usage
+    settable          value     description                 
+> (1M = 1024k)
+    --------------------------------------------------------
+> ------------
+    set maxvar         5000     max. variables allowed      
+>      1.909M
+    set memory          100M    max. data space             
+>    100.000M
+    set matsize         400     max. RHS vars in models     
+>      1.254M
+                                                            
+> -----------
+                                                            
+>    103.163M
+
+. if c(os)=="MacOSX" {;
+.   local projectbase "/Volumes/dept/wws/research/rothstein/
+> projects/caelections";
+. };
+
+. else {;
+.   local projectbase "t:\projects\caelections";
+.   *use z:\ccd\leafinance\cleaned\leafinance_panel_ca.dta;
+. };
+
+. *Get the measure data ready;
+. * use "`projectbase'\houseprices\fromfernando\referenda_ne
+> wleaids_capital.dta";
+.  use "referenda_newleaids_capital.dta";
+
+.  rename year yearref;
+
+.  *note: we are replacing calendar year with schoolyear;
+.   clonevar year=yearref;
+
+.   replace yearref = yearref - 1 if month<5;
+(598 real changes made)
+
+.   label var yearref "schoolyear starting yr of elec.";
+
+.  *change req threshold and type in one election, look at :
+> \\coauthor\referenda_graphing_RDD.do for details;
+.   replace req="M" if newleaid=="0615180" & yearref==1992;
+(1 real change made)
+
+.   replace election_type="Other" if newleaid=="0615180" & y
+> earref==1992;
+(1 real change made)
+
+.  *Select sample;
+.   *Keep only measures since 1995;
+.    *keep if yearref>=1995;
+.   *Keep only measures since 1987;
+.    keep if yearref>=1987;
+(72 observations deleted)
+
+.   *Keep only GO Bonds and parcel taxes;
+.    keep if election_type== "GO Bond"  | election_type=="Pa
+> rcel Tax";
+(88 observations deleted)
+
+.    gen gobond=(election_type=="GO Bond");
+
+.    gen parcel_cap=(capitaloutlays=="Y")*(gobond==0);
+
+.   *Identify measures where percent, passfail, and req dont
+>  all match;
+.    gen mv=percent-req_num;
+(11 missing values generated)
+
+.    gen badobs=(mv>=0 & mv<. & passfail=="F");
+
+.    replace badobs=1 if mv<0 & passfail=="P";
+(1 real change made)
+
+.    replace badobs=1 if mv==.;
+(11 real changes made)
+
+.    count if badobs==1 & percent<.;
+    1
+
+.    assert r(N)==1;
+
+.    count if badobs==1 & percent==.;
+   11
+
+.    replace percent=. if badobs==1;
+(1 real change made, 1 to missing)
+
+.    label var mv "voteshare-based MARGIN of VICTORY";
+
+.   *If there are multiple measures that meet these criteria
+> , keep winning over losing measures
+>   *and then keep only the highest vote share.  Break ties 
+> by (1) GO over parcel (2) lowest requirement.;
+.    gen win=(passfail=="P") if badobs~=1;
+(12 missing values generated)
+
+.    gen fakewin=(percent>=66.7) if percent<. & req_num<=56;
+(1285 missing values generated)
+
+.    replace fakewin=(percent>=55) if percent<. & req_num>=6
+> 6 & req_num<.;
+(1273 real changes made)
+
+.    assert req_num<=56 | req_num>=66;
+
+.    label var fakewin "Indicator for pass at counterfactual
+>  threshold";
+
+.    gsort newleaid yearref badobs -gobond -win -percent req
+> _num ;
+
+.    by newleaid yearref: gen numelec=_N;
+
+.    by newleaid yearref: gen numbad=sum(badobs);
+
+.    by newleaid yearref: replace badobs=(numbad[_N]>0);
+(1 real change made)
+
+.    by newleaid yearref: keep if _n==1;
+(128 observations deleted)
+
+.    label var numelec "# of GO/parcel elecs in same year";
+
+.  *Form counts of measures per district since 1983;
+.   sort newleaid yearref;
+
+.   by newleaid: gen measnum=_n;
+
+.   by newleaid: gen nummeas=_N;
+
+.   label var measnum "Measure number (chronological) in dis
+> trict";
+
+.   label var nummeas "Number of measures in district in sam
+> ple";
+
+.   tab measnum;
+
+    Measure |
+     number |
+(chronologi |
+    cal) in |
+   district |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        656       42.21       42.21
+          2 |        423       27.22       69.43
+          3 |        238       15.32       84.75
+          4 |        123        7.92       92.66
+          5 |         62        3.99       96.65
+          6 |         31        1.99       98.65
+          7 |         14        0.90       99.55
+          8 |          6        0.39       99.94
+          9 |          1        0.06      100.00
+------------+-----------------------------------
+      Total |      1,554      100.00
+
+.   tab nummeas if measnum==nummeas;
+
+  Number of |
+measures in |
+district in |
+     sample |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        233       35.52       35.52
+          2 |        185       28.20       63.72
+          3 |        115       17.53       81.25
+          4 |         61        9.30       90.55
+          5 |         31        4.73       95.27
+          6 |         17        2.59       97.87
+          7 |          8        1.22       99.09
+          8 |          5        0.76       99.85
+          9 |          1        0.15      100.00
+------------+-----------------------------------
+      Total |        656      100.00
+
+.   su measnum, meanonly;
+
+.   local maxnmeas=r(max);
+
+.  sort newleaid yearref;
+
+.  isid newleaid yearref;
+
+.  compress;
+source was float now byte
+cofips was long now int
+altcofips was long now byte
+gobond was float now byte
+parcel_cap was float now byte
+badobs was float now byte
+win was float now byte
+fakewin was float now byte
+numelec was float now byte
+numbad was float now byte
+measnum was float now byte
+nummeas was float now byte
+county was str55 now str24
+district was str52 now str37
+election_type was str31 now str10
+percent_string was str19 now str11
+passfail was str8 now str1
+req was str20 now str1
+proposed_bond was str15 now str10
+purpose was str244 now str236
+district_code was str13 now str5
+ada was str10 now str6
+altname4 was str30 now str29
+altname6 was str30 now str26
+altname7 was str30 now str15
+
+.  save referenda, replace;
+(note: file referenda.dta not found)
+file referenda.dta saved
+
+. tempfile referenda referenda_wide;
+
+.  sort newleaid yearref;
+
+.  gen refid=_n;
+
+.  *We only need a few variables;
+.   keep newleaid yearref percent win fakewin req_num numele
+> c gobond parcel_cap
+>        refid measnum nummeas proposed_bond;
+
+.   rename req_num req;
+
+.  save `referenda';
+file C:\DOCUME~1\JESSER~1\LOCALS~1\Temp\ST_0000008d.tmp save
+> d
+
+. *Make counts of referenda to date and victories to date;
+. use `referenda';
+
+. gen meastodate=measnum;
+
+. by newleaid (yearref): gen winstodate=sum(win);
+
+. keep newleaid yearref meastodate winstodate ;
+
+. fillin newleaid yearref;
+
+. sort newleaid yearref;
+
+. by newleaid: replace meastodate=0 if _n==1 & _fillin;
+(610 real changes made)
+
+. by newleaid: replace winstodate=0 if _n==1 & _fillin;
+(610 real changes made)
+
+. by newleaid: replace meastodate=meastodate[_n-1] if measto
+> date==.;
+(10956 real changes made)
+
+. by newleaid: replace winstodate=winstodate[_n-1] if winsto
+> date==.;
+(10956 real changes made)
+
+. drop _fillin;
+
+. sort newleaid yearref;
+
+. rename yearref year;
+
+. tempfile refs2date;
+
+. save `refs2date';
+file C:\DOCUME~1\JESSER~1\LOCALS~1\Temp\ST_0000008k.tmp save
+> d
+
+. *Merge to the finance data, and make leads and lags of the
+>  referenda variables;
+.  use financepanel;
+
+.  *Drop observations with <50 enrollment;
+.   drop if v33<50;
+(521 observations deleted)
+
+.  sort newleaid year;
+
+.  merge newleaid year using `refs2date', unique;
+
+.  tab _merge;
+
+     _merge |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      3,078       19.00       19.00
+          2 |      5,984       36.94       55.95
+          3 |      7,136       44.05      100.00
+------------+-----------------------------------
+      Total |     16,198      100.00
+
+.  sort newleaid year;
+
+.  by newleaid: replace meastodate=0 if _merge==1 & _n==1;
+(297 real changes made)
+
+.  by newleaid: replace winstodate=0 if _merge==1 & _n==1;
+(297 real changes made)
+
+.  by newleaid: replace meastodate=meastodate[_n-1] if _merg
+> e==1 & _n>1;
+(2781 real changes made)
+
+.  by newleaid: replace winstodate=winstodate[_n-1] if _merg
+> e==1 & _n>1;
+(2781 real changes made)
+
+.  drop _merge;
+
+.  sort newleaid year;
+
+.  *Fill in measures/wins for observations pre CCD;
+.   fillin newleaid year;
+
+.   sort newleaid year;
+
+.   by newleaid: replace meastodate=0 if _n==1 & meastodate=
+> =.;
+(297 real changes made)
+
+.   by newleaid: replace winstodate=0 if _n==1 & winstodate=
+> =.;
+(297 real changes made)
+
+.   by newleaid: replace meastodate=meastodate[_n-1] if _n>1
+>  & meastodate==.;
+(2565 real changes made)
+
+.   by newleaid: replace winstodate=winstodate[_n-1] if _n>1
+>  & winstodate==.;
+(2565 real changes made)
+
+.  tempfile financedat;
+
+.  save `financedat';
+file C:\DOCUME~1\JESSER~1\LOCALS~1\Temp\ST_0000008q.tmp save
+> d
+
+. *Form average enrollment per year, to use as denominator f
+> or bond size measure;
+.  use if v33<. using `financedat';
+
+.  collapse (mean) v33, by(newleaid);
+
+.  rename v33 avgenrollment;
+
+.  label var avgenrollment "Avg. district enrollment across 
+> all yrs";
+
+.  sort newleaid;
+
+. *Another set of outcome variables is the presence of an in
+> itiative on the ballot;
+.  merge newleaid using `referenda', uniqmaster;
+variable newleaid does not uniquely identify observations in
+    C:\DOCUME~1\JESSER~1\LOCALS~1\Temp\ST_0000008d.tmp
+
+.  tab _merge;
+
+     _merge |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        297       16.05       16.05
+          2 |         14        0.76       16.80
+          3 |      1,540       83.20      100.00
+------------+-----------------------------------
+      Total |      1,851      100.00
+
+.  drop if _merge==1;
+(297 observations deleted)
+
+.  drop _merge;
+
+.  destring proposed_bond, gen(bondamt_thisyr);
+proposed_bond has all characters numeric; bondamt_thisyr gen
+> erated as double
+(324 missing values generated)
+
+.  replace bondamt_thisyr=0 if win~=1 | bondamt_thisyr==.;
+(729 real changes made)
+
+.  *Convert to real 2000$, using "West" CPI-U (CUUR0400SA0,C
+> UUS0400SA0);
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/102.3 if yea
+> rref==1984;
+(0 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/106.8 if yea
+> rref==1985;
+(0 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/109.8 if yea
+> rref==1986;
+(0 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/113.2 if yea
+> rref==1987;
+(20 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/117.7 if yea
+> rref==1988;
+(20 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/123.3 if yea
+> rref==1989;
+(14 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/129.4 if yea
+> rref==1990;
+(14 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/136.2 if yea
+> rref==1991;
+(25 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/141.0 if yea
+> rref==1992;
+(22 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/145.5 if yea
+> rref==1993;
+(21 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/148.7 if yea
+> rref==1994;
+(17 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/152.9 if yea
+> rref==1995;
+(39 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/156.6 if yea
+> rref==1996;
+(47 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/160.6 if yea
+> rref==1997;
+(81 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/163.6 if yea
+> rref==1998;
+(54 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/167.8 if yea
+> rref==1999;
+(48 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/173.1 if yea
+> rref==2000;
+(49 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/180.2 if yea
+> rref==2001;
+(83 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/184.0 if yea
+> rref==2002;
+(68 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/188.2 if yea
+> rref==2003;
+(50 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/191.9 if yea
+> rref==2004;
+(48 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/197.1 if yea
+> rref==2005;
+(27 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/204.5 if yea
+> rref==2006;
+(78 real changes made)
+
+.   replace bondamt_thisyr=bondamt_thisyr*174.8/210.890 if y
+> earref==2007;
+(0 real changes made)
+
+.  gen bondamt_thisyr_pp=bondamt_thisyr/avgenrollment;
+(14 missing values generated)
+
+.  keep newleaid yearref gobond parcel_cap win bondamt_thisy
+> r_pp;
+
+.  rename gobond isgobond;
+
+.  rename parcel_cap isparcelcap;
+
+.  gen byte ismeasure=1;
+
+.  rename win iswin;
+
+.  label var isgobond "Is a GO Bond on ballot this yr?";
+
+.  label var ismeasure "Is any Bond/parcel tax on ballot thi
+> s yr?";
+
+.  label var isparcelcap "Is a parcel tax w/capital on ballo
+> t this yr?";
+
+.  label var iswin "Did measure on ballot win?";
+
+.  label var bondamt_thisyr_pp "Size of bond passed this yea
+> r/avg. enroll";
+
+.  fillin newleaid yearref;
+
+.  foreach v of varlist isgobond isparcelcap ismeasure iswin
+>  bondamt_thisyr_pp {;
+  2.         replace `v'=0 if _fillin==1;
+  3.  };
+(11566 real changes made)
+(11566 real changes made)
+(11566 real changes made)
+(11566 real changes made)
+(11566 real changes made)
+
+.  drop _fillin;
+
+.  rename yearref year;
+
+.  sort newleaid year;
+
+.  merge newleaid year using `financedat', unique;
+
+.  tab _merge;
+
+     _merge |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          2 |      5,940       31.16       31.16
+          3 |     13,120       68.84      100.00
+------------+-----------------------------------
+      Total |     19,060      100.00
+
+.  foreach v of varlist isgobond isparcelcap ismeasure iswin
+>  bondamt_thisyr_pp {;
+  2.         replace `v'=0 if _merge==2;
+  3.  };
+(5940 real changes made)
+(5940 real changes made)
+(5940 real changes made)
+(5940 real changes made)
+(5940 real changes made)
+
+.  drop _merge;
+
+.  sort newleaid year;
+
+.  joinby newleaid using `referenda', unmatched(none);
+
+.  gen dyear=year-yearref;
+
+.  tab dyear, m;
+
+      dyear |      Freq.     Percent        Cum.
+------------+-----------------------------------
+        -19 |        111        0.36        0.36
+        -18 |        154        0.50        0.85
+        -17 |        249        0.80        1.65
+        -16 |        359        1.16        2.81
+        -15 |        459        1.48        4.29
+        -14 |        568        1.83        6.11
+        -13 |        648        2.08        8.20
+        -12 |        741        2.38       10.58
+        -11 |        827        2.66       13.24
+        -10 |        961        3.09       16.34
+         -9 |      1,036        3.33       19.67
+         -8 |      1,110        3.57       23.24
+         -7 |      1,165        3.75       26.99
+         -6 |      1,231        3.96       30.95
+         -5 |      1,294        4.16       35.11
+         -4 |      1,383        4.45       39.56
+         -3 |      1,425        4.58       44.15
+         -2 |      1,460        4.70       48.84
+         -1 |      1,508        4.85       53.70
+          0 |      1,554        5.00       58.70
+          1 |      1,443        4.64       63.34
+          2 |      1,400        4.50       67.84
+          3 |      1,305        4.20       72.04
+          4 |      1,195        3.84       75.89
+          5 |      1,095        3.52       79.41
+          6 |        986        3.17       82.58
+          7 |        906        2.92       85.50
+          8 |        813        2.62       88.11
+          9 |        727        2.34       90.45
+         10 |        593        1.91       92.36
+         11 |        518        1.67       94.03
+         12 |        444        1.43       95.46
+         13 |        389        1.25       96.71
+         14 |        323        1.04       97.75
+         15 |        260        0.84       98.58
+         16 |        171        0.55       99.13
+         17 |        129        0.42       99.55
+         18 |         94        0.30       99.85
+         19 |         46        0.15      100.00
+------------+-----------------------------------
+      Total |     31,080      100.00
+
+.  *keep if dyear>=-2 & dyear<=6;
+.   keep if dyear>=-19 & dyear<=19;
+(0 observations deleted)
+
+. *Make squared, cubed, etc. vars;
+.  gen percent2=percent^2;
+(200 missing values generated)
+
+.  gen percent3=percent^3;
+(200 missing values generated)
+
+.  *Make leads and lags;
+.   foreach v in percent percent2 percent3 win fakewin req n
+> umelec gobond parcel_cap {;
+  2.    forvalues dy=1/19 {;
+  3.     gen `v'_m`dy'=`v'*(dyear==-`dy');
+  4.     };
+  5.    forvalues dy=0/19 {;
+  6.     gen `v'_`dy'=`v'*(dyear==`dy');
+  7.    };
+  8.    *drop `v';
+.   };
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+(200 missing values generated)
+
+. *Clean up some variables;
+.  gen dltdebt=_41f-_19h;
+(14178 missing values generated)
+
+.  gen dstdebt=_66v-_61v;
+(14178 missing values generated)
+
+.  *note: this generates a column of ceros;
+.  *note: checking back, since leafinane_panel_ca those vari
+> ables were only zeros;
+.   rename _21f ltdebtiss;
+
+.   rename _31f ltdebtret;
+
+.   rename _41f ltdebt;
+
+.   rename i86 interest;
+
+.   rename t06 locproptax;
+
+.   rename v40 curexp_oper;
+
+.   rename v45 curexp_xport;
+
+.   rename v60 curexp_entop;
+
+.   rename f12 cap_constr;
+
+.   rename g15 cap_land;
+
+.   gen cap_equip=k09+k10+k11;
+(14178 missing values generated)
+
+.   rename z33 instrsal;
+
+.   rename _66v stdebt;
+
+.   rename w01 assets_sink;
+
+.   rename w31 assets_bond;
+
+.   rename w61 assets_other;
+
+.   rename u22 interestearned;
+
+. *Current non-instructional expenditure:
+> *(Total current elem/sec - instructional) + total non-elem
+> /sec
+> * Excludes the following that are otherwise included in to
+> tal expenditures:
+> * L12: Payments to state governments
+> * M12: Payments to local governments
+> * Q11: Payments to other school systems
+> * I86: Interest on debt;
+.  gen tcurnoninst=tcurelsc-tcurinst+tnonelse;
+(14178 missing values generated)
+
+.  gen igpmts = l12 + m12 + q11;
+(14178 missing values generated)
+
+.  gen totassets=assets_sink+assets_bond+assets_other;
+(14178 missing values generated)
+
+. gen othlocrev = tlocrev - locproptax - interestearned;
+(14178 missing values generated)
+
+. gen othcurelsc = tcurelsc - tcurinst - curexp_oper;
+(14178 missing values generated)
+
+. gen netrev = totalrev - totalexp;
+(14178 missing values generated)
+
+. gen totdebt = ltdebt + stdebt;
+(14178 missing values generated)
+
+. gen netassets = totassets - totdebt;
+(14178 missing values generated)
+
+. destring proposed_bond, gen(bondamt);
+proposed_bond has all characters numeric; bondamt generated 
+> as double
+(6480 missing values generated)
+
+. foreach v of varlist tcapout tcurelsc totalexp tcurinst dl
+> tdebt ltdebtiss ltdebtret ltdebt interest
+>              locproptax curexp_oper curexp_xport curexp_en
+> top cap_constr cap_land cap_equip instrsal
+>              tstrev tfedrev c11 c12 c01 c13 c35 tcurnonins
+> t
+>              stdebt assets_sink assets_bond assets_other d
+> stdebt tlocrev interestearned
+>              totalrev tnonelse igpmts totassets othlocrev 
+> othcurelsc netrev totdebt
+>              bondamt
+>              {;
+  2.  *Convert to real 2000$, using "West" CPI-U (CUUR0400SA
+> 0,CUUS0400SA0);
+.   replace `v'=`v'*174.8/102.3 if year==1984;
+  3.   replace `v'=`v'*174.8/106.8 if year==1985;
+  4.   replace `v'=`v'*174.8/109.8 if year==1986;
+  5.   replace `v'=`v'*174.8/113.2 if year==1987;
+  6.   replace `v'=`v'*174.8/117.7 if year==1988;
+  7.   replace `v'=`v'*174.8/123.3 if year==1989;
+  8.   replace `v'=`v'*174.8/129.4 if year==1990;
+  9.   replace `v'=`v'*174.8/136.2 if year==1991;
+ 10.   replace `v'=`v'*174.8/141.0 if year==1992;
+ 11.   replace `v'=`v'*174.8/145.5 if year==1993;
+ 12.   replace `v'=`v'*174.8/148.7 if year==1994;
+ 13.   replace `v'=`v'*174.8/152.9 if year==1995;
+ 14.   replace `v'=`v'*174.8/156.6 if year==1996;
+ 15.   replace `v'=`v'*174.8/160.6 if year==1997;
+ 16.   replace `v'=`v'*174.8/163.6 if year==1998;
+ 17.   replace `v'=`v'*174.8/167.8 if year==1999;
+ 18.   replace `v'=`v'*174.8/173.1 if year==2000;
+ 19.   replace `v'=`v'*174.8/180.2 if year==2001;
+ 20.   replace `v'=`v'*174.8/184.0 if year==2002;
+ 21.   replace `v'=`v'*174.8/188.2 if year==2003;
+ 22.   replace `v'=`v'*174.8/191.9 if year==2004;
+ 23.   replace `v'=`v'*174.8/197.1 if year==2005;
+ 24.   replace `v'=`v'*174.8/204.5 if year==2006;
+ 25.   replace `v'=`v'*174.8/210.890 if year==2007;
+ 26.         gen `v'_pp=`v'/v33;
+ 27.   *Truncate top & bottom 1% of each;
+.    qui su `v'_pp, d;
+ 28.    replace `v'_pp=r(p1) if `v'_pp<r(p1);
+ 29.    replace `v'_pp=r(p99) if `v'_pp>r(p99) & `v'_pp<.;
+ 30.  };
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1535 real changes made)
+(1536 real changes made)
+(1528 real changes made)
+(1524 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(166 real changes made)
+(166 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(166 real changes made)
+(165 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(166 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(516 real changes made)
+(555 real changes made)
+(894 real changes made)
+(928 real changes made)
+(1011 real changes made)
+(1072 real changes made)
+(1151 real changes made)
+(1172 real changes made)
+(1269 real changes made)
+(1272 real changes made)
+(1354 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(158 real changes made)
+(218 real changes made)
+(236 real changes made)
+(394 real changes made)
+(461 real changes made)
+(377 real changes made)
+(495 real changes made)
+(541 real changes made)
+(562 real changes made)
+(456 real changes made)
+(640 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(167 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(478 real changes made)
+(471 real changes made)
+(809 real changes made)
+(809 real changes made)
+(890 real changes made)
+(975 real changes made)
+(1015 real changes made)
+(1081 real changes made)
+(1158 real changes made)
+(1229 real changes made)
+(1305 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(167 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(545 real changes made)
+(590 real changes made)
+(989 real changes made)
+(1027 real changes made)
+(1117 real changes made)
+(1144 real changes made)
+(1217 real changes made)
+(1242 real changes made)
+(1321 real changes made)
+(1360 real changes made)
+(1388 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(515 real changes made)
+(508 real changes made)
+(808 real changes made)
+(851 real changes made)
+(954 real changes made)
+(1033 real changes made)
+(1170 real changes made)
+(1250 real changes made)
+(1359 real changes made)
+(1427 real changes made)
+(1450 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(164 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1536 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(166 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(547 real changes made)
+(547 real changes made)
+(547 real changes made)
+(482 real changes made)
+(474 real changes made)
+(1031 real changes made)
+(1177 real changes made)
+(1451 real changes made)
+(1514 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(547 real changes made)
+(547 real changes made)
+(542 real changes made)
+(478 real changes made)
+(469 real changes made)
+(975 real changes made)
+(1117 real changes made)
+(1380 real changes made)
+(1458 real changes made)
+(1476 real changes made)
+(1473 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(167 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(35 real changes made)
+(34 real changes made)
+(36 real changes made)
+(80 real changes made)
+(162 real changes made)
+(260 real changes made)
+(227 real changes made)
+(263 real changes made)
+(265 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(167 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1444 real changes made)
+(1432 real changes made)
+(1526 real changes made)
+(1529 real changes made)
+(1521 real changes made)
+(1524 real changes made)
+(1525 real changes made)
+(1516 real changes made)
+(1519 real changes made)
+(1489 real changes made)
+(1494 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1260 real changes made)
+(1232 real changes made)
+(1356 real changes made)
+(1324 real changes made)
+(1444 real changes made)
+(1468 real changes made)
+(1464 real changes made)
+(1427 real changes made)
+(1424 real changes made)
+(1413 real changes made)
+(1358 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1530 real changes made)
+(1535 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1512 real changes made)
+(1407 real changes made)
+(1274 real changes made)
+(1250 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(167 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1534 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(168 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(533 real changes made)
+(423 real changes made)
+(630 real changes made)
+(709 real changes made)
+(589 real changes made)
+(798 real changes made)
+(830 real changes made)
+(569 real changes made)
+(940 real changes made)
+(910 real changes made)
+(765 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1421 real changes made)
+(1418 real changes made)
+(1422 real changes made)
+(1374 real changes made)
+(1386 real changes made)
+(1384 real changes made)
+(1385 real changes made)
+(1387 real changes made)
+(1395 real changes made)
+(1394 real changes made)
+(1392 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1519 real changes made)
+(1509 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(166 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(165 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(168 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1004 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(163 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(102 real changes made)
+(123 real changes made)
+(129 real changes made)
+(146 real changes made)
+(1057 real changes made)
+(1123 real changes made)
+(1236 real changes made)
+(1293 real changes made)
+(1357 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(8 real changes made)
+(19 real changes made)
+(668 real changes made)
+(780 real changes made)
+(865 real changes made)
+(926 real changes made)
+(1014 real changes made)
+(1096 real changes made)
+(1195 real changes made)
+(1190 real changes made)
+(1217 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(167 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1525 real changes made)
+(1534 real changes made)
+(1528 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1004 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(163 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(166 real changes made)
+(166 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1532 real changes made)
+(1535 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1530 real changes made)
+(1526 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(167 real changes made)
+(169 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(166 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1512 real changes made)
+(1516 real changes made)
+(861 real changes made)
+(834 real changes made)
+(827 real changes made)
+(1025 real changes made)
+(1064 real changes made)
+(1162 real changes made)
+(1196 real changes made)
+(1197 real changes made)
+(1188 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(163 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1341 real changes made)
+(1331 real changes made)
+(1307 real changes made)
+(1330 real changes made)
+(1331 real changes made)
+(1322 real changes made)
+(1321 real changes made)
+(1305 real changes made)
+(1318 real changes made)
+(1308 real changes made)
+(1329 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(167 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1534 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(168 real changes made)
+(167 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1535 real changes made)
+(1538 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(165 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1533 real changes made)
+(1536 real changes made)
+(1532 real changes made)
+(1534 real changes made)
+(1534 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1539 real changes made)
+(1537 real changes made)
+(1534 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(169 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(545 real changes made)
+(590 real changes made)
+(989 real changes made)
+(1027 real changes made)
+(1117 real changes made)
+(1144 real changes made)
+(1217 real changes made)
+(1242 real changes made)
+(1321 real changes made)
+(1360 real changes made)
+(1388 real changes made)
+(0 real changes made)
+(0 real changes made)
+(14178 missing values generated)
+(0 real changes made)
+(168 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(1230 real changes made)
+(0 real changes made)
+(17675 missing values generated)
+(134 real changes made)
+(134 real changes made)
+
+. *replace totalexp_pp = totalexp_pp/1000;
+. *replace tcurelsc_pp = tcurelsc_pp/1000;
+. *replace tcapout_pp= tcapout_pp/1000;
+. compress;
+csa was float now int
+stfips was float now byte
+meastodate was float now byte
+winstodate was float now byte
+refid was float now int
+dyear was float now byte
+win_m1 was float now byte
+win_m2 was float now byte
+win_m3 was float now byte
+win_m4 was float now byte
+win_m5 was float now byte
+win_m6 was float now byte
+win_m7 was float now byte
+win_m8 was float now byte
+win_m9 was float now byte
+win_m10 was float now byte
+win_m11 was float now byte
+win_m12 was float now byte
+win_m13 was float now byte
+win_m14 was float now byte
+win_m15 was float now byte
+win_m16 was float now byte
+win_m17 was float now byte
+win_m18 was float now byte
+win_m19 was float now byte
+win_0 was float now byte
+win_1 was float now byte
+win_2 was float now byte
+win_3 was float now byte
+win_4 was float now byte
+win_5 was float now byte
+win_6 was float now byte
+win_7 was float now byte
+win_8 was float now byte
+win_9 was float now byte
+win_10 was float now byte
+win_11 was float now byte
+win_12 was float now byte
+win_13 was float now byte
+win_14 was float now byte
+win_15 was float now byte
+win_16 was float now byte
+win_17 was float now byte
+win_18 was float now byte
+win_19 was float now byte
+fakewin_m1 was float now byte
+fakewin_m2 was float now byte
+fakewin_m3 was float now byte
+fakewin_m4 was float now byte
+fakewin_m5 was float now byte
+fakewin_m6 was float now byte
+fakewin_m7 was float now byte
+fakewin_m8 was float now byte
+fakewin_m9 was float now byte
+fakewin_m10 was float now byte
+fakewin_m11 was float now byte
+fakewin_m12 was float now byte
+fakewin_m13 was float now byte
+fakewin_m14 was float now byte
+fakewin_m15 was float now byte
+fakewin_m16 was float now byte
+fakewin_m17 was float now byte
+fakewin_m18 was float now byte
+fakewin_m19 was float now byte
+fakewin_0 was float now byte
+fakewin_1 was float now byte
+fakewin_2 was float now byte
+fakewin_3 was float now byte
+fakewin_4 was float now byte
+fakewin_5 was float now byte
+fakewin_6 was float now byte
+fakewin_7 was float now byte
+fakewin_8 was float now byte
+fakewin_9 was float now byte
+fakewin_10 was float now byte
+fakewin_11 was float now byte
+fakewin_12 was float now byte
+fakewin_13 was float now byte
+fakewin_14 was float now byte
+fakewin_15 was float now byte
+fakewin_16 was float now byte
+fakewin_17 was float now byte
+fakewin_18 was float now byte
+fakewin_19 was float now byte
+numelec_m1 was float now byte
+numelec_m2 was float now byte
+numelec_m3 was float now byte
+numelec_m4 was float now byte
+numelec_m5 was float now byte
+numelec_m6 was float now byte
+numelec_m7 was float now byte
+numelec_m8 was float now byte
+numelec_m9 was float now byte
+numelec_m10 was float now byte
+numelec_m11 was float now byte
+numelec_m12 was float now byte
+numelec_m13 was float now byte
+numelec_m14 was float now byte
+numelec_m15 was float now byte
+numelec_m16 was float now byte
+numelec_m17 was float now byte
+numelec_m18 was float now byte
+numelec_m19 was float now byte
+numelec_0 was float now byte
+numelec_1 was float now byte
+numelec_2 was float now byte
+numelec_3 was float now byte
+numelec_4 was float now byte
+numelec_5 was float now byte
+numelec_6 was float now byte
+numelec_7 was float now byte
+numelec_8 was float now byte
+numelec_9 was float now byte
+numelec_10 was float now byte
+numelec_11 was float now byte
+numelec_12 was float now byte
+numelec_13 was float now byte
+numelec_14 was float now byte
+numelec_15 was float now byte
+numelec_16 was float now byte
+numelec_17 was float now byte
+numelec_18 was float now byte
+numelec_19 was float now byte
+gobond_m1 was float now byte
+gobond_m2 was float now byte
+gobond_m3 was float now byte
+gobond_m4 was float now byte
+gobond_m5 was float now byte
+gobond_m6 was float now byte
+gobond_m7 was float now byte
+gobond_m8 was float now byte
+gobond_m9 was float now byte
+gobond_m10 was float now byte
+gobond_m11 was float now byte
+gobond_m12 was float now byte
+gobond_m13 was float now byte
+gobond_m14 was float now byte
+gobond_m15 was float now byte
+gobond_m16 was float now byte
+gobond_m17 was float now byte
+gobond_m18 was float now byte
+gobond_m19 was float now byte
+gobond_0 was float now byte
+gobond_1 was float now byte
+gobond_2 was float now byte
+gobond_3 was float now byte
+gobond_4 was float now byte
+gobond_5 was float now byte
+gobond_6 was float now byte
+gobond_7 was float now byte
+gobond_8 was float now byte
+gobond_9 was float now byte
+gobond_10 was float now byte
+gobond_11 was float now byte
+gobond_12 was float now byte
+gobond_13 was float now byte
+gobond_14 was float now byte
+gobond_15 was float now byte
+gobond_16 was float now byte
+gobond_17 was float now byte
+gobond_18 was float now byte
+gobond_19 was float now byte
+parcel_cap_m1 was float now byte
+parcel_cap_m2 was float now byte
+parcel_cap_m3 was float now byte
+parcel_cap_m4 was float now byte
+parcel_cap_m5 was float now byte
+parcel_cap_m6 was float now byte
+parcel_cap_m7 was float now byte
+parcel_cap_m8 was float now byte
+parcel_cap_m9 was float now byte
+parcel_cap_m10 was float now byte
+parcel_cap_m11 was float now byte
+parcel_cap_m12 was float now byte
+parcel_cap_m13 was float now byte
+parcel_cap_m14 was float now byte
+parcel_cap_m15 was float now byte
+parcel_cap_m16 was float now byte
+parcel_cap_m17 was float now byte
+parcel_cap_m18 was float now byte
+parcel_cap_m19 was float now byte
+parcel_cap_0 was float now byte
+parcel_cap_1 was float now byte
+parcel_cap_2 was float now byte
+parcel_cap_3 was float now byte
+parcel_cap_4 was float now byte
+parcel_cap_5 was float now byte
+parcel_cap_6 was float now byte
+parcel_cap_7 was float now byte
+parcel_cap_8 was float now byte
+parcel_cap_9 was float now byte
+parcel_cap_10 was float now byte
+parcel_cap_11 was float now byte
+parcel_cap_12 was float now byte
+parcel_cap_13 was float now byte
+parcel_cap_14 was float now byte
+parcel_cap_15 was float now byte
+parcel_cap_16 was float now byte
+parcel_cap_17 was float now byte
+parcel_cap_18 was float now byte
+parcel_cap_19 was float now byte
+c35_pp was float now byte
+v33 was double now long
+t09 was double now byte
+t15 was double now byte
+t40 was double now byte
+t99 was double now long
+t02 was double now byte
+d23 was double now long
+d11 was double now long
+a07 was double now long
+a08 was double now long
+a09 was double now long
+a11 was double now byte
+a13 was double now byte
+a20 was double now long
+a15 was double now long
+u97 was double now long
+tcuroth was double now long
+k09 was double now long
+k10 was double now long
+k11 was double now long
+l12 was double now long
+m12 was double now long
+q11 was double now long
+v13 was double now long
+v15 was double now long
+v17 was double now long
+z34 was double now long
+_61v was double now byte
+c35 was double now byte
+enroll was double now long
+enrollg was double now long
+nskls was double now int
+cbsa was double now long
+cofips was double now int
+
+. save "recursivepanel.dta", replace;
+file recursivepanel.dta saved
+
+. log close;
+       log:  C:\Documents and Settings\Jesse Rothstein\My Do
+> cuments\projects\caelections\archive\makerecursivepanel.lo
+> g
+  log type:  text
+ closed on:   6 Mar 2010, 13:36:14
+------------------------------------------------------------

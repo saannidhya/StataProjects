@@ -559,6 +559,7 @@ INPUT .\images\cov_smoothness_pctmin.png
 INPUT .\images\cov_smoothness_pctmin.png
 INPUT .\images\cov_smoothness_pctmin.png
 INPUT .\images\cov_smoothness_pctmin.png
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti10.tfm
 INPUT JMP-Article.aux
 INPUT .\JMP-Article.out
 INPUT .\JMP-Article.out
@@ -592,6 +593,8 @@ INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr8.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti10.pfb
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti10.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti12.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti12.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\symbols\msbm10.pfb

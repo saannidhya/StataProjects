@@ -9,6 +9,7 @@
 #           10/18/2024: Adding House Price Growth outcome variable to RDD
 #           11/16/2024: regression updates
 #           12/16/2024: Adding reference point for treatment effect estimates of t-1
+#           01/10/2025: Adding year F.E to the regressions, as per Cellini, Ferreira, and Rothstein (2010)
 #==========================================================================================================#
 
 # specify the set up location
@@ -165,46 +166,68 @@ plot_te_recenter(tes_gs, title = "Treatment Effect Estimates: Median House Price
 # get mean optimal bandwidth
 purrr::walk2(gs, names(gs), ~print(paste0("Eff. Bandwidth (h) for ", .y, ": " , round(.x$bws[1,],1))))
 
+#==============================================#
+# Adding Time Fixed Effects
+#==============================================#
 
-# gs[grep("t_plus", names(gs))] %>% map_dbl( ~ round(.x$bws[1,])[[1]] ) %>% mean
+dfs_agg_covs_w_tfe <- map(dfs_agg_covs, ~ dummy_cols(.x, select_columns = c("year"), remove_first_dummy = TRUE) %>% relocate(starts_with("year_"), .after = "year"))
 
+# dummy_cols(dfs_agg_covs$housing_roads_census_t_plus_0_matches, select_columns = c("year"), remove_first_dummy = TRUE) %>% 
+#   relocate(starts_with("year_"), .after = "year")
 
-# y <- dfs_agg_covs$housing_roads_census_t_plus_10_matches
-# x <-  c("pctsinparhhld", "pctrent", "pct18to64", "pctwhite")
-# geg <- rdrobust(  y = y$median_sale_amount,
-#            x = y$votes_pct_against,
+dfs_agg_covs_tfe_names <- map(dfs_agg_covs_w_tfe, ~ colnames(.x) %>% grep("year_", ., value = TRUE))
+
+covs_final_w_tfe <- map2(covs_final, dfs_agg_covs_tfe_names, ~c(.x, .y))
+
+gs_reg <- purrr::map2(covs_final_w_tfe, dfs_agg_covs_w_tfe, .f = function(x,y){
+  rdrobust(  y = y$median_sale_amount,
+             x = y$votes_pct_against,
+             c = cutoff,
+             covs = y %>%
+               select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+
+tes_gs_reg <- te_tables(gs_reg)
+plot_te(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+plot_te_recenter(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
+# rdrobust(  y = dfs_agg_covs_w_tfe$housing_roads_census_t_minus_1_matches$median_sale_amount,
+#            x = dfs_agg_covs_w_tfe$housing_roads_census_t_minus_1_matches$votes_pct_against,
 #            c = cutoff,
-#            covs = y %>%
-#              select(x) ,
-#            all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
-# summary(geg)
-# minus: 3, 1 . plus: 0, 1, 2, 3, 4, 5, 8
+#            covs = dfs_agg_covs_w_tfe$housing_roads_census_t_minus_1_matches %>%
+#              select(c(covs_final$housing_roads_census_t_minus_1_matches, "pctbachelors", dfs_agg_covs_tfe_names$housing_roads_census_t_minus_1_matches)) ,
+#            all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary
+
+#------------------------------------------------------------------------------------------------#
+covs_final_tfe <- purrr::map2(dfs_agg_covs_w_tfe, dfs_agg_covs_tfe_names, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list, dummies = .y))
+
+# cleaning covs_final to avoid multicollinearity
+covs_final_tfe$housing_roads_census_t_minus_3_matches <- covs_final$housing_roads_census_t_minus_3_matches
+covs_final_tfe$housing_roads_census_t_minus_2_matches <- covs_final$housing_roads_census_t_minus_2_matches
+covs_final_tfe$housing_roads_census_t_minus_1_matches <- c(covs_final$housing_roads_census_t_minus_1_matches, "pctbachelors")
+covs_final_tfe$housing_roads_census_t_plus_0_matches <- covs_final$housing_roads_census_t_plus_0_matches
+covs_final_tfe$housing_roads_census_t_plus_1_matches <- covs_final$housing_roads_census_t_plus_1_matches
+covs_final_tfe$housing_roads_census_t_plus_6_matches <- c("childpov", "poverty", "pctsinparhhld", "pct18to64", "pctseparated")
+covs_final_tfe$housing_roads_census_t_plus_7_matches <- c("poverty", "pctrent", "pct18to64", "pctotherrace", "pctseparated", "incherfindahl")
+covs_final_tfe$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches
+covs_final_tfe$housing_roads_census_t_plus_9_matches <- c(covs_final$housing_roads_census_t_plus_9_matches, "medfamy")
 
 
-# implemented using rdd_lm() which uses lm() funciton in R
-# tgt <- map2(covs_final, dfs_agg_covs, .f = function(x, y){
-#   rdd_lm(df = y, y = "median_sale_amount", x = "votes_pct_against", covs = x)
-# })
-# tes_tgt <- te_tables_lm(tgt)
-# plot_te(tes_tgt, var = coef)
-# ggplot(tes_tgt, aes(ord, coef)) +       
-#   geom_point(size = 3, shape = 19, color = "blue") +
-#   geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high), 
-#                 width = 0.2, color = "grey50", size = 0.7) +
-#   geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
-#   labs(
-#     x = "Year",
-#     y = "Treatment Effect",
-#     color = "Position"
-#   ) +
-#   theme_minimal() +
-#   theme(
-#     plot.title = element_text(hjust = 0.5),
-#     legend.position = "bottom"
-#   ) + scale_x_continuous(breaks = c(-3:10))
+covs_final_tfe_w <- map2(covs_final_tfe, dfs_agg_covs_tfe_names, ~c(.x, .y))
 
-# map(tgt, vif)
-# tgt$housing_roads_census_t_plus_10_matches$coefficients
+gs_reg_tfe <- purrr::map2(covs_final_tfe_w, dfs_agg_covs_w_tfe, .f = function(x,y){
+  rdrobust(  y = y$median_sale_amount,
+             x = y$votes_pct_against,
+             c = cutoff,
+             covs = y %>%
+               select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+tes_tfe <- te_tables(gs_reg_tfe)
+plot_te(tes_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+plot_te_recenter(tes_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
 
 # from gs list, select elements that start with "housing_roads_census_t_plus_"
 tes_gs %>% filter((ord >= 0)) %>%

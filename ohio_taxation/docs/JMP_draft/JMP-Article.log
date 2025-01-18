@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3.31) (preloaded format=pdflatex 2024.4.6)  28 DEC 2024 07:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3.31) (preloaded format=pdflatex 2024.4.6)  12 JAN 2025 17:25
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -583,63 +583,63 @@ Underfull \hbox (badness 10000) in paragraph at lines 24--24
 []|\OT1/cmr/m/n/12 Subdivision
  []
 
-<images/andover_township_14grandarmy_2007.png, id=224, 253.9305pt x 164.25pt>
+<images/andover_township_14grandarmy_2007.png, id=228, 253.9305pt x 164.25pt>
 File: images/andover_township_14grandarmy_2007.png Graphic file (type png)
 <use images/andover_township_14grandarmy_2007.png>
 Package pdftex.def Info: images/andover_township_14grandarmy_2007.png  used on input line 67.
 (pdftex.def)             Requested size: 230.18253pt x 148.89128pt.
-<images/andover_township_14grandarmy_2022.png, id=226, 242.7615pt x 164.5785pt>
+<images/andover_township_14grandarmy_2022.png, id=230, 242.7615pt x 164.5785pt>
 File: images/andover_township_14grandarmy_2022.png Graphic file (type png)
 <use images/andover_township_14grandarmy_2022.png>
 Package pdftex.def Info: images/andover_township_14grandarmy_2022.png  used on input line 74.
 (pdftex.def)             Requested size: 230.18253pt x 156.05737pt.
-<images/morgan_township_2801OH-45_2009.png, id=227, 264.4425pt x 178.3755pt>
+<images/morgan_township_2801OH-45_2009.png, id=231, 264.4425pt x 178.3755pt>
 File: images/morgan_township_2801OH-45_2009.png Graphic file (type png)
 <use images/morgan_township_2801OH-45_2009.png>
 Package pdftex.def Info: images/morgan_township_2801OH-45_2009.png  used on input line 86.
 (pdftex.def)             Requested size: 230.18253pt x 155.26707pt.
-<images/morgan_township_2801OH-45_2018.png, id=228, 244.404pt x 174.762pt>
+<images/morgan_township_2801OH-45_2018.png, id=232, 244.404pt x 174.762pt>
 File: images/morgan_township_2801OH-45_2018.png Graphic file (type png)
 <use images/morgan_township_2801OH-45_2018.png>
 Package pdftex.def Info: images/morgan_township_2801OH-45_2018.png  used on input line 93.
 (pdftex.def)             Requested size: 230.18253pt x 164.59894pt.
 [7] [8 <./images/andover_township_14grandarmy_2007.png> <./images/andover_township_14grandarmy_2022.png> <./images/morgan_township_2801OH-45_2009.png> <./images/morgan_township_2801OH-45_2018.png>] [9] [10]
-<images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png, id=259, 855.195pt x 622.325pt>
+<images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png, id=263, 855.195pt x 622.325pt>
 File: images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png Graphic file (type png)
 <use images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png>
 Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_1_tri_mserd_1_2_within.png  used on input line 126.
 (pdftex.def)             Requested size: 225.4804pt x 164.0797pt.
-<images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png, id=260, 855.195pt x 622.325pt>
+<images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png, id=264, 855.195pt x 622.325pt>
 File: images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png Graphic file (type png)
 <use images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png>
 Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_2_tri_mserd_1_2_within.png  used on input line 133.
 (pdftex.def)             Requested size: 225.4804pt x 164.0797pt.
-<images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png, id=261, 855.195pt x 622.325pt>
+<images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png, id=265, 855.195pt x 622.325pt>
 File: images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png Graphic file (type png)
 <use images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png>
 Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_3_tri_mserd_1_2_within.png  used on input line 142.
 (pdftex.def)             Requested size: 225.4804pt x 164.0797pt.
-<images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png, id=262, 855.195pt x 622.325pt>
+<images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png, id=266, 855.195pt x 622.325pt>
 File: images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png Graphic file (type png)
 <use images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png>
 Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_4_tri_mserd_1_2_within.png  used on input line 149.
 (pdftex.def)             Requested size: 225.4804pt x 164.0797pt.
-<images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png, id=263, 855.195pt x 622.325pt>
+<images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png, id=267, 855.195pt x 622.325pt>
 File: images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png Graphic file (type png)
 <use images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png>
 Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_5_tri_mserd_1_2_within.png  used on input line 162.
 (pdftex.def)             Requested size: 225.4804pt x 164.0797pt.
-<images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png, id=264, 855.195pt x 622.325pt>
+<images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png, id=268, 855.195pt x 622.325pt>
 File: images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png Graphic file (type png)
 <use images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png>
 Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_6_tri_mserd_1_2_within.png  used on input line 169.
 (pdftex.def)             Requested size: 225.4804pt x 164.0797pt.
-<images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png, id=265, 855.195pt x 622.325pt>
+<images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png, id=269, 855.195pt x 622.325pt>
 File: images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png Graphic file (type png)
 <use images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png>
 Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_7_tri_mserd_1_2_within.png  used on input line 178.
 (pdftex.def)             Requested size: 225.4804pt x 164.0797pt.
-<images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png, id=266, 855.195pt x 622.325pt>
+<images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png, id=270, 855.195pt x 622.325pt>
 File: images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png Graphic file (type png)
 <use images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png>
 Package pdftex.def Info: images/rd_plot_median_sale_amount_t_plus_8_tri_mserd_1_2_within.png  used on input line 185.
@@ -705,7 +705,7 @@ Overfull \hbox (47.82063pt too wide) in alignment at lines 230--293
  []
 
 [14] [15] [16] [17]
-<images/votes_pct_against_histogram.png, id=315, 855.195pt x 622.325pt>
+<images/votes_pct_against_histogram.png, id=319, 855.195pt x 622.325pt>
 File: images/votes_pct_against_histogram.png Graphic file (type png)
 <use images/votes_pct_against_histogram.png>
 Package pdftex.def Info: images/votes_pct_against_histogram.png  used on input line 309.
@@ -756,19 +756,19 @@ Underfull \hbox (badness 3343) in paragraph at lines 20--20
  []
 
 [21]
-<images/tes_gs_re.png, id=355, 581.92406pt x 401.24907pt>
+<images/tes_gs_re.png, id=359, 581.92406pt x 401.24907pt>
 File: images/tes_gs_re.png Graphic file (type png)
 <use images/tes_gs_re.png>
 Package pdftex.def Info: images/tes_gs_re.png  used on input line 34.
 (pdftex.def)             Requested size: 469.75502pt x 323.91402pt.
  [22] [23 <./images/tes_gs_re.png>]
-<images/tes_covs_ua_re.png, id=369, 581.92406pt x 401.24907pt>
+<images/tes_covs_ua_re.png, id=373, 581.92406pt x 401.24907pt>
 File: images/tes_covs_ua_re.png Graphic file (type png)
 <use images/tes_covs_ua_re.png>
 Package pdftex.def Info: images/tes_covs_ua_re.png  used on input line 51.
 (pdftex.def)             Requested size: 469.75502pt x 323.91402pt.
  [24] [25 <./images/tes_covs_ua_re.png>]
-<images/tes_size_re.png, id=383, 581.92406pt x 401.24907pt>
+<images/tes_size_re.png, id=387, 581.92406pt x 401.24907pt>
 File: images/tes_size_re.png Graphic file (type png)
 <use images/tes_size_re.png>
 Package pdftex.def Info: images/tes_size_re.png  used on input line 65.
@@ -778,7 +778,7 @@ Overfull \hbox (7.74536pt too wide) in paragraph at lines 83--83
 []|\OT1/cmr/m/n/12 Percentile| 
  []
 
-<images/tes_qte_re.png, id=391, 581.92406pt x 401.24907pt>
+<images/tes_qte_re.png, id=395, 581.92406pt x 401.24907pt>
 File: images/tes_qte_re.png Graphic file (type png)
 <use images/tes_qte_re.png>
 Package pdftex.def Info: images/tes_qte_re.png  used on input line 107.
@@ -794,7 +794,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 134--134
  []
 
 [29] [30]
-<images/tes_g_w_re.png, id=422, 581.92406pt x 401.24907pt>
+<images/tes_g_w_re.png, id=426, 581.92406pt x 401.24907pt>
 File: images/tes_g_w_re.png Graphic file (type png)
 <use images/tes_g_w_re.png>
 Package pdftex.def Info: images/tes_g_w_re.png  used on input line 185.
@@ -819,7 +819,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 249--249
 []|\OT1/cmr/m/n/12 Effective Ob-
  []
 
-<images/tes_high_pov_re.png, id=455, 581.92406pt x 401.24907pt>
+<images/tes_high_pov_re.png, id=459, 581.92406pt x 401.24907pt>
 File: images/tes_high_pov_re.png Graphic file (type png)
 <use images/tes_high_pov_re.png>
 Package pdftex.def Info: images/tes_high_pov_re.png  used on input line 263.
@@ -829,7 +829,7 @@ Underfull \hbox (badness 7888) in paragraph at lines 13--13
 []|\OT1/cmr/bx/n/12 Year rel-a-tive
  []
 
-<images/tes_gs.png, id=511, 578.16pt x 346.29375pt>
+<images/tes_gs.png, id=515, 578.16pt x 346.29375pt>
 File: images/tes_gs.png Graphic file (type png)
 <use images/tes_gs.png>
 Package pdftex.def Info: images/tes_gs.png  used on input line 38.
@@ -837,12 +837,12 @@ Package pdftex.def Info: images/tes_gs.png  used on input line 38.
 [41
 
 ] [42 <./images/tes_gs.png>]
-<images/tes_emp.png, id=523, 506.6428pt x 398.99063pt>
+<images/tes_emp.png, id=527, 506.6428pt x 398.99063pt>
 File: images/tes_emp.png Graphic file (type png)
 <use images/tes_emp.png>
 Package pdftex.def Info: images/tes_emp.png  used on input line 82.
 (pdftex.def)             Requested size: 469.75502pt x 369.94942pt.
-<images/tes_ln_emp.png, id=524, 506.6428pt x 398.99063pt>
+<images/tes_ln_emp.png, id=528, 506.6428pt x 398.99063pt>
 File: images/tes_ln_emp.png Graphic file (type png)
 <use images/tes_ln_emp.png>
 Package pdftex.def Info: images/tes_ln_emp.png  used on input line 118.
@@ -854,12 +854,12 @@ Underfull \hbox (badness 3895) in paragraph at lines 133--133
 []|\OT1/cmr/m/n/12 Year rel-a-
  []
 
-<images/tes_wages.png, id=545, 506.6428pt x 398.99063pt>
+<images/tes_wages.png, id=549, 506.6428pt x 398.99063pt>
 File: images/tes_wages.png Graphic file (type png)
 <use images/tes_wages.png>
 Package pdftex.def Info: images/tes_wages.png  used on input line 158.
 (pdftex.def)             Requested size: 469.75502pt x 369.94942pt.
-<images/tes_ln_wages.png, id=546, 506.6428pt x 398.99063pt>
+<images/tes_ln_wages.png, id=550, 506.6428pt x 398.99063pt>
 File: images/tes_ln_wages.png Graphic file (type png)
 <use images/tes_ln_wages.png>
 Package pdftex.def Info: images/tes_ln_wages.png  used on input line 195.
@@ -947,42 +947,42 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 [51
 
 ] [52]
-<images/cov_smoothness_pctrent.png, id=578, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctrent.png, id=582, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctrent.png Graphic file (type png)
 <use images/cov_smoothness_pctrent.png>
 Package pdftex.def Info: images/cov_smoothness_pctrent.png  used on input line 273.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_poverty.png, id=579, 877.2775pt x 638.385pt>
+<images/cov_smoothness_poverty.png, id=583, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_poverty.png Graphic file (type png)
 <use images/cov_smoothness_poverty.png>
 Package pdftex.def Info: images/cov_smoothness_poverty.png  used on input line 280.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctwithkids.png, id=580, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctwithkids.png, id=584, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctwithkids.png Graphic file (type png)
 <use images/cov_smoothness_pctwithkids.png>
 Package pdftex.def Info: images/cov_smoothness_pctwithkids.png  used on input line 289.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctsinparhhld.png, id=581, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctsinparhhld.png, id=585, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctsinparhhld.png Graphic file (type png)
 <use images/cov_smoothness_pctsinparhhld.png>
 Package pdftex.def Info: images/cov_smoothness_pctsinparhhld.png  used on input line 296.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctlesshs.png, id=582, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctlesshs.png, id=586, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctlesshs.png Graphic file (type png)
 <use images/cov_smoothness_pctlesshs.png>
 Package pdftex.def Info: images/cov_smoothness_pctlesshs.png  used on input line 305.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctsomecoll.png, id=583, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctsomecoll.png, id=587, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctsomecoll.png Graphic file (type png)
 <use images/cov_smoothness_pctsomecoll.png>
 Package pdftex.def Info: images/cov_smoothness_pctsomecoll.png  used on input line 312.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctblack.png, id=584, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctblack.png, id=588, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctblack.png Graphic file (type png)
 <use images/cov_smoothness_pctblack.png>
 Package pdftex.def Info: images/cov_smoothness_pctblack.png  used on input line 321.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pop.png, id=585, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pop.png, id=589, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pop.png Graphic file (type png)
 <use images/cov_smoothness_pop.png>
 Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 328.
@@ -991,42 +991,42 @@ Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 328.
 
 LaTeX Warning: Float too large for page by 21.96622pt on input line 335.
 
-<images/cov_smoothness_pctmarried.png, id=586, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctmarried.png, id=590, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctmarried.png Graphic file (type png)
 <use images/cov_smoothness_pctmarried.png>
 Package pdftex.def Info: images/cov_smoothness_pctmarried.png  used on input line 341.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctseparated.png, id=587, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctseparated.png, id=591, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctseparated.png Graphic file (type png)
 <use images/cov_smoothness_pctseparated.png>
 Package pdftex.def Info: images/cov_smoothness_pctseparated.png  used on input line 348.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_incherfindahl.png, id=588, 877.2775pt x 638.385pt>
+<images/cov_smoothness_incherfindahl.png, id=592, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_incherfindahl.png Graphic file (type png)
 <use images/cov_smoothness_incherfindahl.png>
 Package pdftex.def Info: images/cov_smoothness_incherfindahl.png  used on input line 357.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_medfamy.png, id=589, 877.2775pt x 638.385pt>
+<images/cov_smoothness_medfamy.png, id=593, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_medfamy.png Graphic file (type png)
 <use images/cov_smoothness_medfamy.png>
 Package pdftex.def Info: images/cov_smoothness_medfamy.png  used on input line 364.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctlt5.png, id=590, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctlt5.png, id=594, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctlt5.png Graphic file (type png)
 <use images/cov_smoothness_pctlt5.png>
 Package pdftex.def Info: images/cov_smoothness_pctlt5.png  used on input line 373.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pct5to17.png, id=591, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pct5to17.png, id=595, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pct5to17.png Graphic file (type png)
 <use images/cov_smoothness_pct5to17.png>
 Package pdftex.def Info: images/cov_smoothness_pct5to17.png  used on input line 380.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pct18to64.png, id=592, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pct18to64.png, id=596, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pct18to64.png Graphic file (type png)
 <use images/cov_smoothness_pct18to64.png>
 Package pdftex.def Info: images/cov_smoothness_pct18to64.png  used on input line 389.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctmin.png, id=593, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctmin.png, id=597, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctmin.png Graphic file (type png)
 <use images/cov_smoothness_pctmin.png>
 Package pdftex.def Info: images/cov_smoothness_pctmin.png  used on input line 396.
@@ -1043,20 +1043,20 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-03-14>
  ***********
 Package rerunfilecheck Info: File `JMP-Article.out' has not changed.
-(rerunfilecheck)             Checksum: BD640FCCFA4BE21F6B6F473AFB546D70;5549.
+(rerunfilecheck)             Checksum: 4B92EA0C16E9BD3C4A7190B8ED233732;5834.
  ) 
 Here is how much of TeX's memory you used:
- 15660 strings out of 474424
- 257689 string characters out of 5740796
+ 15665 strings out of 474424
+ 257756 string characters out of 5740796
  1976496 words of memory out of 5000000
- 37614 multiletter control sequences out of 15000+600000
- 572726 words of font info for 92 fonts, out of 8000000 for 9000
+ 37616 multiletter control sequences out of 15000+600000
+ 573072 words of font info for 93 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,13n,79p,2443b,567s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on JMP-Article.pdf (56 pages, 5119934 bytes).
+ <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on JMP-Article.pdf (56 pages, 5133784 bytes).
 PDF statistics:
- 717 PDF objects out of 1000 (max. 8388607)
- 141 named destinations out of 1000 (max. 500000)
- 425 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 727 PDF objects out of 1000 (max. 8388607)
+ 143 named destinations out of 1000 (max. 500000)
+ 433 words of extra memory for PDF output out of 10000 (max. 10000000)
 

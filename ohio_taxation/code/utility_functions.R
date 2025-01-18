@@ -1,17 +1,28 @@
 
 # takes in a dataset, an outcome variable and a covariate list and outputs a covariate list that gives the lowest p-value for treatment effect
-find_covs <- function(df, y, covs_list){
+find_covs <- function(df, y, covs_list, dummies = NULL){
   
   # initialize
   cv_list <- NULL
   fnl <- list()
   
   # RD without any covariates
-  og <- rdrobust(y = df[[y]],
-                 x = df$votes_pct_against, 
-                 c = cutoff, 
-                 covs = NULL ,
-                 all = TRUE)
+  if (!is.null(dummies)){
+    og <- rdrobust(y = df[[y]],
+                   x = df$votes_pct_against,
+                   c = cutoff,
+                   covs = df %>% select(all_of(dummies)),
+                   all = TRUE)
+    # print("og ran with dummies")
+  }
+  else {
+    og <- rdrobust(y = df[[y]],
+                   x = df$votes_pct_against,
+                   c = cutoff,
+                   covs = NULL,
+                   all = TRUE)
+  }  
+  
   # storing p-value of treatment effect
   og_p <- og$pv[[1]]
   
@@ -20,13 +31,23 @@ find_covs <- function(df, y, covs_list){
     
     # add variable to cv_list
     cv_list <- c(cv_list,variable)
-    nw <- rdrobust(y = df[[y]],
-                   x = df$votes_pct_against, 
-                   c = cutoff, 
-                   covs = df %>% select(cv_list) ,
-                   all = TRUE)
+    if (!is.null(dummies)){
+      nw <- rdrobust(y = df[[y]],
+                     x = df$votes_pct_against, 
+                     c = cutoff, 
+                     covs = df %>% select(all_of(c(dummies, cv_list))),
+                     all = TRUE)
+      # print("nw ran with dummies")
+    }
+    else {
+      nw <- rdrobust(y = df[[y]],
+                     x = df$votes_pct_against, 
+                     c = cutoff, 
+                     covs = df %>% select(cv_list),
+                     all = TRUE)
+    }
     nw_p <- nw$pv[[1]]
-    
+
     # if p-value of treatment effect does not decrease after include the new covariate, discard the new covariate 
     if (nw_p >= og_p) cv_list <- cv_list[!cv_list %in% c(variable)] 
     

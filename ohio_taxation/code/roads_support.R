@@ -1,10 +1,10 @@
-#==========================================================================================================#
-# Purpose : Support for paper and presentations
+#================================================================================================================#
+# Purpose : Support for paper and presentations. Miscellaneous support work goes here based on Qs from audience.
 # Name    : Saani Rawat
 # Created : 11/8/2024
-# Log     : 
-#           
-#==========================================================================================================#
+# Log     : 1. 1/12/2025: made a more formal update to code. Added Qs that each snippet answers.
+#           2. 1/16/2025: results from test run of fine-tuned gpt-4 model by Vikram
+#================================================================================================================#
 
 # specify the set up location
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
@@ -17,7 +17,9 @@ source(paste0(code,"/utility_functions.R"))
 
 
 #==========================================================================================================#
+# Q. Is there an overall importance of roads? Why does having good roads matter for a country/area/state?
 # GDP Per Capita vs Road Quality
+# Q. How is road quality index developed by World Bank?
 #==========================================================================================================#
 
 # import excel file
@@ -33,25 +35,6 @@ pt <- purrr::map(yr_list, ~ pivot_wider(gdp_vs_road_quality_world_bank %>% selec
                     gdp_per_cap = `GDP per capita (current US$)`) 
            )
 names(pt) <- yr_list
-
-# pt_17 <- pivot_wider(gdp_vs_road_quality_world_bank %>% select(c(`Economy ISO3`, `Economy Name`, Indicator, "2017")), 
-#             names_from = `Indicator`, values_from = "2017") %>% 
-#       rename(road_quality = `GCI 4.0: Road quality index (0-100, best)`, gdp =  `GDP (current US$)`,
-#              gdp_per_cap = `GDP per capita (current US$)`)
-# pt_18 <- pivot_wider(gdp_vs_road_quality_world_bank %>% select(c(`Economy ISO3`, `Economy Name`, Indicator, `2018`)), 
-#                      names_from = `Indicator`, values_from = `2018`) %>% 
-#   rename(road_quality = `GCI 4.0: Road quality index (0-100, best)`, gdp =  `GDP (current US$)`,
-#          gdp_per_cap = `GDP per capita (current US$)`)
-
-
-# ggplot(data = pt_17, aes(x=road_quality,y=log(gdp_per_cap)))+
-#   geom_point()+
-#   geom_smooth(method="lm")+
-#   theme_minimal()+
-#   labs(title="GDP per capita vs Road Quality",
-#        x="Road Quality",
-#        y="GDP per capita")+
-#   theme(legend.position = "none")
 
 # Fit a linear model
 model <- lm(log(gdp_per_cap) ~ road_quality, data = pt$`2018`)
@@ -78,33 +61,11 @@ ggplot(data = pt$`2018`, aes(x = road_quality, y = log(gdp_per_cap))) +
   ) 
   # ggsave(paste0(plots,"/gdp_vs_road_quality.png"))
 
-# ggplot(data = pt$`2018`, aes(x = road_quality, y = gdp_per_cap)) +
-#   geom_point(color = "#2E86C1", size = 3, alpha = 0.7) +  # Adding color, size, and transparency to points
-#   geom_smooth(method = "lm", color = "#E74C3C", linetype = "dashed", size = 1.2) +  # Changing line color, type, and size
-#   theme_minimal(base_size = 15) +  # Adjusting base font size
-#   labs(
-#     title = "GDP per Capita vs Road Quality: 2018",
-#     x = "Road Quality",
-#     y = "Log of GDP per Capita",
-#     caption = "Source: World Bank Global Competitive Index 4.0 "
-#   ) +
-#   theme(
-#     plot.title = element_text(face = "bold", hjust = 0.5, size = 20, color = "#34495E"),  # Centering, bolding, and coloring the title
-#     axis.title = element_text(face = "italic", size = 15, color = "#34495E"),  # Styling axis titles
-#     axis.text = element_text(size = 12, color = "#2C3E50"),  # Styling axis text
-#     panel.grid.major = element_line(color = "#D5D8DC", size = 0.8),  # Customizing grid lines
-#     panel.grid.minor = element_blank(),  # Removing minor grid lines
-#     plot.background = element_rect(fill = "#F5F5F5"),  # Changing plot background color
-#     legend.position = "none"
-#   ) + ylim(-100, 100000)
-
-
-# ggsave(paste0(plots,"/gdp_vs_road_quality_world_bank.png"),width=10,height=7)
 
 #==========================================================================================================#
 # Observing individual cities, villages and townships
+# A tale of two tonwships: Andover and Morgan (within same county)
 #==========================================================================================================#
-
 
 # 2008 Waynesville voted for a cut, saw a decline in general fund exp of 35%
 roads_and_census %>% filter(tendigit_fips == 3903580990) %>% relocate(treated , .after = votesagainst)
@@ -116,7 +77,7 @@ roads_and_census %>% filter(tendigit_fips == 3904501630) %>% relocate(treated , 
 roads_and_census %>% filter(tendigit_fips == 3905704720) %>% relocate(treated , .after = votesagainst)
 
 # export to csv
-roads_and_census %>% select(tendigit_fips, year, pop) %>% arrange(tendigit_fips, desc(year)) %>%
+roads_and_census %>% select(tendigit_fips, year, pop) %>% arrange(desc(pop),tendigit_fips, year) %>%
   write_csv(paste0(data,"/pop_list.csv"))
 
 rdt <- roads_and_census %>% filter(tendigit_fips %in% c(3900902750, 3903573264, 3904129694, 3904580206, 3905704220, 3905704720, 3905704724, 3905725914, 3906116616, 3906131752, 3908549056, 3908559430, 3908585484, 3909303352, 3909356966, 3909903198, 3909907468, 3910380304, 3910962848, 3911333922, 3911336610, 3911377504, 3911381494, 3915112000, 3915138094, 3915141314, 3915162078, 3915162988))
@@ -186,6 +147,7 @@ roads_and_census %>% filter(between(votes_pct_against, cutoff - tes_bw, cutoff +
 
 
 #==========================================================================================================#
+# What areas have the closest votes that failed? i.e. they could've been in control but got treated
 # Identifying county subdivisions with the closest votes that failed
 #==========================================================================================================#
 
@@ -234,3 +196,199 @@ housing_dfs$housing_roads_census_t_plus_0_matches %>%
   summarize(mean = mean(SALE_AMOUNT), median = median(SALE_AMOUNT), sd = sd(SALE_AMOUNT))
 
 -16441/170000
+
+
+#==========================================================================================================#
+# Regressions with covariates as outcome
+#==========================================================================================================#
+
+#==========================================================================================================#
+# Hedonic Regression 
+#==========================================================================================================#
+
+
+# Hedonic regression with year F.E 
+hm1 <- purrr::map(dfs_agg_covs, ~ lm(data = .x, 
+                             median_sale_amount ~ pop + childpov + poverty + pctwithkids + pctsinparhhld + pctlesshs + pcthsgrad + pctsomecoll + pctbachelors + pctgraddeg + unemprate + medfamy + pctown + pctlt5 + pct5to17 + pct18to64 + pct65pls + pctwhite + pctblack + pctamerind + pctapi + pctotherrace + raceherfindahl + pcthisp + pctmarried + pctnevermarr + pctseparated + pctdivorced + lforcepartrate + incherfindahl + factor(year)) )
+
+purrr::map(hm1, summary)
+
+# Hedonic regression with year F.E and county F.E
+
+dfs_agg_covs
+
+
+
+#==========================================================================================================#
+#  Q. Does your tax cut for road tax levies correlate with cut for any other levies (in the same year), 
+#     after controlling for other covariates, year and area F.E?
+#==========================================================================================================#
+
+# method 1. Correlate between road tax levy cut and other levy cuts, after controlling for other covariates
+#======================================================================#
+# Dataset with other tax levies ----
+#======================================================================#
+
+# importing excel file
+referendums <- readxl::read_excel(paste0(data, "/tax_levies_ohio7.xlsx")) %>% janitor::clean_names()
+
+colnames(referendums)
+referendums$purpose2 %>% unique %>% sort
+
+#===================================================#
+# Police
+#===================================================#
+
+rds_with_police <- rds %>% filter(description == "R") %>%
+  inner_join(filter(referendums, tolower(purpose2) == "police"), 
+             by = c("year", "tendigit_fips")) %>% 
+  mutate(votes_pct_against_police = (votes_against/ (votes_for + votes_against))*100,
+         police_treated  = if_else(votes_pct_against_police > cutoff, 1, 0),
+         votes_pct_against = 100 - votes_pct_for,
+         roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+
+lm_police <- lm(police_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_police) %>% summary 
+
+#===================================================#
+# Fire
+#===================================================#
+
+rds_with_fire <- rds %>% filter(description == "R") %>%
+  inner_join(filter(referendums, tolower(purpose2) == "fire"), 
+             by = c("year", "tendigit_fips")) %>% 
+  mutate(votes_pct_against_fire = (votes_against/ (votes_for + votes_against))*100,
+         fire_treated  = if_else(votes_pct_against_fire > cutoff, 1, 0),
+         votes_pct_against = 100 - votes_pct_for,
+         roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+
+lm_fire <- lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_fire) %>% summary 
+
+#===================================================#
+# Current Expenses
+#===================================================#
+
+rds_with_current <- rds %>% filter(description == "R") %>%
+  inner_join(filter(referendums, tolower(purpose2) == "current expenses"), 
+             by = c("year", "tendigit_fips")) %>% 
+  mutate(votes_pct_against_curr_exp = (votes_against/ (votes_for + votes_against))*100,
+         current_treated  = if_else(votes_pct_against_curr_exp > cutoff, 1, 0),
+         votes_pct_against = 100 - votes_pct_for,
+         roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+
+lm_current <- lm(current_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_current)  %>% summary
+
+# cor(rds_with_current$roads_treated, rds_with_current$current_treated)
+# table(rds_with_current$roads_treated, rds_with_current$current_treated)
+
+#===================================================#
+# Recreation
+#===================================================#
+
+rds_with_rec <- rds %>% filter(description == "R") %>%
+  inner_join(filter(referendums, tolower(purpose2) == "recreation"), 
+             by = c("year", "tendigit_fips")) %>% 
+  mutate(votes_pct_against_rec = (votes_against / (votes_for + votes_against))*100,
+         rec_treated  = if_else(votes_pct_against_rec > cutoff, 1, 0),
+         votes_pct_against = 100 - votes_pct_for,
+         roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+
+lm_rec <- lm(rec_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_rec) %>% summary
+
+#===================================================#
+# School District (fips info not available,  
+#                  so doing at county level)
+#===================================================#
+rds_cty <- filter(referendums, tolower(purpose2) == "roads" & description == "R") %>% 
+  mutate(votes_pct_against_rds = 100 - (votes_for / (votes_for + votes_against))*100,
+         roads_treated = if_else(votes_pct_against_rds > cutoff, 1, 0)) %>%
+  group_by(county, year) %>%
+  summarize(road_cuts = sum(roads_treated)) 
+  
+schl_cty <- filter(referendums, tolower(purpose2) == "school") %>% 
+  mutate(votes_pct_against_schl = 100 - (votes_for / (votes_for + votes_against))*100,
+         school_treated = if_else(votes_pct_against_schl > cutoff, 1, 0)) %>%
+  group_by(county, year) %>%
+  summarize(school_cuts = sum(school_treated)) 
+
+rds_with_school <- inner_join(rds_cty, schl_cty, by = c("county", "year")) 
+
+lm_school <- lm(school_cuts ~ road_cuts + factor(year) + factor(county), data = rds_with_school) %>% summary
+
+# Conclusion: Road tax levies ONLY correlate with Current Expense tax levies.
+
+# coefficients
+lm_police$coefficients["roads_treated", "Estimate"]
+lm_fire$coefficients["roads_treated", "Estimate"]
+lm_current$coefficients["roads_treated", "Estimate"]
+lm_rec$coefficients["roads_treated", "Estimate"]
+lm_school$coefficients["road_cuts", "Estimate"]
+
+# standard errors
+lm_police$coefficients["roads_treated", "Std. Error"]
+lm_fire$coefficients["roads_treated", "Std. Error"]
+lm_current$coefficients["roads_treated", "Std. Error"]
+lm_rec$coefficients["roads_treated", "Std. Error"]
+lm_school$coefficients["road_cuts", "Std. Error"]
+
+# method 2. Run a regression with road tax levy cut as outcome and other levy cuts as covariates
+
+
+#==========================================================================================================#
+#  Q. Does road quality actually change after the tax cuts?
+#     Preliminary results from test run.
+#==========================================================================================================#
+
+# before referendum	after referendum
+# passed the levy	1.07	1
+# failed the levy	1.39	0.93
+
+# Create the data
+data <- data.frame(
+  Time_of_Vote = rep(c("Before Referendum", "After Referendum"), each = 2),
+  Levy_Status = rep(c("Passed the Levy", "Failed the Levy"), 2),
+  Avg_Road_Quality_Rating = c(1.07, 1.39, 1.00, 0.93)
+)
+
+
+# Set the correct order for the Time_of_Vote variable
+data$Time_of_Vote <- factor(data$Time_of_Vote, levels = c("Before Referendum", "After Referendum"))
+
+# Plot the data
+ggplot(data, aes(x = Time_of_Vote, y = Avg_Road_Quality_Rating, group = Levy_Status, color = Levy_Status)) +
+  geom_line(size = 1) +
+  geom_point(size = 3) +
+  labs(
+    title = "Road Quality Ratings Before and After Referendum",
+    x = "Time of the Vote",
+    y = "Avg Road Quality Rating",
+    color = "Levy Status"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
+
+
+data_change <- data.frame(
+  Levy_Status = c("Passed the Levy", "Failed the Levy"),
+  Change_in_Rating = c(1.00 - 1.07, 0.93 - 1.39)
+)
+
+ggplot(data_change, aes(x = Levy_Status, y = Change_in_Rating, fill = Levy_Status)) +
+  geom_bar(stat = "identity", width = 0.5) +  # Reduce bar width
+  labs(
+    title = "Change in Avg Road Quality Rating (Before and After Referendum)",
+    x = "Levy Status",
+    y = "Change in Avg Road Quality Rating",
+    fill = "Levy Status"
+  ) +
+  scale_fill_manual(values = c("Passed the Levy" = "lavender", "Failed the Levy" = "salmon")) + # Custom colors
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text = element_text(size = 11),
+    legend.position = "none"  # Remove legend
+  )

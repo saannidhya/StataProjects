@@ -9,6 +9,7 @@
 *		5. 18July2022: added code to generate aggregate housing datasets with median sale amount
 *		6. 30July2022: added code to generate SALE_AMOUNT_per_sq_feet variable
 *		7. 02Aug2022 : updated loops to simplify them. created SALE_AMOUNT_per_sq_feet separately
+*		8. 10Jan2025 : added subdivisionname, subdivisiontype, county to roads_and_census.dta
 *-------------------------------------------------------------------------------------------------;
 
 * Defining root location via global macros;
@@ -43,7 +44,7 @@ drop _merge
 preserve
 
 * keeping only the required variables (using vars in Dr. Brasington's email: see email on 07/08/2022, 8:13am) (removed TENDIGIT_FIPS_year and inctaxrate)
-keep year pop TENDIGIT_FIPS childpov poverty pctwithkids pctsinparhhld pctnokids pctlesshs pcthsgrad pctsomecoll pctbachelors pctgraddeg unemprate medfamy pctrent pctown pctlt5 pct5to17 pct18to64 pct65pls pctwhite pctblack pctamerind pctapi pctotherrace pctmin raceherfindahl pcthisp pctmarried pctnevermarr pctseparated pctdivorced lforcepartrate incherfindahl taxtype purpose2 description millagepercent duration votesfor votesagainst 
+keep year pop TENDIGIT_FIPS subdivisionname subdivisiontype county childpov poverty pctwithkids pctsinparhhld pctnokids pctlesshs pcthsgrad pctsomecoll pctbachelors pctgraddeg unemprate medfamy pctrent pctown pctlt5 pct5to17 pct18to64 pct65pls pctwhite pctblack pctamerind pctapi pctotherrace pctmin raceherfindahl pcthisp pctmarried pctnevermarr pctseparated pctdivorced lforcepartrate incherfindahl taxtype purpose2 description millagepercent duration votesfor votesagainst 
 
 *calculating votes_pct_for and votes_pct_for_cntr
 generate votes_pct_for = (votesfor / (votesfor + votesagainst))*100
