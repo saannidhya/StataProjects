@@ -14,7 +14,7 @@ import json
 import requests
 
 # Define the API key for OpenAI
-api_key = "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"
+# api_key = ""
 
 # Function to encode the image
 def encode_image(image_path):
