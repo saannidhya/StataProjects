@@ -55,7 +55,9 @@ Each treatment effect estimate represents the discount in median sale price for 
 
 Figure \ref{fig:tes_hp} provides an event-study plot that summarizes the treatment effects for each time period. In the graph, we include placebo years up to 3 years before the treatment to show that the median housing prices are statistically identical for cities above and below the threshold prior to the treatment. Each blue dot represents the treatment effect estimate for that year and the bar around it represents the 95\% confidence interval for that estimate. For year 0, which is the year of the vote, we see a slight decrease in the estimate. However, this effect is not statistically significant, as evidenced by the confidence interval containing the null effect. Up to year 3, we observe that the treatment effect estimates are fairly close to zero, and the confidence interval overlaps with zero. As stated previously and shown in Table \ref{tab:median_sale_amount}, we start to see a sizable increase in treatment effect from year 4 onwards and continue to observe it through year 9 after the vote. 
  
-\subsubsection{Heterogeneity Analysis} We show the results of our heterogeneity analysis, where we explore the differential impact of cutting road maintenance spending on house prices based on urban vs rural neighborhoods, the size of the tax levy and housing price quantiles.
+\subsection{Heterogeneity Analysis} 
+
+We show the results of our heterogeneity analysis, where we explore the differential impact of cutting road maintenance spending on house prices based on urban vs rural neighborhoods, the size of the tax levy and housing price quantiles.
 
 \vskip 0.5cm
 
@@ -128,7 +130,9 @@ All the years before the reduction in road spending have treatment effect estima
 
 Table \ref{tab:quantile_tes} shows the treatment effect heterogeneity of cutting road spending on high and low quantiles of median house prices. The top percentiles consistently exhibit a statistically significant decline in house sale prices, beginning in year 6 after the reduction in road spending. In contrast, the lower percentiles do not demonstrate a consistent treatment effect. This suggests a differential impact, where higher-valued properties are more sensitive to road disrepair than lower-valued houses. Figure \ref{fig:tes_qte_covs} contrasts the treatment effects of the 20th and 80th percentiles of home sale prices in an effect plot to highlight this differential impact of reduction in road maintenance spending.
 
-\subsubsection{Robustness Tests} We conduct several robustness tests to ensure the validity of our results. We test the sensitivity of our results to different bandwidths, covariates, and functional forms. We also check for the presence of pre-trends and perform a placebo test to confirm the validity of our RDD.
+\subsection{Robustness Tests}
+
+We conduct several robustness tests to ensure the validity of our results. We test the sensitivity of our results to different bandwidths, covariates, and functional forms. We also check for the presence of pre-trends and perform a placebo test to confirm the validity of our RDD.
 
 \vskip 0.5cm
 
@@ -205,84 +209,6 @@ Table \ref{tab:placebo_cutoffs} does not show consistently significant treatment
 \end{figure}
 
 The treatment effect estimates with winsorization mimic those from our baseline regression results qualitatively and quantitatively.
-
-\subsection{Employment} \label{sec:employment}
-
-We next see if cutting road taxes and spending causes a change in employment in years after the vote. Employment is the average number of workers in a city in a year, which comes from monthly employment data per establishment as provided by ODJFS.  The regressions take the same form as explained in Section \ref{sec:empirical}.  The full set of null results is shown in Appendix \ref{sec:appxa} Table \ref{tab:average_employment} and Table \ref{tab:log_average_employment}.
-
-On the other hand, when we examine an interaction term between poverty and treatment, there is a consistent pattern of significant results.  The estimator of \cite{calonico2019regression} cannot handle interaction terms, but our first step is to use it to establish an optimal bandwidth of the running variable.  We then omit all votes outside the optimal effective bandwidth.  We then create an interaction term between the treatment dummy $T_{i(t+r)}$ and Poverty Rate.  We then regress employment as a function of the running variable, the treatment effect dummy, the interaction term, and the covariates Median Family Income, \% Aged 5 to 17, and \% Less than High School Education.  For certain years, the covariates \% Unemployment Rate, \% Under 5 Years Old, \% Less than High School Education, and \% Some College Education were helpful in achieving precise estimates of the treatment effect. Table \ref{tab:treatment_dummy_poverty} summarizes the results of our experiment. 
- 
-\begin{table}[ht]
-    \centering
-    \caption{Effect of cutting road spending on Employment by Poverty Rate}
-    \label{tab:treatment_dummy_poverty}
-    \begin{tabular}{p{2cm}cc}
-        \hline
-        Year after Vote & Treatment Dummy Estimate & Treatment Dummy  Poverty Rate Estimate ($p$-value) \\
-        \hline
-        $t - 3$ & 498 (0.46) & -2,526 (0.49) \\
-        $t - 2$ & 768 (0.22) & -3,769 (0.31) \\
-        $t - 1$ & 833 (0.17) & -3,649 (0.31) \\
-        $t + 1$ & 1,039 (0.08) & -9,941 (0.02) \\
-        $t + 2$ & 1,231 (0.03) & -7,995 (0.04) \\
-        $t + 3$ & 849 (0.18) & -8,742 (0.03) \\
-        $t + 4$ & 1,050 (0.10) & -10,197 (0.02) \\
-        $t + 5$ & 1,279 (0.05) & -10,478 (0.02) \\
-        $t + 6$ & 1,327 (0.04) & -10,483 (0.02) \\
-        $t + 7$ & 1,473 (0.03) & -11,599 (0.02) \\
-        $t + 8$ & 1,374 (0.04) & -11,073 (0.02) \\
-        $t + 9$ & 1,528 (0.03) & -12,694 (0.02) \\
-        $t + 10$ & 1,435 (0.04) & -13,202 (0.02) \\
-        \hline
-    \end{tabular}
-    \begin{tablenotes}
-        \small
-        \item Estimates shown with $p$-values in parentheses below. Number of observations ranges from 565 to 722. Regressions of outcome variable Employment for optimal bandwidth estimate h = 14. Regressors include Vote Share, Treatment Dummy, Treatment Dummy  Poverty Rate, Median Family Income, \% Aged 5 to 17, and \% Less than High School Education for all years. Regression for year $t + 4$ adds \% Unemployment Rate and \% Some College Education, $t + 8$ adds \% Some College Education, the covariates for $t + 2$ are \% High School Education Only, \% Renters, and \% Under 5 Years Old, to improve the precision of the estimates.
-    \end{tablenotes}
-\end{table}
-
-For the first year after the vote, the interaction term is negative with a $p$-value of 0.02, but the treatment effect is only significant at the 10\% level of significance, for a joint significance of 0.06.  However, starting with the second year after the vote and continuing through all successive years that we test--ten years after the vote--we find a consistent pattern of a positive treatment effect dummy with a negative interaction term.  The average magnitude of the estimates shows that, for cities with Poverty Rate greater than 0.11, cutting road taxes and the associated services causes lower employment, relative to cities that renew road maintenance tax levies. 
-
-The poverty rate of 0.11 is about the 65th percentile of poverty, suggesting that high-poverty cities that renew road tax levies have better employment outcomes than those that cut road maintenance.  We evaluate the magnitude of the effect with the estimates achieved in year 4 after the vote.  For a marginal increase in the poverty rate to 12\%, renewing road maintenance taxes preserves 174 jobs on average relative to cities that cut, which represents an 11\% preservation of jobs.
-
-\subsection{Wages}
-
-We now investigate wages, the other outcome variable provided by ODJFS.  The raw data contains the total dollar amount of wages paid to employees by each firm in each quarter from year 2006 to 2020.  We average the quarterly data up to yearly values and convert nominal dollars to constant 2010 dollars.  We sum the firm-level data to the appropriate city, village, or township and divide by the number of workers to get average yearly wages earned by a worker in each municipality.  We find a better fit when the natural log of average wages is used, rather than a linear term, and we find a local linear functional form fits the data better than a quadratic form (adjusted mean squared error of 9.4m vs. 12.7m).
-
-We find no effect of cutting road taxes and services on wages for the full sample.  Regression results are shown in Table \ref{tab:total_wages} and Table \ref{tab:log_total_wages}.  Section \ref{sec:employment} found an effect on employment in high-poverty cities, and the wages outcome corroborates this story. When we restrict attention to the cities with high levels of poverty—above 14\%, which represents the 75th percentile of poverty—we find that renewing road tax levies causes higher wages.  Covariate smoothness results are provided in Appendix \ref{sec:appxb}, covariate balance for this restricted sample is shown in Table \ref{tab:covariate_means_wage}, and regression results are shown in Table \ref{tab:wages_per_worker} below. 
-
-\begin{table}[ht]
-    \centering
-    \caption{Effect of Failing to Renew a Road Tax Levy on Wages per Worker}
-    \label{tab:wages_per_worker}
-    \begin{tabular}{p{2.8cm}ccccccc}
-        \hline
-        year relative to vote & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
-        \hline
-        Treatment effect & -0.23 & -0.18 & -0.22 & -0.14 & -0.15 & -0.12 & -0.05 \\
-        standard error & 0.11 & 0.04 & 0.01 & 0.10 & 0.11 & 0.09 & 0.48 \\
-        Effective bandwidth (h) & 0.07 & 0.07 & 0.06 & 0.06 & 0.06 & 0.06 & 0.09 \\
-        Bias bandwidth (b) & 0.12 & 0.13 & 0.12 & 0.12 & 0.12 & 0.12 & 0.19 \\
-        Effective Observations & 77 & 76 & 80 & 67 & 67 & 60 & 102 \\
-        Total Observations & 401 & 385 & 367 & 350 & 337 & 319 & 306 \\
-        \hline
-    \end{tabular}
-    \begin{tablenotes}
-        \small 
-        \item Outcome is the natural log of mean wages per employee in a city in constant 2010 U.S. dollars. Unit of observation is the city-year, so a treatment effect of -0.23 means that four years after the vote, high-poverty cities that fail to renew road taxes and its associated spending have 23\% lower wages than high-poverty cities that vote to renew road taxes and spending. Regressions use covariates in Table \ref{tab:wages_per_worker} representing economic and demographic characteristics of the city from the American Community Survey (ACS).
-    \end{tablenotes}
-\end{table}
-
-\begin{figure}[htbp]
-    \centering
-    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_wages_per_emp_hp.png}
-    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_high_pov.png}    
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_high_pov_re.png}    
-    \caption{Effect plot: Wages per Worker in High-Poverty Cities}
-    \label{fig:tes_g_emp_hp}
-\end{figure}
-
-Significant treatment effects begin four years after the vote—later than results for the employment outcome but consistent with the house price outcome results—and continue pretty consistently through the ninth year after the vote, at least at the 10\% level of significance.  The average treatment effect suggests that high-poverty cities that renew road tax levies have 17.8\% higher wages than comparable high-poverty cities that vote to cut road maintenance taxes.  The policy implications of these results are pretty clear: road maintenance matters for wages in high-poverty areas of Ohio.  This finding is also consistent with the consensus of the literature on the effect of infrastructure investment in developing nations, which also feature high levels of poverty.
 
 \section{Mechanisms} \label{sec:mech}
 

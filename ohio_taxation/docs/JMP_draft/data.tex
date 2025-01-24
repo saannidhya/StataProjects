@@ -162,9 +162,7 @@ In our sample, the mean vote share against the tax levy is 0.38, which is essent
 \subsection{Outcome Variables}
 
 
-\subsubsection{Median Housing Price}
-
-Our house price data comes from a CoreLogic® dataset of actual sales transaction prices in Ohio from 1995 through 2021 containing over 7 million observations. The dependent variable, \textit{Median House Price}, reflects the median sale price of houses within a specific city and year. For example, for the houses sold in Delaware Township during the year 2002, the median sale price was \$205,041. We take precaution to only include arm’s-length transactions, and we restrict our attention to single-family residential structures for comparability.  The overall sample mean for the 10-year period from the time of vote considered in this study is \$166,082 in constant 2010 dollars with a standard deviation of \$372,135 which suggests presence of some outliers. Although our use of median sale price addresses outliers, one of our robustness checks drops 1\% tails and re-estimates the treatment effects.  The mean for this winsorized sample is \$150,375 in constant 2010 dollars with a standard deviation of \$116,020. 
+{\bf Median Housing Prices.} Our house price data comes from a CoreLogic® dataset of actual sales transaction prices in Ohio from 1995 through 2021 containing over 7 million observations. The dependent variable, \textit{Median House Price}, reflects the median sale price of houses within a specific city and year. For example, for the houses sold in Delaware Township during the year 2002, the median sale price was \$205,041. We take precaution to only include arm’s-length transactions, and we restrict our attention to single-family residential structures for comparability.  The overall sample mean for the 10-year period from the time of vote considered in this study is \$166,082 in constant 2010 dollars with a standard deviation of \$372,135 which suggests presence of some outliers. Although our use of median sale price addresses outliers, one of our robustness checks drops 1\% tails and re-estimates the treatment effects.  The mean for this winsorized sample is \$150,375 in constant 2010 dollars with a standard deviation of \$116,020. 
 
 \begin{figure}[ht]
     \centering
@@ -175,12 +173,6 @@ Our house price data comes from a CoreLogic® dataset of actual sales transactio
 
 Figure \ref{fig:hp_year5_after} shows house prices from 5 years after the vote graphed against the percent of votes for the tax levy. The points represent the mean house price for the 10 representative bins of vote shares for the average effective bandwidth around the cutoff of 50\%. The graph shows a clear discontinuity in house prices at the cutoff, which is the basis for our identification strategy. We observe a sharp decline after the cutoff in house prices, indicating that the failure to renew a road tax levy has a negative impact on house prices.
 
-
-\subsubsection{Employment and Wages}
-
-We obtain special permission from the Ohio Department of Jobs and Family Services (ODJFS) to access establishment-level data on wages and employment.  It shows total wages and the average number of employees for each quarter.  We aggregate up from quarterly to yearly values.  Each establishment has an address, which we geocode to the proper local government jurisdiction (city, village or township), and we aggregate total wages and average employment up to the local government level to match the unit of geography of the voting data. The outcome variables considered were “Average employment” and “Wages per capita”, where average employment is the average number of employees on the payroll in a particular city during a specific year, and wages per capita is aggregate total wages paid to the employees on the payroll in particular city during a year divided by average employment. Graphs of these outcome variables are available upon request.  Within the typical effective bandwidth of 14 percentage points, mean city-level employment is 1,575 for the fail levy group with a standard deviation of 3,319; and it is 1,342 with a standard deviation of 3,514 for the pass levy group the year before the vote.  
-
-The average wage outcome we study also has similar means within the effective bandwidth the year before the vote.  For the high-poverty sample, the sample with the only significant treatment effects, mean wages in 2010 dollars are \$29,153 for the fail-levy sample with a standard deviation of 8,515; and they are \$29,968 for the pass-levy sample with a standard deviation of 7,524.
 
 \subsection{Covariates}
 
@@ -259,14 +251,14 @@ Table \ref{tab:variable_means_sd} demonstrates the covariate balance between cit
           & (53,242) & (60,893) & (48,438) & (54,162) & (50,786) \\
     t - 1 & 107,706 & 108,234 & 104,575 & 108,401 & 105,843 \\
           & (53,544) & (62,437) & (51,343) & (54,665) & (50,491) \\
-    \textit{b) Employment} & & & & & \\
+    \textit{b) Median House Price (\%)} & & & & & \\
     t - 3 & 1,504 & 1,752 & 1,728 & 1,446 & 1,695 \\
           & (3,848) & (4,006) & (3,642) & (3,887) & (3,739) \\
     t - 2 & 1,429 & 1,734 & 1,680 & 1,388 & 1,562 \\
           & (3,693) & (3,978) & (3,612) & (3,769) & (3,462) \\
     t - 1 & 1,387 & 1,724 & 1,668 & 1,341 & 1,538 \\
           & (3,628) & (3,993) & (3,598) & (3,683) & (3,460) \\
-    \textit{c) Wages per Capita} & & & & & \\
+    \textit{c) Median House Price per square foot} & & & & & \\
     t - 3 & 31,764 & 31,892 & 32,531 & 32,367 & 32,401 \\
           & (8,868) & (8,428) & (10,090) & (9,657) & (8,898) \\
     t - 2 & 31,714 & 32,083 & 32,048 & 31,571 & 32,166 \\
