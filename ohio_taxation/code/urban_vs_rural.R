@@ -112,21 +112,21 @@ tes_covs_urb_cd <- te_tables(regs_covs_urb_cd)
 plot_te(tes_covs_urb_cd)
 
 covs_final_urb_ua2 <- covs_final_urb_ua
-covs_final_urb_ua2$housing_roads_census_t_minus_3_matches <- c("pop","pcthsgrad")
-covs_final_urb_ua2$housing_roads_census_t_minus_2_matches <- c("pctdivorced","pcthsgrad")
-covs_final_urb_ua2$housing_roads_census_t_minus_1_matches <- c("pctdivorced","pcthsgrad")
+covs_final_urb_ua2$housing_roads_census_t_minus_3_matches <- c("pop","pcthsgrad", "medfamy")
+covs_final_urb_ua2$housing_roads_census_t_minus_2_matches <- c("pctdivorced","pcthsgrad", "medfamy")
+covs_final_urb_ua2$housing_roads_census_t_minus_1_matches <- c("pctdivorced","pcthsgrad", "medfamy")
 covs_final_urb_ua2$housing_roads_census_t_plus_0_matches <- c("medfamy")
 covs_final_urb_ua2$housing_roads_census_t_plus_1_matches <- c("medfamy")
 covs_final_urb_ua2$housing_roads_census_t_plus_2_matches <- c("medfamy")
 covs_final_urb_ua2$housing_roads_census_t_plus_3_matches <- c("medfamy")
 covs_final_urb_ua2$housing_roads_census_t_plus_4_matches <- c("medfamy")
-covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy")
+# covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy")
 # covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("poverty", "pctown")
 covs_final_urb_ua2$housing_roads_census_t_plus_5_matches <- c("medfamy", "childpov", "pctapi")
 covs_final_urb_ua2$housing_roads_census_t_plus_6_matches <- c("medfamy")
-covs_final_urb_ua2$housing_roads_census_t_plus_7_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_7_matches <- c("medfamy", "poverty", "pctmin", "lforcepartrate", "unemprate", "incherfindahl", "pctdivorced")
 covs_final_urb_ua2$housing_roads_census_t_plus_8_matches <- c("medfamy")
-covs_final_urb_ua2$housing_roads_census_t_plus_9_matches <- c("medfamy")
+covs_final_urb_ua2$housing_roads_census_t_plus_9_matches <- c("medfamy", "poverty", "pctmin", "lforcepartrate", "unemprate", "incherfindahl")
 covs_final_urb_ua2$housing_roads_census_t_plus_10_matches<- c("medfamy")
 
 regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua2 ,
@@ -240,13 +240,13 @@ ggplot(tes_covs_ua, aes(ord, robust_coef, color = cat)) +
   ylim(c(NA, 50000)) 
 
 ### Re-centered Main urban vs rural plot in paper ###
-tes_covs_ua_ <- tes_covs_ua %>% mutate(conf_int_low  = if_else(ord == -0.85, robust_coef, conf_int_low),
-                                       conf_int_high = if_else(ord == -0.85, robust_coef, conf_int_high))
+tes_covs_ua_ <- tes_covs_ua %>% mutate(conf_int_low  = if_else(year == "t_minus_1", robust_coef, conf_int_low),
+                                       conf_int_high = if_else(year == "t_minus_1", robust_coef, conf_int_high))
 ggplot(tes_covs_ua_, aes(ord, robust_coef, color = cat)) +       
   geom_point(size = 3, shape = 19) +
   geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high, color = cat), 
                 width = 0.2, color = "grey50", size = 0.7) +
-  geom_hline(yintercept = tes_covs_ua_ %>% filter(cat == "urban" & ord == -0.85) %>% pull(robust_coef), linetype = "dashed", color = "green", size = 1) +
+  geom_hline(yintercept = tes_covs_ua_ %>% filter(cat == "urban" & ord == -0.85) %>% pull(robust_coef), linetype = "dashed", color = "#66b2b2", size = 1) +
   geom_hline(yintercept = tes_covs_ua_ %>% filter(cat == "rural" & ord == -1.15) %>% pull(robust_coef), linetype = "dashed", color = "orange", size = 1) +
   labs(
     x = "Year",
@@ -267,6 +267,88 @@ ggplot(tes_covs_ua_, aes(ord, robust_coef, color = cat)) +
   ylim(c(NA, 50000)) 
 
 
+#==============================================#
+# Adding Time Fixed Effects
+#==============================================#
+
+# urban
+dfs_agg_covs_urb_ua_w_tfe <- map(dfs_agg_covs_urb_ua, ~ dummy_cols(.x, select_columns = c("year"), remove_first_dummy = TRUE) %>% relocate(starts_with("year_"), .after = "year"))
+
+# merging year dummies and covariates list 
+dfs_agg_covs_urb_ua_tfe_names <- map(dfs_agg_covs_urb_ua_w_tfe, ~ colnames(.x) %>% grep("year_", ., value = TRUE))
+covs_final_urb_ua_w_tfe <- map2(covs_final_urb_ua2, dfs_agg_covs_tfe_names, ~c(.x, .y))
+
+regs_covs_urb_ua_tfe <- purrr::map2(dfs_agg_covs_urb_ua_w_tfe, covs_final_urb_ua_w_tfe ,
+                                function(x, y){
+                                  rdrobust::rdrobust(y = x$median_sale_amount,
+                                                     x = x$votes_pct_against, 
+                                                     c = cutoff, 
+                                                     covs = x %>% select(y),
+                                                     # covs =  x %>% select(c("pop")),
+                                                     # covs =  x %>% select("medfamy"),
+                                                     all = TRUE)
+                                }
+)
+
+tes_regs_covs_urb_ua_tfe <- te_tables(regs_covs_urb_ua_tfe)
+plot_te(tes_regs_covs_urb_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+plot_te_recenter(tes_regs_covs_urb_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
+# rural
+dfs_agg_covs_rur_ua_w_tfe <- map(dfs_agg_covs_rur_ua, ~ dummy_cols(.x, select_columns = c("year"), remove_first_dummy = TRUE) %>% relocate(starts_with("year_"), .after = "year"))
+
+map_chr(rep("c", 2), ~ .x)
+
+# merging time dummies with covariates list
+dfs_agg_covs_rur_ua_tfe_names <- map(dfs_agg_covs_rur_ua_w_tfe, ~ colnames(.x) %>% grep("year_", ., value = TRUE))
+covs_final_rur_ua_w_tfe <- map(dfs_agg_covs_rur_ua_tfe_names, ~ c(c("pop", "poverty", "pctmin", "pctown", "medfamy", "unemprate", "raceherfindahl"), .x))
+
+regs_covs_rur_ua_tfe <- purrr::map2(dfs_agg_covs_rur_ua_w_tfe, covs_final_rur_ua_w_tfe ,
+                                    function(x, y){
+                                      rdrobust::rdrobust(y = x$median_sale_amount,
+                                                         x = x$votes_pct_against, 
+                                                         c = cutoff, 
+                                                         covs = x %>% select(y),
+                                                         all = TRUE)
+                                    }
+)
+
+tes_regs_covs_rur_ua_tfe <- te_tables(regs_covs_rur_ua_tfe)
+plot_te(tes_regs_covs_rur_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+plot_te_recenter(tes_regs_covs_rur_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
+
+
+### Re-centered Main urban vs rural plot in paper WITH Time F.E ###
+tes_regs_covs_ua <- rbind(tes_regs_covs_urb_ua_tfe %>% mutate(cat = "urban"), tes_regs_covs_rur_ua_tfe %>% mutate(cat = "rural")) %>% 
+  mutate(ord = if_else(cat == "rural", ord - 0.15, ord + 0.15),
+         conf_int_low  = if_else(year == "t_minus_1", robust_coef, conf_int_low),
+         conf_int_high = if_else(year == "t_minus_1", robust_coef, conf_int_high)) 
+
+
+ggplot(tes_regs_covs_ua, aes(ord, robust_coef, color = cat)) +       
+  geom_point(size = 3, shape = 19) +
+  geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high, color = cat), 
+                width = 0.2, color = "grey50", size = 0.7) +
+  geom_hline(yintercept = tes_regs_covs_ua %>% filter(cat == "urban" & ord == -0.85) %>% pull(robust_coef), linetype = "dashed", color = "#66b2b2", size = 1) +
+  geom_hline(yintercept = tes_regs_covs_ua %>% filter(cat == "rural" & ord == -1.15) %>% pull(robust_coef), linetype = "dashed", color = "orange", size = 1) +
+  labs(
+    x = "Year",
+    y = "Treatment Effect",
+    color = "Position",
+    title = "Treatment Effects: Urban vs Rural"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom",
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(), 
+    panel.grid.minor.y = element_blank(),
+    legend.title = element_blank()
+  ) + 
+  scale_x_continuous(breaks = c(-3:10)) +
+  ylim(c(NA, 50000)) 
 
 #=================================================================================#
 # winsorizing the data after identifying urban and rural ----

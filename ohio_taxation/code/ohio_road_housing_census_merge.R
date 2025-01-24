@@ -131,13 +131,13 @@ names(mgd) <- paste0(gsub("^yr", "housing_roads_census", names(mgd)), "_matches"
 mean(hs %>% filter(!is.na(SALE_AMOUNT)) %>% select(SALE_AMOUNT) %>% pull())
 median(hs %>% filter(!is.na(SALE_AMOUNT)) %>% select(SALE_AMOUNT) %>% pull())
 
-gs <- hs %>% filter(!is.na(SALE_AMOUNT)) 
+hs2 <- hs %>% filter(!is.na(SALE_AMOUNT)) 
 # gg %>% filter(!is.na(SALE_AMOUNT)) 
 # nrow(hs) - hs %>% filter(is.na(SALE_AMOUNT)) %>% nrow()
 
-hs_winsorized <- winsorize_data(list(gs) , "SALE_AMOUNT")
+hs_winsorized <- winsorize_data(list(hs2) , "SALE_AMOUNT")
 
-mean(gs$SALE_AMOUNT)
+mean(hs2$SALE_AMOUNT)
 round(min(hs_winsorized[[1]]$SALE_AMOUNT))
 round(max(hs_winsorized[[1]]$SALE_AMOUNT))
 
@@ -160,5 +160,53 @@ hs_agg <- hs %>%
                         count = n() ) %>% 
               ungroup() %>% 
               arrange(tendigit_fips, year) %>% 
-              filter(year >= 1995) %>% 
+              filter(year >= 1995) %>% # SALE_AMOUNT missing before this year 
               mutate(tendigit_fips = as.numeric(tendigit_fips), year = as.numeric(year))
+
+hs_agg_grwth <- hs_agg %>%
+  arrange(tendigit_fips, year) %>% # Ensure data is sorted by year
+  group_by(tendigit_fips) %>% # Ensure computation is grouped by fips
+  mutate(
+    # yoy_change_median_sale = median_sale_amount - lag(median_sale_amount),
+    yoy_growth_median_sale = ((median_sale_amount - lag(median_sale_amount))/lag(median_sale_amount))*100    
+    # yoy_growth_median_sale = (median_sale_amount - lag(median_sale_amount)) / lag(median_sale_amount) * 100
+  ) %>% filter(!is.na(yoy_growth_median_sale)) %>% ungroup()
+
+
+hss_agg_grwth <- purrr::map(yrs, ~ hs_agg_grwth %>% 
+                    janitor::clean_names() %>%
+                    arrange(tendigit_fips, year) %>%
+                    mutate({{.x}} := as.numeric(year)) %>%
+                    select(-c(year)) 
+                  # arrange(tendigit_fips, {{.x}})
+                  
+)
+names(hss_agg_grwth) <- yrs
+
+mgd_grwth <- purrr::map2(hss_agg_grwth, yrs, function(x, y){
+  x %>% inner_join(roads_and_census, by = c("tendigit_fips", y)) %>% 
+    relocate(year, .before = tendigit_fips) %>%
+    relocate(y, .after = tendigit_fips) %>% 
+    mutate(votes_pct_against = 100 - votes_pct_for,
+           treated = if_else(votes_pct_against > 50, 1, 0)  )
+})
+
+names(mgd_grwth) <- paste0(gsub("^yr", "housing_roads_census", names(mgd_grwth)), "_matches")
+
+# winsorizing 1%
+mgd_grwth_ws <- winsorize_data(mgd_grwth , "yoy_growth_median_sale")
+
+mgd_grwth_ws$housing_roads_census_t_minus_3_matches %>% select(treated) %>% summary()
+
+map(mgd_grwth , ~ summary(.x$yoy_growth_median_sale))
+
+map(mgd_grwth_ws , ~ summary(.x$yoy_growth_median_sale))
+
+# a density plot of yoy_growth_median_sale
+# purrr::map(mgd_grwth_ws, ~ ggplot(.x, aes(x = yoy_growth_median_sale)) + 
+#              geom_density() +
+#              ggtitle("Density plot of YoY growth in median sale price") + theme_minimal() )
+
+purrr::map(dfs_agg_covs, ~ ggplot(.x, aes(x = median_sale_amount)) + 
+             geom_density() +
+             ggtitle("Density plot of YoY growth in median sale price") + theme_minimal() )

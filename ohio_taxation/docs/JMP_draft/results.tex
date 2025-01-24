@@ -1,37 +1,54 @@
-First, we share the results for house prices. Next, we present the results for employment and wages outcome variables.
+% First, we share the results for house prices. Next, we present the results for employment and wages outcome variables.
 
-\subsection{House Prices}
+\subsection{Road Maintenance}
 
-We find no significant treatment effect of changes in road taxes and funding on house prices in years $t+1$ through $t+3$ relative to the year of the vote, so we relegate these regression results to Table \ref{tab:median_sale_amount_full}.  On the other hand, Table \ref{tab:median_sale_amount} below shows the treatment effect estimates of failing a road tax levy on housing sale prices starting four years after the vote. 
+\subsection{Road Quality decline}
 
-\begin{table}[ht]
+ To assess the impact of cutting local road taxes on road quality, we utilized a fine-tuned Vision Transformer (ViT) model, leveraging labeled satellite imagery data for U.S. roads. The ViT model, fine-tuned using a large dataset of road images, assigned quality ratings on a scale of 0 (poor) to 2 (high) to our collected satellite imagery for Ohio neighborhoods, as explained in Section \ref{sec:road_quality}. We compared road quality ratings from the fine-tuned ViT model before and after the referendum in areas that failed to renew their road tax levy versus those that successfully passed the levy. These results are visually summarized in Figure \ref{fig:road_quality_change}, which shows the change in road quality ratings for both groups. 
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth,keepaspectratio]{images/road_quality_change.png}
+    \caption{Change in Road Quality Ratings Before and After Referendum}
+    \label{fig:road_quality_change}
+\end{figure}
+
+Areas that failed to renew their tax levy experienced an average decline in road quality ratings of -0.5 points, equivalent to a 17\% deterioration in road quality relative to the three-point scale. In contrast, areas that maintained their tax levies saw a negligible decline of -0.08 points, suggesting effectively no deterioration in road quality. In neighborhoods where renewal taxes were cut, the decline in road quality highlights the potential long-term implications of fiscal policy decisions on public infrastructure maintenance.
+
+\subsection{House Prices decline}
+
+ Table \ref{tab:median_sale_amount} below shows the ITT estimates of failing a road tax levy on housing sale prices starting four years after the vote. 
+
+ \begin{table}[ht]
     \centering
     \caption{Effect on median house prices of failing to renew a road tax levy}
     \label{tab:median_sale_amount}
     \begin{tabular}{p{2cm}ccccccc}
         \hline
-        year relative to vote & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
+        Year relative to vote & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
         \hline
-        Treatment effect & -19,535 & -21,531 & -16,994 & -16,691 & -23,323 & -30,620 & -16,411 \\
-        Standard error & (9,289) & (9,147) & (7,558) & (7,357) & (9,449) & (9,586) & (9,342) \\
-        Effective bandwidth ($h$) & 8.9 & 12.1 & 14.1 & 14.0 & 8.2 & 8.2 & 8.3 \\
-        Bias bandwidth ($b$) & 15.4 & 20.0 & 24.1 & 24.2 & 15.5 & 16.3 & 17.5 \\
-        Effective Observations & 714 & 1,020 & 1,182 & 1,127 & 593 & 584 & 557 \\
-        Total Observations & 2,618 & 2,535 & 2,442 & 2,328 & 2,204 & 2,119 & 2,022 \\
+        Treatment effect & -21,684 & -22,415 & -17,539 & -16,001 & -21,973 & -19,890 & -16,042 \\
+        Standard error   & (7,838) & (8,348) & (8,465) & (6,918) & (9,111) & (7,756) & (8,915) \\
+        Effective bandwidth ($h$) & 8.508 & 10.573 & 9.613 & 13.390 & 8.240 & 7.233 & 6.404 \\
+        Bias bandwidth ($b$) & 16.430 & 19.894 & 17.133 & 23.953 & 15.327 & 14.073 & 16.469 \\
+        Effective Observations & 469 & 605 & 525 & 801 & 402 & 324 & 260 \\
+        Total Observations & 2,614 & 2,531 & 2,438 & 2,324 & 2,199 & 2,115 & 2,017 \\
         \hline
     \end{tabular}
     \begin{tablenotes}
         \small
-        \item Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year, so a treatment effect of -\$19,535 means that four years after the vote, cities that failed to renew road taxes and its associated spending have houses that sell for \$19,535 less than cities that vote to renew road taxes and spending. Treatment effects for years prior to $t + 4$ are statistically insignificant at 5\% level; full results shown in Table \ref{tab:median_sale_amount_full}. The regressions include covariates related to the demographics and socioeconomic factors of the cities, drawn from Table \ref{tab:variable_means_sd}.
+        \item Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year, so a treatment effect of -\$21,684 means that four years after the vote, cities that failed to renew road taxes and its associated spending have houses that sell for \$21,684 less than cities that vote to renew road taxes and spending. Treatment effects for years prior to $t + 4$ are statistically insignificant at the 5\% level; full results shown in Table \ref{tab:median_sale_amount_full}. The regressions include covariates related to the demographics and socioeconomic factors of the cities, drawn from Table \ref{tab:variable_means_sd}.
     \end{tablenotes}
 \end{table}
 
-Each treatment effect estimate represents the discount in median sale price for cities that cut road taxes and spending in the years after voting on a road tax levy relative to otherwise similar cities that renew the taxes. For instance, the treatment effect for the $t + 4$ outcome variable is -19,535.  This means that four years after the vote, the median house sale price is \$19,535 lower in cities that fail to renew their road tax levy, relative to cities that vote to renew their road taxes and spending. Treatment effect estimates for years 4 through 9 after the vote are statistically significant in Table \ref{tab:median_sale_amount} as the $p$-values are below the canonical 0.05 threshold.  The estimate for year $t + 10$ has a smaller estimate and is only significant at the 10\% level, suggesting that the effect of tax and service cuts on house prices may peter out ten years after the vote. Overall, we find an average reduction of \$20,729 in median house price from years $t+4$ to $t+10$ for houses in cities that vote to cut road tax levies representing 12\% of house value.
+
+Each treatment effect estimate represents the discount in median sale price for cities that cut road taxes in the years after voting on a road tax levy relative to otherwise similar cities that renew the taxes. Treatment effect estimates for years 4 through 9 after the vote are statistically significant in Table \ref{tab:median_sale_amount} as the $p$-values are below the canonical 0.05 threshold. The estimate for year $t + 10$ has a smaller estimate and is only significant at the 10\% level, suggesting that the effect of tax and service cuts on house prices may peter out ten years after the vote. Overall, we find an average reduction of \$15,349 in median house price over the 10 year period for houses in cities that vote to cut road tax levies representing 9\% of overall home value.\footnote{The average treatment effect estimate of \$15,349 was divided by the mean home sale price in the dataset of \$166,000 to get 9\%.}
 
 \begin{figure}[htbp]
     \centering
     % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs.png}
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs_re.png}    
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs_reg.png}    
     \caption{Effect plot for Median Housing Price}
     \label{fig:tes_hp}
 \end{figure}
@@ -48,7 +65,7 @@ Figure \ref{fig:tes_hp} provides an event-study plot that summarizes the treatme
     \centering
     % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_new.png}
     % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_clean.png}    
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_re.png}        
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_reg.png}        
     \caption{Median Housing Price in Urban and Rural Areas}
     \label{fig:tes_covs_ua}
 \end{figure}

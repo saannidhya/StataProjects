@@ -109,15 +109,16 @@ covs_final$housing_roads_census_t_minus_2_matches <- c("pop", "poverty", "pctmin
 covs_final$housing_roads_census_t_minus_1_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 covs_final$housing_roads_census_t_plus_0_matches <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctsinparhhld", "pctlt5")
 # covs_final$housing_roads_census_t_plus_0_matches <- covs_final$housing_roads_census_t_plus_0_matches[!(covs_final$housing_roads_census_t_plus_0_matches %in% c("pctmin"))]
-covs_final$housing_roads_census_t_plus_1_matches <- c("pop")
+covs_final$housing_roads_census_t_plus_1_matches <- c("pop", "pctblack", "unemprate", "pctrent")
 # covs_final$housing_roads_census_t_plus_1_matches <- covs_final$housing_roads_census_t_plus_1_matches[!(covs_final$housing_roads_census_t_plus_1_matches %in% c("pctmin"))]
-covs_final$housing_roads_census_t_plus_2_matches <- covs_final$housing_roads_census_t_plus_2_matches[!(covs_final$housing_roads_census_t_plus_2_matches %in% c("pctnokids"))]
+covs_final$housing_roads_census_t_plus_2_matches <- c("pop",covs_final$housing_roads_census_t_plus_2_matches[!(covs_final$housing_roads_census_t_plus_2_matches %in% c("pctnokids", "pctmin", "pct5to17", "pctblack", "pop"))])
 covs_final$housing_roads_census_t_plus_3_matches <- covs_final$housing_roads_census_t_plus_3_matches[!(covs_final$housing_roads_census_t_plus_3_matches %in% c("pctnokids"))]
 covs_final$housing_roads_census_t_plus_4_matches <- covs_final$housing_roads_census_t_plus_4_matches[!(covs_final$housing_roads_census_t_plus_4_matches %in% c("pctnokids","pctown"))]
-covs_final$housing_roads_census_t_plus_5_matches <- covs_final$housing_roads_census_t_plus_5_matches[!(covs_final$housing_roads_census_t_plus_5_matches %in% c("pctown", "pctmin"))]
+covs_final$housing_roads_census_t_plus_5_matches <- c("pctwithkids", "pctsinparhhld", "unemprate", "pctrent", "pctlt5", "pctblack")
 # covs_final$housing_roads_census_t_plus_7_matches <- covs_final$housing_roads_census_t_plus_7_matches[!(covs_final$housing_roads_census_t_plus_7_matches %in% c("pctmin"))]
 covs_final$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches[!(covs_final$housing_roads_census_t_plus_8_matches %in% c("pctmin", "pctnokids"))]
-# covs_final$housing_roads_census_t_plus_10_matches <- covs_final$housing_roads_census_t_plus_10_matches[!(covs_final$housing_roads_census_t_plus_10_matches %in% c("pctnokids","pctmin"))]
+covs_final$housing_roads_census_t_plus_9_matches <- c("medfamy", "poverty", "pctsinparhhld", "pctrent", "pct18to64", "pctmarried")
+covs_final$housing_roads_census_t_plus_10_matches <- covs_final$housing_roads_census_t_plus_10_matches[!(covs_final$housing_roads_census_t_plus_10_matches %in% c("pctmin"))]
 
 sel_covs_10 <- purrr::map(combn(covs_list, 6, simplify = FALSE), function(x) {
 
@@ -162,6 +163,7 @@ tes_gs <- te_tables(gs)
 plot_te(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 plot_te_recenter(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
+tes_gs %>% filter(ord >= 0) %>% select(robust_coef) %>% pull %>% mean / 166000
 
 # get mean optimal bandwidth
 purrr::walk2(gs, names(gs), ~print(paste0("Eff. Bandwidth (h) for ", .y, ": " , round(.x$bws[1,],1))))
@@ -192,42 +194,14 @@ tes_gs_reg <- te_tables(gs_reg)
 plot_te(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 plot_te_recenter(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
-# rdrobust(  y = dfs_agg_covs_w_tfe$housing_roads_census_t_minus_1_matches$median_sale_amount,
-#            x = dfs_agg_covs_w_tfe$housing_roads_census_t_minus_1_matches$votes_pct_against,
-#            c = cutoff,
-#            covs = dfs_agg_covs_w_tfe$housing_roads_census_t_minus_1_matches %>%
-#              select(c(covs_final$housing_roads_census_t_minus_1_matches, "pctbachelors", dfs_agg_covs_tfe_names$housing_roads_census_t_minus_1_matches)) ,
-#            all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary
+tes_gs_reg %>% filter((ord >= 0)) %>%
+  select(robust_coef) %>% pull %>% mean
+
+# average effective bandwidth
+map_dbl(gs_reg[4:14], ~ .x$bws[1,1]) %>% mean
+# 9.425709
 
 #------------------------------------------------------------------------------------------------#
-covs_final_tfe <- purrr::map2(dfs_agg_covs_w_tfe, dfs_agg_covs_tfe_names, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list, dummies = .y))
-
-# cleaning covs_final to avoid multicollinearity
-covs_final_tfe$housing_roads_census_t_minus_3_matches <- covs_final$housing_roads_census_t_minus_3_matches
-covs_final_tfe$housing_roads_census_t_minus_2_matches <- covs_final$housing_roads_census_t_minus_2_matches
-covs_final_tfe$housing_roads_census_t_minus_1_matches <- c(covs_final$housing_roads_census_t_minus_1_matches, "pctbachelors")
-covs_final_tfe$housing_roads_census_t_plus_0_matches <- covs_final$housing_roads_census_t_plus_0_matches
-covs_final_tfe$housing_roads_census_t_plus_1_matches <- covs_final$housing_roads_census_t_plus_1_matches
-covs_final_tfe$housing_roads_census_t_plus_6_matches <- c("childpov", "poverty", "pctsinparhhld", "pct18to64", "pctseparated")
-covs_final_tfe$housing_roads_census_t_plus_7_matches <- c("poverty", "pctrent", "pct18to64", "pctotherrace", "pctseparated", "incherfindahl")
-covs_final_tfe$housing_roads_census_t_plus_8_matches <- covs_final$housing_roads_census_t_plus_8_matches
-covs_final_tfe$housing_roads_census_t_plus_9_matches <- c(covs_final$housing_roads_census_t_plus_9_matches, "medfamy")
-
-
-covs_final_tfe_w <- map2(covs_final_tfe, dfs_agg_covs_tfe_names, ~c(.x, .y))
-
-gs_reg_tfe <- purrr::map2(covs_final_tfe_w, dfs_agg_covs_w_tfe, .f = function(x,y){
-  rdrobust(  y = y$median_sale_amount,
-             x = y$votes_pct_against,
-             c = cutoff,
-             covs = y %>%
-               select(x) ,
-             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
-})
-tes_tfe <- te_tables(gs_reg_tfe)
-plot_te(tes_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
-plot_te_recenter(tes_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
-
 
 # from gs list, select elements that start with "housing_roads_census_t_plus_"
 tes_gs %>% filter((ord >= 0)) %>%

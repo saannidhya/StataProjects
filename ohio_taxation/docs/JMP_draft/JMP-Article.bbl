@@ -4,6 +4,14 @@
 
 \begin{thebibliography}{xx}
 
+\harvarditem[Achiam et~al.]{Josh Achiam, Steven Adler, Sandhini Agarwal, Lama
+  Ahmad, Ilge Akkaya, Florencia~Leoni Aleman, Diogo Almeida, Janko
+  Altenschmidt, Sam Altman, Shyamal Anadkat et~al.}{2023}{achiam2023gpt}
+{\bf Achiam, Josh, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya,
+  Florencia~Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman,
+  Shyamal Anadkat, et~al.} 2023. ``Gpt-4 technical report.'' {\em arXiv
+  preprint arXiv:2303.08774}.
+
 \harvarditem[Adukia, Asher \harvardand\ Novosad]{Anjali Adukia, Sam Asher
   \harvardand\ Paul Novosad}{2020}{adukia2020}
 {\bf Adukia, Anjali, Sam Asher, and Paul Novosad.} 2020. ``Educational
@@ -31,6 +39,12 @@
 \harvarditem[Brasington]{David~M Brasington}{2017}{brasington2017school}
 {\bf Brasington, David~M.} 2017. ``School spending and new construction.'' {\em
   Regional Science and Urban Economics}, 63:~76--84.
+
+\harvarditem[Brewer et~al.]{Ethan Brewer, Jason Lin, Peter Kemper, John Hennin
+  \harvardand\ Dan Runfola}{2021}{brewer2021}
+{\bf Brewer, Ethan, Jason Lin, Peter Kemper, John Hennin, and Dan Runfola.}
+  2021. ``Predicting road quality using high resolution satellite imagery: A
+  transfer learning approach.'' {\em Plos one}, 16(7):~e0253370.
 
 \harvarditem[Calonico et~al.]{Sebastian Calonico, Matias~D Cattaneo, Max~H
   Farrell \harvardand\ Roc{\'\i}o Titiunik}{2017}{calonico2017rdrobust}
@@ -76,6 +90,10 @@
   transit line on private housing values.'' {\em Regional Science and Urban
   Economics}, 67:~64--77.
 
+\harvarditem[Dosovitskiy]{Alexey Dosovitskiy}{2020}{dosovitskiy2020image}
+{\bf Dosovitskiy, Alexey.} 2020. ``An image is worth 16x16 words: Transformers
+  for image recognition at scale.'' {\em arXiv preprint arXiv:2010.11929}.
+
 \harvarditem[Duranton \harvardand\ Turner]{Gilles Duranton \harvardand\
   Matthew~A. Turner}{2012}{duranton2012}
 {\bf Duranton, Gilles, and Matthew~A. Turner.} 2012. ``Urban growth and
@@ -107,6 +125,12 @@
 {\bf Kohlhase, Janet~E.} 1991. ``The impact of toxic waste sites on housing
   values.'' {\em Journal of Urban Economics}, 30(1):~1--26.
 
+\harvarditem[Lee \harvardand\ Lemieux]{David~S Lee \harvardand\ Thomas
+  Lemieux}{2010}{lee_lemieux2010}
+{\bf Lee, David~S, and Thomas Lemieux.} 2010. ``Regression discontinuity
+  designs in economics.'' {\em Journal of economic literature},
+  48(2):~281--355.
+
 \harvarditem[Levkovich, Rouwendal \harvardand\ Van~Marwijk]{Oleg Levkovich, Jan
   Rouwendal \harvardand\ Rolf Van~Marwijk}{2016}{levkovich2016effects}
 {\bf Levkovich, Oleg, Jan Rouwendal, and Rolf Van~Marwijk.} 2016. ``The effects
@@ -118,5 +142,33 @@
 {\bf Li, Shanjun, Jun Yang, Ping Qin, and Shouyang Chonabayashi.} 2016.
   ``Wheels of fortune: Subway expansion and property values in Beijing.'' {\em
   Journal of Regional Science}, 56(5):~792--813.
+
+\harvarditem[{Ohio Department of Transportation}]{{Ohio Department of
+  Transportation}}{2023}{odot2023}
+{\bf {Ohio Department of Transportation}.} 2023. ``2023 Annual Report.''
+  Accessed: 2024-01-23.
+
+\harvarditem[{Peter G. Peterson Foundation}]{{Peter G. Peterson
+  Foundation}}{2024}{pgpf_htf_explained}
+{\bf {Peter G. Peterson Foundation}.} 2024. ``The Highway Trust Fund
+  Explained.'' Accessed: 2025-01-23.
+
+\harvarditem[Schroeder]{John Schroeder}{2025}{schroeder2025}
+{\bf Schroeder, John.} 2025. ``Road funding \& maintenance in Beavercreek
+  Township, Ohio.'' {\em Personal communication}, Email to Saani, January 21,
+  2025.
+
+\harvarditem[{Ulrik Boesen}]{{Ulrik Boesen}}{2021}{boesen2021}
+{\bf {Ulrik Boesen}.} 2021. ``How Are Your State’s Roads Funded?'' Accessed:
+  2025-01-23.
+
+\harvarditem[{U.S. Department of Transportation}]{{U.S. Department of
+  Transportation}}{2022}{USDOT_BIL_Ohio}
+{\bf {U.S. Department of Transportation}.} 2022. ``The Bipartisan
+  Infrastructure Law Will Deliver for Ohio.'' Accessed: 2025-01-23.
+
+\harvarditem[Vaswani]{A Vaswani}{2017}{vaswani2017attention}
+{\bf Vaswani, A.} 2017. ``Attention is all you need.'' {\em Advances in Neural
+  Information Processing Systems}.
 
 \end{thebibliography}

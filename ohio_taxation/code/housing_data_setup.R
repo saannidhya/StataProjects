@@ -13,7 +13,7 @@
 #==========================================================================================================#
 
 # loading packages
-packages <- c("Rbearcat", "tidyverse", "lubridate", "haven", "stringr", "here", "knitr", "janitor", "scales","data.table","rdrobust")
+packages <- c("Rbearcat", "tidyverse", "lubridate", "haven", "stringr", "here", "knitr", "janitor", "scales","data.table","rdrobust", "fastDummies")
 for (pkg in packages){
   library(pkg, character.only = TRUE)
 }
@@ -94,6 +94,11 @@ dfs_agg <- purrr::map2(.x = dfs, .y = yr_t_names, ~ .x %>%
                          rename(vote_year = year, year = `eval(parse(text = .y))`) %>%
                          summarize(median_sale_amount = median(sale_amount, na.rm = TRUE),
                                    median_ln_sale_amount = median(ln_sale_amount, na.rm = TRUE)) 
+)
+
+dfs_agg_covs <- purrr::map(.x = dfs_agg, ~ .x %>% 
+                             dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
+                             ungroup()
 )
 
 # creating a dataset with sale_amount_per_sq_feet separately.

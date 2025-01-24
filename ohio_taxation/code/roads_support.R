@@ -392,3 +392,25 @@ ggplot(data_change, aes(x = Levy_Status, y = Change_in_Rating, fill = Levy_Statu
     axis.text = element_text(size = 11),
     legend.position = "none"  # Remove legend
   )
+
+
+#==========================================================================================================#
+#  Q. Does one election change the probability of having another election?
+#     # Check most common duration
+#>    # check how often referendums take place in a city (more than 5 years?)
+#>
+#==========================================================================================================#
+
+roads_and_census$duration %>% unique %>% sort
+
+# Roughly 90% of the time, 5 years
+roads_and_census %>% mutate(duration = as.numeric(duration)) %>% group_by(duration) %>% summarize(prop = n()/nrow(roads_and_census) )
+# Most common duration is 5 years
+
+fre <- roads_and_census %>% group_by(tendigit_fips) %>%
+  summarize(max_year = max(year), min_year = min(year), count = n()) %>%
+  mutate(diff = max_year - min_year, freq = diff/count) %>% 
+  filter(freq != 0)
+  
+fre$freq %>% summary
+# Elections happen every 4 years on average. So last year of levy might have a "double" effect.
