@@ -140,11 +140,32 @@ compare_covariates <- function(data, city_col, covariates, city1, city2) {
   return(results)
 }
 
+# covariates with p-val < 0.05
 compare_covariates(roads_and_census, "tendigit_fips", c("pop", "medfamy", "childpov"), 3900702064, 3900752066)
 
 
+# 3900702064 = Andover, 3900752066 = Morgan
+compare_covariates(roads_and_census, "tendigit_fips", covs_list, 3900702064, 3900752066) %>% filter(p_value < 0.05)
+#> Compared to Morgan, Andover has 
+#> 1. more people
+#> 2. more poverty
+#> 3. less median family income
+#> 4. more renters than owners
+#> 5. older population
+#> 6. less people married
+#> 7. less educated population
+#> The two townships are not identical. AND, their referendum results are different.
+
+# The two
+
 roads_and_census %>% filter(between(votes_pct_against, cutoff - tes_bw, cutoff + tes_bw))
 
+# comparing house price now
+compare_covariates(housing_dfs$housing_roads_census_t_plus_0_matches, "TENDIGIT_FIPS", c("SALE_AMOUNT"), 3900702064, 3900752066)
+
+housing_dfs$housing_roads_census_t_plus_0_matches %>% filter(tendi)
+
+colnames(housing_dfs$housing_roads_census_t_plus_0_matches)
 
 #==========================================================================================================#
 # What areas have the closest votes that failed? i.e. they could've been in control but got treated
@@ -414,3 +435,23 @@ fre <- roads_and_census %>% group_by(tendigit_fips) %>%
   
 fre$freq %>% summary
 # Elections happen every 4 years on average. So last year of levy might have a "double" effect.
+
+
+#==========================================================================================================#
+#  Latest failed referendum for "close' elections and cities, townships with population above 10,000
+#>    
+#==========================================================================================================#
+
+
+fips_list <- c(3902374119, 3915162988, 3915142168, 3908174608, 3909356966, 3915319036, 3911377504, 3911377504, 3900729624, 3903573264, 3903580990, 3908585484, 3909963968, 3913946578, 3915156294, 3902351912, 3902978890, 3904781718, 3906176028, 3908559430, 3909975126, 3915162078, 3915328448, 3905503590, 3905911003, 3905704720, 3905704724, 3913303086, 3900902750, 3903526446, 3904129694, 3905513988, 3908518196, 3908523618, 3908546494, 3909903198, 3915141314, 3915318658, 3901366628, 3902346788, 3902923730, 3903310030, 3904361714, 3906116616, 3906131752, 3908549056, 3908559416, 3909907468, 3915112000, 3915138094, 3915374130, 3917341328)
+
+# subsetting based on the fips that satisfy the required criteria, taking failed levies only, group by and take max year for each fips
+
+roads_and_census %>% 
+  filter(treated == 1 & tendigit_fips %in% fips_list) %>% 
+  group_by(tendigit_fips) %>%
+  summarize(latest_fail_yr = max(year)) %>% filter(latest_fail_yr >= 2010) -> fail_yrs
+
+
+fail_yrs
+

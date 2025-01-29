@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  24 JAN 2025 15:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  28 JAN 2025 16:50
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -572,116 +572,117 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 49.
  (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 56--62
+Underfull \hbox (badness 10000) in paragraph at lines 58--64
 
  []
 
 [0
 
-{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (intro.tex [1]) (lit_review.tex [2] [3] [4]) (data.tex [5] [6] [7] [8]
+{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (intro.tex [1]) (lit_review.tex [2] [3] [4]) (data.tex [5]
+Overfull \hbox (7.75723pt too wide) in paragraph at lines 16--17
+\OT1/cmr/bx/n/12 Background. \OT1/cmr/m/n/12 Ohio con-sists of 88 coun-ties, each cov-er-ing about 464 miles$[]$ (1,200 kilometers$[]$).
+ []
+
+[6] [7] [8]
 <images/andover_township_14grandarmy_2007.png, id=263, 253.9305pt x 164.25pt>
 File: images/andover_township_14grandarmy_2007.png Graphic file (type png)
 <use images/andover_township_14grandarmy_2007.png>
-Package pdftex.def Info: images/andover_township_14grandarmy_2007.png  used on input line 86.
+Package pdftex.def Info: images/andover_township_14grandarmy_2007.png  used on input line 89.
 (pdftex.def)             Requested size: 230.18253pt x 148.89128pt.
 <images/andover_township_14grandarmy_2022.png, id=265, 242.7615pt x 164.5785pt>
 File: images/andover_township_14grandarmy_2022.png Graphic file (type png)
 <use images/andover_township_14grandarmy_2022.png>
-Package pdftex.def Info: images/andover_township_14grandarmy_2022.png  used on input line 93.
+Package pdftex.def Info: images/andover_township_14grandarmy_2022.png  used on input line 96.
 (pdftex.def)             Requested size: 230.18253pt x 156.05737pt.
 <images/morgan_township_2801OH-45_2009.png, id=266, 264.4425pt x 178.3755pt>
 File: images/morgan_township_2801OH-45_2009.png Graphic file (type png)
 <use images/morgan_township_2801OH-45_2009.png>
-Package pdftex.def Info: images/morgan_township_2801OH-45_2009.png  used on input line 105.
+Package pdftex.def Info: images/morgan_township_2801OH-45_2009.png  used on input line 108.
 (pdftex.def)             Requested size: 230.18253pt x 155.26707pt.
 <images/morgan_township_2801OH-45_2018.png, id=267, 244.404pt x 174.762pt>
 File: images/morgan_township_2801OH-45_2018.png Graphic file (type png)
 <use images/morgan_township_2801OH-45_2018.png>
-Package pdftex.def Info: images/morgan_township_2801OH-45_2018.png  used on input line 112.
+Package pdftex.def Info: images/morgan_township_2801OH-45_2018.png  used on input line 115.
 (pdftex.def)             Requested size: 230.18253pt x 164.59894pt.
-
-
-LaTeX Warning: Reference `tab:max_renewals_cuts' on page 9 undefined on input line 121.
-
-[9] [10 <./images/andover_township_14grandarmy_2007.png> <./images/andover_township_14grandarmy_2022.png> <./images/morgan_township_2801OH-45_2009.png> <./images/morgan_township_2801OH-45_2018.png>] [11] [12]
-<images/rd_plot_year_5_after_vote.png, id=314, 817.0525pt x 594.22pt>
+ [9] [10 <./images/andover_township_14grandarmy_2007.png> <./images/andover_township_14grandarmy_2022.png> <./images/morgan_township_2801OH-45_2009.png> <./images/morgan_township_2801OH-45_2018.png>] [11] [12]
+<images/votes_pct_against_histogram.png, id=318, 855.195pt x 622.325pt>
+File: images/votes_pct_against_histogram.png Graphic file (type png)
+<use images/votes_pct_against_histogram.png>
+Package pdftex.def Info: images/votes_pct_against_histogram.png  used on input line 168.
+(pdftex.def)             Requested size: 469.75502pt x 341.8335pt.
+ [13] [14 <./images/votes_pct_against_histogram.png (PNG copy)>]
+<images/rd_plot_year_5_after_vote.png, id=332, 817.0525pt x 594.22pt>
 File: images/rd_plot_year_5_after_vote.png Graphic file (type png)
 <use images/rd_plot_year_5_after_vote.png>
-Package pdftex.def Info: images/rd_plot_year_5_after_vote.png  used on input line 169.
+Package pdftex.def Info: images/rd_plot_year_5_after_vote.png  used on input line 183.
 (pdftex.def)             Requested size: 375.80544pt x 273.31732pt.
- [13] [14 <./images/rd_plot_year_5_after_vote.png (PNG copy)>]
-Overfull \hbox (47.82063pt too wide) in alignment at lines 184--191
+ [15 <./images/rd_plot_year_5_after_vote.png (PNG copy)>]
+Overfull \hbox (47.82063pt too wide) in alignment at lines 198--205
  [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 191--199
+Overfull \hbox (47.82063pt too wide) in alignment at lines 205--213
  [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 199--202
+Overfull \hbox (47.82063pt too wide) in alignment at lines 213--216
  [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 202--205
+Overfull \hbox (47.82063pt too wide) in alignment at lines 216--219
  [] [] [] [] [] [] [] 
  []
 
 
-Underfull \hbox (badness 6125) in paragraph at lines 214--214
+Underfull \hbox (badness 6125) in paragraph at lines 228--228
 []|\OT1/cmr/m/n/12 % House-holds with
  []
 
 
-Underfull \hbox (badness 5578) in paragraph at lines 216--216
+Underfull \hbox (badness 5578) in paragraph at lines 230--230
 []|\OT1/cmr/m/n/12 % Less than High
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 220--220
+Underfull \hbox (badness 10000) in paragraph at lines 234--234
 []|\OT1/cmr/m/n/12 % Un-em-ploy-ment
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 234--234
+Underfull \hbox (badness 10000) in paragraph at lines 248--248
 []|\OT1/cmr/m/n/12 Median Fam-ily In-
  []
 
 
-Underfull \hbox (badness 1484) in paragraph at lines 244--244
+Underfull \hbox (badness 1484) in paragraph at lines 258--258
 []|\OT1/cmr/m/n/12 Number of Ob-ser-va-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 247--247
+Underfull \hbox (badness 10000) in paragraph at lines 261--261
 []|\OT1/cmr/m/it/12 a) Me-dian House
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 254--254
+Underfull \hbox (badness 10000) in paragraph at lines 268--268
 []|\OT1/cmr/m/it/12 b) Me-dian House
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 261--261
+Underfull \hbox (badness 10000) in paragraph at lines 275--275
 []|\OT1/cmr/m/it/12 c) Me-dian House
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 205--268
+Overfull \hbox (47.82063pt too wide) in alignment at lines 219--282
  [] [] [] [] [] [] [] 
  []
 
-[15] [16] [17] [18]
-<images/votes_pct_against_histogram.png, id=351, 855.195pt x 622.325pt>
-File: images/votes_pct_against_histogram.png Graphic file (type png)
-<use images/votes_pct_against_histogram.png>
-Package pdftex.def Info: images/votes_pct_against_histogram.png  used on input line 283.
-(pdftex.def)             Requested size: 469.75502pt x 341.8335pt.
-) [19 <./images/votes_pct_against_histogram.png (PNG copy)>] (emp_strategy.tex [20] [21]) (results.tex [22]
-<images/road_quality_change.png, id=388, 747.54282pt x 399.74344pt>
+[16] [17] [18] [19]) (emp_strategy.tex [20] [21]) (results.tex [22]
+<images/road_quality_change.png, id=389, 747.54282pt x 399.74344pt>
 File: images/road_quality_change.png Graphic file (type png)
 <use images/road_quality_change.png>
 Package pdftex.def Info: images/road_quality_change.png  used on input line 12.
@@ -727,34 +728,34 @@ Underfull \hbox (badness 3343) in paragraph at lines 36--36
  []
 
 [23 <./images/road_quality_change.png>]
-<images/tes_gs_reg.png, id=400, 556.32843pt x 377.91188pt>
+<images/tes_gs_reg.png, id=401, 556.32843pt x 377.91188pt>
 File: images/tes_gs_reg.png Graphic file (type png)
 <use images/tes_gs_reg.png>
 Package pdftex.def Info: images/tes_gs_reg.png  used on input line 51.
 (pdftex.def)             Requested size: 469.75502pt x 319.11032pt.
  [24] [25 <./images/tes_gs_reg.png>]
-<images/tes_covs_ua_reg.png, id=418, 517.935pt x 377.91188pt>
+<images/tes_covs_ua_reg.png, id=419, 517.935pt x 377.91188pt>
 File: images/tes_covs_ua_reg.png Graphic file (type png)
 <use images/tes_covs_ua_reg.png>
 Package pdftex.def Info: images/tes_covs_ua_reg.png  used on input line 70.
 (pdftex.def)             Requested size: 469.75502pt x 342.77011pt.
  [26] [27 <./images/tes_covs_ua_reg.png>]
-<images/tes_size_re.png, id=431, 581.92406pt x 401.24907pt>
+<images/tes_size_re.png, id=432, 581.92406pt x 401.24907pt>
 File: images/tes_size_re.png Graphic file (type png)
 <use images/tes_size_re.png>
 Package pdftex.def Info: images/tes_size_re.png  used on input line 84.
 (pdftex.def)             Requested size: 469.75502pt x 323.91402pt.
- [28 <./images/tes_size_re.png>]
+
 Overfull \hbox (7.74536pt too wide) in paragraph at lines 102--102
 []|\OT1/cmr/m/n/12 Percentile| 
  []
 
-<images/tes_qte_re.png, id=439, 581.92406pt x 401.24907pt>
+<images/tes_qte_re.png, id=434, 581.92406pt x 401.24907pt>
 File: images/tes_qte_re.png Graphic file (type png)
 <use images/tes_qte_re.png>
 Package pdftex.def Info: images/tes_qte_re.png  used on input line 126.
 (pdftex.def)             Requested size: 469.75502pt x 323.91402pt.
-[29] [30 <./images/tes_qte_re.png>]
+[28 <./images/tes_size_re.png>] [29 <./images/tes_qte_re.png>] [30]
 Underfull \hbox (badness 10000) in paragraph at lines 151--151
 []|\OT1/cmr/m/n/12 Treatment
  []
@@ -765,28 +766,28 @@ Underfull \hbox (badness 10000) in paragraph at lines 155--155
  []
 
 [31] [32]
-<images/tes_g_w_re.png, id=470, 581.92406pt x 401.24907pt>
+<images/tes_g_w_re.png, id=473, 581.92406pt x 401.24907pt>
 File: images/tes_g_w_re.png Graphic file (type png)
 <use images/tes_g_w_re.png>
 Package pdftex.def Info: images/tes_g_w_re.png  used on input line 206.
 (pdftex.def)             Requested size: 469.75502pt x 323.91402pt.
- [33] [34 <./images/tes_g_w_re.png>]
+ [33 <./images/tes_g_w_re.png>]
 
-LaTeX Warning: Reference `tab:max_renewals_cuts' on page 35 undefined on input line 219.
+LaTeX Warning: Reference `tab:max_renewals_cuts' on page 34 undefined on input line 219.
 
-[35] [36]) (JMP-Article.bbl [37] [38]) [39] (appendix.tex
+[34] [35]) (JMP-Article.bbl [36] [37]) [38] (appendix.tex
 Underfull \hbox (badness 7888) in paragraph at lines 13--13
 []|\OT1/cmr/bx/n/12 Year rel-a-tive
  []
 
-<images/tes_gs.png, id=523, 578.16pt x 346.29375pt>
+<images/tes_gs.png, id=520, 578.16pt x 346.29375pt>
 File: images/tes_gs.png Graphic file (type png)
 <use images/tes_gs.png>
 Package pdftex.def Info: images/tes_gs.png  used on input line 38.
 (pdftex.def)             Requested size: 469.75502pt x 281.36296pt.
-[40
+[39
 
-] [41 <./images/tes_gs.png>]
+] [40 <./images/tes_gs.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 63--63
 []|\OT1/cmr/m/n/12 Poverty
  []
@@ -846,42 +847,42 @@ Underfull \hbox (badness 10000) in paragraph at lines 73--73
 []|\OT1/cmr/m/n/12 % Sep-a-
  []
 
-<images/cov_smoothness_pctrent.png, id=535, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctrent.png, id=532, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctrent.png Graphic file (type png)
 <use images/cov_smoothness_pctrent.png>
 Package pdftex.def Info: images/cov_smoothness_pctrent.png  used on input line 88.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_poverty.png, id=536, 877.2775pt x 638.385pt>
+<images/cov_smoothness_poverty.png, id=533, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_poverty.png Graphic file (type png)
 <use images/cov_smoothness_poverty.png>
 Package pdftex.def Info: images/cov_smoothness_poverty.png  used on input line 95.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctwithkids.png, id=537, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctwithkids.png, id=534, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctwithkids.png Graphic file (type png)
 <use images/cov_smoothness_pctwithkids.png>
 Package pdftex.def Info: images/cov_smoothness_pctwithkids.png  used on input line 104.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctsinparhhld.png, id=538, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctsinparhhld.png, id=535, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctsinparhhld.png Graphic file (type png)
 <use images/cov_smoothness_pctsinparhhld.png>
 Package pdftex.def Info: images/cov_smoothness_pctsinparhhld.png  used on input line 111.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctlesshs.png, id=539, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctlesshs.png, id=536, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctlesshs.png Graphic file (type png)
 <use images/cov_smoothness_pctlesshs.png>
 Package pdftex.def Info: images/cov_smoothness_pctlesshs.png  used on input line 120.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctsomecoll.png, id=540, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctsomecoll.png, id=537, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctsomecoll.png Graphic file (type png)
 <use images/cov_smoothness_pctsomecoll.png>
 Package pdftex.def Info: images/cov_smoothness_pctsomecoll.png  used on input line 127.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctblack.png, id=541, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctblack.png, id=538, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctblack.png Graphic file (type png)
 <use images/cov_smoothness_pctblack.png>
 Package pdftex.def Info: images/cov_smoothness_pctblack.png  used on input line 136.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pop.png, id=542, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pop.png, id=539, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pop.png Graphic file (type png)
 <use images/cov_smoothness_pop.png>
 Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 143.
@@ -889,42 +890,42 @@ Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 143.
 
 LaTeX Warning: Float too large for page by 21.96622pt on input line 150.
 
-<images/cov_smoothness_pctmarried.png, id=543, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctmarried.png, id=540, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctmarried.png Graphic file (type png)
 <use images/cov_smoothness_pctmarried.png>
 Package pdftex.def Info: images/cov_smoothness_pctmarried.png  used on input line 156.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctseparated.png, id=544, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctseparated.png, id=541, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctseparated.png Graphic file (type png)
 <use images/cov_smoothness_pctseparated.png>
 Package pdftex.def Info: images/cov_smoothness_pctseparated.png  used on input line 163.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_incherfindahl.png, id=545, 877.2775pt x 638.385pt>
+<images/cov_smoothness_incherfindahl.png, id=542, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_incherfindahl.png Graphic file (type png)
 <use images/cov_smoothness_incherfindahl.png>
 Package pdftex.def Info: images/cov_smoothness_incherfindahl.png  used on input line 172.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_medfamy.png, id=546, 877.2775pt x 638.385pt>
+<images/cov_smoothness_medfamy.png, id=543, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_medfamy.png Graphic file (type png)
 <use images/cov_smoothness_medfamy.png>
 Package pdftex.def Info: images/cov_smoothness_medfamy.png  used on input line 179.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctlt5.png, id=547, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctlt5.png, id=544, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctlt5.png Graphic file (type png)
 <use images/cov_smoothness_pctlt5.png>
 Package pdftex.def Info: images/cov_smoothness_pctlt5.png  used on input line 188.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pct5to17.png, id=548, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pct5to17.png, id=545, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pct5to17.png Graphic file (type png)
 <use images/cov_smoothness_pct5to17.png>
 Package pdftex.def Info: images/cov_smoothness_pct5to17.png  used on input line 195.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pct18to64.png, id=549, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pct18to64.png, id=546, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pct18to64.png Graphic file (type png)
 <use images/cov_smoothness_pct18to64.png>
 Package pdftex.def Info: images/cov_smoothness_pct18to64.png  used on input line 204.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctmin.png, id=550, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctmin.png, id=547, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctmin.png Graphic file (type png)
 <use images/cov_smoothness_pctmin.png>
 Package pdftex.def Info: images/cov_smoothness_pctmin.png  used on input line 211.
@@ -932,10 +933,10 @@ Package pdftex.def Info: images/cov_smoothness_pctmin.png  used on input line 21
 
 LaTeX Warning: Float too large for page by 57.21585pt on input line 218.
 
-[42
+[41
 
 
-] [43 <./images/cov_smoothness_pctrent.png (PNG copy)> <./images/cov_smoothness_poverty.png (PNG copy)> <./images/cov_smoothness_pctwithkids.png (PNG copy)> <./images/cov_smoothness_pctsinparhhld.png (PNG copy)> <./images/cov_smoothness_pctlesshs.png (PNG copy)> <./images/cov_smoothness_pctsomecoll.png (PNG copy)> <./images/cov_smoothness_pctblack.png (PNG copy)> <./images/cov_smoothness_pop.png (PNG copy)>] [44 <./images/cov_smoothness_pctmarried.png (PNG copy)> <./images/cov_smoothness_pctseparated.png (PNG copy)> <./images/cov_smoothness_incherfindahl.png (PNG copy)> <./images/cov_smoothness_medfamy.png (PNG copy)> <./images/cov_smoothness_pctlt5.png (PNG copy)> <./images/cov_smoothness_pct5to17.png (PNG copy)> <./images/cov_smoothness_pct18to64.png (PNG copy)> <./images/cov_smoothness_pctmin.png (PNG copy)>]) [45
+] [42 <./images/cov_smoothness_pctrent.png (PNG copy)> <./images/cov_smoothness_poverty.png (PNG copy)> <./images/cov_smoothness_pctwithkids.png (PNG copy)> <./images/cov_smoothness_pctsinparhhld.png (PNG copy)> <./images/cov_smoothness_pctlesshs.png (PNG copy)> <./images/cov_smoothness_pctsomecoll.png (PNG copy)> <./images/cov_smoothness_pctblack.png (PNG copy)> <./images/cov_smoothness_pop.png (PNG copy)>] [43 <./images/cov_smoothness_pctmarried.png (PNG copy)> <./images/cov_smoothness_pctseparated.png (PNG copy)> <./images/cov_smoothness_incherfindahl.png (PNG copy)> <./images/cov_smoothness_medfamy.png (PNG copy)> <./images/cov_smoothness_pctlt5.png (PNG copy)> <./images/cov_smoothness_pct5to17.png (PNG copy)> <./images/cov_smoothness_pct18to64.png (PNG copy)> <./images/cov_smoothness_pctmin.png (PNG copy)>]) [44
 
 ] (JMP-Article.aux)
  ***********
@@ -947,20 +948,20 @@ L3 programming layer <2024-03-14>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `JMP-Article.out' has not changed.
-(rerunfilecheck)             Checksum: FB26F4894A77EE23C757B66BAA14A105;5879.
+(rerunfilecheck)             Checksum: B6F623E1FD2BDF63E0F1943A27E415C9;5572.
  ) 
 Here is how much of TeX's memory you used:
- 15590 strings out of 474424
- 253440 string characters out of 5740796
- 1975496 words of memory out of 5000000
- 37551 multiletter control sequences out of 15000+600000
+ 15591 strings out of 474424
+ 253508 string characters out of 5740796
+ 1976496 words of memory out of 5000000
+ 37553 multiletter control sequences out of 15000+600000
  573072 words of font info for 93 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,13n,79p,2443b,600s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,13n,79p,2443b,588s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on JMP-Article.pdf (46 pages, 4763974 bytes).
+Output written on JMP-Article.pdf (45 pages, 4764168 bytes).
 PDF statistics:
- 689 PDF objects out of 1000 (max. 8388607)
- 133 named destinations out of 1000 (max. 500000)
- 386 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 685 PDF objects out of 1000 (max. 8388607)
+ 132 named destinations out of 1000 (max. 500000)
+ 378 words of extra memory for PDF output out of 10000 (max. 10000000)
 

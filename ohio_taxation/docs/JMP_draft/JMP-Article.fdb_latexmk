@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex JMP-Article"] 1737752074.41566 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1737752078.54185 0
+["bibtex JMP-Article"] 1738100798.76361 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1738101044.93441 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
-  "./aej_references.bib" 1737671173 11263 a1b782c2fe8f8a30c0a14d5814a65a2e ""
-  "JMP-Article.aux" 1737752077 19025 a32541c85f2e4edc6146d24b3c7d675d "pdflatex"
+  "./aej_references.bib" 1738100636 11604 fa758a7b31c1892bcb53a1a5bce1311d ""
+  "JMP-Article.aux" 1738101042 19019 333b4a78bb3647e76b998af5254928f4 "pdflatex"
   (generated)
   "JMP-Article.bbl"
   "JMP-Article.blg"
   (rewritten before read)
-["pdflatex"] 1737752074.89292 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1737752078.54294 0
+["pdflatex"] 1738101040.19523 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1738101044.93588 0
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1737579305 81286 a24972354787ad66f4189952495c30ed ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0700.pk" 1737579311 8268 191349543146a4c053d7a8b3d482dfab ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1737579313 11548 9725287d5650551bd806f254213fceb9 ""
@@ -145,13 +145,13 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "JMP-Article.aux" 1737752077 19025 a32541c85f2e4edc6146d24b3c7d675d "pdflatex"
-  "JMP-Article.bbl" 1737752074 9088 b4fd3c8f5e6322604f7afd86382abb58 "bibtex JMP-Article"
-  "JMP-Article.out" 1737752077 5879 fb26f4894a77ee23c757b66baa14a105 "pdflatex"
-  "JMP-Article.tex" 1737752056 4709 7ca549d0ad1908fbdaa81d09163c4da1 ""
+  "JMP-Article.aux" 1738101042 19019 333b4a78bb3647e76b998af5254928f4 "pdflatex"
+  "JMP-Article.bbl" 1738100799 9354 413b17a5d81b1326242244a73f452208 "bibtex JMP-Article"
+  "JMP-Article.out" 1738101042 5572 b6f623e1fd2bdf63e0f1943a27e415c9 "pdflatex"
+  "JMP-Article.tex" 1738098383 5722 7014accdee849d1679c44a52bbfb78f9 ""
   "appendix.tex" 1737751687 11753 14e3d3458808cde8c2a82dcb2cf7032a ""
-  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1737752056 4709 7ca549d0ad1908fbdaa81d09163c4da1 ""
-  "data.tex" 1737752069 30838 b96a2e95485c277eb3a1d9380958c39e ""
+  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1738098383 5722 7014accdee849d1679c44a52bbfb78f9 ""
+  "data.tex" 1738101039 30844 00ad739b9cd54d8c9793947cf61c6252 ""
   "emp_strategy.tex" 1737677846 4875 aa5ab11af8ef8c0ef7b227ab137aaafa ""
   "images/andover_township_14grandarmy_2007.png" 1725811387 576950 e94fc7f73cf903b985bbadc85a7982c7 ""
   "images/andover_township_14grandarmy_2022.png" 1725811422 603518 b995e03b7e8c71daba275ec3ed3392be ""
@@ -184,7 +184,7 @@
   "images/votes_pct_against_histogram.png" 1708134432 34910 2ab2ad4a06488c5311893b5e98604a06 ""
   "intro.tex" 1737497359 2973 14f93c82bd506cd1d6cc2e3786ac284e ""
   "lit_review.tex" 1737498040 7339 254e14fe159b6254d01b98389e6007aa ""
-  "results.tex" 1737746966 25751 50fb43418816dd667e77652bc7d07404 ""
+  "results.tex" 1738097123 25760 a7d570f602257421a531061613b3f61c ""
   (generated)
   "JMP-Article.aux"
   "JMP-Article.log"
