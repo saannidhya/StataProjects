@@ -112,6 +112,8 @@ tes_covs_urb_cd <- te_tables(regs_covs_urb_cd)
 plot_te(tes_covs_urb_cd)
 
 covs_final_urb_ua2 <- covs_final_urb_ua
+covs_final_urb_ua2 <- list(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+names(covs_final_urb_ua2) <- names(dfs_agg_covs)
 covs_final_urb_ua2$housing_roads_census_t_minus_3_matches <- c("pop","pcthsgrad", "medfamy")
 covs_final_urb_ua2$housing_roads_census_t_minus_2_matches <- c("pctdivorced","pcthsgrad", "medfamy")
 covs_final_urb_ua2$housing_roads_census_t_minus_1_matches <- c("pctdivorced","pcthsgrad", "medfamy")
@@ -129,6 +131,7 @@ covs_final_urb_ua2$housing_roads_census_t_plus_8_matches <- c("medfamy")
 covs_final_urb_ua2$housing_roads_census_t_plus_9_matches <- c("medfamy", "poverty", "pctmin", "lforcepartrate", "unemprate", "incherfindahl")
 covs_final_urb_ua2$housing_roads_census_t_plus_10_matches<- c("medfamy")
 
+# urban
 regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua2 ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
@@ -143,58 +146,8 @@ regs_covs_urb_ua <- purrr::map2(dfs_agg_covs_urb_ua, covs_final_urb_ua2 ,
 tes_covs_urb_ua <- te_tables(regs_covs_urb_ua) 
 plot_te(tes_covs_urb_ua)
 
-sel_covs <- purrr::map(combn(covs_list, 2, simplify = FALSE), function(x) {
-  
-  # find the covariate where treatment effect is positive and insignificant
-  rg <- rdrobust::rdrobust(y = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches$median_sale_amount,
-                     x = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches$votes_pct_against, 
-                     c = cutoff, 
-                     covs = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches %>% select(x),
-                     all = TRUE)
-  
-  if (rg$coef[3] > 0 & rg$pv[3] > 0.05) return(x)
-  
-}) %>% Filter(Negate(is.null), .)
-
-# save coefs
-cfs_ua <- map_dbl(sel_covs, ~ rdrobust::rdrobust(y = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches$median_sale_amount,
-                     x = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches$votes_pct_against, 
-                     c = cutoff, 
-                     covs = dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches %>% select(.x),
-                     all = TRUE)$coef[3])
-names(cfs_ua) <- sel_covs
-sort(cfs_ua)
-  
-# sel_covs_5 <- purrr::map(lapply(combn(covs_list, 2, simplify = FALSE), function(y) c("medfamy", y)), function(x) {
-#   
-#   # find the covariate where treatment effect is positive and insignificant
-#   rg <- rdrobust::rdrobust(y = dfs_agg_covs_urb_ua$housing_roads_census_t_plus_5_matches$median_sale_amount,
-#                            x = dfs_agg_covs_urb_ua$housing_roads_census_t_plus_5_matches$votes_pct_against, 
-#                            c = cutoff, 
-#                            covs = dfs_agg_covs_urb_ua$housing_roads_census_t_plus_5_matches %>% select(x),
-#                            all = TRUE)
-#   
-#   if (rg$coef[3] < 0 & rg$pv[3] < 0.05) return(x)
-#   
-# }) %>% Filter(Negate(is.null), .)
-
-# dfs_agg_covs_urb_ua$housing_roads_census_t_minus_3_matches
-
-# regs_covs_rur_cd <- purrr::map2(dfs_agg_covs_rur_cd, covs_final_rur_cd ,
-#                                 function(x, y){
-#                                   rdrobust::rdrobust(y = x$median_sale_amount,
-#                                                      x = x$votes_pct_against, 
-#                                                      c = cutoff, 
-#                                                      covs =  x %>% select(c("pop", "poverty", "pctmin", "pctown")),
-#                                                      # covs = x %>% select(y),
-#                                                      all = TRUE)
-#                                 }
-# )
-# tes_covs_rur_cd <- te_tables(regs_covs_rur_cd) 
-# plot_te(tes_covs_rur_cd)
-
-
-regs_covs_rur_ua <- purrr::map2(dfs_agg_covs_rur_ua, covs_final_rur_ua ,
+# rural
+regs_covs_rur_ua <- purrr::map2(dfs_agg_covs_rur_ua, c("") ,
                                 function(x, y){
                                   rdrobust::rdrobust(y = x$median_sale_amount,
                                                      x = x$votes_pct_against, 
@@ -276,7 +229,7 @@ dfs_agg_covs_urb_ua_w_tfe <- map(dfs_agg_covs_urb_ua, ~ dummy_cols(.x, select_co
 
 # merging year dummies and covariates list 
 dfs_agg_covs_urb_ua_tfe_names <- map(dfs_agg_covs_urb_ua_w_tfe, ~ colnames(.x) %>% grep("year_", ., value = TRUE))
-covs_final_urb_ua_w_tfe <- map2(covs_final_urb_ua2, dfs_agg_covs_tfe_names, ~c(.x, .y))
+covs_final_urb_ua_w_tfe <- map2(covs_final_urb_ua2, dfs_agg_covs_urb_ua_tfe_names, ~c(.x, .y))
 
 regs_covs_urb_ua_tfe <- purrr::map2(dfs_agg_covs_urb_ua_w_tfe, covs_final_urb_ua_w_tfe ,
                                 function(x, y){
@@ -296,8 +249,6 @@ plot_te_recenter(tes_regs_covs_urb_ua_tfe, title = "Treatment Effect Estimates: 
 
 # rural
 dfs_agg_covs_rur_ua_w_tfe <- map(dfs_agg_covs_rur_ua, ~ dummy_cols(.x, select_columns = c("year"), remove_first_dummy = TRUE) %>% relocate(starts_with("year_"), .after = "year"))
-
-map_chr(rep("c", 2), ~ .x)
 
 # merging time dummies with covariates list
 dfs_agg_covs_rur_ua_tfe_names <- map(dfs_agg_covs_rur_ua_w_tfe, ~ colnames(.x) %>% grep("year_", ., value = TRUE))

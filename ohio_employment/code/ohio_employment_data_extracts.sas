@@ -16,6 +16,7 @@
 			 27sep2023  SR Used new 2022 data provided by ODJFS (for all quarters)
 			 21mar2024  SR Added new 2023 data provided by ODJFS (up to 3Q23)
 			  8Aug2024	SR Updating to include 4Q23
+			 29jan2025  SR Updating to include up to 2Q24
 \*=================================================================================================*/
 
 *setting up macro variables;
@@ -187,7 +188,25 @@ proc import
     dbms=xlsx 
     replace;
 run;
-
+*2024;
+proc import 
+    datafile="&in_loc.\2024\UCMA 1Q24.xlsx"
+    out=df_2024q1 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2024\UCMA 2Q24.xlsx"
+    out=df_2024q2 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
 
 /*'Reporting Unit Description'n = RUD*/
 
@@ -215,7 +234,7 @@ run;
 %mend ;
 %loop(qtr_list = 2019q1 2019q2 2019q3 2019q4 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2 2021q3 2021q4 2022q1 2022q2 2022q3 2022q4);
 /*%loop(qtr_list = 2022q1 2022q2 2022q3 2022q4)*/
-%loop(qtr_list = 2023q1 2023q2 2023q3 2023q4)
+%loop(qtr_list = 2023q1 2023q2 2023q3 2023q4 2024q1 2024q2)
 
 
 *removing illegible entries using EINs (see ohio_data_checks.sas for more details);
@@ -264,7 +283,7 @@ quit;
 
 *21,159,278 obs;*append all years together (2006 onwards) and exporting as sas dataset;
 proc sql;
-	create table out.masterfile_2006q1_2023q4	(where = (strip(EIN) ^= "043583679" and 
+	create table out.masterfile_2006q1_2024q2	(where = (strip(EIN) ^= "043583679" and 
 														  strip(EIN) ^= "201731623" and 
 														  strip(EIN) ^= "462603341" and meei ^= 2)) 
 				as 
@@ -330,6 +349,12 @@ proc sql;
 		   outer union corr
 	   select *
 	   	  from df_2023q4
+		   outer union corr
+	   select *
+	   	  from df_2024q1
+		   outer union corr
+	   select *
+	   	  from df_2024q2
 	;
 quit;
 
@@ -339,7 +364,7 @@ quit;
 proc sql;
 	create table count as
 		select year, quarter, COUNT(*) AS ObsCount
-			from out.masterfile_2006q1_2023q4
+			from out.masterfile_2006q1_2024q2
 				group by year, quarter
 ;
 quit;
@@ -360,7 +385,7 @@ quit;
 proc sql;
 	create table wage as
 		select year, quarter, sum(wage) AS wages
-			from out.masterfile_2006q1_2023q4
+			from out.masterfile_2006q1_2024q2
 				group by year, quarter
 ;
 quit;
@@ -390,8 +415,8 @@ RUN;
 *	Converting the exported SAS dataset into a Stata dataset
 *----------------------------------------------------------------------------------------;
 proc export 
-		    data=out.masterfile_2006q1_2023q3
-		    outfile="&out_csv.\masterfile_2006q1_2023q3.dta" 
+		    data=out.masterfile_2006q1_2024q2
+		    outfile="&out_csv.\masterfile_2006q1_2024q2.dta" 
 		    dbms=dta 
 		    replace;
 run;

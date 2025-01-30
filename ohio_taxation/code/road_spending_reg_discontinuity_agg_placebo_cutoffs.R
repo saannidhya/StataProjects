@@ -32,3 +32,23 @@ tes_g_pb$pval %>% sort
 
 # output to csv
 write.csv(tes_g_pb, paste0(tables, "/tes_gs_placebos.csv"), row.names = FALSE)
+
+
+#==============================================#
+# Adding Time Fixed Effects
+#==============================================#
+
+gs_reg_pb <- map(placebo_cutoffs , ~ map2(covs_final_w_tfe, dfs_agg_covs_w_tfe, .f = function(x,y){
+  rdrobust(  y = y$median_sale_amount,
+             x = y$votes_pct_against,
+             c = .x,
+             covs = y %>%
+               select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+}) )
+names(gs_reg_pb) <- placebo_cutoffs
+
+tes_reg_g_pb <- map2(gs_reg_pb, placebo_cutoffs, ~ te_tables(.x) %>% mutate(cutoff = .y) ) %>% bind_rows
+tes_reg_g_pb$pval %>% sort
+
+tes_reg_g_pb %>% print(., n = 56)

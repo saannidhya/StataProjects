@@ -24,106 +24,7 @@ The type of tax levy we study is for the renewal of road tax levy, which covers 
 {\bf Consequences of failing to renew a levy.}
 
 
-\subsection{Tax Cuts \& Evidence of Road Quality}
-
-% \subsubsection{Visual Evidence of Road Quality}
-
-\subsubsection{A Tale of Two Cities}
-
-To further understand what differentiates the areas which regularly pass their levies from the areas which often fail to renew their levies, we present two townships in the same county that exhibit very different behavior with respect to successful renewal of their road tax levies. Table \ref{tab:renewals_cuts} provides a comparative analysis of two townships, Andover and Morgan, within Ashtabula County. Despite being in the same county, these townships show contrasting patterns in the renewal of road tax levies. Andover township has consistently passed all its road tax levies, while Morgan township has failed to renew more than half of its levies. This stark difference in voting behavior allows us to examine the impact of road tax levy renewals on road quality within a controlled environment, as both townships share similar geographic,  demographic and economic characteristics.
-
-\begin{table}[ht]
-    \centering
-    \caption{Andover \& Morgan Townships - Referendum Results}
-    \label{tab:renewals_cuts}
-    \begin{threeparttable}
-    \begin{tabular}{p{4cm}p{3cm}p{3cm}cc}
-        \hline
-        \multicolumn{5}{l}{\textbf{Panel A. Levy cut Rates}} \\
-        County Subdivision  & County & Renewals & Cuts & \% Cut  \\
-        \hline
-        % Elmore & Village & Ottawa & 20 & 0 \\
-        % Bainbridge & Township & Geauga & 19 & 0 \\
-        % Ames & Township & Athens & 17 & 0 \\
-        % Franklin & Township & Portage & 17 & 0 \\
-        Andover & Ashtabula & 16 & 0 & 0\% \\
-        Morgan & Ashtabula & 7 & 9 & 56\% \\
-        % Auburn & Township & Geauga & 16 & 0 \\
-        % Chester & Township & Geauga & 16 & 0 \\
-        % Waterloo & Township & Athens & 15 & 1 \\
-        % Hiram & Township & Portage & 15 & 0 \\
-        % Ashtabula & Township & Ashtabula & 14 & 0 \\
-        \\
-        \hline
-        \multicolumn{5}{l}{\textbf{Panel B. Township Characteristics}} \\
-        Covariates & Andover & Morgan & Renewals & Cuts \\
-        \hline
-        Morgan & Township & Ashtabula & 7 & 9 \\
-        Rush & Township & Champaign & 11 & 9 \\
-        Wayne & Township & Champaign & 5 & 8 \\
-        Rose & Township & Carroll & 6 & 6 \\
-        Perry & Township & Morrow & 4 & 6 \\
-        Washington & Township & Scioto & 10 & 6 \\
-        Waynesville & Village & Warren & 2 & 6 \\
-        Trumbull & Township & Ashtabula & 3 & 5 \\
-        Thompson & Township & Geauga & 7 & 5 \\
-        Paint & Township & Holmes & 8 & 5 \\
-        \hline
-    \end{tabular}
-    \begin{tablenotes}
-        \small
-        \item This table shows the ten cities in Ohio with the largest number of renewed road maintenance levies (Panel A) and the most levies that failed to renew funding (Panel B). The table also provides subdivision type and county for each city. Townships belonging to Ashtabula county have been highlighted.  
-    \end{tablenotes}
-    \end{threeparttable}
-\end{table}
-
-% \begin{figure}[htbp]
-%     \centering
-%     \includegraphics[width=\textwidth,keepaspectratio]{images/andover_township_14grandarmy_2022.png}
-% \end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \begin{minipage}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,keepaspectratio]{images/andover_township_14grandarmy_2007.png}
-        \caption*{Grand Army of the Republic Hwy: 2007} % * suppresses numbering
-        \label{fig:andover_2007}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,keepaspectratio]{images/andover_township_14grandarmy_2022.png}
-        \caption*{Grand Army of the Republic Hwy: 2022}
-        \label{fig:andover_2022}
-    \end{minipage}
-    \caption{Andover township - Road quality}
-    \label{fig:rd_andover}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \begin{minipage}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,keepaspectratio]{images/morgan_township_2801OH-45_2009.png}
-        \caption*{OH-45: 2009}
-        \label{fig:morgan_oh_2009}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,keepaspectratio]{images/morgan_township_2801OH-45_2018.png}
-        \caption*{OH-45: 2018}
-        \label{fig:morgan_oh_2018}
-    \end{minipage}
-    \caption{Morgan township - Road quality}
-    \label{fig:rd_morgan}
-\end{figure}
-
-
-Table \ref{tab:renewals_cuts} shows that there are certain cities which always renew their road tax levies and other cities which often cut their renewal tax levies. Interestingly, we find two townships, Andover and Morgan, which belong to the same county of Ashtabula but exhibit very different behavior in terms of their voting patterns. Andover township passed all the road tax levies that were up for election whereas Morgan township failed to renew more than 56\% of its renewal levies. Since both the townships belong to the same county and have similar characteristics, we can effectively identify whether cutting road spending via road tax levies have a tangible impact on the quality of roads in the area. For this, we leverage Google Street Maps (GSM). Since photos of roads on GSM are time-stamped and the same area can have photos from different points in time, this feature allows us to observe the evolving condition of roads in these neighborhoods over time. For instance, we can observe the major streets of Andover township and compare them with the main streets of Morgan township. We checked whether there were any road tax renewals that took place between these available dates and then observed whether the road conditions improved, stayed the same or deteriorated during this period. Figure \ref{fig:rd_andover} shows Grand Army of the Republic Hwy, a specific hub in Andover, for periods 2007 and 2022. The road quality appears to have been maintained well over the years, indicating that consistent renewal of road tax levies contributes to sustained road infrastructure quality. In contrast, Figure \ref{fig:rd_morgan} illustrates the condition of OH-45 and W Water St in Morgan township for the years 2009 and 2018. The deterioration as well as continuation of poor road quality is evident, suggesting that the failure to renew road tax levies has a tangible negative impact on roads. The disparity in road conditions between Andover and Morgan townships may be suggestive of the broader economic implications of fiscal policy decisions at the local level, particularly how underinvestment in infrastructure can lead to tangible declines in public asset quality and potentially hinder economic growth and development.
-
-\subsubsection{Assessing Road Quality using Satellite Imagery} \label{sec:road_quality}
+\subsection{Tax Cuts \& Evidence of Road Quality} \label{sec:road_quality}
 
 To understand the effect of cutting local road tax on road quality, we fine-tune a Vision Transformer (ViT) model, gpt-4o by OpenAI, on satellite imagery data from \cite{brewer2021}. Following the seminal work on text-based Transformers in Natural Language Processing (NLP) by \cite{vaswani2017attention}, ViTs were introduced by Google Brain's team and are part of a recent class of deep learning models that have shown to outperform Convolutional Neural Networks (CNNs) on image classification tasks \citep{dosovitskiy2020image}. Below, we outline the steps we take to assess road quality using the ViT model.
 
@@ -194,7 +95,6 @@ Covariates can be useful in regression discontinuity studies, although they are 
 
 Table \ref{tab:variable_means_sd} demonstrates the covariate balance between cities that renew their tax levies and those that do not, indicating similar demographic and economic profiles across both groups. The data, captured at the time of the vote, shows minimal differences within the effective bandwidth: the mean population differs by only 224 from a base of 5,220, and median family income varies by \$190 from a base of \$60,269, measured in 2010 U.S. dollars. Other variables, including poverty rates, single-parent household percentages, educational attainment, age distribution, and racial composition, show differences of less than one percentage point, reinforcing the comparability of the two groups.
 
-
 \begin{longtable}{p{4cm}cccccc}
     \caption{Variable Means \& Standard Deviation by Tax Levy Renewal Status} \label{tab:variable_means_sd} \\
     \hline
@@ -218,68 +118,78 @@ Table \ref{tab:variable_means_sd} demonstrates the covariate balance between cit
     \hline
     \endlastfoot
 
-    \multicolumn{6}{l}{\textbf{Panel A. Covariates}} \\
-    Population & 5,074 & 5,134 & 4,769 & 5,220 & 4,996 \\
-               & (7,942) & (8,030) & (7,478) & (8,205) & (7,420) \\
-    Poverty Rate & 0.11 & 0.11 & 0.11 & 0.11 & 0.10 \\
-                 & (0.08) & (0.08) & (0.07) & (0.08) & (0.07) \\
-    \% with Kids & 0.39 & 0.39 & 0.40 & 0.39 & 0.39 \\
-                 & (0.08) & (0.08) & (0.08) & (0.08) & (0.07) \\
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%  Panel A (UPDATED)   %%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % \multicolumn{6}{l}{\textbf{Panel A. Covariates}} \\
+    Population & 5,072 & 4,733 & 5,139 & 4,885 & 5,186 \\
+               & (7,936) & (7,291) & (8,058) & (7,036) & (8,229) \\
+    Poverty Rate & 0.11 & 0.11 & 0.11 & 0.10 & 0.11 \\
+                 & (0.08) & (0.07) & (0.08) & (0.07) & (0.08) \\
+    \% with Kids & 0.39 & 0.40 & 0.39 & 0.39 & 0.39 \\
+                 & (0.08) & (0.08) & (0.08) & (0.07) & (0.08) \\
     \% Households with Children under 18 & 0.09 & 0.09 & 0.09 & 0.09 & 0.08 \\
-                                         & (0.06) & (0.06) & (0.05) & (0.06) & (0.05) \\
-    \% Less than High School Education & 0.16 & 0.15 & 0.18 & 0.17 & 0.18 \\
-                                       & (0.11) & (0.11) & (0.10) & (0.11) & (0.09) \\
-    \% Some College Education & 0.25 & 0.25 & 0.24 & 0.25 & 0.24 \\
-                              & (0.06) & (0.06) & (0.06) & (0.06) & (0.07) \\
-    \% Unemployment Rate & 0.05 & 0.05 & 0.05 & 0.06 & 0.05 \\
-                         & (0.04) & (0.04) & (0.03) & (0.04) & (0.03) \\
-    \% Renters & 0.20 & 0.20 & 0.20 & 0.20 & 0.19 \\
-               & (0.11) & (0.11) & (0.10) & (0.11) & (0.09) \\
-    \% White & 0.96 & 0.96 & 0.97 & 0.97 & 0.96 \\
-             & (0.07) & (0.08) & (0.07) & (0.08) & (0.08) \\
+                                         & (0.06) & (0.05) & (0.06) & (0.06) & (0.05) \\
+    \% Less than High School Education & 0.16 & 0.18 & 0.15 & 0.18 & 0.16 \\
+                                       & (0.11) & (0.12) & (0.11) & (0.12) & (0.10) \\
+    \% Some College Education & 0.25 & 0.24 & 0.25 & 0.24 & 0.25 \\
+                              & (0.06) & (0.06) & (0.06) & (0.07) & (0.06) \\
+    \% Unemployment Rate & 0.05 & 0.05 & 0.05 & 0.05 & 0.06 \\
+                         & (0.04) & (0.03) & (0.04) & (0.03) & (0.04) \\
+    \% Renters & 0.20 & 0.20 & 0.20 & 0.19 & 0.20 \\
+               & (0.11) & (0.10) & (0.11) & (0.09) & (0.11) \\
+    \% White & 0.96 & 0.97 & 0.96 & 0.97 & 0.97 \\
+             & (0.07) & (0.07) & (0.07) & (0.07) & (0.08) \\
     \% Black & 0.02 & 0.02 & 0.02 & 0.02 & 0.02 \\
-             & (0.07) & (0.07) & (0.06) & (0.07) & (0.07) \\
-    \% Married & 0.59 & 0.59 & 0.60 & 0.60 & 0.61 \\
-               & (0.09) & (0.09) & (0.08) & (0.09) & (0.08) \\
+             & (0.07) & (0.06) & (0.07) & (0.07) & (0.07) \\
+    \% Married & 0.59 & 0.60 & 0.59 & 0.61 & 0.60 \\
+               & (0.09) & (0.08) & (0.09) & (0.08) & (0.09) \\
     \% Separated & 0.01 & 0.01 & 0.01 & 0.01 & 0.01 \\
                  & (0.01) & (0.01) & (0.01) & (0.01) & (0.01) \\
-    Income Heterogeneity Index & 0.10 & 0.10 & 0.09 & 0.09 & 0.09 \\
-                               & (0.08) & (0.08) & (0.07) & (0.07) & (0.06) \\
-    Median Family Income & 61,014 & 61,445 & 58,837 & 60,269 & 60,079 \\
-                         & (17,694) & (18,283) & (14,177) & (15,687) & (14,143) \\
+    Income Heterogeneity Index & 0.10 & 0.09 & 0.10 & 0.09 & 0.09 \\
+                               & (0.08) & (0.07) & (0.08) & (0.07) & (0.06) \\
+    Median Family Income & 61,018 & 58,761 & 61,467 & 59,934 & 60,370 \\
+                         & (17,649) & (13,915) & (18,270) & (13,655) & (15,713) \\
     \% Under 5 Years Old & 0.06 & 0.06 & 0.06 & 0.06 & 0.06 \\
                          & (0.02) & (0.02) & (0.02) & (0.02) & (0.02) \\
-    \% Aged 5 to 17 & 0.20 & 0.20 & 0.21 & 0.20 & 0.20 \\
-                    & (0.05) & (0.05) & (0.04) & (0.05) & (0.04) \\
+    \% Aged 5 to 17 & 0.20 & 0.21 & 0.20 & 0.20 & 0.20 \\
+                    & (0.05) & (0.04) & (0.05) & (0.04) & (0.05) \\
     \% Aged 18 to 64 & 0.60 & 0.60 & 0.60 & 0.60 & 0.60 \\
-                     & (0.05) & (0.05) & (0.05) & (0.05) & (0.04) \\
-    \% Racial Minority & 0.04 & 0.04 & 0.03 & 0.03 & 0.04 \\
-                       & (0.07) & (0.08) & (0.07) & (0.08) & (0.08) \\
-    Number of Observations & 3,188 & 2,661 & 527 & 694 & 273 \\
+                     & (0.05) & (0.05) & (0.05) & (0.04) & (0.05) \\
+    \% Racial Minority & 0.04 & 0.03 & 0.04 & 0.03 & 0.03 \\
+                       & (0.07) & (0.07) & (0.07) & (0.08) & (0.07) \\
+    Number of Observations & 3,184 & 2,656 & 528 & 653 & 269 \\
     \\
-    \multicolumn{6}{l}{\textbf{Panel B. Outcome Variables}} \\
-    \textit{a) Median House Price} & & & & & \\
-    t - 3 & 106,067 & 107,502 & 102,766 & 106,771 & 104,201 \\
-          & (52,988) & (60,197) & (50,794) & (53,461) & (51,794) \\
-    t - 2 & 105,528 & 107,211 & 101,456 & 106,207 & 103,713 \\
-          & (53,242) & (60,893) & (48,438) & (54,162) & (50,786) \\
-    t - 1 & 107,706 & 108,234 & 104,575 & 108,401 & 105,843 \\
-          & (53,544) & (62,437) & (51,343) & (54,665) & (50,491) \\
-    \textit{b) Median House Price (\%)} & & & & & \\
-    t - 3 & 1,504 & 1,752 & 1,728 & 1,446 & 1,695 \\
-          & (3,848) & (4,006) & (3,642) & (3,887) & (3,739) \\
-    t - 2 & 1,429 & 1,734 & 1,680 & 1,388 & 1,562 \\
-          & (3,693) & (3,978) & (3,612) & (3,769) & (3,462) \\
-    t - 1 & 1,387 & 1,724 & 1,668 & 1,341 & 1,538 \\
-          & (3,628) & (3,993) & (3,598) & (3,683) & (3,460) \\
-    \textit{c) Median House Price per square foot} & & & & & \\
-    t - 3 & 31,764 & 31,892 & 32,531 & 32,367 & 32,401 \\
-          & (8,868) & (8,428) & (10,090) & (9,657) & (8,898) \\
-    t - 2 & 31,714 & 32,083 & 32,048 & 31,571 & 32,166 \\
-          & (8,630) & (8,392) & (9,224) & (8,723) & (8,372) \\
-    t - 1 & 31,764 & 32,399 & 32,399 & 31,579 & 32,367 \\
-          & (8,868) & (9,716) & (9,716) & (8,623) & (9,657) \\
-\end{longtable}
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%   Panel B (Same)     %%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % \multicolumn{6}{l}{\textbf{Panel B. Outcome Variables}} \\
+    % \textit{a) Median House Price} & & & & & \\
+    % t - 3 & 106,067 & 107,502 & 102,766 & 106,771 & 104,201 \\
+    %       & (52,988) & (60,197) & (50,794) & (53,461) & (51,794) \\
+    % t - 2 & 105,528 & 107,211 & 101,456 & 106,207 & 103,713 \\
+    %       & (53,242) & (60,893) & (48,438) & (54,162) & (50,786) \\
+    % t - 1 & 107,706 & 108,234 & 104,575 & 108,401 & 105,843 \\
+    %       & (53,544) & (62,437) & (51,343) & (54,665) & (50,491) \\
+    % \textit{b) Median House Price (\%)} & & & & & \\
+    % t - 3 & 1,504 & 1,752 & 1,728 & 1,446 & 1,695 \\
+    %       & (3,848) & (4,006) & (3,642) & (3,887) & (3,739) \\
+    % t - 2 & 1,429 & 1,734 & 1,680 & 1,388 & 1,562 \\
+    %       & (3,693) & (3,978) & (3,612) & (3,769) & (3,462) \\
+    % t - 1 & 1,387 & 1,724 & 1,668 & 1,341 & 1,538 \\
+    %       & (3,628) & (3,993) & (3,598) & (3,683) & (3,460) \\
+    % \textit{c) Median House Price per square foot} & & & & & \\
+    % t - 3 & 31,764 & 31,892 & 32,531 & 32,367 & 32,401 \\
+    %       & (8,868) & (8,428) & (10,090) & (9,657) & (8,898) \\
+    % t - 2 & 31,714 & 32,083 & 32,048 & 31,571 & 32,166 \\
+    %       & (8,630) & (8,392) & (9,224) & (8,723) & (8,372) \\
+    % t - 1 & 31,764 & 32,399 & 32,399 & 31,579 & 32,367 \\
+    %       & (8,868) & (9,716) & (9,716) & (8,623) & (9,657) \\
+
+
+    \end{longtable}
+
 
 % \begin{tablenotes}
 %     \small

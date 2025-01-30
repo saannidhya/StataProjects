@@ -2,6 +2,8 @@
 
 \subsection{Local government spending}
 
+
+
 \subsection{Road Quality decline}
 
  To assess the impact of cutting local road taxes on road quality, we utilized a fine-tuned Vision Transformer (ViT) model, leveraging labeled satellite imagery data for U.S. roads. The ViT model, fine-tuned using a large dataset of road images, assigned quality ratings on a scale of 0 (poor) to 2 (high) to our collected satellite imagery for Ohio neighborhoods, as explained in Section \ref{sec:road_quality}. We compared road quality ratings from the fine-tuned ViT model before and after the referendum in areas that failed to renew their road tax levy versus those that successfully passed the levy. These results are visually summarized in Figure \ref{fig:road_quality_change}, which shows the change in road quality ratings for both groups. 
@@ -148,19 +150,20 @@ For example, consider a scenario where a city votes on a renewal tax levy in the
         \hline
         year relative to vote & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
         \hline
-        Treatment effect & -21,819 & -16,308 & -13,850 & -15,944 & -18,443 & -29,298 & -19,179 \\
-        standard error & (11,271) & (7,489) & (8,161) & (8,186) & (8,591) & (8,342) & (10,120) \\
-        Effective bandwidth (h) & 7.7 & 7.4 & 14.7 & 10.5 & 9.4 & 6.2 & 8.9 \\
-        Bias bandwidth (b) & 13.6 & 17.8 & 24.5 & 19.0 & 18.4 & 13.3 & 18.2 \\
-        Effective Observations & 538 & 512 & 1,086 & 680 & 584 & 347 & 492 \\
-        Total Observations & 2,390 & 2,273 & 2,147 & 2,016 & 1,889 & 1,786 & 1,665 \\
+        Treatment effect & -19,015 & -15,609 & -18,403 & -20,842 & -18,950 & -28,634 & -23,823 \\
+        standard error   & (9,563) & (10,283) & (10,246) & (9,629) & (9,179) & (7,770)  & (10,594) \\
+        Effective bandwidth (h) & 6.88 & 5.92 & 8.36 & 9.42 & 7.91 & 5.43 & 7.05 \\
+        Bias bandwidth (b)      & 12.14 & 15.94 & 14.53 & 17.87 & 15.24 & 11.90 & 17.33 \\
+        Effective Observations  & 475 & 389 & 561 & 611 & 475 & 300 & 374 \\
+        Total Observations      & 2,389 & 2,274 & 2,145 & 2,016 & 1,890 & 1,787 & 1,666 \\
         \hline
     \end{tabular}
     \begin{tablenotes}
         \small
-        \item The outcome is median house price in constant 2010 U.S. dollars. The unit of observation is the city-year, so a treatment effect of -\$21,819 means that four years after the vote, cities that fail to renew road taxes and its associated spending have houses that sell for \$21,819 less than cities that vote to renew road taxes and spending. The regressions include covariates related to the demographics and socioeconomic factors of the cities, drawn from Table \ref{tab:variable_means_sd}.
+        \item The outcome is median house price in constant 2010 U.S. dollars. The unit of observation is the city-year, so a treatment effect of -\$19,015 means that four years after the vote, cities that fail to renew road taxes and its associated spending have houses that sell for \$19,015 less than cities that vote to renew road taxes and spending. The regressions include covariates related to the demographics and socioeconomic factors of the cities, drawn from Table~\ref{tab:variable_means_sd}.
     \end{tablenotes}
 \end{table}
+
 
 Upon implementing this data filtration, we observe that the treatment effect of the renewal levies on housing prices, measured from $t+1$ to $t+10$, remains largely consistent with our initial findings. This consistency in treatment effect, despite the exclusion of potentially confounding data, lends further credence to our results. The standard errors increase slightly due to reduction in sample size caused by the aforementioned data filtration process. 
 
@@ -174,20 +177,20 @@ Upon implementing this data filtration, we observe that the treatment effect of 
         \hline
         Years after vote & 30\% & 40\% & 60\% & 70\% \\
         \hline
-        $t + 4$ & -2,540 & 7,037 & -4,037 & -43,670 \\
-        & (8,473) & (6,993) & (10,961) & (21,452) \\
-        $t + 5$ & -1,376 & -15,672 & -1,740 & 12,263 \\
-        & (9,554) & (20,892) & (12,588) & (19,392) \\
-        $t + 6$ & 10,589 & 9,476 & -13,479 & -617 \\
-        & (8,894) & (7,721) & (13,661) & (18,438) \\
-        $t + 7$ & 5,086 & 2,952 & -21,731 & -21,204 \\
-        & (10,447) & (7,898) & (11,519) & (18,330) \\
-        $t + 8$ & 9,900 & 11,821 & -11,014 & -37,686 \\
-        & (10,745) & (8,241) & (12,460) & (15,717) \\
-        $t + 9$ & 14,361 & 9,904 & -20,057 & -9,340 \\
-        & (9,624) & (7,935) & (11,975) & (17,731) \\
-        $t + 10$ & 12,147 & -25,540 & -13,828 & -16,358 \\
-        & (13,649) & (31,460) & (10,267) & (21,396) \\
+        $t + 4$ & 2,578 & 9,149 & 9,419 & -12,987 \\
+                & (8,209) & (7,284) & (11,462) & (14,365) \\
+        $t + 5$ & -6,381 & -29,077 & 6,383 & 41,683 \\
+                & (9,086) & (20,680) & (10,786) & (17,836) \\
+        $t + 6$ & 7,681 & 5,573 & -1,095 & -14,226 \\
+                & (9,616) & (8,120) & (8,612) & (15,733) \\
+        $t + 7$ & 1,162 & 3,982 & -12,050 & 22,261 \\
+                & (10,468) & (8,191) & (9,396) & (19,765) \\
+        $t + 8$ & 4,334 & 12,881 & 3,593 & 31,696 \\
+                & (9,670) & (8,625) & (10,061) & (6,902) \\
+        $t + 9$ & 851 & 7,381 & -6,935 & 42,790 \\
+                & (5,921) & (6,333) & (7,114) & (15,663) \\
+        $t + 10$ & 10,032 & -35,038 & 324 & -8,566 \\
+                 & (10,599) & (35,569) & (8,220) & (17,281) \\
         \hline
     \end{tabular}
     \begin{tablenotes}
@@ -196,6 +199,7 @@ Upon implementing this data filtration, we observe that the treatment effect of 
     \end{tablenotes}
 \end{table}
 
+
 Table \ref{tab:placebo_cutoffs} does not show consistently significant treatment effects for any of the placebo cutoffs for our parameter of interest. This absence of significance at thresholds other than the true 50\% reinforces the idea that the effects we observe at the 50\% mark are not a mere coincidence or a result of random variation in the data, but are indeed attributable to the dynamics surrounding the passing or failing of renewal tax levies. 
 
 \textbf{Winsorization}: The debate over whether to include or exclude outliers continues, with some research suggesting that trimming outliers does not improve mean squared error (e.g., Bollinger and Chandra, 2005).  We now drop the 1\% tails to help curtail the influence of outliers. The overall sample mean after dropping 1\% tails is \$144,268 in constant 2010 dollars with a standard deviation of \$109,624. After performing this winsorization step, we re-estimate the treatment effect of failing to renew a road tax levy on housing outcome variables. The results from this estimation process are summarized in Figure \ref{fig:tes_g_w} below:
@@ -203,7 +207,7 @@ Table \ref{tab:placebo_cutoffs} does not show consistently significant treatment
 \begin{figure}[htbp]
     \centering
     % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w.png}
-    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w_re.png}    
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w_reg.png}    
     \caption{Median Housing Price after 1\% Winsorization}
     \label{fig:tes_g_w}
 \end{figure}
@@ -216,9 +220,7 @@ Initially, we discussed the limitations of road infrastructure papers, one of wh
 
 We suggest that road maintenance probably primarily affects aesthetics and productivity.  For example, the house price effects we document reflect how pretty the roads are to look at and the savings to damage to the cars that use the roads, like decreased wear on suspension, struts, shock absorbers, and damage to rims and tires. The effects we document on employment and wages in high-poverty cities are potentially driven by productivity, acting through travel time, although car damage could be involved as well:  to poorer households, car maintenance represents a high proportion of disposable income, so businesses could conceivably have to pay compensating wage differentials to induce workers to commute through poorly maintained roads. 
 
-In Table \ref{tab:max_renewals_cuts}, we identified several cities that habitually vote against renewing road maintenance.  We traveled to one of these cities, the village of Waynesville, to investigate the condition of the roads.  While the main arteries were in satisfactory condition, most of the other roads were challenged.  Appendix \ref{sec:appxc} shows photos we took of the streets. Most were plastered with tar strips, the cheapest way to cover over cracks.  A surprising number of roads had one lane blocked for eventual road construction.  Sizeable potholes went unrepaired.  Despite the numerous problems with the roads, a police officer told us, “You should have seen the roads before!”. 
-
-The clearest mechanism for the wage and employment outcomes is through productivity like transportation costs, commuting times, and damage to vehicles.  Some transportation studies go to great lengths to isolate one mechanism of action on house prices, but in the end the effect combines several influences like noise, crime, fatalities, car damage and travel time that are hard to disentangle.  \cite{currier2023} finds that rough roads decrease travel speed so that the cost of driving on rough roads is about 43\% higher than the cost of travel time alone, accounting for part of the house price effects we note. But our lack of wage and employment findings for the overall sample suggest that the effects of decreased road spending on house prices is probably not predominantly driven by productivity through commuting and transportation costs. We suggest that decreased attractiveness of poorly maintained roads is a ‘driving’ mechanism of our findings. Aesthetics are visible to all who use the roads, and the lagged effect on house prices is consistent with the time it might take for decreased maintenance to noticeably reducing the attractiveness of the roads. The photos we present also suggest decreased road maintenance leads to uglier roads.
+ Aesthetics are visible to all who use the roads, and the lagged effect on house prices is consistent with the time it might take for decreased maintenance to noticeably reducing the attractiveness of the roads. The photos we present also suggest decreased road maintenance leads to uglier roads.
 
 
 \section{Conclusion} \label{sec:conclusion}

@@ -66,7 +66,6 @@ rf_data <- roads_and_census %>%
   arrange(tendigit_fips, year)
 
 ##=== computing tax val per HH per year ===##
-
 tax_val <- rf_data %>% 
               mutate(tax_per_hh_per_yr = (as.numeric(millagepercent)/1000) * 0.35 * avg_appraised_val,
                      num_houses = pop/2.39,
@@ -78,3 +77,8 @@ summary(tax_val$tax_per_hh_per_yr)
 
 tax_val %>% filter(treated == 1) %>% pull(tax_per_yr) %>% summary()
 tax_val %>% filter(treated == 1) %>% pull(tax_per_hh_per_yr) %>% summary()
+
+roads_and_census$tendigit_fips %>% unique %>% length
+
+summary(tax_val$tax_per_yr)
+

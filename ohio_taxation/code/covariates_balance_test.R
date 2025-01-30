@@ -217,7 +217,8 @@ means_eff_agg <-   roads_and_census %>% select(votes_pct_against, all_of(covs_li
 # means_eff_agg  %>% tail()
 # effective 1: passed and failed
 means_eff_div <-   roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>%
-    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% 
+    select(-votes_pct_against) %>%
     group_by(treated) %>%
     summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                         sd = ~sd(., na.rm = TRUE))), count = n()) %>%
@@ -226,6 +227,7 @@ means_eff_div <-   roads_and_census %>% select(treated, votes_pct_against, all_o
     mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
 # means_eff_div  %>% tail()
 # means_global_agg %>% print(n = 67)
+
 
 #------- Covariates Table ---------#  
 tbl1 <- means_global_agg %>% 
@@ -252,8 +254,10 @@ tbl1 %>%
          `Eff: Passed levies` = effective_treated_1, `Eff: Failed levies` = effective_treated_0)  %>%
   rowwise() %>% 
   # mutate(across(where(is.numeric), ~add_parentheses(., statistic)))  %>%
-  ungroup() %>% View()
+  ungroup() %>% print(. , n = 48)
   # write.csv(paste0(tables,"/covar_bal_tab.csv"), row.names = FALSE)
+
+
 
 # mean/median/sd vote share
 roads_and_census$votes_pct_against %>% mean %>% round
@@ -277,6 +281,34 @@ medfamy <- roads_and_census %>% filter(between(votes_pct_against, cutoff - avg_b
   summarize(mean_medfamy= mean(medfamy), median_medfamy = median(medfamy), sd_pop = sd(medfamy)) 
 medfamy$mean_medfamy[2] - medfamy$mean_medfamy[1] # difference in means
 
+
+#==== loop to get covariates t-tests val and s.e for paper ====#
+df_eff <- roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw))
+
+results <- list()
+for (i in seq_along(covariates)) {
+  cov <- covariates[i]
+  t_test_result <- t.test(df_eff[df_eff$treated == 1, ] %>% pull(cov), 
+                          df_eff[df_eff$treated == 0, ] %>% pull(cov), var.equal = TRUE, na.rm = TRUE)
+  results$t_stat[i] <- t_test_result$statistic
+  results$p_value[i] <- t_test_result$p.value
+}
+
+
+t_test <- t.test(df_eff[df_eff$treated == 1, ] %>% pull(covs_list[1]), 
+                        df_eff[df_eff$treated == 0, ] %>% pull(covs_list[1]), var.equal = TRUE, na.rm = TRUE)
+
+t_test$statistic
+
+t_test$stderr
+
+diffs_comps <- purrr::map(covs_list, ~ t.test(df_eff[[.x]] ~ df_eff$treated ))
+names(diffs_comps) <- covs_list
+
+
+walk2(diffs_comps, covs_list, ~ print(paste0(.y, " | Statistic: ", round(.x[["statistic"]], 2), " | Std Error: ", round(.x[["stderr"]],2), " | P-val: ", .x[["p.value"]] )))
+
 #====================================================#
 # t-3, t-2, t-1 means for Data section of paper ----
 #====================================================#
@@ -284,30 +316,36 @@ medfamy$mean_medfamy[2] - medfamy$mean_medfamy[1] # difference in means
 ## Housing Price
 
 # global: aggregate
-map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y) ) %>% 
+  # .[grepl("t_minus", names(.)) ] %>%
+  bind_rows() %>%
+  # filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% 
+  select(-votes_pct_against) %>%
   group_by(dataset) %>%
   summarize(global_mean_hp = mean(median_sale_amount), global_sd_hp = sd(median_sale_amount)) 
 
 # global: passed and failed
 map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
-  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  # .[grepl("t_minus", names(.)) ] %>% 
+  bind_rows() %>%
   group_by(dataset, treated) %>%
   summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) 
 
 # effective 1: agg
 map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
-  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  # .[grepl("t_minus", names(.)) ] %>% 
+  bind_rows() %>%
   filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
   group_by(dataset) %>%
   summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) 
 
 # effective 1: passed and failed
 map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
-  .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
+  # .[grepl("t_minus", names(.)) ] %>% 
+  bind_rows() %>%
   filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
   group_by(dataset, treated) %>%
-  summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) 
+  summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) %>% print(. , n = 28)
 
 
 ## Employment
@@ -373,4 +411,12 @@ map2(dfs_emp_agg_p, names(dfs_emp_agg_p), ~  .x %>% mutate(dataset = .y, treated
   filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
   group_by(dataset, treated) %>%
   summarize(div_mean_hp = mean(wages_per_emp), div_sd_hp = sd(wages_per_emp)) 
+
+
+hpp <- hs_winsorized[[1]] %>% 
+  group_by(year) %>% 
+  summarize(mean_sale = mean(SALE_AMOUNT), sd = sd(SALE_AMOUNT)) %>% 
+  filter(!(year %in% c(".", "1994") )) %>% mutate(year = as.numeric(year))
+
+
 

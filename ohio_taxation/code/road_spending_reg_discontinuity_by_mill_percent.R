@@ -170,7 +170,7 @@ dfs_agg_covs_gm_tfe_names <- map(dfs_agg_covs_gm_w_tfe, ~ colnames(.x) %>% grep(
 covs_final_gm_w_tfe <- map2(covs_final_gm, dfs_agg_covs_gm_tfe_names, ~c(.x, .y))
 
 
-gs_gm <- purrr::map2(covs_final_gm_w_tfe, dfs_agg_covs_gm_w_tfe, .f = function(x,y){
+gs_gm_tfe <- purrr::map2(covs_final_gm_w_tfe, dfs_agg_covs_gm_w_tfe, .f = function(x,y){
   rdrobust(  y = y$median_sale_amount,
              x = y$votes_pct_against,
              c = cutoff,
@@ -196,4 +196,35 @@ gs_lm <- purrr::map2(covs_final_lm, dfs_agg_lm_covs, .f = function(x,y){
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
 })
 
+## with Time Fixed Effects ##
+
+# adding time dummies to data
+dfs_agg_covs_lm_w_tfe <- map(dfs_agg_lm_covs, ~ dummy_cols(.x, select_columns = c("year"), remove_first_dummy = TRUE) %>% relocate(starts_with("year_"), .after = "year"))
+
+# merging time dummies with covariates
+dfs_agg_covs_lm_tfe_names <- map(dfs_agg_covs_lm_w_tfe, ~ colnames(.x) %>% grep("year_", ., value = TRUE))
+covs_final_lm_w_tfe <- map2(covs_final_lm, dfs_agg_covs_lm_tfe_names, ~c(.x, .y))
+
+
+gs_lm_tfe <- purrr::map2(dfs_agg_covs_lm_tfe_names, dfs_agg_covs_lm_w_tfe, .f = function(x,y){
+  rdrobust(  y = y$median_sale_amount,
+             x = y$votes_pct_against,
+             c = cutoff,
+             covs = y %>%
+               select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+tes_gs_lm <- te_tables(gs_lm_tfe)
+plot_te(tes_gs_lm, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+plot_te_recenter(tes_gs_lm, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
+y <- dfs_agg_covs_lm_w_tfe$housing_roads_census_t_plus_4_matches
+x <- c('medfamy')
+
+rdrobust(  y = y$median_sale_amount,
+           x = y$votes_pct_against,
+           c = cutoff,
+           covs = y %>%
+             select(c("pctblack", "")) ,
+           all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary
 
