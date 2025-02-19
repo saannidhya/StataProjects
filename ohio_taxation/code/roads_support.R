@@ -189,7 +189,7 @@ closest_votes <- roads_and_census %>%
                       filter(between(votes_pct_against, cutoff - tes_gs_bw, cutoff + tes_gs_bw)) %>%
                       arrange(votes_pct_against) %>% 
                       group_by(tendigit_fips) %>%
-                      summarize(num_votes = n(), min_year = min(year), max_year = max(year), mean_vote_result = mean(votes_pct_against), num_failed = sum(treated), num_passed = num_votes - num_failed) %>% 
+                      summarize(num_votes = n(), min_year = min(year), max_year = max(year), mean_vote_result = mean(votes_pct_against), num_failed = sum(treated), num_passed = num_votes - num_failed, max_pop = max(pop)) %>% 
                       arrange(desc(num_votes)) %>%
                       left_join(cty_sub_names, by = "tendigit_fips")
 
@@ -217,6 +217,11 @@ housing_dfs$housing_roads_census_t_plus_0_matches %>%
   summarize(mean = mean(SALE_AMOUNT), median = median(SALE_AMOUNT), sd = sd(SALE_AMOUNT))
 
 -16441/170000
+
+# Exporting areas with "close elections" starting 2010. output it as .Rdata.
+closest_votes %>% filter(max_year >= 2010) %>% pull(tendigit_fips) %>% unique %>% as.character() %>%
+  writeLines(., paste0(data,"/roads/tendigit_fips_close_elections_gs_bw.txt"))
+
 
 
 #==========================================================================================================#

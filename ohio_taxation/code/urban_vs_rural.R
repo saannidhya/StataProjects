@@ -301,6 +301,18 @@ ggplot(tes_regs_covs_ua, aes(ord, robust_coef, color = cat)) +
   scale_x_continuous(breaks = c(-3:10)) +
   ylim(c(NA, 50000)) 
 
+tes_ua_te <- tes_regs_covs_ua %>% filter(cat == "urban" & ord >= 0) %>% pull(robust_coef) %>% mean
+
+# importing housing dataset
+hs2 <- haven::read_dta(paste0(shared,"/housesales_9521_slim.dta")) %>% filter(!is.na(SALE_AMOUNT)) 
+
+hs2_ua_rur <- hs2 %>% janitor::clean_names() %>% mutate(tendigit_fips = as.numeric(tendigit_fips)) %>%
+  left_join(twp_places_urban, by = "tendigit_fips") %>%
+  mutate(urban_flg_cd = if_else(is.na(clusterdummy), 0, clusterdummy),
+         urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy)) 
+
+round(tes_ua_te / hs2_ua_rur %>% filter(urban_flg_ua == 1) %>% pull(sale_amount) %>% mean, 3)
+
 #=================================================================================#
 # winsorizing the data after identifying urban and rural ----
 #=================================================================================#

@@ -19,6 +19,12 @@
   construction.'' {\em American Economic Journal: Applied Economics},
   12(1):~348--376.
 
+\harvarditem[Alesina \harvardand\ Tabellini]{Alberto Alesina \harvardand\ Guido
+  Tabellini}{1990}{AlesinaTabellini1990}
+{\bf Alesina, Alberto, and Guido Tabellini.} 1990. ``A Positive Theory of
+  Fiscal Deficits and Government Debt.'' {\em Review of Economic Studies},
+  57(3):~403--414.
+
 \harvarditem[Asher \harvardand\ Novosad]{Sam Asher \harvardand\ Paul
   Novosad}{2020}{asher2020}
 {\bf Asher, Sam, and Paul Novosad.} 2020. ``Rural roads and local economic
@@ -36,6 +42,10 @@
   ``Hedonic pricing when housing is endogenous: The value of access to the
   trans-Israel highway.'' {\em Journal of Regional Science}, 56(1):~134--155.
 
+\harvarditem[Boesen]{Ulrik Boesen}{2021}{boesen2021}
+{\bf Boesen, Ulrik.} 2021. ``How Are Your State’s Roads Funded?'' Accessed:
+  2025-01-23.
+
 \harvarditem[Brasington]{David~M Brasington}{2017}{brasington2017school}
 {\bf Brasington, David~M.} 2017. ``School spending and new construction.'' {\em
   Regional Science and Urban Economics}, 63:~76--84.
@@ -45,6 +55,12 @@
 {\bf Brewer, Ethan, Jason Lin, Peter Kemper, John Hennin, and Dan Runfola.}
   2021. ``Predicting road quality using high resolution satellite imagery: A
   transfer learning approach.'' {\em Plos one}, 16(7):~e0253370.
+
+\harvarditem[Buchanan \harvardand\ Tullock]{James~M. Buchanan \harvardand\
+  Gordon Tullock}{1962}{BuchananTullock1962}
+{\bf Buchanan, James~M., and Gordon Tullock.} 1962. {\em The Calculus of
+  Consent: Logical Foundations of Constitutional Democracy.} Ann
+  Arbor:University of Michigan Press.
 
 \harvarditem[Calonico et~al.]{Sebastian Calonico, Matias~D Cattaneo, Max~H
   Farrell \harvardand\ Roc{\'\i}o Titiunik}{2017}{calonico2017rdrobust}
@@ -77,12 +93,6 @@
   ``Infrastructure Inequality: Who Pays the Cost of Road Roughness?'' National
   Bureau of Economic Research Working Paper w31981.
 
-\harvarditem[Dalenberg \harvardand\ Partridge]{Douglas~R Dalenberg \harvardand\
-  Mark~D Partridge}{1995}{dalenberg1995effects}
-{\bf Dalenberg, Douglas~R, and Mark~D Partridge.} 1995. ``The effects of taxes,
-  expenditures, and public infrastructure on metropolitan area employment.''
-  {\em Journal of Regional Science}, 35(4):~617--640.
-
 \harvarditem[Diao, Leonard \harvardand\ Sing]{Mi Diao, Devon Leonard
   \harvardand\ Tien~Foo Sing}{2017}{diao2017spatial}
 {\bf Diao, Mi, Devon Leonard, and Tien~Foo Sing.} 2017.
@@ -93,11 +103,6 @@
 \harvarditem[Dosovitskiy]{Alexey Dosovitskiy}{2020}{dosovitskiy2020image}
 {\bf Dosovitskiy, Alexey.} 2020. ``An image is worth 16x16 words: Transformers
   for image recognition at scale.'' {\em arXiv preprint arXiv:2010.11929}.
-
-\harvarditem[Duranton \harvardand\ Turner]{Gilles Duranton \harvardand\
-  Matthew~A. Turner}{2012}{duranton2012}
-{\bf Duranton, Gilles, and Matthew~A. Turner.} 2012. ``Urban growth and
-  transportation.'' {\em Review of Economic Studies}, 79(4):~1407--1440.
 
 \harvarditem[{Federal Reserve Bank of St. Louis}]{{Federal Reserve Bank of St.
   Louis}}{2024}{stlouisfed2024local}
@@ -126,6 +131,11 @@
   quasi-experiment in transport infrastructure.'' {\em Journal of Economic
   Geography}, 19(1):~57--87.
 
+\harvarditem[Huang]{Yiping Huang}{2016}{huang2016understanding}
+{\bf Huang, Yiping.} 2016. ``Understanding China's Belt \& Road initiative:
+  motivation, framework and assessment.'' {\em China economic review},
+  40:~314--321.
+
 \harvarditem[Kohlhase]{Janet~E Kohlhase}{1991}{kohlhase1991impact}
 {\bf Kohlhase, Janet~E.} 1991. ``The impact of toxic waste sites on housing
   values.'' {\em Journal of Urban Economics}, 30(1):~1--26.
@@ -148,6 +158,20 @@
   ``Wheels of fortune: Subway expansion and property values in Beijing.'' {\em
   Journal of Regional Science}, 56(5):~792--813.
 
+\harvarditem[Oates]{Wallace~E. Oates}{1969}{Oates1969}
+{\bf Oates, Wallace~E.} 1969. ``The Effects of Property Taxes and Local Public
+  Spending on Property Values: An Empirical Study of Tax Capitalization and the
+  Tiebout Hypothesis.'' {\em Journal of Political Economy}, 77(6):~957--971.
+
+\harvarditem[Oates]{Wallace~E. Oates}{1972}{Oates1972}
+{\bf Oates, Wallace~E.} 1972. {\em Fiscal Federalism.} New York:Harcourt Brace
+  Jovanovich.
+
+\harvarditem[{Ohio Department of Taxation}]{{Ohio Department of
+  Taxation}}{2020}{OhioRealPropertyTax}
+{\bf {Ohio Department of Taxation}.} 2020. ``Real Property Tax – General.''
+  Accessed: 2025-01-30.
+
 \harvarditem[{Ohio Department of Transportation}]{{Ohio Department of
   Transportation}}{2023}{odot2023}
 {\bf {Ohio Department of Transportation}.} 2023. ``2023 Annual Report.''
@@ -158,14 +182,20 @@
 {\bf {Peter G. Peterson Foundation}.} 2024. ``The Highway Trust Fund
   Explained.'' Accessed: 2025-01-23.
 
-\harvarditem[Schroeder]{John Schroeder}{2025}{schroeder2025}
-{\bf Schroeder, John.} 2025. ``Road funding \& maintenance in Beavercreek
-  Township, Ohio.'' {\em Personal communication}, Email to Saani, January 21,
-  2025.
+\harvarditem[{Public Service Department of Beavercreek Township}]{{Public
+  Service Department of Beavercreek Township}}{2025}{schroeder2025}
+{\bf {Public Service Department of Beavercreek Township}.} 2025. ``Road funding
+  \& maintenance in Beavercreek Township, Ohio.'' {\em Personal communication},
+  Email to Saani, January 21, 2025.
 
-\harvarditem[{Ulrik Boesen}]{{Ulrik Boesen}}{2021}{boesen2021}
-{\bf {Ulrik Boesen}.} 2021. ``How Are Your State’s Roads Funded?'' Accessed:
-  2025-01-23.
+\harvarditem[Suresh \harvardand\ Rawat]{Vikram Suresh \harvardand\ Saani
+  Rawat}{2025}{2025predicting}
+{\bf Suresh, Vikram, and Saani Rawat.} 2025. ``Predicting road quality in Ohio
+  using satellite images and Vision Transformers.'' Working paper.
+
+\harvarditem[Tiebout]{Charles~M. Tiebout}{1956}{Tiebout1956}
+{\bf Tiebout, Charles~M.} 1956. ``A pure theory of local expenditures.'' {\em
+  Journal of Political Economy}, 64(5):~416--424.
 
 \harvarditem[{U.S. Department of Transportation}]{{U.S. Department of
   Transportation}}{2022}{USDOT_BIL_Ohio}

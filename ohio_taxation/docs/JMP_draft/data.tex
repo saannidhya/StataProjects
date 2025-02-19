@@ -8,7 +8,7 @@ Roads in Ohio are funded through a combination of federal, state, and local sour
 In Ohio, gas taxes, licensing fees and user fees account for $69\%$ of the state's road funding \citep{boesen2021}. The Ohio Department of Transportation (ODOT) is responsible for the allocation of state funds, which are used for both maintenance and new construction. However, about 70\% of funds go to new highway construction, 2\% is given to local governments as grants and only 4\% of state funds is directed towards local road maintenance \citep{odot2023}. The remaining funds are part of payroll \& operating expenses, and other miscellaneous expenses. Hence, most of the road maintenance funding for local, neighborhood-specific roads in Ohio comes from local governments.
 
 
-{\bf Local Funding.} Local governments in Ohio fund roads mainly through a portion of property taxes, even though there is variation in such funding across the local governments. These municipalities have the authority to levy property taxes specifically for road maintenance, providing a crucial source of funding for the upkeep of local infrastructure. As per our correspondance with the Beavercreek Township, 61\% of their road funds come from property taxes, and only 8\% from gas taxes. Moreover, 77\% of funding for roads in Beavercreek township is provided by the local government and 11\% of overall local government budget is allocated to roadway maintenance \citep{schroeder2025}. Hence, local roads are primarily funded by local governments in Ohio and road maintenance funding is a significant part of the local government's budget.
+{\bf Local Funding.} Local governments in Ohio fund roads mainly through a portion of property taxes, even though there is variation in such funding across the local governments. These municipalities have the authority to levy property taxes specifically for road maintenance, providing a crucial source of funding for the upkeep of local infrastructure. For instance, as per our correspondance with the Beavercreek Township, 61\% of their road funds come from property taxes, and only 8\% from gas taxes. Moreover, 77\% of funding for roads in Beavercreek township is provided by the local government and 11\% of overall local government budget is allocated to roadway maintenance \citep{schroeder2025}. We can see that these local roads are primarily funded by local governments in Ohio and road maintenance funding is a significant part of the local government's budget.
 
 
 \subsection{Local Taxation in Ohio}
@@ -21,8 +21,50 @@ The type of tax levy we study is for the renewal of road tax levy, which covers 
 
 {\bf Renewal levies.} Most regression discontinuity studies that use voting data to look at the impact of funding changes examine new tax levies for additional funding.  \cite{cellini2010value} observes that votes for additional tax money may not be statistically independent; a vote may be proposed until it passes.  We minimize this source of endogeneity of new votes by only considering renewal votes \citep{brasington2017school}.  While a government may choose when to put a vote for additional funding on the ballot and keep proposing the new tax until it is passed, when a vote passes it has an expiration date.  So if a road tax levy for additional funding passes in 2007 to last five years, in 2012 voters will have the chance to renew or reject the tax.  The timing of the vote in 2012 is not endogenous, having been set in 2007.  If voters renew it in 2012, it will be up for renewal again in 2017. 
 
-{\bf Consequences of failing to renew a levy.}
+{\bf Spending impact of failing to renew a levy.} When a renewal tax levy fails, the local government loses the funding from that tax levy. The local government may still have other tax levies in effect, but the road tax levy that failed to renew is no longer collected. The local government may also have current expense tax levies in effect, which are not earmarked for roads but can be used for any purpose. To investigate the impact of failing to renew a road tax levy on road spending, we use related information from the levy database, along with home prices and demographics information. We use this data to determine the dollar amount in consideration when a household is making a decision on whether to vote for or against a renewal road tax levy, and we call it Average cost of levy per household, which is the tax amount that a household will be paying if the levy is successfully renewed. Average cost of levy per household is computed using the following formula -
 
+\begin{equation}
+\text{Average Cost of levy per household}_{it} = \text{millage rate}_{it} \times \text{Average Assessed value}_{it}
+\end{equation}
+
+where $i$ is the city, $t$ is the year, and millage rate is the predetermined millage amount set for the road tax levy. The average assessed value is 35\% of the average appraisal value\footnote{Assessment ratio of 35\%, as set by \cite{OhioRealPropertyTax}}, which for our study equals the average sale price of homes in the city. From this, we can also compute the average cost of levy per city by multiplying the average cost of levy per household with the number of households in the city.
+
+Although we acknowledge large variation in the appraisal value across neighborhoods and in millage rates across referendums, we find that the average cost of levy per household is \$76, and the average cost of levy per city is \$167,011 as shown in Table \ref{tab:levy_stats}.  We do not observe any significant difference in the average cost of levy per household between cities that renew and cut road tax levies. This average cost of levy accounts for 15\% of a local government's budget for road maintenance.
+
+\begin{table}[ht]
+    \centering
+    \caption{Descriptive Statistics: Cost of Road Tax Levies}
+    \label{tab:levy_stats}
+    \begin{threeparttable}
+    \begin{tabular}{p{5cm}ccc}
+    \hline\hline
+    & \textbf{Aggregate} & \textbf{Renewed} & \textbf{Cut} \\
+    \hline
+    \textbf{Panel A: Cost of levy per household} \\
+    Mean & 76 & 75 & 79 \\
+       & (55) & (53) & (62) \\
+    \hline
+    \textbf{Panel B: Cost of levy} \\
+    Mean & 167,011 & 167,648 & 163,547 \\
+       & (340,268) & (340,628) & (338,671) \\
+    \hline\hline
+    \end{tabular}
+    \begin{tablenotes}[flushleft]
+      \footnotesize
+      \item \textit{Notes:} 
+      This table presents descriptive statistics for two measures of the cost of road tax levies. 
+      \textbf{Panel A} reports the mean and standard deviation (SD) of the cost per household per year. 
+      \textbf{Panel B} reports the mean and SD of the total cost per city per year. 
+      “Aggregate” denotes the full sample, while “Renewed” and “Cut” refer to levies that were renewed and failed to renew respectively.
+      All monetary values are in constant 2010 U.S. dollars and rounded to the nearest integer.
+    \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+
+
+
+% We also sample financial audits of cities in our sample whose renewal tax levies fail.  
 
 \subsection{Tax Cuts \& Evidence of Road Quality} \label{sec:road_quality}
 
@@ -33,10 +75,26 @@ To understand the effect of cutting local road tax on road quality, we fine-tune
 
 {\bf Satellite Images for fine-tuning.} In order to enable ViTs to accurately predict road quality, we needed large-scale road-image data to fine-tune OpenAI's gpt-4o, a Large Language Model (LLM) with multi-modal ability that has shown to outperform various other models and benchmarks \citep{achiam2023gpt}. We use the road-image dataset by \cite{brewer2021} which consists of 53,677 labeled images of road infrastructure for U.S. from 1,000 cities across the United States. The dataset includes images of roads in different conditions, and a classification representing quality of the road: 0 (poor), 1 (decent) and 2 (high). 
 
-{\bf Ohio Satellite Images.} We use satellite images from Google Earth Pro for roads in different neighborhoods in Ohio. We collect road images for areas that were within the average effective RD bandwidth provided in Table \ref{tab:median_sale_amount} and ensure that we have pre and post referendum images for both, the treatment and control groups. This allows us to construct a novel database of road images, which we use to classify road quality for areas that were part of our quasi-experiment. 
+{\bf Ohio Satellite Images.} We use satellite images from Google Earth Pro for roads in different neighborhoods in Ohio. We collect road images for areas that were within the average effective RD bandwidth provided in Table \ref{tab:median_sale_amount} and ensure that we have pre and post referendum images for both, the treatment and control groups. This allows us to construct a novel database of road images, which we use to classify road quality for areas that were part of our quasi-experiment. Figure \ref{fig:road_quality_examples} presents 2 examples of road images from Ohio, one from a road that was classified as high and the other as poor quality.
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/rush_twp_champaign_aug16.jpg}
+        \caption*{(A) A {\bf \underline{Poor}} Quality Road}
+    \end{minipage}\hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/hartford_twp_licking_sep21.jpg}
+        \caption*{(B) A {\bf \underline{High}} Quality Road}
+    \end{minipage}
+    \caption{Road Quality Satellite images for Ohio}
+    \label{fig:road_quality_examples}
+\end{figure}
 
 
-{\bf Fine-tuning process.} Fine-tuning a ViT involves taking a pretrained model and adapting it for specific image-classification task. We fine-tune gpt-4o, a pretrained model with over 200 billion parameters, on the road-image dataset by \cite{brewer2021} to classify road images into three categories: 0, 1 and 2. Next, we divide the data into traning and validation datasets. Using OpenAI's API, we set up a training seed, convert the images into their corresponding base64 encoding and fine-tune the model on the road-image dataset for 10 epochs with a batch size of 9 and a learning rate multiplier of 2. For further details on fine-tuning and results, see Appendix \ref{sec:appxc1}. 
+{\bf Fine-tuning process.} Fine-tuning a ViT involves taking a pretrained model and adapting it for specific image-classification task. We fine-tune gpt-4o, a pretrained model with over 200 billion parameters, on the road-image dataset by \cite{brewer2021} to classify road images into three categories: 0, 1 and 2. Next, we divide the data into traning and validation datasets. Using OpenAI's API, we set up a training seed, convert the images into their corresponding base64 encoding and fine-tune the model on the road-image dataset for 10 epochs with a batch size of 9 and a learning rate multiplier of 2. In section \ref{sec:road_quality_decline}, we present the results from our fine-tuned model, when applied on roads in areas with close elections within our effective bandwidth. For full details on the modeling methodology, fine-tuning results and robustness tests, see \cite{2025predicting}. 
 
 % We use the classification results to assess the quality of roads in different neighborhoods in Ohio. We collect road images for areas that were within the average effective RD bandwidth provided in Table \ref{tab:median_sale_amount} and ensure that we have pre and post referendum images for both, the treatment and control groups. This allows us to construct a novel database of road images and assess the impact of cutting local road tax on road quality.
 
@@ -51,16 +109,19 @@ To understand the effect of cutting local road tax on road quality, we fine-tune
 
 % \clearpage
 
-\subsection{Road Maintenance Funding}
+% \subsection{Road Maintenance Funding}
 
 
 
 \subsection{Running Variable}
 
-The running variable plays a critical role in regression discontinuity.  In our case it represents the proportion of votes against the renewal of a road tax levy.  A vote share of less than 50 means the tax will no longer be collected, and road funding from that particular tax levy will stop.  Other road tax levies may continue to be in effect, and funds from current expense tax levies may still be used for road maintenance.  There are 3,188 votes in our sample, 83\% of which renew the tax, and 17\% of which cut taxes and road maintenance.
+The running variable plays a critical role in regression discontinuity, which in this study represents the proportion of votes against the renewal of a road tax levy. 
 
-We quantify the size of the cut in road spending a city faces in two ways.  First, not every city has a tax levy in effect specifically for roads, but every city has current expense tax funding.  Our mean 1.9 mill road tax represents 13.6\% of current expense funding, indicating that cities that fail to renew a road tax levy face a moderate reduction in funding.  We also investigate the drop in road expenditures by sampling financial audits of cities in our sample whose renewal tax levies fail, finding an average drop of \$218,808 in road spending one year later.  This \$218,808 drop represents a 34\% decrease in road spending.  
-In our sample, the mean vote share against the tax levy is 0.38, which is essentially the same as the median of 0.36.  The standard deviation is 0.15, so that the typical levy that fails represents a little less than one standard deviation away from the mean. The Great Financial Crisis falls in the middle of our dataset, so readers might wonder if voting behavior was affected, but we find vote share the same to two decimal points during and outside the years 2008-2009. 
+
+
+A vote share of more than 50 means the renewal road tax levy fails and tax will no longer be collected, resulting in a stoppage of road funding via that particular tax levy. However, other road tax levies may continue to be in effect, and funds from current expense tax levies may still be used for road maintenance. There are 3,188 referendum results in our sample, 83\% of which renew the tax, and 17\% of which cut taxes and road maintenance. We quantify the size of the cut in road spending a city faces in two ways. The Great Financial Crisis falls in the middle of our dataset, so readers might wonder if voting behavior was affected, but we find vote share the same to two decimal points during and outside the years 2008-2009. 
+
+Our key identification assumption is that the election results are not predetermined and vote share is not precisely manipulated to fall just above or below the cutoff. This asumption allows use to exploit the randomization around the cutoff and provides the variation needed to identify the causal effect of cutting road tax. We test this assumption using a density test detailed below and covariate balance tests (see Appendix \ref{sec:appxb}).
 
 {\bf Density test.} Classic regression discontinuity design (RDD) assumption states that agents cannot precisely manipulate the running variable to fall just above or below the cutoff. In our context, it means that the election results are not determined prior to when the ballot takes place. In other words, no individuals, organizations, higher levels of government, foreign governments, or the firm that programs the voting machines are dictating the precise vote share for the renewal road tax levy referendums raised by a city. The standard way to test this assumption is to perform a density test like that of \cite{cattaneo2020simple}, which is based on the idea that manipulation of elections might cause a clustering of votes just to one side of the cutoff, with a pronounced drop-off on the other side of the cutoff. The $p$-value of this density test is 0.98. A histogram of vote share is shown in Figure \ref{fig:running_var_hist} that graphically illustrates the lack of abrupt change in density.
 
@@ -71,9 +132,7 @@ In our sample, the mean vote share against the tax levy is 0.38, which is essent
     \label{fig:running_var_hist}
 \end{figure}
 
-Although Table \ref{tab:variable_means_sd} shows covariate balance between sets of cities that pass and fail to renew road tax levies, covariate values could still jump from one side of the cutoff to another. A drop in education levels, for example, could cause a drop in house prices that might coincide with a change in treatment, so that what might look like a treatment effect from cutting taxes and spending might in fact be caused by lower education levels.  Graphs of covariate smoothness around the cutoff are found in the Appendix \ref{sec:appxb}. A formal way to assess covariate smoothness is to use each covariate as an outcome variable in a regression of the running variable and a treatment effect dummy. When we do so, the $p$-value of the treatment effect dummy varies from 0.13 to 0.98, indicating no statistically significant jump in covariate values. 
-
-
+Although Table \ref{tab:variable_means_sd} shows covariate balance between sets of cities that pass and fail to renew road tax levies, covariate values could still jump from one side of the cutoff to another. A drop in education levels, for example, could cause a drop in house prices that might coincide with a change in treatment, so that what might look like a treatment effect from cutting taxes and spending might in fact be caused by lower education levels. Graphs of covariate smoothness around the cutoff are found in the Appendix \ref{sec:appxb}. A formal way to assess covariate smoothness is to use each covariate as an outcome variable in a regression of the running variable and a treatment effect dummy. When we do so, the $p$-value of the treatment effect dummy varies from 0.13 to 0.98, indicating no statistically significant jump in covariate values. 
 
 \subsection{Outcome Variables}
 
@@ -93,7 +152,7 @@ Figure \ref{fig:hp_year5_after} shows house prices from 5 years after the vote g
 
 Covariates can be useful in regression discontinuity studies, although they are not necessary for the identification of treatment effects.  One use of covariates is to increase the precision of treatment effect estimates.  The other is to see if cities that barely pass and fail tax levies are similar to each other like the theory of regression discontinuity says they should be. Table \ref{tab:variable_means_sd} shows covariate means for both the global sample of all votes in the data set as well as the local sample within a representative effective bandwidth of the 0.50 cutoff. The effective bandwidth displayed in Table \ref{tab:variable_means_sd} is the mean bandwidth for all the housing outcome regressions. The first columns for the global sample show similar values of characteristics between cities that renew and cut road taxes and spending, but it is the two rightmost columns that are critical for the credibility of the regression discontinuity design.   
 
-Table \ref{tab:variable_means_sd} demonstrates the covariate balance between cities that renew their tax levies and those that do not, indicating similar demographic and economic profiles across both groups. The data, captured at the time of the vote, shows minimal differences within the effective bandwidth: the mean population differs by only 224 from a base of 5,220, and median family income varies by \$190 from a base of \$60,269, measured in 2010 U.S. dollars. Other variables, including poverty rates, single-parent household percentages, educational attainment, age distribution, and racial composition, show differences of less than one percentage point, reinforcing the comparability of the two groups.
+Table \ref{tab:variable_means_sd} demonstrates the covariate balance between cities that renew their tax levies and those that do not, indicating similar demographic and economic profiles across both groups. The data, captured at the time of the vote, shows minimal differences within the effective bandwidth: the mean population differs by only 301, and median family income varies by \$436, measured in 2010 U.S. dollars. Other variables, including poverty rates, married household percentages, educational attainment, age distribution, and racial composition, show differences of two percentage point or less, bolstering the comparability of the two groups.
 
 \begin{longtable}{p{4cm}cccccc}
     \caption{Variable Means \& Standard Deviation by Tax Levy Renewal Status} \label{tab:variable_means_sd} \\
@@ -123,72 +182,44 @@ Table \ref{tab:variable_means_sd} demonstrates the covariate balance between cit
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
     % \multicolumn{6}{l}{\textbf{Panel A. Covariates}} \\
     Population & 5,072 & 4,733 & 5,139 & 4,885 & 5,186 \\
-               & (7,936) & (7,291) & (8,058) & (7,036) & (8,229) \\
+                & (7,936) & (7,291) & (8,058) & (7,036) & (8,229) \\
     Poverty Rate & 0.11 & 0.11 & 0.11 & 0.10 & 0.11 \\
-                 & (0.08) & (0.07) & (0.08) & (0.07) & (0.08) \\
+                    & (0.08) & (0.07) & (0.08) & (0.07) & (0.08) \\
     \% with Kids & 0.39 & 0.40 & 0.39 & 0.39 & 0.39 \\
-                 & (0.08) & (0.08) & (0.08) & (0.07) & (0.08) \\
-    \% Households with Children under 18 & 0.09 & 0.09 & 0.09 & 0.09 & 0.08 \\
-                                         & (0.06) & (0.05) & (0.06) & (0.06) & (0.05) \\
-    \% Less than High School Education & 0.16 & 0.18 & 0.15 & 0.18 & 0.16 \\
-                                       & (0.11) & (0.12) & (0.11) & (0.12) & (0.10) \\
-    \% Some College Education & 0.25 & 0.24 & 0.25 & 0.24 & 0.25 \\
-                              & (0.06) & (0.06) & (0.06) & (0.07) & (0.06) \\
-    \% Unemployment Rate & 0.05 & 0.05 & 0.05 & 0.05 & 0.06 \\
-                         & (0.04) & (0.03) & (0.04) & (0.03) & (0.04) \\
+                    & (0.08) & (0.08) & (0.08) & (0.07) & (0.08) \\
+    \% Households with Children under 18 & 0.09 & 0.09 & 0.09 & 0.09 & 0.08 \\[-2.3em]
+                                            & (0.06) & (0.05) & (0.06) & (0.06) & (0.05) \\
+    \% Less than High School Education & 0.16 & 0.18 & 0.15 & 0.18 & 0.16 \\[-2.3em]
+                                        & (0.11) & (0.12) & (0.11) & (0.12) & (0.10) \\
+    \% Some College Education & 0.25 & 0.24 & 0.25 & 0.24 & 0.25 \\[-2.3em]
+                                & (0.06) & (0.06) & (0.06) & (0.07) & (0.06) \\
+    \% Unemployment Rate & 0.05 & 0.05 & 0.05 & 0.05 & 0.06 \\[-2.3em]
+                            & (0.04) & (0.03) & (0.04) & (0.03) & (0.04) \\
     \% Renters & 0.20 & 0.20 & 0.20 & 0.19 & 0.20 \\
-               & (0.11) & (0.10) & (0.11) & (0.09) & (0.11) \\
+                & (0.11) & (0.10) & (0.11) & (0.09) & (0.11) \\
     \% White & 0.96 & 0.97 & 0.96 & 0.97 & 0.97 \\
-             & (0.07) & (0.07) & (0.07) & (0.07) & (0.08) \\
+                & (0.07) & (0.07) & (0.07) & (0.07) & (0.08) \\
     \% Black & 0.02 & 0.02 & 0.02 & 0.02 & 0.02 \\
-             & (0.07) & (0.06) & (0.07) & (0.07) & (0.07) \\
+                & (0.07) & (0.06) & (0.07) & (0.07) & (0.07) \\
     \% Married & 0.59 & 0.60 & 0.59 & 0.61 & 0.60 \\
-               & (0.09) & (0.08) & (0.09) & (0.08) & (0.09) \\
+                & (0.09) & (0.08) & (0.09) & (0.08) & (0.09) \\
     \% Separated & 0.01 & 0.01 & 0.01 & 0.01 & 0.01 \\
-                 & (0.01) & (0.01) & (0.01) & (0.01) & (0.01) \\
-    Income Heterogeneity Index & 0.10 & 0.09 & 0.10 & 0.09 & 0.09 \\
-                               & (0.08) & (0.07) & (0.08) & (0.07) & (0.06) \\
-    Median Family Income & 61,018 & 58,761 & 61,467 & 59,934 & 60,370 \\
-                         & (17,649) & (13,915) & (18,270) & (13,655) & (15,713) \\
+                    & (0.01) & (0.01) & (0.01) & (0.01) & (0.01) \\
+    Income Heterogeneity Index & 0.10 & 0.09 & 0.10 & 0.09 & 0.09 \\[-2.3em]
+                                & (0.08) & (0.07) & (0.08) & (0.07) & (0.06) \\
+    Median Family Income & 61,018 & 58,761 & 61,467 & 59,934 & 60,370 \\[-2.3em]
+                            & (17,649) & (13,915) & (18,270) & (13,655) & (15,713) \\
     \% Under 5 Years Old & 0.06 & 0.06 & 0.06 & 0.06 & 0.06 \\
-                         & (0.02) & (0.02) & (0.02) & (0.02) & (0.02) \\
+                            & (0.02) & (0.02) & (0.02) & (0.02) & (0.02) \\
     \% Aged 5 to 17 & 0.20 & 0.21 & 0.20 & 0.20 & 0.20 \\
                     & (0.05) & (0.04) & (0.05) & (0.04) & (0.05) \\
     \% Aged 18 to 64 & 0.60 & 0.60 & 0.60 & 0.60 & 0.60 \\
-                     & (0.05) & (0.05) & (0.05) & (0.04) & (0.05) \\
+                        & (0.05) & (0.05) & (0.05) & (0.04) & (0.05) \\
     \% Racial Minority & 0.04 & 0.03 & 0.04 & 0.03 & 0.03 \\
-                       & (0.07) & (0.07) & (0.07) & (0.08) & (0.07) \\
+                        & (0.07) & (0.07) & (0.07) & (0.08) & (0.07) \\
     Number of Observations & 3,184 & 2,656 & 528 & 653 & 269 \\
-    \\
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%   Panel B (Same)     %%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % \multicolumn{6}{l}{\textbf{Panel B. Outcome Variables}} \\
-    % \textit{a) Median House Price} & & & & & \\
-    % t - 3 & 106,067 & 107,502 & 102,766 & 106,771 & 104,201 \\
-    %       & (52,988) & (60,197) & (50,794) & (53,461) & (51,794) \\
-    % t - 2 & 105,528 & 107,211 & 101,456 & 106,207 & 103,713 \\
-    %       & (53,242) & (60,893) & (48,438) & (54,162) & (50,786) \\
-    % t - 1 & 107,706 & 108,234 & 104,575 & 108,401 & 105,843 \\
-    %       & (53,544) & (62,437) & (51,343) & (54,665) & (50,491) \\
-    % \textit{b) Median House Price (\%)} & & & & & \\
-    % t - 3 & 1,504 & 1,752 & 1,728 & 1,446 & 1,695 \\
-    %       & (3,848) & (4,006) & (3,642) & (3,887) & (3,739) \\
-    % t - 2 & 1,429 & 1,734 & 1,680 & 1,388 & 1,562 \\
-    %       & (3,693) & (3,978) & (3,612) & (3,769) & (3,462) \\
-    % t - 1 & 1,387 & 1,724 & 1,668 & 1,341 & 1,538 \\
-    %       & (3,628) & (3,993) & (3,598) & (3,683) & (3,460) \\
-    % \textit{c) Median House Price per square foot} & & & & & \\
-    % t - 3 & 31,764 & 31,892 & 32,531 & 32,367 & 32,401 \\
-    %       & (8,868) & (8,428) & (10,090) & (9,657) & (8,898) \\
-    % t - 2 & 31,714 & 32,083 & 32,048 & 31,571 & 32,166 \\
-    %       & (8,630) & (8,392) & (9,224) & (8,723) & (8,372) \\
-    % t - 1 & 31,764 & 32,399 & 32,399 & 31,579 & 32,367 \\
-    %       & (8,868) & (9,716) & (9,716) & (8,623) & (9,657) \\
-
-
-    \end{longtable}
+\end{longtable}
 
 
 % \begin{tablenotes}

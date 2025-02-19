@@ -144,6 +144,7 @@ round(max(hs_winsorized[[1]]$SALE_AMOUNT))
 round(mean(hs_winsorized[[1]]$SALE_AMOUNT)) # 138,565
 round(sd(hs_winsorized[[1]]$SALE_AMOUNT)) # 108,687
 
+round(mean(hs$SALE_AMOUNT, na.rm = TRUE)) # 138,565
 
 #======================================================================#
 # Generating House Price Aggregate dataset ----

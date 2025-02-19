@@ -3,7 +3,8 @@
 # Name    : Saani Rawat
 # Created : 01/28/2025
 # Log     : 
-#           01/28/2025: 
+#           01/28/2025: computing the "money lost"
+#           02/18/2025: computing the reduction in revenue and spending after a cut in taxes
 #==========================================================================================================#
 
 # specify the set up location
@@ -12,6 +13,7 @@ data <- paste0(root,"/data")
 code <- paste0(root,"/code")
 tables <- paste0(data,"/outputs/tables")
 plots <- paste0(data,"/outputs/plots")
+spend_reports_loc <- paste0(data,"/spending reports/")
 
 source(paste0(code,"/utility_functions.R"))
 
@@ -72,8 +74,21 @@ tax_val <- rf_data %>%
                      tax_per_yr = tax_per_hh_per_yr*num_houses) %>% # 2.39 people per household in 2020 (as per ohio.gov: https://dam.assets.ohio.gov/image/upload/development.ohio.gov/research/census/20230829-census-2020-demographic-profile-charting-the-changes.pdf) 
                     relocate(c("tax_per_hh_per_yr", "avg_appraised_val", "num_houses", "tax_per_yr"), .before = millagepercent)
 
-summary(tax_val$tax_per_yr)
+# aggregate
 summary(tax_val$tax_per_hh_per_yr)
+sd(tax_val$tax_per_hh_per_yr)
+
+summary(tax_val$tax_per_yr)
+sd(tax_val$tax_per_yr)
+
+# by renewed and cut
+tax_val %>% 
+  group_by(treated) %>%
+  summarize(mean_tax_per_hh_per_yr = mean(tax_per_hh_per_yr), sd_tax_per_hh_per_yr = sd(tax_per_hh_per_yr))
+
+tax_val %>% 
+  group_by(treated) %>%
+  summarize(mean_tax_tax_per_yr = mean(tax_per_yr), sd_tax_per_yr = sd(tax_per_yr))
 
 tax_val %>% filter(treated == 1) %>% pull(tax_per_yr) %>% summary()
 tax_val %>% filter(treated == 1) %>% pull(tax_per_hh_per_yr) %>% summary()
@@ -81,4 +96,37 @@ tax_val %>% filter(treated == 1) %>% pull(tax_per_hh_per_yr) %>% summary()
 roads_and_census$tendigit_fips %>% unique %>% length
 
 summary(tax_val$tax_per_yr)
+
+
+#============================================================================================================#
+#     Estimating the reduction in revenue and spending after a cut in taxes
+#============================================================================================================#
+
+# importing spending data (year end data)
+renewed <- readxl::read_xlsx(paste0(spend_reports_loc, "renewed/renewed_spending_reports.xlsx"))
+cut     <- readxl::read_xlsx(paste0(spend_reports_loc, "cut/cut_spending_reports.xlsx"))
+
+# importing cpi data (year beginning data)
+cpi_df <- readr::read_csv(paste0(data,"/CPIAUCSL_NBD20100101.csv")) %>% rename(cpi = CPIAUCSL_NBD20100101) %>%
+  mutate(year = lubridate::year(observation_date) - 1, cpi_deflator = cpi/100) # since base of 2010 has cpi of 100
+# Note: shifting a year due to year-beg and year-end discrepancy in govt data and cpi  
+
+renewed <- renewed %>% 
+  left_join(select(cpi_df, c(year, cpi_deflator)), by = c("year")) %>%
+  mutate(property_tax_d = property_tax/cpi_deflator,
+         public_works_d = public_works/cpi_deflator)
+
+
+## ggplot plotting a line
+
+ggplot(data = renewed) +
+  geom_line(aes(x = year, y = property_tax_d, color = "Property Tax")) +
+  geom_line(aes(x = year, y = public_works_d, color = "Public Works")) +
+  labs(title = "Property Tax and Public Works Spending",
+       x = "Year",
+       y = "Spending (deflated to 2010 $$)",
+       color = "Spending Type") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+  
 
