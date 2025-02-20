@@ -3,6 +3,7 @@ Purpose: Extract Google Street View images for roads in Ohio only for areas with
 Date: 2025-02-18
 Log:
     - 2025-02-18: Created initial file with header. 
+    - 2025-02-19: Added code to extract images for roads in Ohio with close elections. Ran the main section of the code.
 """
 
 import streetview as sv
@@ -10,12 +11,18 @@ from streetview import search_panoramas
 import os
 import sys
 import geopandas as gpd
+from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point, MultiPoint, GeometryCollection
+import logging
+import time
 
-# sv.api_key = os.environ['GOOGLE_MAPS_API_KEY']
-sv.api_key = "AIzaSyCmMbHMc2Dnpi_BGICwQs-r5HsY31x5AtQ"
+# Enter your Google Street View API key here.
+sv.api_key = "" 
 
+loc = "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads/ohio/"
 # print(os.environ.keys())
-out_loc = "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads/ohio/google maps photos"
+out_loc = loc + "google maps photos/"
+
+LOG_PATH = out_loc + "/run.log"
 
 #------------------------------------------------------------------------------------;
 #       Sample code to get ONE image from streetview
@@ -67,71 +74,135 @@ for loc in (locations[0],):
 #       MAIN CODE to get MULTIPLE images from streetview, based on lat, lon of close elections
 #-----------------------------------------------------------------------------------------------;
 
-gdf_roads = gpd.read_file("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads/TIGERS/tl_2010_39_cousub00/tl_2010_39_cousub00.shp")
-
-# Convert latitude and longitude columns to float and store in a list of tuples
-# lat_lon_tuples = [
-#     (float(row.INTPTLAT00), float(row.INTPTLON00), row.COSBIDFP00, row.NAMELSAD00, row.CLASSFP00) 
-#     for row in gdf_roads.itertuples()
-# ]
+# gdf_roads = gpd.read_file("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads/TIGERS/tl_2010_39_cousub00/tl_2010_39_cousub00.shp")
+gdf_roads = gpd.read_file(loc + "oh_roads_by_cousub.geojson")
 
 # get list of close elections
-file = open("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads/tendigit_fips_close_elections_gs_bw.txt", "r")
+file = open(out_loc + "tendigit_fips_close_elections_gs_bw.txt", "r")
 tendigit_fips_list = [line.strip() for line in file]
 file.close()  
 
 # only keep the rows with close elections
 gdf_roads = gdf_roads[gdf_roads.COSBIDFP00.isin(tendigit_fips_list)].reset_index(drop=True)
 
+gdf_roads.geometry
+# Check the types of geometries in the geometry column
+geometry_types = gdf_roads.geometry.apply(lambda geom: geom.geom_type).unique()
+print("Unique geometry types in the GeoDataFrame:", geometry_types)
+
+
 """
 Getting all the coordinates of the polygons (road) for each row in the geodataframe
 """
-lat_lon_tuples = []
-for row in gdf_roads.itertuples():
-    geom = row.geometry
-    coords_list = []
+def get_road_coords(gdf):
+    """
+    Returns a list of tuples for each row in the GeoDataFrame:
+      [
+        (
+            [(lat, lon), (lat, lon), ...],  # All coords for that row's geometry
+            row.COSBIDFP00,
+            row.NAME00,
+            row.NAMELSAD00,
+            row.CLASSFP00,
+            row.FULLNAME,
+            row.UR00
+        ),
+        ...
+      ]
 
-    if isinstance(geom, Polygon):
-        exterior_coords = list(geom.exterior.coords)
-        coords_list.extend([(coord[1], coord[0]) for coord in exterior_coords])
+    This handles the following geometry types:
+      - Point
+      - MultiPoint
+      - LineString
+      - MultiLineString
+      - GeometryCollection
+    """
 
-    elif isinstance(geom, MultiPolygon):
-        for poly in geom.geoms:
-            exterior_coords = list(poly.exterior.coords)
+    def extract_coords(geom):
+        """
+        Recursively extract (lat, lon) coordinate pairs from a geometry.
+        Supports Point, MultiPoint, LineString, MultiLineString, GeometryCollection.
+        Returns a list of (lat, lon) tuples.
+        """
+        coords_list = []
+
+        if geom is None:
+            return coords_list
+
+        # 1. Point
+        if isinstance(geom, Point):
+            # Single coordinate: (x=longitude, y=latitude)
+            x, y = geom.x, geom.y
+            coords_list.append((y, x))  # flip for (lat, lon)
+
+        # 2. MultiPoint
+        elif isinstance(geom, MultiPoint):
+            for pt in geom.geoms:
+                x, y = pt.x, pt.y
+                coords_list.append((y, x))
+
+        # 3. LineString
+        elif isinstance(geom, LineString):
+            for x, y in geom.coords:
+                coords_list.append((y, x))
+
+        # 4. MultiLineString
+        elif isinstance(geom, MultiLineString):
+            for line in geom.geoms:
+                for x, y in line.coords:
+                    coords_list.append((y, x))
+
+        # 5. GeometryCollection
+        elif isinstance(geom, GeometryCollection):
+            # Recursively handle each geometry in the collection
+            for sub_geom in geom.geoms:
+                coords_list.extend(extract_coords(sub_geom))
+
+        # 6. Polygon 
+        elif isinstance(geom, Polygon):
+            exterior_coords = list(geom.exterior.coords)
             coords_list.extend([(coord[1], coord[0]) for coord in exterior_coords])
 
-    else:
-        # Something other than Polygon or MultiPolygon (LineString, Point, etc.)
-        print(f"Skipping non-polygon geometry type: {geom.geom_type}")
-        continue
+        # 7. MultiPolygon
+        elif isinstance(geom, MultiPolygon):
+            for poly in geom.geoms:
+                exterior_coords = list(poly.exterior.coords)
+                coords_list.extend([(coord[1], coord[0]) for coord in exterior_coords])                
 
-    lat_lon_tuples.append(
-        (
-            coords_list,
-            row.COSBIDFP00,
-            row.NAMELSAD00,
-            row.CLASSFP00
+        # If other geometry types appear, handle or skip
+        else:
+            print(f"Skipping unhandled geometry type: {geom.geom_type}")
+
+        return coords_list
+
+    output_tuples = []
+    for row in gdf.itertuples():
+        # Extract coords for this row
+        coords = extract_coords(row.geometry)
+
+        # Build the tuple with coords + whichever attributes you need
+        # Adjust to match your actual columns
+        output_tuples.append(
+            (
+                coords,          # list of (lat, lon) pairs
+                row.COSBIDFP00,
+                row.NAME00,
+                row.NAMELSAD00,
+                row.CLASSFP00,
+                row.FULLNAME,
+                row.UR00
+            )
         )
-    )
+
+    return output_tuples
+
+# Call the function to get road coordinates
+lat_lon_tuples = get_road_coords(gdf_roads)
+
+# Next step: Extract images for each road. Each lat, lon tuple is a list of coordinates for that road
 
 
-# import shapely
-# from shapely.geometry import Polygon, MultiPolygon
-
-
-
-# for loc in lat_lon_tuples:    
-#     panos = search_panoramas(lat=loc[0], lon=loc[1])
-#     filtered_panos = [(p.pano_id, p.date, p.lat, p.lon) for p in panos if p.date is not None]
-#     if not filtered_panos:
-#         print("No images found for location: ", loc[3])
-#         continue
-#     pano_id = filtered_panos[-1][0]
-#     pic = sv.get_streetview(pano_id = pano_id, api_key= sv.api_key)
-#     pic.save(out_loc + "/" + loc[3] + "_" + filtered_panos[-1][1] + ".jpg", "jpeg")
-
-
-def fetch_and_save_streetview(pano, out_dir, cosbidfp, namelsad, api_key):
+def fetch_and_save_streetview(pano, out_dir, cosbidfp, namelsad, stname, api_key):
     """
     Function to get road images for each road pano_id.
     Given a single panorama record and other metadata,
@@ -155,7 +226,7 @@ def fetch_and_save_streetview(pano, out_dir, cosbidfp, namelsad, api_key):
         # Constructing a file name. Incorporates road info, date, lat, lon
         # e.g. "3906966502_Richfield_2007-09_41.2551_-83.88226.jpg"
         safe_name = namelsad.replace(" ", "_")  # or re.sub(...) to remove special chars
-        filename = f"{cosbidfp}_{safe_name}_{date}_{lat}_{lon}.jpg"
+        filename = f"{cosbidfp}_{stname}_{safe_name}_{date}_{lat}_{lon}.jpg"
 
         # Save in out_dir
         filepath = os.path.join(out_dir, filename)
@@ -166,54 +237,81 @@ def fetch_and_save_streetview(pano, out_dir, cosbidfp, namelsad, api_key):
         print(f"Error fetching pano_id={pano_id} (date={date}): {e}")
 
 
-def fetch_streetview_images_for_road(coords_list, cosbidfp, namelsad, classfp, out_dir, api_key):
+
+def fetch_streetview_images_for_road(coords_list, cosbidfp, namelsad, stname, out_dir, api_key, min_year=2010):
     """
     For a single road:
       - Loop through each boundary coordinate
       - Search all panoramas
-      - For each panorama with a valid date, fetch & save the Street View image
+      - For each panorama with a valid date >= min_year, fetch & save the Street View image
     """
     for (lat, lon) in coords_list:
         try:
             # search_panoramas is your function from the 'streetview' package
             panos = search_panoramas(lat=lat, lon=lon)
             
-            # If you want to include *all* dated panoramas, do NOT just pick the last one
-            # Instead, iterate over all that have a non-None date
-            filtered_panos = [(p.pano_id, p.date, p.lat, p.lon) 
-                              for p in panos if p.date is not None]
+            # Filter to panoramas that have a date and year >= min_year.
+            # The date format is typically "YYYY-MM", e.g. "2011-06" or "2016-10".
+            filtered_panos = []
+            for p in panos:
+                if p.date is not None:
+                    # Safely parse the year from "YYYY-MM"
+                    # (assuming there's always a dash, e.g. "2011-06")
+                    year_str = p.date.split("-")[0]
+                    
+                    try:
+                        year = int(year_str)
+                    except ValueError:
+                        # If something went wrong parsing, skip this panorama
+                        continue
+                    
+                    if year >= min_year:
+                        filtered_panos.append((p.pano_id, p.date, p.lat, p.lon))
             
             if not filtered_panos:
-                # No images at this coordinate
+                # No images after min_year at this coordinate
+                print(f"No panoramas found for cosbidfp: {cosbidfp}, stname: {stname} at lat={lat}, lon={lon} after {min_year}")
                 continue
             
-            # If you want multiple images across different years, loop them all:
-            for p in filtered_panos:
+            # Now, loop over all the panoramas that meet the date criteria
+            for pano_tuple in filtered_panos:
                 fetch_and_save_streetview(
-                    pano=p,
+                    pano=pano_tuple,
                     out_dir=out_dir,
                     cosbidfp=cosbidfp,
                     namelsad=namelsad,
+                    stname=stname,
                     api_key=api_key
                 )
             
         except Exception as e:
-            print(f"Error searching panoramas for road={namelsad} at lat={lat}, lon={lon}: {e}")
-            # continue to the next coordinate
+            print(f"Error searching panoramas for namelsad={namelsad}, stname={stname} at lat={lat}, lon={lon}: {e}")
+
 
 
 # SPIN IT UP! MOMENT OF TRUTH.
-for coords_list, cosbid, namelsad, classfp in lat_lon_tuples:
-    # If the polygon has no boundary coords, skip
-    if not coords_list:
-        continue
-    
-    # Try fetching Street View images for all boundary coordinates
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_PATH), 
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
+start_time = time.time()
+
+for coords_list, cosbid, _ , namelsad, classfp, stname, _ in lat_lon_tuples:
+    logging.info(f"Processing cosbid={cosbid}, stname={stname}, namelsad={namelsad}")
     fetch_streetview_images_for_road(
         coords_list=coords_list,
         cosbidfp=cosbid,
         namelsad=namelsad,
-        classfp=classfp,
+        stname=stname,
         out_dir=out_loc,
         api_key=sv.api_key
     )
+
+elapsed_time = time.time() - start_time
+logging.info(f"Run completed in {elapsed_time:.2f} seconds")
+

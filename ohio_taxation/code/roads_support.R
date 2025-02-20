@@ -223,6 +223,39 @@ closest_votes %>% filter(max_year >= 2010) %>% pull(tendigit_fips) %>% unique %>
   writeLines(., paste0(data,"/roads/tendigit_fips_close_elections_gs_bw.txt"))
 
 
+#==========================================================================================================#
+# TIGERS shapefile identifying roads
+# 
+#==========================================================================================================#
+
+oh_cosub <- sf::read_sf(paste0(data,"/roads/TIGERS/tl_2010_39_cousub00/tl_2010_39_cousub00.shp"))
+oh_prisec <- sf::read_sf(paste0(data,"/roads/TIGERS/tl_2010_39_prisecroads/tl_2010_39_prisecroads.shp"))
+
+close_fips <- readLines(paste0(data,"/roads/tendigit_fips_close_elections_gs_bw.txt"))
+
+oh_cosub_sub <- oh_cosub %>%
+  select(COSBIDFP00, NAME00, NAMELSAD00, UR00 , CLASSFP00, geometry) %>%
+  filter(COSBIDFP00 %in% close_fips)
+
+oh_prisec_local <- oh_prisec %>%
+  filter(RTTYP == "M") %>%
+  select(LINEARID, FULLNAME, RTTYP, MTFCC, geometry)
+
+oh_roads_by_cousub <- st_intersection(oh_cosub_sub, oh_prisec_local)
+
+# plot(oh_roads_by_cousub$geometry, col = "blue", main = "Roads by County Subdivision")
+
+# Export the object as a shapefile
+# st_write(oh_roads_by_cousub, paste0(data, "/roads/ohio/oh_roads_by_cousub.gpkg"), delete_dsn = TRUE)
+
+st_write(oh_roads_by_cousub, paste0(data, "/roads/ohio/oh_roads_by_cousub.geojson"), delete_dsn = TRUE)
+
+# oh_prisec %>% filter(RTTYP  == "M") %>% .$MTFCC %>% st_drop_geometry() %>% unique
+# 
+# plot(oh_prisec["FULLNAME"])
+# plot(oh_prisec %>% filter(RTTYP  == "M") %>% .["FULLNAME"])
+
+
 
 #==========================================================================================================#
 # Regressions with covariates as outcome
