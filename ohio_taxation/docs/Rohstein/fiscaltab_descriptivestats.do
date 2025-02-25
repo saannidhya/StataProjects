@@ -1,5 +1,5 @@
-capture log close
-log using fiscaltab_descriptivestats.log, text replace
+/* capture log close
+log using fiscaltab_descriptivestats.log, text replace */
 
 *Program to compute estimates for Table 2:  Summary statistics for
 * - All districts
@@ -16,7 +16,7 @@ set mem 100m;
 *local projectbase "/Volumes/Dept/WWS/Research/Rothstein/projects/caelections";
 
 *Start by grabbing all districts and merging on the "ever propose" indicator;
- use "referenda_newleaids_capital.dta";
+ use "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/Rohstein/referenda_newleaids_capital.dta"
  rename year yearref;
  replace yearref = yearref - 1 if month<5;
  label var yearref "schoolyear starting yr of elec.";

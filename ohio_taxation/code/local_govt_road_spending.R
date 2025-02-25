@@ -103,8 +103,18 @@ summary(tax_val$tax_per_yr)
 #============================================================================================================#
 
 # importing spending data (year end data)
-renewed <- readxl::read_xlsx(paste0(spend_reports_loc, "renewed/renewed_spending_reports.xlsx"))
-cut     <- readxl::read_xlsx(paste0(spend_reports_loc, "cut/cut_spending_reports.xlsx"))
+renewed <- readxl::read_xlsx(paste0(spend_reports_loc, "renewed/renewed_spending_reports.xlsx")) %>%
+  filter(grepl("township", name, ignore.case = TRUE)) %>%
+  mutate(name = tolower(name))
+
+# only keep rows that contain the word "Township" in their names
+# Note: numbers for cities are unreliable. Thus, doing analysis ONLy on townships within bw.
+
+cut     <- readxl::read_xlsx(paste0(spend_reports_loc, "cut/cut_spending_reports.xlsx")) %>%
+filter(grepl("township", name, ignore.case = TRUE)) %>% 
+  mutate(name = tolower(name))
+
+# Note: numbers for cities are unreliable. Thus, doing analysis ONLy on townships within bw.
 
 # importing cpi data (year beginning data)
 cpi_df <- readr::read_csv(paste0(data,"/CPIAUCSL_NBD20100101.csv")) %>% rename(cpi = CPIAUCSL_NBD20100101) %>%
@@ -116,17 +126,71 @@ renewed <- renewed %>%
   mutate(property_tax_d = property_tax/cpi_deflator,
          public_works_d = public_works/cpi_deflator)
 
+renewed2 <- renewed %>%
+  separate(name, into = c("township", "county"), sep = ",") %>%
+  mutate(
+    township = trimws(township),
+    county = trimws(gsub("county", "", county))
+)
 
-## ggplot plotting a line
 
-ggplot(data = renewed) +
-  geom_line(aes(x = year, y = property_tax_d, color = "Property Tax")) +
-  geom_line(aes(x = year, y = public_works_d, color = "Public Works")) +
-  labs(title = "Property Tax and Public Works Spending",
-       x = "Year",
-       y = "Spending (deflated to 2010 $$)",
-       color = "Spending Type") +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
+
+cut <- cut %>% 
+  left_join(select(cpi_df, c(year, cpi_deflator)), by = c("year")) %>%
+  mutate(property_tax_d = property_tax/cpi_deflator,
+         public_works_d = public_works/cpi_deflator)
+
+cut2 <- cut %>%
+  separate(name, into = c("township", "county"), sep = ",") %>%
+  mutate(
+    township = trimws(township),
+    county = trimws(gsub("county", "", county))
+  )
+
+# importing spendin analysis excel
+last_votes <- readxl::read_xlsx(paste0(spend_reports_loc, "spending_analysis.xlsx"), sheet = "rd_fips_close_elections_gs_bw") %>%
+  mutate(subdivision = tolower(subdivision),
+         county = tolower(county)) %>%
+  rename(township = subdivision) %>%
+  select(tendigit_fips, township, county, max_year, pop)
   
+# joining renewed and last_votes by township and county
+renewed_ <- renewed2 %>%
+  inner_join(last_votes, by = c("township", "county")) %>%
+  mutate(after_election_flag = if_else(year >= max_year, 1, 0)) %>%
+  arrange(township, county, year)
 
+# joining cut and last_votes by township and county
+cut_ <- cut2 %>%
+  inner_join(last_votes, by = c("township", "county")) %>%
+  mutate(after_election_flag = if_else(year >= max_year, 1, 0)) %>%
+  arrange(township, county, year)
+
+
+## Analysis ##
+
+# Regression for property_tax_d
+renewed_mod_property_tax <- lm(property_tax_d ~ after_election_flag + factor(year) + factor(tendigit_fips), 
+                         data = renewed_)
+summary(renewed_mod_property_tax)
+
+# Regression for public_works_d
+renewed_mod_public_works <- lm(public_works_d ~ after_election_flag + factor(year) + factor(tendigit_fips), 
+                         data = renewed_)
+summary(renewed_mod_public_works)
+
+
+
+# Regression for property_tax_d
+cut_mod_property_tax <- lm(property_tax_d ~ after_election_flag + factor(year) + factor(tendigit_fips), 
+                           data = cut_)
+summary(cut_mod_property_tax)
+mean(cut_$property_tax_d)
+median(cut_$property_tax_d)
+
+# Regression for public_works_d
+cut_mod_public_works <- lm(public_works_d ~ after_election_flag + factor(year) + factor(tendigit_fips), 
+                           data = cut_)
+summary(cut_mod_public_works)
+
+# Coefficient is negative, but not stat significant, likely due to limited number of observations.

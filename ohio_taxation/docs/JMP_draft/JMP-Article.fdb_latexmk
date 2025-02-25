@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex JMP-Article"] 1739391440.77766 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1739391444.7671 0
+["bibtex JMP-Article"] 1740501013.04551 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1740501016.84652 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
   "./aej_references.bib" 1739390287 15430 24b235db62315c08c3522803bf025b64 ""
-  "JMP-Article.aux" 1739391443 18298 01b243f9264ecc6a5f15423e63c0ff39 "pdflatex"
+  "JMP-Article.aux" 1740501015 18080 6a23255e93473a21fc0e7dd149cd5d47 "pdflatex"
   (generated)
   "JMP-Article.bbl"
   "JMP-Article.blg"
   (rewritten before read)
-["pdflatex"] 1739391441.32148 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1739391444.76811 0
+["pdflatex"] 1740501013.4724 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1740501016.84762 0
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1738277282 81286 a24972354787ad66f4189952495c30ed ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0700.pk" 1737579311 8268 191349543146a4c053d7a8b3d482dfab ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1737579313 11548 9725287d5650551bd806f254213fceb9 ""
@@ -146,13 +146,13 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "JMP-Article.aux" 1739391443 18298 01b243f9264ecc6a5f15423e63c0ff39 "pdflatex"
-  "JMP-Article.bbl" 1739391441 10795 fa46c73a2deef8cb144dc6bec1a29a1d "bibtex JMP-Article"
-  "JMP-Article.out" 1739391443 4700 67bb1637be872f4ff22ed814455ae554 "pdflatex"
-  "JMP-Article.tex" 1738610534 5796 3c06a4047a98043554dddc9fda3b63df ""
+  "JMP-Article.aux" 1740501015 18080 6a23255e93473a21fc0e7dd149cd5d47 "pdflatex"
+  "JMP-Article.bbl" 1740501013 10457 5511f835217db89d1d659e823ccff8cc "bibtex JMP-Article"
+  "JMP-Article.out" 1740501015 4700 67bb1637be872f4ff22ed814455ae554 "pdflatex"
+  "JMP-Article.tex" 1740454958 6762 92fdc00ba3d2122be3eb0314e2e671e7 ""
   "appendix.tex" 1739390288 11765 cb2748aee7d7ff7964e52e7605460b3d ""
-  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1738610534 5796 3c06a4047a98043554dddc9fda3b63df ""
-  "data.tex" 1739391436 26952 cd00c6073e4de9bc5313830b6fa6b095 ""
+  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1740454958 6762 92fdc00ba3d2122be3eb0314e2e671e7 ""
+  "data.tex" 1740449954 26965 50f75430d23c84b4c43f809ce6867030 ""
   "emp_strategy.tex" 1739391436 4855 8b0e44c06c795b8f93f5ae9a94a2255f ""
   "images/cov_smoothness_incherfindahl.png" 1719384968 96219 f2c7e0d7952b8c42e58665a73bc8255e ""
   "images/cov_smoothness_medfamy.png" 1719384932 103396 4242c17683df9604fbb4431eaf171387 ""
@@ -180,9 +180,9 @@
   "images/tes_qte_re.png" 1734359049 8127 038959f1171e33e19271fd2987a9de80 ""
   "images/tes_size_re.png" 1734357196 8191 40d85d034ded7d29a7af70f44522156e ""
   "images/votes_pct_against_histogram.png" 1708134432 34910 2ab2ad4a06488c5311893b5e98604a06 ""
-  "intro.tex" 1738358208 2372 0ff29fcd3bea2ea89ef5f42255478b69 ""
-  "lit_review.tex" 1739391436 7865 4fcb56efb2589b97bfd84327384af33d ""
-  "results.tex" 1739391435 35252 b27f902b19568cc8b723602a8099bcf0 ""
+  "intro.tex" 1740501000 2666 2c0cfd988689528b2b1a96afc153fa80 ""
+  "lit_review.tex" 1740455165 7710 d1d6bd783a3c31596b0e3ad1dfd86dd1 ""
+  "results.tex" 1740449953 35949 72c3379ada992a2f440c55060da07a3d ""
   (generated)
   "JMP-Article.aux"
   "JMP-Article.log"
