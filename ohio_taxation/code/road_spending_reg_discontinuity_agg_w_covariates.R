@@ -126,7 +126,7 @@ gs <- purrr::map2(covs_final, dfs_agg_covs, .f = function(x,y){
                                          c = cutoff,
                                          covs = y %>%
                                            select(x) ,
-                                         all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) })
+                                         all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips) })
 purrr::walk2(names(gs), gs, .f = function(x, y) {
   print(paste0("Outcome variable is ",x))
   summary(y) 
@@ -159,10 +159,8 @@ gs_reg <- purrr::map2(covs_final_w_tfe, dfs_agg_covs_w_tfe, .f = function(x,y){
              c = cutoff,
              covs = y %>%
                select(x) ,
-             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
-
-tes_gs_reg <- te_tables(gs_reg)
 plot_te(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 plot_te_recenter(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
@@ -172,6 +170,12 @@ tes_gs_reg %>% filter((ord >= 0)) %>%
 # average effective bandwidth
 map_dbl(gs_reg[4:14], ~ .x$bws[1,1]) %>% mean
 # 9.425709
+
+map_dbl(gs_reg[4:14], ~ .x$bws[1,1]) # Effective (h)
+map_dbl(gs_reg[4:14], ~ .x$bws[2,1]) # bias (b)
+map_dbl(gs_reg[4:14], ~ sum(.x$N) ) # Total obs
+map_dbl(gs_reg[4:14], ~ sum(.x$N_h) ) # Effective obs
+
 
 #------------------------------------------------------------------------------------------------#
 
@@ -229,7 +233,7 @@ g_regs_w <- purrr::map2(covs_final, dfs_agg_covs_winsored, .f = function(x,y){
              x = y$votes_pct_against,
              c = cutoff,
              covs = y %>% select(x) ,
-             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 tes_g_w <- te_tables(g_regs_w)
 plot_te(tes_g_w)
@@ -254,12 +258,12 @@ gs_reg_win <- purrr::map2(covs_final_win_tfe, dfs_agg_covs_win_tfe, .f = functio
              c = cutoff,
              covs = y %>%
                select(x) ,
-             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 
 tes_gs_reg_win <- te_tables(gs_reg_win)
-plot_te(tes_gs_reg_win, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
-plot_te_recenter(tes_gs_reg_win, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+plot_te(tes_gs_reg_win, title = "Treatment Effect Estimates: Median House Price", subtitle = "after 1% Winsorization")
+plot_te_recenter(tes_gs_reg_win, title = "Treatment Effect Estimates: Median House Price", subtitle = "after 1% Winsorization")
 
 # average effective bandwidth
 map_dbl(gs_reg_win[4:14], ~ .x$bws[1,1]) %>% mean

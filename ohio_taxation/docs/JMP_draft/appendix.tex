@@ -1,8 +1,8 @@
-\section{Additional Treatment Effects Tables \& Effect Plots} \label{sec:appxa}
+\section{Additional Tables} \label{sec:appxa}
 
-\subsection{Full set of Treatment Effects for Housing Prices}
+\subsection{Full set of Treatment Effects for Median Housing Price}
 
-The full set of treatment effects provided in Table \ref{tab:median_sale_amount_full} support Table \ref{tab:median_sale_amount} which provides treatment effects for the housing price outcome variable in the main body of the paper. These treatment effects are estimated using a regression model that controls for various factors.
+The full set of treatment effects in Table \ref{tab:median_sale_amount_full} supports Table \ref{tab:median_sale_amount}, which provides treatment effects for the housing price outcome variable in the main body of the paper. These treatment effects are estimated using a regression discontinuity model explained in Section \ref{sec:empirical}. Additionally, Table \ref{tab:median_sale_amount_winsorized} presents the treatment effects after applying 1\% Winsorization to the data, ensuring robustness against outliers. Furthermore, Table \ref{tab:urban_rural_results} breaks down the treatment effects by urban and rural categories, highlighting the differential impacts on housing prices based on the urbanization level.
 
 \begin{table}[htbp]
     \centering
@@ -12,26 +12,119 @@ The full set of treatment effects provided in Table \ref{tab:median_sale_amount_
         \hline
         \textbf{Year relative to vote} & \textbf{Estimate} & \textbf{Standard error} & \textbf{p-value} & \textbf{Confidence interval} \\
         \hline
-        $t - 3$  & 3,468   & 7,465  & 0.642  & [-11,164, 18,099] \\
-        $t - 2$  & -1,703  & 6,617  & 0.797  & [-14,673, 11,267] \\
-        $t - 1$  & 1,784   & 6,950  & 0.797  & [-11,838, 15,407] \\
-        $t + 1$ & -6,197  & 9,662  & 0.521  & [-25,134, 12,741] \\
-        $t + 2$ & -17,059 & 9,518  & 0.073  & [-35,715, 1,597] \\
-        $t + 3$ & -9,823  & 8,244  & 0.233  & [-25,981, 6,335] \\
-        $t + 4$ & -19,535 & 9,289  & 0.035  & [-37,741, -1,329] \\
-        $t + 5$ & -21,531 & 9,147  & 0.019  & [-39,459, -3,604] \\
-        $t + 6$ & -16,994 & 7,558  & 0.025  & [-31,809, -2,180] \\
-        $t + 7$ & -16,991 & 7,357  & 0.023  & [-31,111, -2,272] \\
-        $t + 8$ & -23,323 & 9,449  & 0.014  & [-41,842, -4,803] \\
-        $t + 9$ & -30,620 & 9,586  & 0.001  & [-49,408, -11,833] \\
-        $t + 10$ & -16,411 & 9,342  & 0.079  & [-34,721, 1,898] \\
+        $t - 3$  & 5,295   & 7,255  & 0.466  & [-8,926, 19,515] \\
+        $t - 2$  & 247     & 6,969  & 0.972  & [-13,412, 13,907] \\
+        $t - 1$  & -258    & 7,594  & 0.973  & [-15,141, 14,626] \\
+        $t + 1$  & -3,815  & 8,502  & 0.654  & [-20,480, 12,849] \\
+        $t + 2$  & -10,829 & 8,840  & 0.221  & [-28,156, 6,497] \\
+        $t + 3$  & -14,437 & 7,782  & 0.064  & [-29,691, 817] \\
+        $t + 4$  & -21,684 & 7,838  & 0.006  & [-37,047, -6,321] \\
+        $t + 5$  & -22,415 & 8,348  & 0.007  & [-38,777, -6,052] \\
+        $t + 6$  & -17,539 & 8,465  & 0.038  & [-34,130, -947] \\
+        $t + 7$  & -16,001 & 6,918  & 0.021  & [-29,560, -2,442] \\
+        $t + 8$  & -21,973 & 9,111  & 0.016  & [-39,830, -4,116] \\
+        $t + 9$  & -19,890 & 7,756  & 0.010  & [-35,092, -4,687] \\
+        $t + 10$ & -16,042 & 8,915  & 0.072  & [-33,515, 1,432] \\
         \hline
     \end{tabular}
     \begin{tablenotes}
         \small
-        \item Supplements Table \ref{tab:median_sale_amount} in text. Full set of treatment effect estimates of renewing road tax levies relative to cutting road tax levies from 3 years before the vote to 10 years after the vote. Covariates from Table \ref{tab:variable_means_sd} used in all regressions. Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year. A treatment effect of -\$19,535 means that four years after the vote, cities that vote to cut road taxes and its associated spending have houses that sell for \$19,535 less than cities that vote to renew road taxes and spending.
+        \item Supplements Table \ref{tab:median_sale_amount} in text. Full set of treatment effect estimates of renewing road tax levies relative to cutting road tax levies from 3 years before the vote to 10 years after the vote. Covariates from Table \ref{tab:variable_means_sd} used in all regressions. Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year. A treatment effect of -\$21,684 means that four years after the vote, cities that vote to cut road taxes and its associated spending have houses that sell for \$21,684 less than cities that vote to renew road taxes and spending.
     \end{tablenotes}
 \end{table}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Full set of estimates - Median Housing Price (after 1\% Winsorization)}
+    \label{tab:median_sale_amount_winsorized}
+    \begin{tabular}{p{3cm}cccc}
+        \hline
+        \textbf{Year relative to vote} & \textbf{Estimate} & \textbf{Standard error} & \textbf{p-value} & \textbf{Confidence interval} \\
+        \hline
+        $t - 3$  & 286     & 6,334  & 0.964  & [-12,128, 12,701] \\
+        $t - 2$  & 1,878   & 6,320  & 0.766  & [-10,509, 14,266] \\
+        $t - 1$  & 3,493   & 7,383  & 0.636  & [-10,979, 17,964] \\
+        $t + 1$  & -4,173  & 8,657  & 0.630  & [-21,142, 12,795] \\
+        $t + 2$  & -8,160  & 7,544  & 0.279  & [-22,945, 6,626] \\
+        $t + 3$  & -13,364 & 7,497  & 0.075  & [-28,058, 1,330] \\
+        $t + 4$  & -22,583 & 8,020  & 0.005  & [-38,303, -6,864] \\
+        $t + 5$  & -21,063 & 8,996  & 0.019  & [-38,696, -3,430] \\
+        $t + 6$  & -18,767 & 8,872  & 0.034  & [-36,156, -1,379] \\
+        $t + 7$  & -17,930 & 6,879  & 0.009  & [-31,414, -4,447] \\
+        $t + 8$  & -21,092 & 8,947  & 0.018  & [-38,629, -3,556] \\
+        $t + 9$  & -17,801 & 7,802  & 0.023  & [-33,092, -2,510] \\
+        $t + 10$ & -13,108 & 7,555  & 0.083  & [-27,916, 1,700] \\
+        \hline
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item Supplements Table \ref{tab:median_sale_amount} in text. Full set of treatment effect estimates of renewing road tax levies relative to cutting road tax levies from 3 years before the vote to 10 years after the vote, with **1\% Winsorization** applied to the data. Covariates from Table \ref{tab:variable_means_sd} used in all regressions. Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year. A treatment effect of -\$22,583 means that four years after the vote, cities that vote to cut road taxes and its associated spending have houses that sell for \$22,583 less than cities that vote to renew road taxes and spending.
+    \end{tablenotes}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Treatment Effects on Housing Prices by Urban vs. Rural Categories}
+    \label{tab:urban_rural_results}
+    \begin{threeparttable}
+    \small
+    %----- Panel A: Urban -----
+    \textbf{Panel A: Urban} \\[4pt]
+    \begin{tabularx}{\textwidth}{l*{4}{X}}
+    \hline\hline
+    \textbf{Year} & \textbf{Estimate} & \textbf{Std. Error} & \textbf{p-value} & \textbf{Conf. Interval} \\
+    \hline
+    $t - 3$  & -2,636  & 8,066  & 0.744 & [-18,446, 13,173] \\
+    $t - 2$  & -9,607  & 7,310  & 0.189 & [-23,935, 4,722] \\
+    $t - 1$  & 1,045   & 6,496  & 0.872 & [1,045, 1,045] \\
+    $t + 0$  & 458     & 7,873  & 0.954 & [-14,973, 15,889] \\
+    $t + 1$  & -5,087  & 7,617  & 0.504 & [-20,016, 9,843] \\
+    $t + 2$  & -3,675  & 9,077  & 0.686 & [-21,465, 14,115] \\
+    $t + 3$  & -11,657 & 7,667  & 0.128 & [-26,684, 3,370] \\
+    $t + 4$  & -8,846  & 9,162  & 0.334 & [-26,804, 9,112] \\
+    $t + 5$  & -8,967  & 9,311  & 0.336 & [-27,217, 9,284] \\
+    $t + 6$  & -24,476 & 7,127  & 0.001 & [-38,446, -10,507] \\
+    $t + 7$  & -14,457 & 7,869  & 0.066 & [-29,880, 966] \\
+    $t + 8$  & -26,174 & 8,921  & 0.003 & [-43,659, -8,688] \\
+    $t + 9$  & -19,469 & 8,221  & 0.018 & [-35,582, -3,357] \\
+    $t + 10$ & -23,969 & 10,364 & 0.021 & [-44,284, -3,655] \\
+    \hline
+    \end{tabularx}
+    
+    \vspace{8pt}
+    
+    %----- Panel B: Rural -----
+    \centering
+    \textbf{Panel B: Rural} \\[4pt]
+    \begin{tabularx}{\textwidth}{l*{4}{X}}
+    \hline\hline
+    \textbf{Year} & \textbf{Estimate} & \textbf{Std. Error} & \textbf{p-value} & \textbf{Conf. Interval} \\
+    \hline
+    $t - 3$  & 6,384  & 9,962  & 0.522 & [-13,142, 25,910] \\
+    $t - 2$  & 1,609  & 7,758  & 0.836 & [-13,597, 16,814] \\
+    $t - 1$  & -835   & 8,354  & 0.920 & [-835, -835] \\
+    $t + 0$  & -8,727 & 9,351  & 0.351 & [-27,056, 9,601] \\
+    $t + 1$  & 5,731  & 7,458  & 0.442 & [-8,886, 20,349] \\
+    $t + 2$  & -2,970 & 7,107  & 0.676 & [-16,899, 10,960] \\
+    $t + 3$  & -1,866 & 6,538  & 0.775 & [-14,681, 10,949] \\
+    $t + 4$  & -10,505 & 8,641 & 0.224 & [-27,441, 6,431] \\
+    $t + 5$  & -16,897 & 7,564 & 0.026 & [-31,722, -2,072] \\
+    $t + 6$  & -4,561 & 6,551  & 0.486 & [-17,402, 8,280] \\
+    $t + 7$  & -7,632 & 8,936  & 0.393 & [-25,146, 9,882] \\
+    $t + 8$  & -469   & 8,063  & 0.954 & [-16,273, 15,335] \\
+    $t + 9$  & -11,492 & 8,383 & 0.170 & [-27,923, 4,940] \\
+    $t + 10$ & 1,851  & 7,790  & 0.812 & [-13,417, 17,119] \\
+    \hline
+    \end{tabularx}
+    
+    \begin{tablenotes}
+    \small
+    \item \textit{Notes:} Each panel reports separate regressions of median house price on a referendum “cut vs. maintain” indicator, broken down by Urban and Rural classifications. Columns show the year relative to the referendum vote, estimated treatment effect, standard error, \(p\)-value, and 95\% confidence interval. Standard errors are robust. A negative estimate indicates lower house prices in areas that cut their road taxes relative to areas that maintained them.
+    \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+    
+
 
 % \begin{figure}[htbp]
 %     \centering
@@ -40,7 +133,7 @@ The full set of treatment effects provided in Table \ref{tab:median_sale_amount_
 %     \label{fig:tes_gs_app}
 % \end{figure}
 
-\clearpage
+% \clearpage
 
 
 % \subsection{Outcome vs Running variable plots for years after Treatment}
@@ -49,13 +142,13 @@ The full set of treatment effects provided in Table \ref{tab:median_sale_amount_
 
 \section{Additional Robustness Tests} \label{sec:appxb}
 
-\subsection{Covariate Discontinuity Tests \& Smoothness Plots}
+\subsection{Covariate Discontinuity Tables}
 
 \begin{table}[!h]
     \centering
     \caption{Covariate Discontinuity Test Results}
     \label{tab:covariate_discontinuity}
-    \begin{tabular}{p{2cm}cccc}
+    \begin{tabularx}{\textwidth}{l*{3}{X}X}
         \hline
         Variable & Estimate & Standard error & p-value & Confidence interval \\
         \hline
@@ -72,12 +165,14 @@ The full set of treatment effects provided in Table \ref{tab:median_sale_amount_
         \% Married                           & -0.013    & 0.015   & 0.374  & [-0.042, 0.016] \\
         \% Separated                         & 0.001     & 0.002   & 0.485  & [-0.002, 0.004] \\
         \hline
-    \end{tabular}
+    \end{tabularx}
     \begin{tablenotes}
         \small
-        \item Estimates indicate the treatment effect of failing to renew a road maintenance tax levy on each covariate considered during our study. Confidence intervals are presented in square brackets.
+        \item \textit{Notes:} Estimates indicate the treatment effect of failing to renew a road maintenance tax levy on each covariate considered during our study. Confidence intervals are presented in square brackets.
     \end{tablenotes}
 \end{table}
+
+\subsection{Covariate Discontinuity Plots}
 
 % \subsection{Covariate Smoothness Plots}
 
@@ -224,9 +319,9 @@ The full set of treatment effects provided in Table \ref{tab:median_sale_amount_
 \section{Additional Information} \label{sec:appxc}
 
 % \subsection{A Case Study of Roads in Waynesville OH: Serial Cutter of Road Maintenance Tax Levies}
-\subsection{More Details on Predicting Road Quality} \label{sec:appxc1}
+% \subsection{More Details on Predicting Road Quality} \label{sec:appxc1}
 
-Coming very soon.
+% Coming very soon.
 
 \subsection{Road tax levies vs. Other types of levies}
 

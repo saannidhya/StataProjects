@@ -82,7 +82,7 @@ dev.off()
 # running regressions (aggregate) for millage size <= 1.9 ----
 #==================================================================================#
 
-regs_l_1.9 <- purrr::map(.x = dfs_agg_mill_l_1.9, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE))
+regs_l_1.9 <- purrr::map(.x = dfs_agg_mill_l_1.9, ~ rdrobust::rdrobust(y = .x$median_sale_amount, x = .x$votes_pct_against, c = cutoff, all = TRUE, cluster = .x$tendigit_fips))
 
 tes_l_1.9 <- te_tables(regs_l_1.9)
 tes_l_1.9
@@ -91,7 +91,7 @@ plot_te(tes_l_1.9, title = "Millage percent less than mean of 1.9%", subtitle = 
 dev.off()
 
 
-map(dfs_agg_mill_l_1.9, tab)
+# map(dfs_agg_mill_l_1.9, tab)
 
 # append the two datasets regs_g_1.9 and regs_l_1.9
 tes_g_1.9 <- tes_g_1.9 %>% mutate(cat = "> mean tax levy",
@@ -154,7 +154,7 @@ gs_gm <- purrr::map2(covs_final_gm, dfs_agg_gm_covs, .f = function(x,y){
                                  c = cutoff,
                                  covs = y %>%
                                    select(x) ,
-                                 all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+                                 all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 tes_gs_gm <- te_tables(gs_gm)
 plot_te(tes_gs_gm, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
@@ -193,7 +193,7 @@ gs_lm <- purrr::map2(covs_final_lm, dfs_agg_lm_covs, .f = function(x,y){
              c = cutoff,
              covs = y %>%
                select(x) ,
-             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 
 ## with Time Fixed Effects ##

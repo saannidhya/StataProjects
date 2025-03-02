@@ -4,6 +4,7 @@
 # Created : 11/8/2024
 # Log     : 1. 1/12/2025: made a more formal update to code. Added Qs that each snippet answers.
 #           2. 1/16/2025: results from test run of fine-tuned gpt-4 model by Vikram
+#           3. 2/26/2025: Added regression analysis for Road quality
 #================================================================================================================#
 
 # specify the set up location
@@ -196,9 +197,14 @@ closest_votes <- roads_and_census %>%
 closest_votes %>% arrange(desc(num_failed)) %>%
   readr::write_csv(paste0(data,"/outputs/tables/rd_fips_close_elections_gs_bw.csv"))
 
+cty_sub_names <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xlsx")) %>% janitor::clean_names() %>% 
+  select(all_of(c("tendigit_fips", "name_note_if_split_between_two_counties", "county_name", "split_flag"))) %>% 
+  rename(subdivision = name_note_if_split_between_two_counties, county = county_name) %>%
+  mutate(subdivision = if_else(split_flag == 1,
+                               trimws(str_replace(subdivision, "(village|city).*", "\\1")),
+                               subdivision)) 
 
-roads_and_census2 %>% 
-  # filter(tendigit_fips == 3915112000) %>% relocate(treated , .after = votesagainst) %>%
+roads_and_census %>% 
   left_join(cty_sub_names, by = "tendigit_fips") %>% relocate(c(subdivision, county) , .after = tendigit_fips) %>% filter(pop > 10000) %>%
   group_by(tendigit_fips, subdivision, county) %>% 
   summarize(num_elections = n(), min_year = min(year), max_year = max(year), pop = mean(pop)) %>% 
@@ -405,9 +411,8 @@ lm_school$coefficients["road_cuts", "Std. Error"]
 data <- data.frame(
   Time_of_Vote = rep(c("Before Referendum", "After Referendum"), each = 2),
   Levy_Status = rep(c("Passed the Levy", "Failed the Levy"), 2),
-  Avg_Road_Quality_Rating = c(1.07, 1.39, 1.00, 0.93)
+  Avg_Road_Quality_Rating = c(1.00, 1.375, 1.066667, 0.9310345)
 )
-
 
 # Set the correct order for the Time_of_Vote variable
 data$Time_of_Vote <- factor(data$Time_of_Vote, levels = c("Before Referendum", "After Referendum"))
@@ -431,7 +436,7 @@ ggplot(data, aes(x = Time_of_Vote, y = Avg_Road_Quality_Rating, group = Levy_Sta
 
 data_change <- data.frame(
   Levy_Status = c("Passed the Levy", "Failed the Levy"),
-  Change_in_Rating = c(1.00 - 1.07, 0.93 - 1.39)
+  Change_in_Rating = c(1.066667 - 1, 0.9310345 - 1.375)
 )
 
 ggplot(data_change, aes(x = Levy_Status, y = Change_in_Rating, fill = Levy_Status)) +
@@ -452,6 +457,18 @@ ggplot(data_change, aes(x = Levy_Status, y = Change_in_Rating, fill = Levy_Statu
     legend.position = "none"  # Remove legend
   )
 
+# Regression analysis #
+above_roads <- readr::read_csv(paste0(data,"/roads/ohio/above/above_predictions_with_flag.csv"))
+below_roads <- readr::read_csv(paste0(data,"/roads/ohio/below/below_predictions_with_flag.csv"))
+
+road_above_lm <- lm(data = above_roads, formula = predicted_label ~ post_election_flag)
+summary(road_above_lm)
+
+road_below_lm <- lm(data = below_roads, formula = predicted_label ~ post_election_flag)
+summary(road_below_lm)
+
+above_roads[above_roads$post_election_flag == 1, "predicted_label"] %>% pull(predicted_label) %>% mean
+below_roads[below_roads$post_election_flag == 1, "predicted_label"] %>% pull(predicted_label) %>% mean
 
 #==========================================================================================================#
 #  Q. Does one election change the probability of having another election?
