@@ -161,6 +161,7 @@ gs_reg <- purrr::map2(covs_final_w_tfe, dfs_agg_covs_w_tfe, .f = function(x,y){
                select(x) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
+tes_gs_reg <- te_tables(gs_reg)
 plot_te(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 plot_te_recenter(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
@@ -220,8 +221,8 @@ map_dbl(gs, ~ round(.x$bws[1,1],1)  )
 ## winsorization of median_sale_amount
 dfs_winsorized <- winsorize_data(dfs, "sale_amount", na.rm = TRUE)
 # mean house value, keeping only t + 0 to t + 10
-map_dbl(dfs_winsorized, ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
-map_dbl(dfs_winsorized, ~sd(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(dfs_winsorized[4:length(dfs_winsorized)], ~mean(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
+map_dbl(dfs_winsorized[4:length(dfs_winsorized)], ~sd(.x$sale_amount, na.rm = TRUE)) %>% .[grepl("t_plus", names(.)) ] %>% mean()
 
 # removing top and bottom 1% of observations
 dfs_agg_covs_winsored <- winsorize_data(dfs_agg_covs, "median_sale_amount")

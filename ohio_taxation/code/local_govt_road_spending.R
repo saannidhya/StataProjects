@@ -1,11 +1,12 @@
-#==========================================================================================================#
+#==============================================================================================================#
 # Purpose : Computing the value of local government spending cuts when you fail a road tax levy
 # Name    : Saani Rawat
 # Created : 01/28/2025
 # Log     : 
 #           01/28/2025: computing the "money lost"
 #           02/18/2025: computing the reduction in revenue and spending after a cut in taxes
-#==========================================================================================================#
+#           03/04/2025: Computing the "money lost" as a % of total roads budget for areas with close elections
+#==============================================================================================================#
 
 # specify the set up location
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
@@ -194,3 +195,46 @@ cut_mod_public_works <- lm(public_works_d ~ after_election_flag + factor(year) +
 summary(cut_mod_public_works)
 
 # Coefficient is negative, but not stat significant, likely due to limited number of observations.
+
+
+
+#============================================================================================================#
+#      Computing the "money lost" as a % of public works expense
+#============================================================================================================#
+
+# importing township_reports_all.csv
+all_townships <- readxl::read_xlsx(paste0(spend_reports_loc, "/township_reports_all.xlsx")) %>%
+  filter(grepl("township", name, ignore.case = TRUE)) %>%
+  mutate(name = tolower(name)) %>%
+  separate(name, into = c("township", "county"), sep = ",") %>%
+  mutate(
+    township = trimws(township),
+    county = trimws(gsub("county", "", county))
+  ) %>% rename(subdivision = township)
+# importing subdivision and county name
+cty_sub_names <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xlsx")) %>% janitor::clean_names() %>% 
+  select(all_of(c("tendigit_fips", "name_note_if_split_between_two_counties", "county_name", "split_flag"))) %>% 
+  rename(subdivision = name_note_if_split_between_two_counties, county = county_name) %>%
+  mutate(subdivision = tolower(if_else(split_flag == 1,
+                               trimws(str_replace(subdivision, "(village|city).*", "\\1")),
+                               subdivision)),
+         county = tolower(county))
+
+# joining all_townships and cty_sub_names by township and county
+
+fips_list <- c(3902374119, 3915162988, 3915142168, 3908174608, 3909356966, 3915319036, 3911377504, 3911377504, 3900729624, 3903573264, 3903580990, 3908585484, 3909963968, 3913946578, 3915156294, 3902351912, 3902978890, 3904781718, 3906176028, 3908559430, 3909975126, 3915162078, 3915328448, 3905503590, 3905911003, 3905704720, 3905704724, 3913303086, 3900902750, 3903526446, 3904129694, 3905513988, 3908518196, 3908523618, 3908546494, 3909903198, 3915141314, 3915318658, 3901366628, 3902346788, 3902923730, 3903310030, 3904361714, 3906116616, 3906131752, 3908549056, 3908559416, 3909907468, 3915112000, 3915138094, 3915374130, 3917341328)
+
+close_cty_sub_names <- cty_sub_names %>% filter(tendigit_fips %in% fips_list)
+
+
+close_townships <- all_townships %>% 
+                      inner_join(close_cty_sub_names, by = c("subdivision", "county")) %>%
+                      left_join(select(cpi_df, c(year, cpi_deflator)), by = "year" ) %>%
+                      mutate(public_works_d = public_works/cpi_deflator)
+  
+mean(close_townships$public_works_d, na.rm = TRUE)
+median(close_townships$public_works_d, na.rm = TRUE)
+# > mean(close_townships$public_works_d, na.rm = TRUE)
+# [1] 1528404
+# > median(close_townships$public_works_d, na.rm = TRUE)
+# [1] 1299030
