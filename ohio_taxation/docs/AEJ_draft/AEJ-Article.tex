@@ -1,0 +1,110 @@
+% AER-Article.tex for AEA last revised 22 June 2011
+\documentclass[AEJ]{AEA}
+
+% The mathtime package uses a Times font instead of Computer Modern.
+% Uncomment the line below if you wish to use the mathtime package:
+% \usepackage[cmbold]{mathtime}
+% Note that miktex, by default, configures the mathtime package to use commercial fonts
+% which you may not have. If you would like to use mathtime but you are seeing error
+% messages about missing fonts (mtex.pfb, mtsy.pfb, or rmtmi.pfb) then please see
+% the technical support document at http://www.aeaweb.org/templates/technical_support.pdf
+% for instructions on fixing this problem.
+
+% Note: you may use either harvard or natbib (but not both) to provide a wider
+% variety of citation commands than latex supports natively. See below.
+
+% Uncomment the next line to use the natbib package with bibtex 
+\usepackage{natbib}
+
+% Uncomment the next line to use the harvard package with bibtex
+%\usepackage[abbr]{harvard}
+
+% This command determines the leading (vertical space between lines) in draft mode
+% with 1.5 corresponding to "double" spacing.
+\draftSpacing{1.5} 
+
+% \usepackage{biblatex} % for biblatex
+% \usepackage{natbib} % for BibTeX with natbib
+\usepackage{longtable} 
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{amsmath}
+% \usepackage{amsthm}	
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable} 
+\usepackage{booktabs} % For formal tables
+\usepackage{listings} % Add the listings package for formatted text blocks
+
+% Customizing listings settings
+\lstset{
+    basicstyle=\ttfamily\small, % Use a small, monospaced font
+    breaklines=true, % Enable line breaking
+    breakatwhitespace=true, % Break lines at whitespace
+    postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space}, % Indicate wrapped lines with an arrow
+    numbers=none, % Line numbers on left
+    numberstyle=\tiny\color{gray}, % Style for line numbers
+    frame=single, % Frame around the code block
+    framesep=2mm, % Distance between frame and code
+    xleftmargin=3mm, % Left margin within the listings environment
+    xrightmargin=3mm, % Right margin within the listings environment
+    showstringspaces=false, % Don't show spaces within strings as special characters
+    tabsize=2, % Sets default tabsize to 2 spaces
+    captionpos=b, % Caption position at bottom
+    keepspaces=true, % Keeps spaces in text, useful for keeping indentation
+    columns=flexible, % Column flexibility
+    moredelim=[is][\bfseries\color{blue}]{@}{@}, % New delimiter to bold and color text
+}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rn}{\mathbb{R}^n}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Ha}{\mathcal{H}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\dist}{\text{dist}}
+
+\begin{document}
+
+\title{The Effect of Cutting Road Maintenance Spending on House Values,  Wages, and Employment in a Developed Economy}
+\shortTitle{Effect of Cutting Road Maintenance Spending}
+\author{David Brasington and Saani Rawat \thanks{Brasington: University of Cincinnati (email: brasindd@ucmail.uc.edu). Rawat: University of Cincinnati (email: rawatsa@mail.uc.edu). Acknowledgements: We are grateful for comments from CK Tang, Guoyang Yang, Dan Boles, Eunjee Kwon, Gary Painter, Olivier Parent, Jeffrey Mills, Nayoung Lee, Matias Cattaneo, and Chris Bollinger, to CoreLogic® for leasing us the housing dataset, and to the Ohio Department of Jobs and Family Services (ODJFS) for providing us access to establishment-level employment data.}}
+\date{\today}
+\pubMonth{Month}
+\pubYear{Year}
+\pubVolume{Vol}
+\pubIssue{Issue} 
+\JEL{R42, H71, J31, R11, R21}
+\Keywords{Road Maintenance Spending, Local Taxation, Housing values, Employment, Wages}
+
+\begin{abstract} 
+    We investigate the economic impact of cutting road maintenance spending in Ohio. Using a regression discontinuity design, we analyze city-level votes to renew road maintenance tax funding, which typically represents about 34\% of road funding. We compare housing sale prices, wages, and employment between similar cities that narrowly pass or fail road tax levies. Cities that cut road maintenance spending suffer an average decrease in housing prices of \$20,729 (12\%) relative to cities that renewed funding. High-poverty cities that cut road spending have 11\% lower levels of employment and 17.8\% lower wages than similar cities that maintained their spending.
+\end{abstract}
+ 
+\maketitle
+
+\input{aej_body.tex}
+\input{aej_results.tex}
+
+\bibliographystyle{aea}
+\bibliography{aej_references}
+
+\pagebreak
+
+\appendix
+\input{aej_appx.tex}
+
+\end{document}

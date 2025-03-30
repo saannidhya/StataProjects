@@ -1,0 +1,17 @@
+{
+    "sortOrder": [
+        {
+            "columnIndex": 4,
+            "ascending": false
+        },
+        {
+            "columnIndex": 2,
+            "ascending": true
+        },
+        {
+            "columnIndex": 3,
+            "ascending": false
+        }
+    ],
+    "path": "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/code"
+}

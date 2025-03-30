@@ -1,0 +1,512 @@
+gs_reg_tfe <- purrr::map2(covs_final_tfe_w, dfs_agg_covs_w_tfe, .f = function(x,y){
+rdrobust(  y = y$median_sale_amount,
+x = y$votes_pct_against,
+c = cutoff,
+covs = y %>%
+select("medfamy") ,
+all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+tes_tfe <- te_tables(gs_reg_tfe)
+plot_te(tes_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+tes_tfe
+tes_tfe %>% filter(ord >= 0)
+tes_tfe %>% filter(ord >= 0) %>% pull(robust_coef) %>% mean
+tes_tfe %>% filter(ord >= 0) %>% pull(robust_coef) %>% mean / 161000
+plot_te(tes_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+tes_tfe
+covs_final_tfe_w <- map2(covs_final_tfe, dfs_agg_covs_tfe_names, ~c(.x, .y))
+gs_reg_tfe <- purrr::map2(covs_final_tfe_w, dfs_agg_covs_w_tfe, .f = function(x,y){
+rdrobust(  y = y$median_sale_amount,
+x = y$votes_pct_against,
+c = cutoff,
+covs = y %>%
+select(x) ,
+all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+tes_tfe <- te_tables(gs_reg_tfe)
+plot_te(tes_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+tes_tfe
+tes_tfe %>% filter(ord >= 0) %>% pull(robust_coef) %>% mean / 161000
+plot_te_recenter(tes_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+# specify the set up location
+root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
+data <- paste0(root,"/data")
+code <- paste0(root,"/code")
+tables <- paste0(data,"/outputs/tables")
+plots <- paste0(data,"/outputs/plots")
+source(paste0(code,"/utility_functions.R"))
+#==========================================================================================================#
+# Q. Is there an overall importance of roads? Why does having good roads matter for a country/area/state?
+# GDP Per Capita vs Road Quality
+#==========================================================================================================#
+# import excel file
+gdp_vs_road_quality_world_bank <- readxl::read_excel(paste0(data,"/gdp_vs_road_quality_world_bank.xlsx"))
+# plotting the data using ggplot
+yr_list <- c("2017", "2018", "2019", "2020")
+pt <- purrr::map(yr_list, ~ pivot_wider(gdp_vs_road_quality_world_bank %>% select(c(`Economy ISO3`, `Economy Name`, Indicator, .x )),
+names_from = `Indicator`, values_from = .x ) %>%
+rename(road_quality = `GCI 4.0: Road quality index (0-100, best)`, gdp =  `GDP (current US$)`,
+gdp_per_cap = `GDP per capita (current US$)`)
+)
+names(pt) <- yr_list
+model <- lm(log(gdp_per_cap) ~ road_quality, data = pt$`2018`)
+slope <- coef(model)[2]  # Extract the slope coefficient
+ggplot(data = pt$`2018`, aes(x = road_quality, y = log(gdp_per_cap))) +
+geom_point(color = "#2E86C1", size = 3, alpha = 0.7) +  # Adding color, size, and transparency to points
+geom_smooth(method = "lm", color = "#E74C3C", linetype = "dashed", size = 1.2) +  # Changing line color, type, and size
+theme_minimal(base_size = 15) +  # Adjusting base font size
+labs(
+title = "GDP per Capita vs Road Quality: 2018",
+x = "Road Quality",
+y = "Log of GDP per Capita",
+caption = "Source: World Bank Global Competitive Index 4.0 "
+) +
+theme(
+plot.title = element_text(face = "bold", hjust = 0.5, size = 20, color = "#34495E"),  # Centering, bolding, and coloring the title
+axis.title = element_text(face = "italic", size = 15, color = "#34495E"),  # Styling axis titles
+axis.text = element_text(size = 12, color = "#2C3E50"),  # Styling axis text
+panel.grid.major = element_line(color = "#D5D8DC", size = 0.8),  # Customizing grid lines
+panel.grid.minor = element_blank(),  # Removing minor grid lines
+# plot.background = element_rect(fill = "#F5F5F5"),  # Changing plot background color
+legend.position = "none"
+)
+# 2008 Waynesville voted for a cut, saw a decline in general fund exp of 35%
+roads_and_census %>% filter(tendigit_fips == 3903580990) %>% relocate(treated , .after = votesagainst)
+# Amanda, cut took place in 2005
+roads_and_census %>% filter(tendigit_fips == 3904501630) %>% relocate(treated , .after = votesagainst)
+# Beavercreek
+roads_and_census %>% filter(tendigit_fips == 3905704720) %>% relocate(treated , .after = votesagainst)
+# Beavercreek
+roads_and_census %>% filter(tendigit_fips == 3905704720) %>% relocate(treated , .after = votesagainst)
+roads_and_census %>% select(tendigit_fips, year, pop) %>% arrange(tendigit_fips, desc(year))
+roads_and_census %>% select(tendigit_fips, year, pop) %>% arrange(desc(pop),tendigit_fips, year)
+# export to csv
+roads_and_census %>% select(tendigit_fips, year, pop) %>% arrange(desc(pop),tendigit_fips, year) %>%
+write_csv(paste0(data,"/pop_list.csv"))
+rdt %>%
+mutate(renewals = if_else(treated == 0, 1, 0),
+cuts = if_else(treated == 1, 1, 0)) %>%
+group_by(tendigit_fips, treated) %>%
+summarise(
+renewals = sum(renewals),
+cuts = sum(cuts)
+) %>%
+filter(treated == 0) %>%
+arrange(desc(renewals))
+rdt <- roads_and_census %>% filter(tendigit_fips %in% c(3900902750, 3903573264, 3904129694, 3904580206, 3905704220, 3905704720, 3905704724, 3905725914, 3906116616, 3906131752, 3908549056, 3908559430, 3908585484, 3909303352, 3909356966, 3909903198, 3909907468, 3910380304, 3910962848, 3911333922, 3911336610, 3911377504, 3911381494, 3915112000, 3915138094, 3915141314, 3915162078, 3915162988))
+rdt %>%
+mutate(renewals = if_else(treated == 0, 1, 0),
+cuts = if_else(treated == 1, 1, 0)) %>%
+group_by(tendigit_fips, treated) %>%
+summarise(
+renewals = sum(renewals),
+cuts = sum(cuts)
+) %>%
+filter(treated == 0) %>%
+arrange(desc(renewals))
+cuts <- rdt %>%
+mutate(renewals = if_else(treated == 0, 1, 0),
+cuts = if_else(treated == 1, 1, 0)) %>%
+group_by(tendigit_fips, treated) %>%
+summarise(
+renewals = sum(renewals),
+cuts = sum(cuts)
+) %>%
+filter(treated == 1) %>%
+arrange(desc(cuts))
+cuts
+# importing excel file
+readxl::read_excel(paste0(data, "/tax_levies_ohio7.xlsx"))
+# importing excel file
+readxl::read_excel(paste0(data, "/tax_levies_ohio7.xlsx"))
+# importing excel file
+referendums <- readxl::read_excel(paste0(data, "/tax_levies_ohio7.xlsx"))
+# importing excel file
+referendums <- readxl::read_excel(paste0(data, "/tax_levies_ohio7.xlsx")) %>% janitor::clean_names()
+referendums
+referendums$purpose
+referendums$purpose %>% unique %>% sort
+referendums
+colnames(referendums)
+referendums$purpose2 %>% unique %>% sort
+rds
+referendums$purpose2 %>% unique %>% sort
+rds_with_police <- rds %>%
+left_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips"))
+rds_with_police
+rds_with_police <- rds %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips"))
+rds_with_police
+View(rds_with_police)
+rds_with_police <- rds %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = votesagainst/ (votesfor + votesagainst))
+View(rds_with_police)
+View(rds_with_police)
+rds_with_police <- rds %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = votesagainst/ (votesfor + votesagainst),
+fire_treated = if_else(votes_pct_against_fire > cutoff, 1, 0))
+colnames(rds_with_police)
+colnames(referendums)
+rds_with_police <- rds %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = votes_against/ (votes_for + votes_against),
+fire_treated = if_else(votes_pct_against_fire > cutoff, 1, 0))
+colnames(rds_with_police)
+rds_with_police <- rds %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = (votes_against/ (votes_for + votes_against))*100,
+fire_treated  = if_else(votes_pct_against_fire > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+lm(fire_treated ~ roads_treated + factor(year), data = rds_with_police) %>% summary
+lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips), data = rds_with_police) %>% summary
+lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty, data = rds_with_police) %>% summary
+colnames(rds_with_police)
+lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_police) %>% summary
+rds$description %>% unique
+rds_with_police <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = (votes_against/ (votes_for + votes_against))*100,
+fire_treated  = if_else(votes_pct_against_fire > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+rds_with_police
+lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_police) %>% summary
+referendums$purpose2 %>% unique %>% sort
+rds_with_school <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "school"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = (votes_against/ (votes_for + votes_against))*100,
+fire_treated  = if_else(votes_pct_against_fire > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+rds_with_school
+rds_with_school <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "fire"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = (votes_against/ (votes_for + votes_against))*100,
+fire_treated  = if_else(votes_pct_against_fire > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+rds_with_school
+rds_with_police <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_police = (votes_against/ (votes_for + votes_against))*100,
+police_treated  = if_else(votes_pct_against_police > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+lm(police_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_police) %>% summary
+rds_with_school <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "fire"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = (votes_against/ (votes_for + votes_against))*100,
+fire_treated  = if_else(votes_pct_against_fire > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_school) %>% summary
+referendums$purpose2 %>% unique %>% sort
+rds_with_current <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "current expenses"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_curr_exp = (votes_against/ (votes_for + votes_against))*100,
+current_treated  = if_else(votes_pct_against_curr_exp > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+lm(current_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_current) %>% summary
+lm(current_treated ~ roads_treated , data = rds_with_current) %>% summary
+options(scipen = 10)
+lm(current_treated ~ roads_treated , data = rds_with_current) %>% summary
+lm(current_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_current) %>% summary
+referendums$purpose2 %>% unique %>% sort
+rds_with_rec <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "recreation"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_rec = (votes_against / (votes_for + votes_against))*100,
+current_treated  = if_else(votes_pct_against_rec > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+rds_with_rec
+rds_with_rec <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "recreation"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_rec = (votes_against / (votes_for + votes_against))*100,
+rec_treated  = if_else(votes_pct_against_rec > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+lm(rec_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_rec) %>% summary
+filter(referendums, tolower(purpose2) == "school")
+colnames(rds)
+referendums$purpose2 %>% unique %>% sort
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads")
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads") %>%
+group_by(tendigit_fips, year)
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads") %>%
+group_by(tendigit_fips, year) %>%
+summarize(n = n() )
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads") %>%
+group_by(county, year) %>%
+summarize(n = n() )
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+group_by(county, year) %>%
+summarize(n = n() )
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+group_by(county, year) %>%
+summarize(n = n() ) %>% arrange(desc(n))
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+mutate(votes_pct_against = 100 - (votes_for / (votes_for + votes_against))*100)
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+mutate(votes_pct_against = 100 - (votes_for / (votes_for + votes_against))*100)
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+mutate(votes_pct_against = 100 - (votes_for / (votes_for + votes_against))*100)
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+mutate(votes_pct_against_rds = 100 - (votes_for / (votes_for + votes_against))*100,
+roads_treated = if_else(votes_pct_against_rds > cutoff, 1, 0))
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+mutate(votes_pct_against_rds = 100 - (votes_for / (votes_for + votes_against))*100,
+roads_treated = if_else(votes_pct_against_rds > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(road_cuts = sum(roads_treated))
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+mutate(votes_pct_against_rds = 100 - (votes_for / (votes_for + votes_against))*100,
+roads_treated = if_else(votes_pct_against_rds > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(road_cuts = sum(roads_treated)) %>% arrange(desc(road_cuts))
+schl_cty <- filter(referendums, tolower(purpose2) == "school") %>%
+mutate(votes_pct_against_schl = 100 - (votes_for / (votes_for + votes_against))*100,
+school_treated = if_else(votes_pct_against_schl > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(road_cuts = sum(school_treated))
+schl_cty
+schl_cty <- filter(referendums, tolower(purpose2) == "school") %>%
+mutate(votes_pct_against_schl = 100 - (votes_for / (votes_for + votes_against))*100,
+school_treated = if_else(votes_pct_against_schl > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(school_cuts = sum(school_treated))
+rds_with_school <- inner_join(rds_cty, schl_cty, by = c("county", "year"))
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+rds_cty <- filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+mutate(votes_pct_against_rds = 100 - (votes_for / (votes_for + votes_against))*100,
+roads_treated = if_else(votes_pct_against_rds > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(road_cuts = sum(roads_treated))
+schl_cty <- filter(referendums, tolower(purpose2) == "school") %>%
+mutate(votes_pct_against_schl = 100 - (votes_for / (votes_for + votes_against))*100,
+school_treated = if_else(votes_pct_against_schl > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(school_cuts = sum(school_treated))
+rds_with_school <- inner_join(rds_cty, schl_cty, by = c("county", "year"))
+rds_with_school
+lm(school_cuts ~ road_cuts + factor(year) + factor(county) , data = rds_with_rec) %>% summary
+schl_cty <- filter(referendums, tolower(purpose2) == "school") %>%
+mutate(votes_pct_against_schl = 100 - (votes_for / (votes_for + votes_against))*100,
+school_treated = if_else(votes_pct_against_schl > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(school_cuts = sum(school_treated))
+rds_with_school <- inner_join(rds_cty, schl_cty, by = c("county", "year"))
+lm(school_cuts ~ road_cuts + factor(year) + factor(county) , data = rds_with_rec) %>% summary
+lm(school_cuts ~ road_cuts + factor(year) + factor(county) , data = rds_with_school) %>% summary
+rds_with_current <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "current expenses"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_curr_exp = (votes_against/ (votes_for + votes_against))*100,
+current_treated  = if_else(votes_pct_against_curr_exp > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+lm(current_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_current) %>% summary
+lm(current_treated ~ roads_treated) %>% summary
+lm(current_treated ~ roads_treated , data = rds_with_current) %>% summary
+cor(rds_with_current$roads_treated, rds_with_current$current_treated)
+table(rds_with_current$roads_treated, rds_with_current$current_treated)
+sum(rds_with_current$roads_treated)
+rds_with_current$roads_treated
+rds_with_police <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_police = (votes_against/ (votes_for + votes_against))*100,
+police_treated  = if_else(votes_pct_against_police > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+lm(police_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_police) %>% summary
+rds_with_fire <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "fire"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_fire = (votes_against/ (votes_for + votes_against))*100,
+fire_treated  = if_else(votes_pct_against_fire > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_fire) %>% summary
+rds_with_current <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "current expenses"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_curr_exp = (votes_against/ (votes_for + votes_against))*100,
+current_treated  = if_else(votes_pct_against_curr_exp > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+lm(current_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_current) %>% summary
+cor(rds_with_current$roads_treated, rds_with_current$current_treated)
+sum(rds_with_current$roads_treated)
+table(rds_with_current$roads_treated, rds_with_current$current_treated)
+rds_with_rec <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "recreation"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_rec = (votes_against / (votes_for + votes_against))*100,
+rec_treated  = if_else(votes_pct_against_rec > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_for > cutoff, 1, 0) )
+lm(rec_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_rec) %>% summary
+#===================================================#
+# School District (fips info not available,
+#                  so doing at county level)
+#===================================================#
+rds_cty <- filter(referendums, tolower(purpose2) == "roads" & description == "R") %>%
+mutate(votes_pct_against_rds = 100 - (votes_for / (votes_for + votes_against))*100,
+roads_treated = if_else(votes_pct_against_rds > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(road_cuts = sum(roads_treated))
+schl_cty <- filter(referendums, tolower(purpose2) == "school") %>%
+mutate(votes_pct_against_schl = 100 - (votes_for / (votes_for + votes_against))*100,
+school_treated = if_else(votes_pct_against_schl > cutoff, 1, 0)) %>%
+group_by(county, year) %>%
+summarize(school_cuts = sum(school_treated))
+rds_with_school <- inner_join(rds_cty, schl_cty, by = c("county", "year"))
+lm(school_cuts ~ road_cuts + factor(year) + factor(county) , data = rds_with_school) %>% summary
+rds_with_rec <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "recreation"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_rec = (votes_against / (votes_for + votes_against))*100,
+rec_treated  = if_else(votes_pct_against_rec > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+lm(rec_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_rec) %>% summary
+rds_with_police <- rds %>% filter(description == "R") %>%
+inner_join(filter(referendums, tolower(purpose2) == "police"),
+by = c("year", "tendigit_fips")) %>%
+mutate(votes_pct_against_police = (votes_against/ (votes_for + votes_against))*100,
+police_treated  = if_else(votes_pct_against_police > cutoff, 1, 0),
+votes_pct_against = 100 - votes_pct_for,
+roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+lm_police <- lm(police_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_police)
+lm_police
+summary(lm_police)
+lm_police$coefficients
+lm_fire <- lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_fire) %>% summary
+lm_fire <- lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_fire)
+lm_current <- lm(current_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_current)
+lm_rec <- lm(rec_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_rec)
+lm_school <- lm(school_cuts ~ road_cuts + factor(year) + factor(county), data = rds_with_school)
+lm_police$coefficients
+lm_police$coefficients["roads_treated"]
+lm_police$coefficients[["roads_treated"]]
+lm_police$coefficients[["roads_treated"]]
+lm_fire$coefficients[["roads_treated"]]
+lm_current$coefficients[["roads_treated"]]
+lm_rec$coefficients[["roads_treated"]]
+lm_school$coefficients[["road_cuts"]]
+# standard errors
+lm_police$model
+# standard errors
+lm_police$coefficients
+# standard errors
+lm_police$se
+summary(lm_police) -> lm_police_s
+lm_police_s
+lm_police_s$coefficients
+lm_police <- lm(police_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_police) %>% summary
+lm_fire <- lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_fire) %>% summary
+lm_current <- lm(current_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_current)  %>% summary
+lm_rec <- lm(rec_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_rec) %>% summary
+lm_school <- lm(school_cuts ~ road_cuts + factor(year) + factor(county), data = rds_with_school) %>% summary
+# coefficients
+lm_police$coefficients
+# coefficients
+colnames(lm_police$coefficients)
+# coefficients
+type(lm_police$coefficients)
+# coefficients
+class(lm_police$coefficients)
+lm_police$coefficients["roads_treated", "Estimate"]
+lm_police$coefficients["roads_treated", "Estimate"]
+lm_fire$coefficients["roads_treated", "Estimate"]
+lm_current$coefficients["roads_treated", "Estimate"]
+lm_rec$coefficients["roads_treated", "Estimate"]
+lm_school$coefficients["road_cuts", "Estimate"]
+lm_police$coefficients["roads_treated", "Std. Error"]
+lm_fire$coefficients["roads_treated", "Std. Error"]
+lm_current$coefficients["roads_treated", "Std. Error"]
+lm_rec$coefficients["roads_treated", "Std. Error"]
+lm_school$coefficients["road_cuts", "Std. Error"]
+clear
+library("sf")
+library("terra")
+install.packages("terra")
+library("terra")
+install.packages("spData")
+install.packages("spDataLarge", repos = "https://geocompr.r-universe.dev")
+remotes::install_github("geocompx/geocompkg")
+vignette("sf1", package = "sf")
+plot(world)
+world_dfr = st_read(system.file("shapes/world.shp", package = "spData"))
+unlink("C:/Users/rawatsa/OneDrive - University of Cincinnati/R/remotes/R/remotes.rdb", recursive = TRUE)
+unlink("C:/Users/rawatsa/OneDrive - University of Cincinnati/R/remotes/R/remotes.rdx", recursive = TRUE)
+install.packages("remotes")

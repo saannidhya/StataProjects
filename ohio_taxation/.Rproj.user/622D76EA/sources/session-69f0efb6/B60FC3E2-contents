@@ -1,0 +1,115 @@
+#================================================================================================================#
+# Purpose : Geocode housing data provided by Dr. Mike Erikson and Dr. Brasington
+# Name    : Saani Rawat
+# Created : 01/12/2024
+# Log     : 
+#        1. 01/12/2024: started the code. Ran on a sample.
+#        2. 01/13/2024: Ran geocoding on entire data (~9MM obs). This will take time.
+#================================================================================================================#
+
+library(tidyverse)
+library(tidygeocoder)
+
+
+root = "C:/Users/rawatsa/OneDrive - University of Cincinnati/SASprojects/misc/dr_brasington_esri"
+
+df_s = readr::read_csv(paste0(root, "/AddressOH_LongPanel_1pct_sample.csv"))
+df = readr::read_csv(paste0(root, "/AddressOH_LongPanel_cleaned.csv"))
+
+
+#=================================================================#
+# 1% of the 1% sample
+#=================================================================#
+
+
+# Sample 1% of the rows
+sample_size <- ceiling(0.01 * nrow(df_s))
+df_sampled <- sample_n(df_s, size = sample_size)
+
+df_sampled
+
+df2 <- df_sampled %>%
+  mutate(full_address = paste(address_clean, city, state, zip, sep = ", "))
+
+# Now use geocode()
+# df_geocoded <- df2 %>%
+#   geocode(addr = full_address, method = 'osm')
+# df_geocoded %>% filter(!is.na(lat)) %>% nrow()
+
+df_geocoded_census <- df2 %>%
+  geocode(addr = full_address, method = 'census',
+          full_results = TRUE,
+          api_options = list(census_return_type = 'geographies'))
+
+df_geocoded_census %>% nrow()
+df_geocoded_census %>% filter(!is.na(lat)) %>% nrow() / df_geocoded_census %>% nrow()
+
+
+write.csv(df_geocoded_census, paste0(root,"/outputs/R/df_geocoded_census_1pct_of_1pct_sample.csv"), row.names = FALSE)
+
+
+#=================================================================#
+# 1% sample
+#=================================================================#
+df_s2 <- df_s %>%
+  mutate(full_address = paste(address_clean, city, state, zip, sep = ", "))
+
+# df_s2_geocoded_census <- df_s2 %>%
+#   geocode(addr = full_address, method = 'census')
+
+
+n <- nrow(df_s2)
+chunk_size <- 10000
+chunks <- split(df_s2, ceiling(seq_len(n)/chunk_size))
+
+# Function to geocode each chunk
+geocode_chunk <- function(chunk) {
+  chunk %>%
+    geocode(addr = full_address, method = 'census')
+}
+
+# Apply geocoding to each chunk and combine the results
+df_s2_geocoded_census <- map_df(chunks, geocode_chunk)
+
+write.csv(df_s2_geocoded_census, paste0(root,"/outputs/R/df_geocoded_census_1pct_sample.csv"), row.names = FALSE)
+
+
+df_s2_geocoded_census %>% filter(!is.na(lat)) %>% nrow()
+
+df_s2_geocoded_census %>% filter(!is.na(lat)) %>% nrow() / df_s2_geocoded_census %>% nrow()
+# geocoded 79% of the data
+
+
+#=================================================================#
+# Full dataset
+#=================================================================#
+start_time <- Sys.time()
+
+df2 <- df %>%
+  mutate(full_address = paste(address_clean, city, state, zip, sep = ", "))
+
+n <- nrow(df2)
+chunk_size <- 10000
+chunks <- split(df2, ceiling(seq_len(n)/chunk_size))
+
+# Function to geocode each chunk
+geocode_chunk <- function(chunk) {
+  chunk %>%
+    geocode(addr = full_address, method = 'census')
+}
+print("NOTE: running census geocoding now")
+df_s2_geocoded_census <- map_df(chunks, geocode_chunk)
+print("NOTE: Finished running census geocoding")
+
+print("NOTE: Exporting to CSV file")
+write.csv(df_s2_geocoded_census, paste0(root,"/outputs/R/df_geocoded_census_full.csv"), row.names = FALSE)
+
+
+end_time <- Sys.time()
+
+elapsed_time <- end_time - start_time
+print(elapsed_time)
+
+(df_s2_geocoded_census %>% filter(!is.na(lat)) %>% nrow() / df_s2_geocoded_census %>% nrow() ) %>% round(2)
+# ~ 78% of the full dataset was geocoded i.e. more than 3 out of 4 observations
+

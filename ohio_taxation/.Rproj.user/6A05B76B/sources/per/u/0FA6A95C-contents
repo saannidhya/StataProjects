@@ -1,0 +1,15 @@
+
+
+path <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads/ohio/google maps photos"
+
+images <- list.files(path, pattern = ".jpg", full.names = TRUE)
+
+library(magick)
+library(tidyverse)
+
+
+# filter to filenames that contain "40.85843570734747"
+
+images[grepl("40.85843570734747", images)]
+
+roads_and_census

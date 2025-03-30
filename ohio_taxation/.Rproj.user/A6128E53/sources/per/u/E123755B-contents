@@ -1,0 +1,56 @@
+# Purpose: Regression Discontinuity Simulations
+
+# Load libraries as a list
+library_list <- c("tidyverse", "broom", "ggplot2", "gridExtra", "grid", "ggpubr", "rdd", "rddtools", "rddapp", "rdrobust", "data.table")
+lapply(library_list, require, character.only = TRUE)
+
+library(rddtools)
+
+data.table(rnorm(1000, 50, 25), )
+
+
+#---------------------------------------------------------------------------------#
+# No RD T.E
+#---------------------------------------------------------------------------------#
+
+te <- 0 
+
+dat <- tibble(x = pmax(0, pmin(rnorm(1000, 50, 25),100))) %>% 
+        mutate(D = ifelse(x > 50, 1, 0),
+                y = 1 + 2*x + te*D + rnorm(n(), 0, 10))
+
+# plot
+ggplot(dat, aes(x = x, y = y)) + 
+  geom_point() + 
+  # geom_smooth(method = "lm", se = FALSE) + 
+  geom_vline(xintercept = 50, linetype = "dashed") + 
+  theme_minimal()
+
+
+#---------------------------------------------------------------------------------#
+# RD T.E
+#---------------------------------------------------------------------------------#
+
+te <- 40
+dat2 <- tibble(x = pmax(0, pmin(rnorm(1000, 50, 25),100))) %>% 
+  mutate(D = ifelse(x > 50, 1, 0),
+         y = 1 + 2*x + te*D + rnorm(n(), 0, 10))
+
+ggplot(dat2, aes(x = x, y = y)) + 
+  geom_point() + 
+  # geom_smooth(method = "lm", se = FALSE) + 
+  geom_vline(xintercept = 50, linetype = "dashed") + 
+  theme_minimal()
+
+#---------------------------------------------------------------------------------#
+# RD T.E with non linear lines
+#---------------------------------------------------------------------------------#
+
+te <- 0
+
+dat3 <- tibble(x = pmax(0, pmin(rnorm(1000, 50, 25),100))) %>% 
+  mutate(D = ifelse(x > 50, 1, 0),
+         x2 = x^2,
+         x3 = x^3,
+         y = 10000 - 100*x + x2 + te*D + rnorm(n(), 0, 10))
+

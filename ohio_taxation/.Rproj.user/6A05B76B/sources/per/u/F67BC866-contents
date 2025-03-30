@@ -1,0 +1,27 @@
+
+
+library(sf)
+
+tg_cosub <- read_sf("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads/TIGERS/tl_2010_39_cousub00/tl_2010_39_cousub00.shp")
+
+tg_cosub$INTPTLON00
+
+roads_and_census_full <- haven::read_dta(paste0(data,"/roads_and_census.dta"))
+  select(-matches("yr_t_")) %>%
+  filter(description == "R" & duration != "1000") %>%
+  janitor::clean_names() %>%
+  mutate(votes_pct_against = 100 - votes_pct_for) %>%
+  mutate(treated = if_else(votes_pct_against > cutoff, 1, 0))    
+  
+  roads_and_census %>%
+    group_by(treated) %>%
+    summarize(prop = n()/nrow(.))
+
+  colnames(roads_and_census)
+  
+  
+colnames(roads_and_census)
+
+roads_and_census %>% filter(tendigit_fips == 3915159850) %>% View()
+
+

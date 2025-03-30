@@ -1,0 +1,35 @@
+library(tidyverse)
+library(sf)
+
+root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
+data <- paste0(root,"/data")
+
+
+oh_cosub <- sf::read_sf(paste0(data,"/roads/TIGERS/tl_2010_39_cousub00/tl_2010_39_cousub00.shp"))
+oh_prisec <- sf::read_sf(paste0(data,"/roads/TIGERS/tl_2010_39_prisecroads/tl_2010_39_prisecroads.shp"))
+
+close_fips <- readLines(paste0(data,"/roads/tendigit_fips_close_elections_gs_bw.txt"))
+
+oh_cosub_sub <- oh_cosub %>%
+  select(COSBIDFP00, NAME00, NAMELSAD00, UR00 , CLASSFP00, geometry) %>%
+  filter(COSBIDFP00 %in% close_fips)
+
+oh_prisec_local <- oh_prisec %>%
+  filter(RTTYP == "M") %>%
+  select(LINEARID, FULLNAME, RTTYP, MTFCC, geometry)
+
+oh_roads_by_cousub <- st_intersection(oh_cosub_sub, oh_prisec_local)
+
+df_fr_plot <- dfs_agg_covs$housing_roads_census_t_plus_5_matches %>% 
+  inner_join(dfs_agg_covs$housing_roads_census_t_plus_0_matches %>% select(tendigit_fips, vote_year, median_sale_amount) ,
+            by = c("tendigit_fips", "vote_year")) %>%
+  rename(base_median_sale_amount = median_sale_amount.y,
+         median_sale_amount = median_sale_amount.x) %>%
+  mutate(price_ratio = median_sale_amount/base_median_sale_amount) %>%
+  relocate(price_ratio, .after = median_sale_amount) %>%
+  relocate(base_median_sale_amount, .before = median_sale_amount)
+
+
+# output as a stata dataset
+haven::write_dta(df_fr_plot, paste0(shared,"/df_fr_plot.dta"))
+

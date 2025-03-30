@@ -1,0 +1,7 @@
+{
+    "installOptions": {
+        "installFromRepository": true,
+        "libraryPath": "C:/Users/rawatsa/OneDrive - University of Cincinnati/R",
+        "installDependencies": true
+    }
+}

@@ -1,0 +1,51 @@
+
+?quantile
+
+quantile(hdfs_agg_covs$housing_roads_census_t_minus_2_matches, probs = c(0.25, 0.5, 0.75))
+
+
+qts <- map(dfs_agg_covs, function(df) map_dbl(c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1), ~quantile(df$median_sale_amount, .x)))
+
+mapply(c, qts$housing_roads_census_t_plus_0_matches[-length(qts$housing_roads_census_t_plus_0_matches)], qts$housing_roads_census_t_plus_0_matches[-1], SIMPLIFY = FALSE)
+
+
+qts_20 <- map(dfs_agg_covs, function(df) map_dbl(c(0, 0.2), ~quantile(df$median_sale_amount, .x)))
+qts_80 <- map(dfs_agg_covs, function(df) map_dbl(c(0.8, 1), ~quantile(df$median_sale_amount, .x)))
+
+df <- dfs_agg_covs$housing_roads_census_t_plus_0_matches
+
+  # qts_20[1]  
+  
+df %>% filter(between(median_sale_amount, qts_20[[1]][1], qts_20[[1]][2])) %>% pull(median_sale_amount)
+
+gsd <- purrr::map2(qts_80, dfs_agg_covs, .f = function(x,y){
+  # print(paste0("Covariates list: ", deparse(substitute(y))))
+  # print(paste0("Covariates list: ", x))
+  rdrobust(  y = df %>% filter(between(median_sale_amount, x[1], x[2])) %>% pull(median_sale_amount),
+             x = df %>% filter(between(median_sale_amount, x[1], x[2])) %>% pull(votes_pct_against),
+             c = cutoff,
+             # covs = y %>%
+             #   select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
+})
+tes_gsd <- te_tables(gsd)
+plot_te(tes_gsd, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
+rdrobust(  y = df %>% filter(between(median_sale_amount, qts_20[[1]][1], qts_20[[1]][2])) %>% pull(median_sale_amount),
+           x = df %>% filter(between(median_sale_amount, qts_20[[1]][1], qts_20[[1]][2])) %>% pull(votes_pct_against),
+           c = cutoff,
+           # covs = y %>%
+           #   select(x) ,
+           all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary()
+
+#------------------------------------------------------------------------------------------#
+
+qt_min_2 <- quantile(dfs_agg_covs$housing_roads_census_t_minus_2_matches$median_sale_amount, 0.2)[[1]]
+
+
+rdrobust(  y = dfs_agg_covs$housing_roads_census_t_minus_2_matches %>% filter(median_sale_amount < qt_min_2) %>% pull(median_sale_amount),
+           x = dfs_agg_covs$housing_roads_census_t_minus_2_matches %>% filter(median_sale_amount < qt_min_2) %>% pull(votes_pct_against),
+           c = cutoff,
+           # covs = y %>%
+           #   select(x) ,
+           all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary()

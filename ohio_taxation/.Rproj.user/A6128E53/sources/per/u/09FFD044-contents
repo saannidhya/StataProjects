@@ -1,0 +1,18 @@
+
+
+c(3913335672, 3905536946, 3902169078, 3915782292, 3907331780, 3908934188, 3907715364, 3912125438, 3902139228, 3902333586)
+
+roads_and_census %>% 
+  filter(tendigit_fips %in% c(3913335672, 3905536946, 3902169078, 3915782292, 3907331780, 3908934188, 3907715364, 3912125438, 3902139228, 3902333586) & treated == 0) %>% relocate(treated, .after = year) %>% View()
+
+
+paser_loc <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads/DetroitPASER_2024"
+
+paser_loc
+
+# library to import shapefiles
+
+library(sf)
+
+# import shapefile
+

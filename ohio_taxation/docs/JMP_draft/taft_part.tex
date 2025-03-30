@@ -1,0 +1,92 @@
+\section*{TAFT Executive Summary}
+
+This paper examines the long-term economic consequences of cutting local road taxes by focusing on a unique quasi-experiment in Ohio. Specifically, it studies communities (cities, villages, and townships) that periodically vote on whether to renew road-maintenance tax levies. When a tax levy renewal narrowly fails, the loss of dedicated road funds provides a natural experiment to measure the causal impact of decreased road spending on housing values.
+
+\noindent {\bf Research Question.} The primary question is: What happens to local house prices when a community votes to cut its road-maintenance tax levy and thus reduces spending on local roads? A secondary question concerns the mechanism driving any observed price changes—namely, whether a drop in funding leads to measurable declines in road quality, which then become capitalized into property values.
+
+\noindent {\bf Data Sources.} Over 3,000 road tax levy referendums from local governments in Ohio (1995–2021). Individual-level house sales data (over 7 million transactions) from CoreLogic®, capturing actual sale prices, demographics, and property characteristics. Satellite imagery for road surface condition, which is analyzed using a fine-tuned Vision Transformer (ViT) model to classify road quality.
+
+\noindent {\bf Identification Strategy.} A regression discontinuity design (RDD) exploits the discrete cutoff at 50\% of the vote. When the levy renewal just fails (vote share against $>$ 50\%), local governments lose a predictable slice of road-maintenance funds. Narrowly passing and narrowly failing areas are assumed to be comparable except for the funding outcome.
+Bandwidth selection and local polynomial regression techniques ensure that outcomes are compared within small neighborhoods around the 50\% threshold, strengthening causal inference.
+
+\noindent {\bf Key Findings:} 
+
+\begin{itemize}
+    \item {\bf Reduction in Road Quality:} Failed tax renewals result in a significant, visible deterioration in roads. The machine-learning model classifies a 17\% overall decline in road quality in communities that lost their levy.
+    \item {\bf Housing Market Impact:} Over a ten-year window, the loss of local road funding leads to approximately a \$15,000 (9\%) decrease in median house prices, starting about four years after the vote. This time lag corresponds to when roads degrade enough for buyers and sellers to notice.
+    \item {\bf Heterogeneity:}
+    \begin{itemize}
+        \item {\bf Urban vs. Rural:} The negative effects on house prices are pronounced in urban areas (about \$25,825 average decline), whereas rural areas display smaller, statistically insignificant price changes.
+        \item {\bf Price Quantiles:} Higher-priced homes experience larger devaluations relative to lower-priced homes, suggesting that wealthier households place a greater premium on road aesthetics and quality.
+    \end{itemize}
+\end{itemize}
+
+\noindent {\bf Mechanisms.} The paper argues for the following mechanisms -
+
+\begin{itemize}
+    \item {\bf Funding Shock:} Communities lose a key revenue stream, forcing city officials to postpone road repairs and stretch limited budgets.
+    \item {\bf Infrastructure Decay:} Road surfaces gradually degrade, with visible potholes, cracks, and associated driving and commuting costs increasing over time.
+    \item {\bf Capitalization into Home Values:} Buyers discount home prices to reflect perceived long-term deterioration of local infrastructure—less curb appeal, higher car repair expenses, and the expectation of future tax shocks or further service cutbacks.
+    \item {\bf Short-Run vs. Long-Run Trade-Off:} Residents may initially prefer lower taxes, but the eventual drop in road quality reduces home values. This tension emerges roughly four to five years after a failed levy, highlighting how short-term fiscal relief can yield longer-term property devaluation.
+\end{itemize}
+
+
+\section*{Proposal \& Future Work}
+
+As noted in Executive Summary, in this paper, I demonstrate a causal link between reduced road taxes and a subsequent decline in residential property prices. A key novel component of this project is the use of a fine-tuned Vision Transformer (ViT) model to classify the condition of roads in affected cities. Despite encouraging preliminary results, there are significant methodological, data, and computational hurdles that must be addressed to finalize this research, strengthen its credibility, and extend its policy relevance. The TAFT fellowship will help me address these challenges by providing the necessary resources and support. The tasks I plan to undertake have been explained below.
+
+\begin{itemize}
+    \item {\bf Scaling Up the Training Data:} The current ViT model has been fine-tuned on a single, relatively small satellite-imagery dataset. Only a limited subset of images from Ohio were used to validate model performance.
+    To improve accuracy and ensure broader applicability, the model needs to be fine-tuned on a larger dataset of Ohio-specific road images. Sourcing and preparing these additional images involve high-resolution captures, systematic geo-referencing, and extensive labeling/annotation work.
+
+    \item {\bf Model Robustness and Multiple ViTs:} Relying on a single ViT architecture could introduce biases or idiosyncrasies in classification. Replicating our results across multiple ViT models with varying hyperparameters or architectures can provide robust checks, confirm generalizability, and address concerns about model dependence.
+    Training and validating multiple ViTs is computationally intensive, requiring high-performance computing resources and significant time commitments to manage data pipelines, hyperparameter searches, and model checkpoints.
+    
+    \item {\bf Uncovering Budget Data from Auditor Reports:} A crucial remaining question is: Exactly how much does road spending decline in each city when a renewal levy fails? To answer this, we must parse Ohio Auditor of State reports and local budget summaries, which are often stored in PDF format and require manual extraction. These data will allow us to measure the precise magnitude and composition of local budget cuts. We will be able to track changes in road-maintenance line items over time (e.g., from year of vote to 3, 5, and 10 years thereafter).
+    
+    \item {\bf Expanding the Paper with a Dedicated Section on new findings:} A new section focused on road-maintenance budget trajectories will add depth to the empirical analysis. By linking actual spending changes to the observed deterioration in roads, we will provide more direct evidence of the mechanism driving housing-price discounts. This budget-based analysis not only strengthens causal inference but also yields richer policy insights. Cities with a higher proportion of discretionary funds, for example, may compensate for failed levies in ways that mitigate (or exacerbate) road-quality declines.
+\end{itemize}
+
+\newpage
+
+\section*{Timeline of Future Work}
+
+\noindent {\bf Months 1–2: Dataset Expansion for Satellite Images}
+\begin{itemize}
+    \item Acquire (or collect) a larger set of geo-tagged Ohio road images.
+    \item Refine and implement labeling/annotation protocols to ensure consistent quality.
+\end{itemize}
+
+\noindent {\bf Months 3–5: Model Fine-Tuning and Validation}
+\begin{itemize}
+    \item Train multiple ViT architectures on the expanded dataset.
+    \item Conduct robustness checks across different model configurations.
+\end{itemize}
+
+\noindent {\bf Months 6–8: Auditor of State Data Collection}
+\begin{itemize}
+    \item Systematically download Ohio Auditor of State budget reports for relevant municipalities over the past 20 years.
+    \item Develop scripts or rely on manual parsing to extract line-item data on road spending.
+\end{itemize}
+
+\noindent {\bf Months 9–10: Integrated Analysis}
+\begin{itemize}
+    \item Merge newly constructed budget dataset with existing voting, housing, and road-quality data.
+    \item Update statistical analyses and include a detailed sub-section on the magnitude and timing of road spending changes following failed levies.
+\end{itemize}
+
+\noindent {\bf Months 11–12: Final Write-Up and Policy Extensions}
+\begin{itemize}
+    \item Produce a full paper draft with consolidated results.
+    \item Integrate further policy implications and recommendations based on spending data.
+\end{itemize}
+
+\newpage
+% \section*{Current Draft}
+\begin{center}
+    \vspace*{\fill}
+    \Huge{{\bf Current Draft}}
+    \vspace*{\fill}
+\end{center}
+
+\newpage

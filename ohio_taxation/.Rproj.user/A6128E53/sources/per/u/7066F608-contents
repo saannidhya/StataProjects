@@ -1,0 +1,146 @@
+# Goal: Balancing control and treatment groups 
+# *Day 3 Northwestern Main Causal Inference Workshop
+# *Homework 3
+# *Underlying PaperL  Cheng  and  Hoekstra, Does Strengthening Self-Defense Law Deter Crime or Escalate Violence?  Evidence from Expansions to Castle Doctrine, Journal of Human Resources 48(3), 821-853 (2013).
+
+
+library(fixest)
+library(dplyr)
+library(did)
+library(ggplot2)
+library(haven)
+library(tidyr)
+library(DRDID)
+# install.packages(c("fixest","did","DRDID"))
+?DRDID::drdid
+
+cheng_hoekstra = read_dta("C:/Users/rawatsa/OneDrive - University of Cincinnati/Applied Economics Program/PhD/classes/summer 2023/causal_inference_workshop/readings_and_past_materials/Stata R Python materials/2023 materials/Cheng-Hoekstra-castle-doctrine-simplified.dta")
+table(is.na(cheng_hoekstra$treatment_date))
+cheng_hoekstra$treat = 1
+cheng_hoekstra$treat[is.na(cheng_hoekstra$treatment_date) == T] = 0
+
+cheng_hoekstra_limited = cheng_hoekstra %>% 
+  filter(treatment_date == 2006|treat == 0,
+         !year == 2010)
+table(cheng_hoekstra_limited$treat, 
+      cheng_hoekstra_limited$state)
+
+cheng_hoekstra_limited$post = NA
+cheng_hoekstra_limited$post[cheng_hoekstra_limited$year <= 2005 ] = 0 # pre
+cheng_hoekstra_limited$post[cheng_hoekstra_limited$year >  2005 ] = 1 # post
+table(cheng_hoekstra_limited$treat, 
+      cheng_hoekstra_limited$post)
+
+
+# Manual DID
+mean11 = mean(log(cheng_hoekstra_limited$homicide[cheng_hoekstra_limited$treat == 1 & 
+                                                    cheng_hoekstra_limited$post == 1  ])) # treated and post
+
+mean10 = mean(log(cheng_hoekstra_limited$homicide[cheng_hoekstra_limited$treat == 1 & 
+                                                    cheng_hoekstra_limited$post == 0  ])) # treated and pre
+
+mean01 = mean(log(cheng_hoekstra_limited$homicide[cheng_hoekstra_limited$treat == 0 & 
+                                                    cheng_hoekstra_limited$post == 1  ])) # control and post
+
+mean00 = mean(log(cheng_hoekstra_limited$homicide[cheng_hoekstra_limited$treat == 0 & 
+                                                    cheng_hoekstra_limited$post == 0  ])) # control and pre
+sum((mean11 -mean01) -(mean10 - mean00) )
+
+#Simple Regression DiD
+
+did1 = feols(log(homicide) ~ post*treat, data = cheng_hoekstra_limited, 
+             cluster = "state")
+summary(did1)
+
+# Event Study DiD i.e. leads and lags plot
+
+
+did2 = feols(log(homicide) ~ i(year, treat, 2005) | state + year, data = cheng_hoekstra_limited, 
+             cluster = "state")
+iplot(did2)
+
+did3 = feols(homicide ~ i(year, treat, 2005) | state  + year, data = cheng_hoekstra_limited, 
+             cluster = "state")
+iplot(did3)
+
+# Covariates
+
+did3 = feols(log(homicide) ~ i(year, treat, 2005)  + police + unemployment_rate + white_m_15_24 + black_m_15_24 +
+               poverty + prisoner + population  | state + year, data = cheng_hoekstra_limited, 
+             cluster = "state")
+iplot(did3)
+did4 = feols(log(homicide) ~ post*treat+ police + unemployment_rate + white_m_15_24 + black_m_15_24 +
+               poverty + prisoner + population, data = cheng_hoekstra_limited, 
+             cluster = "state")
+summary(did4)
+
+# doubly robust DID (if you think covariates matter, add doubly robust DID)
+cheng_hoekstra_limited$treat_post = 0
+cheng_hoekstra_limited$treat_post[cheng_hoekstra_limited$treat == 1 & cheng_hoekstra_limited$post == 1] = 1
+cheng_hoekstra_limited$unit_id = as.numeric(paste0(cheng_hoekstra_limited$state_id, cheng_hoekstra_limited$year))
+cheng_hoekstra_limited$log_homicide = log(cheng_hoekstra_limited$homicide)
+drdid_1 = drdid(yname = "log_homicide", 
+                tname = "post", 
+                idname = "unit_id",
+                dname = "treat", 
+                xformla = ~ police + unemployment_rate + white_m_15_24 + black_m_15_24 +
+                  poverty + prisoner + population, 
+                data = cheng_hoekstra_limited, panel = F)
+
+
+
+
+### For fun, dynamic DID
+# Calloway and SantAnna estimator (Group-time avg treatment effect of the treated)
+# Jonathan Roth has a page.
+
+
+cheng_hoekstra$treatment_date[is.na(cheng_hoekstra$treatment_date) == T] = 0
+cheng_hoekstra$log_homicide = log(cheng_hoekstra$homicide)
+
+atts = att_gt(
+  yname = "log_homicide", 
+  tnam = "year", 
+  idname = "state_id", 
+  gname = "treatment_date", 
+  data = cheng_hoekstra,
+  clustervars = "state_id"
+)
+att_dyn = aggte(atts, type = "dynamic")
+att_group = aggte(atts, type = "group")
+
+ggdid(att_dyn)
+
+cheng_hoekstra_limited$treatment_date[is.na(cheng_hoekstra_limited$treatment_date) == T] = 0
+
+atts_simp = att_gt(
+  yname = "log_homicide", 
+  tnam = "year", 
+  idname = "state_id", 
+  gname = "treatment_date", 
+  data = cheng_hoekstra_limited,
+  xformla = ~ police + unemployment_rate + white_m_15_24 , 
+  clustervars = "state_id"
+)
+aggte(atts_simp, type = "dynamic")
+aggte(atts_simp, type = "group")
+
+ggdid(aggte(atts_simp, type = "dynamic"))
+
+
+
+atts_cov = att_gt(
+  yname = "log_homicide", 
+  tnam = "year", 
+  idname = "state_id", 
+  gname = "treatment_date", 
+  data = cheng_hoekstra,
+  clustervars = "state_id", 
+  xformla = ~ police + poverty + prisoner, 
+  control_group = "nevertreated", 
+  anticipation = 0
+)
+att_dyn_cov = aggte(atts_cov, type = "dynamic")
+att_group_cov = aggte(atts_cov, type = "group")
+
+ggdid(att_dyn_cov)

@@ -1,0 +1,291 @@
+\section{Results} \label{sec:results}
+
+First, we share the results for house prices. Next, we present the results for employment and wages outcome variables.
+
+\subsection{House Prices}
+
+We find no significant treatment effect of changes in road taxes and funding on house prices in years $t+1$ through $t+3$ relative to the year of the vote, so we relegate these regression results to Table \ref{tab:median_sale_amount_full}.  On the other hand, Table \ref{tab:median_sale_amount} below shows the treatment effect estimates of failing a road tax levy on housing sale prices starting four years after the vote. 
+
+\begin{table}[ht]
+    \centering
+    \caption{Effect on median house prices of failing to renew a road tax levy}
+    \label{tab:median_sale_amount}
+    \begin{tabular}{p{2cm}ccccccc}
+        \hline
+        year relative to vote & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
+        \hline
+        Treatment effect & -19,535 & -21,531 & -16,994 & -16,691 & -23,323 & -30,620 & -16,411 \\
+        Standard error & (9,289) & (9,147) & (7,558) & (7,357) & (9,449) & (9,586) & (9,342) \\
+        Effective bandwidth ($h$) & 8.9 & 12.1 & 14.1 & 14.0 & 8.2 & 8.2 & 8.3 \\
+        Bias bandwidth ($b$) & 15.4 & 20.0 & 24.1 & 24.2 & 15.5 & 16.3 & 17.5 \\
+        Effective Observations & 714 & 1,020 & 1,182 & 1,127 & 593 & 584 & 557 \\
+        Total Observations & 2,618 & 2,535 & 2,442 & 2,328 & 2,204 & 2,119 & 2,022 \\
+        \hline
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year, so a treatment effect of -\$19,535 means that four years after the vote, cities that failed to renew road taxes and its associated spending have houses that sell for \$19,535 less than cities that vote to renew road taxes and spending. Treatment effects for years prior to $t + 4$ are statistically insignificant at 5\% level; full results shown in Table \ref{tab:median_sale_amount_full}. The regressions include covariates related to the demographics and socioeconomic factors of the cities, drawn from Table \ref{tab:variable_means_sd}.
+    \end{tablenotes}
+\end{table}
+
+Each treatment effect estimate represents the discount in median sale price for cities that cut road taxes and spending in the years after voting on a road tax levy relative to otherwise similar cities that renew the taxes. For instance, the treatment effect for the $t + 4$ outcome variable is -19,535.  This means that four years after the vote, the median house sale price is \$19,535 lower in cities that fail to renew their road tax levy, relative to cities that vote to renew their road taxes and spending. Treatment effect estimates for years 4 through 9 after the vote are statistically significant in Table \ref{tab:median_sale_amount} as the $p$-values are below the canonical 0.05 threshold.  The estimate for year $t + 10$ has a smaller estimate and is only significant at the 10\% level, suggesting that the effect of tax and service cuts on house prices may peter out ten years after the vote. Overall, we find an average reduction of \$20,729 in median house price from years $t+4$ to $t+10$ for houses in cities that vote to cut road tax levies representing 12\% of house value.
+
+\begin{figure}[htbp]
+    \centering
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs.png}
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs_re.png}    
+    \caption{Effect plot for Median Housing Price}
+    \label{fig:tes_hp}
+\end{figure}
+
+Figure \ref{fig:tes_hp} provides an event-study plot that summarizes the treatment effects for each time period. In the graph, we include placebo years up to 3 years before the treatment to show that the median housing prices are statistically identical for cities above and below the threshold prior to the treatment. Each blue dot represents the treatment effect estimate for that year and the bar around it represents the 95\% confidence interval for that estimate. For year 0, which is the year of the vote, we see a slight decrease in the estimate. However, this effect is not statistically significant, as evidenced by the confidence interval containing the null effect. Up to year 3, we observe that the treatment effect estimates are fairly close to zero, and the confidence interval overlaps with zero. As stated previously and shown in Table \ref{tab:median_sale_amount}, we start to see a sizable increase in treatment effect from year 4 onwards and continue to observe it through year 9 after the vote. 
+ 
+\subsubsection{Heterogeneity Analysis} We show the results of our heterogeneity analysis, where we explore the differential impact of cutting road maintenance spending on house prices based on urban vs rural neighborhoods, the size of the tax levy and housing price quantiles.
+
+\vskip 0.5cm
+
+\textbf{Urban vs Rural neighborhoods}: We perform heterogeneity analysis to assess whether different types of neighborhoods and differing size of tax levies result in a differential impact on the housing prices. We first compare urban and rural areas in Ohio. We consider two different ways to define a city as urban:  one including only urbanized areas and another one including both urban areas and urbanized clusters. The event study plot in Figure 6 shows this result. 
+
+\begin{figure}[htbp]
+    \centering
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_new.png}
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_clean.png}    
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_covs_ua_re.png}        
+    \caption{Median Housing Price in Urban and Rural Areas}
+    \label{fig:tes_covs_ua}
+\end{figure}
+
+As shown by Figure \ref{fig:tes_covs_ua}, we do not find any significant differences in housing prices after a renewal tax levy fails to pass for rural areas. On the other hand, we do find a statistically significant decline in housing prices in urban areas starting six years after voting. The standard errors are somewhat smaller for the rural estimates due to a larger number of observations. The difference in point estimates between urban and rural areas may stem from differences in housing supply elasticity (Brasington 2002). Overall, we find that housing prices decrease by \$25,825 on average over the decade after cutting road maintenance tax levies in urban areas. 
+
+\vskip 1cm
+
+\textbf{Tax magnitude}: We check whether the treatment effect is greater for bigger tax levies than smaller tax levies. For this analysis, we split the tax levies based on the millage of a tax levy that is voted upon, where one mill is one tenth of one percent. Mean millage in our dataset is 1.9. We split the data into two parts: small tax levies $\le$ 1.9 mills and large tax levies $>$ 1.9 mills. We do not identify a consistent statistically significant difference in treatment effects between smaller and larger tax levies, suggesting a lack of dose-response. Figure \ref{fig:tes_covs_size} illustrates this result.
+
+\begin{figure}[htbp]
+    \centering
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_size.png}
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_size_re.png}    
+    \caption{Median Housing Price based on Millage size}
+    \label{fig:tes_covs_size}
+\end{figure}
+
+All the years before the reduction in road spending have treatment effect estimates with confidence intervals containing zero. Starting in year $t+2$, we observe statistically significant treatment effects in some years after the vote such as year 5, 6 and 8 that show a for tax levies with millage size equal to or below the mean. However, we do not see a consistent decrease in housing prices. Hence, we conclude that the decrease in housing prices of cities that fail to maintain their roads does not vary significantly based on the size of the tax levy.
+
+\vskip 1cm
+
+\textbf{RDD Quantile Estimation}: We further analyze our results by estimating quantile-level treatment effects, as suggested by Frandsen et al (2012), to study how the treatment’s impact varies at different quantiles of the outcome variable. 
+
+\begin{table}[ht]
+    \hspace{-1cm}
+    % \centering
+    \caption{Quantile-level Treatment Effects of Cutting Road Spending on Median House Prices}
+    \label{tab:quantile_tes}
+    \begin{tabular}{p{1.5cm}ccccccc}
+        \hline
+        Percentile & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
+        \hline
+        10\% & -6,433 & -22,570 & -9,602 & -12,984 & -11,217 & -6,569 & -1,326 \\
+        & (9,364) & (9,065) & (9,205) & (8,420) & (9,136) & (10,809) & (8,793) \\
+        20\% & -5,400 & -15,070 & 4,014 & -14,682 & -15,040 & -3,228 & 624 \\
+        & (9,983) & (9,886) & (7,443) & (8,502) & (8,160) & (10,435) & (8,509) \\
+        70\% & -21,760 & -11,171 & -38,082 & -36,685 & -21,356 & -25,605 & -18,600 \\
+        & (12,333) & (11,806) & (12,835) & (12,163) & (12,218) & (13,984) & (9,872) \\
+        80\% & -28,478 & -16,379 & -38,460 & -37,470 & -28,950 & -27,800 & -18,658 \\
+        & (13,343) & (11,404) & (18,623) & (12,169) & (12,507) & (12,421) & (11,808) \\
+        90\% & -51,470 & -34,604 & -38,510 & -27,039 & -29,010 & -49,093 & -36,662 \\
+        & (18,409) & (15,837) & (22,194) & (16,308) & (16,640) & (14,498) & (19,110) \\
+        \hline
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item The outcome is median house price in constant 2010 U.S. dollars. The unit of observation is the city-year, so a treatment effect of -\$28,478 means that at the 80th percentile of house prices four years after the vote, cities that fail to renew road taxes and its associated spending have houses that sell for \$28,478 less than cities that vote to renew road taxes and spending. The regressions include covariates related to the demographics and socioeconomic factors of the cities, drawn from Table \ref{tab:variable_means_sd}.
+    \end{tablenotes}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_qte_covs.png}
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_qte.png}    
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_qte_re.png}    
+    \caption{Median Housing Price based on Quantiles: 20\% and 80\%}
+    \label{fig:tes_qte_covs}
+\end{figure}
+
+Table \ref{tab:quantile_tes} shows the treatment effect heterogeneity of cutting road spending on high and low quantiles of median house prices. The top percentiles consistently exhibit a statistically significant decline in house sale prices, beginning in year 6 after the reduction in road spending. In contrast, the lower percentiles do not demonstrate a consistent treatment effect. This suggests a differential impact, where higher-valued properties are more sensitive to road disrepair than lower-valued houses. Figure \ref{fig:tes_qte_covs} contrasts the treatment effects of the 20th and 80th percentiles of home sale prices in an effect plot to highlight this differential impact of reduction in road maintenance spending.
+
+\subsubsection{Robustness Tests} We conduct several robustness tests to ensure the validity of our results. We test the sensitivity of our results to different bandwidths, covariates, and functional forms. We also check for the presence of pre-trends and perform a placebo test to confirm the validity of our RDD.
+
+\vskip 0.5cm
+
+\textbf{Removing contradictory observations}: In this test, we focus on ensuring the independence and exogeneity of our dataset, a critical aspect in assessing the impact of renewal tax levies on housing prices. An additional concern is the potential bias introduced by tax levies for additional money that might pass after renewal tax levy decisions.
+To address this concern, we exclude observations from our analysis if a tax levy for additional funding is introduced and passed within a ten-year period following a renewal tax levy vote. This approach is premised on the notion that the introduction of new funding through additional levies could confound the effects of decreased road taxes on housing prices. 
+For example, consider a scenario where a city votes on a renewal tax levy in the year 2000. If that city subsequently introduces and passes a tax levy for additional road spending in 2004, we exclude all votes for that city from 2005 through 2010. This exclusion ensures that the effect on house prices from the 2000 vote are captured for uncontaminated years but not for years after 2004 when the effect of additional road taxes may counteract the drop in tax money from the year 2000 vote. It allows us to isolate and examine the pure impact of the drop in funding from failing renewal levies on housing prices. 
+
+\begin{table}[ht]
+    \centering
+    \caption{Effect on Median Sale Amount of Failing to Renew a Road Tax Levy}
+    \label{tab:uncontaminated}
+    \begin{tabular}{p{2.8cm}ccccccc}
+        \hline
+        year relative to vote & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
+        \hline
+        Treatment effect & -21,819 & -16,308 & -13,850 & -15,944 & -18,443 & -29,298 & -19,179 \\
+        standard error & (11,271) & (7,489) & (8,161) & (8,186) & (8,591) & (8,342) & (10,120) \\
+        Effective bandwidth (h) & 7.7 & 7.4 & 14.7 & 10.5 & 9.4 & 6.2 & 8.9 \\
+        Bias bandwidth (b) & 13.6 & 17.8 & 24.5 & 19.0 & 18.4 & 13.3 & 18.2 \\
+        Effective Observations & 538 & 512 & 1,086 & 680 & 584 & 347 & 492 \\
+        Total Observations & 2,390 & 2,273 & 2,147 & 2,016 & 1,889 & 1,786 & 1,665 \\
+        \hline
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item The outcome is median house price in constant 2010 U.S. dollars. The unit of observation is the city-year, so a treatment effect of -\$21,819 means that four years after the vote, cities that fail to renew road taxes and its associated spending have houses that sell for \$21,819 less than cities that vote to renew road taxes and spending. The regressions include covariates related to the demographics and socioeconomic factors of the cities, drawn from Table \ref{tab:variable_means_sd}.
+    \end{tablenotes}
+\end{table}
+
+Upon implementing this data filtration, we observe that the treatment effect of the renewal levies on housing prices, measured from $t+1$ to $t+10$, remains largely consistent with our initial findings. This consistency in treatment effect, despite the exclusion of potentially confounding data, lends further credence to our results. The standard errors increase slightly due to reduction in sample size caused by the aforementioned data filtration process. 
+
+\textbf{Placebo cutoffs}: In our primary analysis, the pivotal threshold for the vote share running variable is 50\%, indicating whether a renewal levy passes or fails.  Although we find significant treatment effects using this 50\% threshold, it could be random jumps in the data rather than cutting road taxes and funding that are responsible for the significant estimates.  To this end we conduct a series of placebo tests using alternative cutoffs: 30\%, 40\%, 60\%, and 70\%. Table \ref{tab:placebo_cutoffs} below summarizes the results from the placebo cutoffs analysis. 
+
+\begin{table}[ht]
+    \centering
+    \caption{Robust Treatment Effect Estimate for Placebo Cutoffs}
+    \label{tab:placebo_cutoffs}
+    \begin{tabular}{p{2cm}cccc}
+        \hline
+        Years after vote & 30\% & 40\% & 60\% & 70\% \\
+        \hline
+        $t + 4$ & -2,540 & 7,037 & -4,037 & -43,670 \\
+        & (8,473) & (6,993) & (10,961) & (21,452) \\
+        $t + 5$ & -1,376 & -15,672 & -1,740 & 12,263 \\
+        & (9,554) & (20,892) & (12,588) & (19,392) \\
+        $t + 6$ & 10,589 & 9,476 & -13,479 & -617 \\
+        & (8,894) & (7,721) & (13,661) & (18,438) \\
+        $t + 7$ & 5,086 & 2,952 & -21,731 & -21,204 \\
+        & (10,447) & (7,898) & (11,519) & (18,330) \\
+        $t + 8$ & 9,900 & 11,821 & -11,014 & -37,686 \\
+        & (10,745) & (8,241) & (12,460) & (15,717) \\
+        $t + 9$ & 14,361 & 9,904 & -20,057 & -9,340 \\
+        & (9,624) & (7,935) & (11,975) & (17,731) \\
+        $t + 10$ & 12,147 & -25,540 & -13,828 & -16,358 \\
+        & (13,649) & (31,460) & (10,267) & (21,396) \\
+        \hline
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item Robust treatment effect estimate for placebo cutoffs as per the estimator from \cite{calonico2017rdrobust}. The unit of observation is city-year level. Standard errors are shown in parentheses below each estimate.
+    \end{tablenotes}
+\end{table}
+
+Table \ref{tab:placebo_cutoffs} does not show consistently significant treatment effects for any of the placebo cutoffs for our parameter of interest. This absence of significance at thresholds other than the true 50\% reinforces the idea that the effects we observe at the 50\% mark are not a mere coincidence or a result of random variation in the data, but are indeed attributable to the dynamics surrounding the passing or failing of renewal tax levies. 
+
+\textbf{Winsorization}: The debate over whether to include or exclude outliers continues, with some research suggesting that trimming outliers does not improve mean squared error (e.g., Bollinger and Chandra, 2005).  We now drop the 1\% tails to help curtail the influence of outliers. The overall sample mean after dropping 1\% tails is \$144,268 in constant 2010 dollars with a standard deviation of \$109,624. After performing this winsorization step, we re-estimate the treatment effect of failing to renew a road tax levy on housing outcome variables. The results from this estimation process are summarized in Figure \ref{fig:tes_g_w} below:
+
+\begin{figure}[htbp]
+    \centering
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w.png}
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w_re.png}    
+    \caption{Median Housing Price after 1\% Winsorization}
+    \label{fig:tes_g_w}
+\end{figure}
+
+The treatment effect estimates with winsorization mimic those from our baseline regression results qualitatively and quantitatively.
+
+\subsection{Employment} \label{sec:employment}
+
+We next see if cutting road taxes and spending causes a change in employment in years after the vote. Employment is the average number of workers in a city in a year, which comes from monthly employment data per establishment as provided by ODJFS.  The regressions take the same form as explained in Section \ref{sec:method}.  The full set of null results is shown in Appendix \ref{sec:appxa} Table \ref{tab:average_employment} and Table \ref{tab:log_average_employment}.
+
+On the other hand, when we examine an interaction term between poverty and treatment, there is a consistent pattern of significant results.  The estimator of \cite{calonico2019regression} cannot handle interaction terms, but our first step is to use it to establish an optimal bandwidth of the running variable.  We then omit all votes outside the optimal effective bandwidth.  We then create an interaction term between the treatment dummy $T_{i(t+r)}$ and Poverty Rate.  We then regress employment as a function of the running variable, the treatment effect dummy, the interaction term, and the covariates Median Family Income, \% Aged 5 to 17, and \% Less than High School Education.  For certain years, the covariates \% Unemployment Rate, \% Under 5 Years Old, \% Less than High School Education, and \% Some College Education were helpful in achieving precise estimates of the treatment effect. Table \ref{tab:treatment_dummy_poverty} summarizes the results of our experiment. 
+ 
+\begin{table}[ht]
+    \centering
+    \caption{Effect of cutting road spending on Employment by Poverty Rate}
+    \label{tab:treatment_dummy_poverty}
+    \begin{tabular}{p{2cm}cc}
+        \hline
+        Year after Vote & Treatment Dummy Estimate & Treatment Dummy  Poverty Rate Estimate ($p$-value) \\
+        \hline
+        $t - 3$ & 498 (0.46) & -2,526 (0.49) \\
+        $t - 2$ & 768 (0.22) & -3,769 (0.31) \\
+        $t - 1$ & 833 (0.17) & -3,649 (0.31) \\
+        $t + 1$ & 1,039 (0.08) & -9,941 (0.02) \\
+        $t + 2$ & 1,231 (0.03) & -7,995 (0.04) \\
+        $t + 3$ & 849 (0.18) & -8,742 (0.03) \\
+        $t + 4$ & 1,050 (0.10) & -10,197 (0.02) \\
+        $t + 5$ & 1,279 (0.05) & -10,478 (0.02) \\
+        $t + 6$ & 1,327 (0.04) & -10,483 (0.02) \\
+        $t + 7$ & 1,473 (0.03) & -11,599 (0.02) \\
+        $t + 8$ & 1,374 (0.04) & -11,073 (0.02) \\
+        $t + 9$ & 1,528 (0.03) & -12,694 (0.02) \\
+        $t + 10$ & 1,435 (0.04) & -13,202 (0.02) \\
+        \hline
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item Estimates shown with $p$-values in parentheses below. Number of observations ranges from 565 to 722. Regressions of outcome variable Employment for optimal bandwidth estimate h = 14. Regressors include Vote Share, Treatment Dummy, Treatment Dummy  Poverty Rate, Median Family Income, \% Aged 5 to 17, and \% Less than High School Education for all years. Regression for year $t + 4$ adds \% Unemployment Rate and \% Some College Education, $t + 8$ adds \% Some College Education, the covariates for $t + 2$ are \% High School Education Only, \% Renters, and \% Under 5 Years Old, to improve the precision of the estimates.
+    \end{tablenotes}
+\end{table}
+
+For the first year after the vote, the interaction term is negative with a $p$-value of 0.02, but the treatment effect is only significant at the 10\% level of significance, for a joint significance of 0.06.  However, starting with the second year after the vote and continuing through all successive years that we test--ten years after the vote--we find a consistent pattern of a positive treatment effect dummy with a negative interaction term.  The average magnitude of the estimates shows that, for cities with Poverty Rate greater than 0.11, cutting road taxes and the associated services causes lower employment, relative to cities that renew road maintenance tax levies. 
+
+The poverty rate of 0.11 is about the 65th percentile of poverty, suggesting that high-poverty cities that renew road tax levies have better employment outcomes than those that cut road maintenance.  We evaluate the magnitude of the effect with the estimates achieved in year 4 after the vote.  For a marginal increase in the poverty rate to 12\%, renewing road maintenance taxes preserves 174 jobs on average relative to cities that cut, which represents an 11\% preservation of jobs.
+
+\subsection{Wages}
+
+We now investigate wages, the other outcome variable provided by ODJFS.  The raw data contains the total dollar amount of wages paid to employees by each firm in each quarter from year 2006 to 2020.  We average the quarterly data up to yearly values and convert nominal dollars to constant 2010 dollars.  We sum the firm-level data to the appropriate city, village, or township and divide by the number of workers to get average yearly wages earned by a worker in each municipality.  We find a better fit when the natural log of average wages is used, rather than a linear term, and we find a local linear functional form fits the data better than a quadratic form (adjusted mean squared error of 9.4m vs. 12.7m).
+
+We find no effect of cutting road taxes and services on wages for the full sample.  Regression results are shown in Table \ref{tab:total_wages} and Table \ref{tab:log_total_wages}.  Section \ref{sec:employment} found an effect on employment in high-poverty cities, and the wages outcome corroborates this story. When we restrict attention to the cities with high levels of poverty—above 14\%, which represents the 75th percentile of poverty—we find that renewing road tax levies causes higher wages.  Covariate smoothness results are provided in Appendix \ref{sec:appxb}, covariate balance for this restricted sample is shown in Table \ref{tab:covariate_means_wage}, and regression results are shown in Table \ref{tab:wages_per_worker} below. 
+
+\begin{table}[ht]
+    \centering
+    \caption{Effect of Failing to Renew a Road Tax Levy on Wages per Worker}
+    \label{tab:wages_per_worker}
+    \begin{tabular}{p{2.8cm}ccccccc}
+        \hline
+        year relative to vote & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
+        \hline
+        Treatment effect & -0.23 & -0.18 & -0.22 & -0.14 & -0.15 & -0.12 & -0.05 \\
+        standard error & 0.11 & 0.04 & 0.01 & 0.10 & 0.11 & 0.09 & 0.48 \\
+        Effective bandwidth (h) & 0.07 & 0.07 & 0.06 & 0.06 & 0.06 & 0.06 & 0.09 \\
+        Bias bandwidth (b) & 0.12 & 0.13 & 0.12 & 0.12 & 0.12 & 0.12 & 0.19 \\
+        Effective Observations & 77 & 76 & 80 & 67 & 67 & 60 & 102 \\
+        Total Observations & 401 & 385 & 367 & 350 & 337 & 319 & 306 \\
+        \hline
+    \end{tabular}
+    \begin{tablenotes}
+        \small 
+        \item Outcome is the natural log of mean wages per employee in a city in constant 2010 U.S. dollars. Unit of observation is the city-year, so a treatment effect of -0.23 means that four years after the vote, high-poverty cities that fail to renew road taxes and its associated spending have 23\% lower wages than high-poverty cities that vote to renew road taxes and spending. Regressions use covariates in Table \ref{tab:wages_per_worker} representing economic and demographic characteristics of the city from the American Community Survey (ACS).
+    \end{tablenotes}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_wages_per_emp_hp.png}
+    % \includegraphics[width=\textwidth,keepaspectratio]{images/tes_high_pov.png}    
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_high_pov_re.png}    
+    \caption{Effect plot: Wages per Worker in High-Poverty Cities}
+    \label{fig:tes_g_emp_hp}
+\end{figure}
+
+Significant treatment effects begin four years after the vote—later than results for the employment outcome but consistent with the house price outcome results—and continue pretty consistently through the ninth year after the vote, at least at the 10\% level of significance.  The average treatment effect suggests that high-poverty cities that renew road tax levies have 17.8\% higher wages than comparable high-poverty cities that vote to cut road maintenance taxes.  The policy implications of these results are pretty clear: road maintenance matters for wages in high-poverty areas of Ohio.  This finding is also consistent with the consensus of the literature on the effect of infrastructure investment in developing nations, which also feature high levels of poverty.
+
+\section{Mechanisms} \label{sec:mech}
+
+Initially, we discussed the limitations of road infrastructure papers, one of which is pinpointing a mechanism of action. \cite{currier2023} studies road roughness, finding an elasticity of speed with respect to road roughness between -0.14 and -0.30 depending on the methodology.  It also finds worse road roughness in places with lower incomes, higher racial minority fraction, and towns closer to city centers. A survey it conducts finds that towns repave only a small fraction of roads that need it, and that towns spend a lot more on resurfacing roads than other types of maintenance.
+
+We suggest that road maintenance probably primarily affects aesthetics and productivity.  For example, the house price effects we document reflect how pretty the roads are to look at and the savings to damage to the cars that use the roads, like decreased wear on suspension, struts, shock absorbers, and damage to rims and tires. The effects we document on employment and wages in high-poverty cities are potentially driven by productivity, acting through travel time, although car damage could be involved as well:  to poorer households, car maintenance represents a high proportion of disposable income, so businesses could conceivably have to pay compensating wage differentials to induce workers to commute through poorly maintained roads. 
+
+In Table \ref{tab:max_renewals_cuts}, we identified several cities that habitually vote against renewing road maintenance.  We traveled to one of these cities, the village of Waynesville, to investigate the condition of the roads.  While the main arteries were in satisfactory condition, most of the other roads were challenged.  Appendix \ref{sec:appxc} shows photos we took of the streets. Most were plastered with tar strips, the cheapest way to cover over cracks.  A surprising number of roads had one lane blocked for eventual road construction.  Sizeable potholes went unrepaired.  Despite the numerous problems with the roads, a police officer told us, “You should have seen the roads before!”. 
+
+The clearest mechanism for the wage and employment outcomes is through productivity like transportation costs, commuting times, and damage to vehicles.  Some transportation studies go to great lengths to isolate one mechanism of action on house prices, but in the end the effect combines several influences like noise, crime, fatalities, car damage and travel time that are hard to disentangle.  \cite{currier2023} finds that rough roads decrease travel speed so that the cost of driving on rough roads is about 43\% higher than the cost of travel time alone, accounting for part of the house price effects we note. But our lack of wage and employment findings for the overall sample suggest that the effects of decreased road spending on house prices is probably not predominantly driven by productivity through commuting and transportation costs. We suggest that decreased attractiveness of poorly maintained roads is a ‘driving’ mechanism of our findings. Aesthetics are visible to all who use the roads, and the lagged effect on house prices is consistent with the time it might take for decreased maintenance to noticeably reducing the attractiveness of the roads. The photos we present also suggest decreased road maintenance leads to uglier roads.
+
+
+\section{Conclusion} \label{sec:conclusion}
+
+A great deal of research has studied the effect of new roads on economic outcomes like house prices, wages, and employment, especially in developing nations, providing valuable policy insights and spurring development initiatives like China’s Belt and Road Initiative and India’s Bharatmala project.  However, the endogeneity of road placement makes it difficult to identify economic effects. We study existing roads to help get around this source of confounding effects. There are many more existing roads than newly-constructed roads, especially in developed economies like the one we study, making our study especially relevant to policymakers. We study more than 3,000 votes by cities, villages, and townships in Ohio to renew maintenance spending on existing roads. We use sharp regression discontinuity to identify the effects of average treatment on the treated.  We find an average 34\% cut in road maintenance spending reduces housing sale prices by about 12\%. We find no anticipation effects, unlike \cite{beenstock2016hedonic} and \cite{diao2017spatial}, but we find statistically significant effects starting four years after funding cuts and persisting through at least the ninth year.  The effects are driven by urban rather than rural areas. We find a lack of dose-response for the size of the reduction in funding, but we find larger house price reductions for more expensive houses than for cheaper houses.  
+
+Consistent with \cite{dalenberg1995effects} and \cite{gibbons2019new}, we cannot link road maintenance spending cuts to changes in employment or wages for our overall sample.  On the other hand, we find effects for high-poverty cities.  When the poverty rate increases by one percentage point, renewing road spending preserves 174 jobs relative to high–poverty cities that cut spending, for an 11\% difference in employment.  The effects start two years after treatment and persists through all ten years we test.  High-poverty cities (those above the 75th percentile of poverty) that cut road spending have 17.8\% lower wages than otherwise similar cities that maintain road spending. Our findings suggest that policymakers should carefully consider the long-term economic impacts of cutting road maintenance spending. While immediate budgetary savings may be appealing, the long-term costs in terms of reduced property values and economic activity, particularly in high-poverty areas, may outweigh these short-term benefits. 
+
+ Future research could extend the regression discontinuity identification strategy we employ to other geographies, using vote share as a running variable for places that vote on road spending, or using time as a running variable for cities that directly change road spending without a referendum. Future research could also shift away from studying votes to maintain spending toward studying votes to increase road spending, although the endogeneity of choosing when to propose such a referendum makes identification more challenging.
+
+
