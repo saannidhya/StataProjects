@@ -1,0 +1,205 @@
+
+
+% Bibstyle aea.bst version 2009.05.20
+
+\begin{thebibliography}{xx}
+
+\harvarditem[Achiam et~al.]{Josh Achiam, Steven Adler, Sandhini Agarwal, Lama
+  Ahmad, Ilge Akkaya, Florencia~Leoni Aleman, Diogo Almeida, Janko
+  Altenschmidt, Sam Altman, Shyamal Anadkat et~al.}{2023}{achiam2023gpt}
+{\bf Achiam, Josh, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya,
+  Florencia~Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman,
+  Shyamal Anadkat, et~al.} 2023. ``Gpt-4 technical report.'' {\em arXiv
+  preprint arXiv:2303.08774}.
+
+\harvarditem[Adukia, Asher \harvardand\ Novosad]{Anjali Adukia, Sam Asher
+  \harvardand\ Paul Novosad}{2020}{adukia2020}
+{\bf Adukia, Anjali, Sam Asher, and Paul Novosad.} 2020. ``Educational
+  investment responses to economic opportunity: Evidence from Indian road
+  construction.'' {\em American Economic Journal: Applied Economics},
+  12(1):~348--376.
+
+\harvarditem[Alesina \harvardand\ Tabellini]{Alberto Alesina \harvardand\ Guido
+  Tabellini}{1990}{AlesinaTabellini1990}
+{\bf Alesina, Alberto, and Guido Tabellini.} 1990. ``A Positive Theory of
+  Fiscal Deficits and Government Debt.'' {\em Review of Economic Studies},
+  57(3):~403--414.
+
+\harvarditem[Asher \harvardand\ Novosad]{Sam Asher \harvardand\ Paul
+  Novosad}{2020}{asher2020}
+{\bf Asher, Sam, and Paul Novosad.} 2020. ``Rural roads and local economic
+  development.'' {\em American Economic Review}, 110(3):~797--823.
+
+\harvarditem[Beenstock, Feldman \harvardand\ Felsenstein]{Michael Beenstock,
+  Daniel Feldman \harvardand\ Daniel Felsenstein}{2016}{beenstock2016hedonic}
+{\bf Beenstock, Michael, Daniel Feldman, and Daniel Felsenstein.} 2016.
+  ``Hedonic pricing when housing is endogenous: The value of access to the
+  trans-Israel highway.'' {\em Journal of Regional Science}, 56(1):~134--155.
+
+\harvarditem[Boesen]{Ulrik Boesen}{2021}{boesen2021}
+{\bf Boesen, Ulrik.} 2021. ``How Are Your State’s Roads Funded?'' Accessed:
+  2025-01-23.
+
+\harvarditem[Bollinger \harvardand\ Chandra]{Christopher~R Bollinger
+  \harvardand\ Amitabh Chandra}{2005}{bollinger2005}
+{\bf Bollinger, Christopher~R, and Amitabh Chandra.} 2005. ``Iatrogenic
+  specification error: A cautionary tale of cleaning data.'' {\em Journal of
+  Labor Economics}, 23(2):~235--257.
+
+\harvarditem[Brasington]{David~M Brasington}{2002}{brasington2002}
+{\bf Brasington, David~M.} 2002. ``Edge versus center: finding common ground in
+  the capitalization debate.'' {\em Journal of Urban Economics},
+  52(3):~524--541.
+
+\harvarditem[Brasington]{David~M Brasington}{2017}{brasington2017school}
+{\bf Brasington, David~M.} 2017. ``School spending and new construction.'' {\em
+  Regional Science and Urban Economics}, 63:~76--84.
+
+\harvarditem[Brewer et~al.]{Ethan Brewer, Jason Lin, Peter Kemper, John Hennin
+  \harvardand\ Dan Runfola}{2021}{brewer2021}
+{\bf Brewer, Ethan, Jason Lin, Peter Kemper, John Hennin, and Dan Runfola.}
+  2021. ``Predicting road quality using high resolution satellite imagery: A
+  transfer learning approach.'' {\em Plos one}, 16(7):~e0253370.
+
+\harvarditem[Buchanan \harvardand\ Tullock]{James~M. Buchanan \harvardand\
+  Gordon Tullock}{1962}{BuchananTullock1962}
+{\bf Buchanan, James~M., and Gordon Tullock.} 1962. {\em The Calculus of
+  Consent: Logical Foundations of Constitutional Democracy.} Ann
+  Arbor:University of Michigan Press.
+
+\harvarditem[Calonico et~al.]{Sebastian Calonico, Matias~D Cattaneo, Max~H
+  Farrell \harvardand\ Roc{\'\i}o Titiunik}{2017}{calonico2017rdrobust}
+{\bf Calonico, Sebastian, Matias~D Cattaneo, Max~H Farrell, and Roc{\'\i}o
+  Titiunik.} 2017. ``rdrobust: Software for regression-discontinuity designs.''
+  {\em The Stata Journal}, 17(2):~372--404.
+
+\harvarditem[Calonico et~al.]{Sebastian Calonico, Matias~D Cattaneo, Max~H
+  Farrell \harvardand\ Roc{\'\i}o Titiunik}{2019}{calonico2019regression}
+{\bf Calonico, Sebastian, Matias~D Cattaneo, Max~H Farrell, and Roc{\'\i}o
+  Titiunik.} 2019. ``Regression discontinuity designs using covariates.'' {\em
+  Review of Economics and Statistics}, 101(3):~442--451.
+
+\harvarditem[Cattaneo, Jansson \harvardand\ Ma]{Matias~D Cattaneo, Michael
+  Jansson \harvardand\ Xinwei Ma}{2020}{cattaneo2020simple}
+{\bf Cattaneo, Matias~D, Michael Jansson, and Xinwei Ma.} 2020. ``Simple local
+  polynomial density estimators.'' {\em Journal of the American Statistical
+  Association}, 115(531):~1449--1455.
+
+\harvarditem[Cellini, Ferreira \harvardand\ Rothstein]{Stephanie~R Cellini,
+  Fernando Ferreira \harvardand\ Jesse Rothstein}{2010}{cellini2010value}
+{\bf Cellini, Stephanie~R, Fernando Ferreira, and Jesse Rothstein.} 2010. ``The
+  value of school facility investments: Evidence from a dynamic regression
+  discontinuity design.'' {\em The Quarterly Journal of Economics},
+  125(1):~215--261.
+
+\harvarditem[Currier, Glaeser \harvardand\ Kreindler]{Lauren Currier, Edward~L
+  Glaeser \harvardand\ Gabriel~E Kreindler}{2023}{currier2023}
+{\bf Currier, Lauren, Edward~L Glaeser, and Gabriel~E Kreindler.} 2023.
+  ``Infrastructure Inequality: Who Pays the Cost of Road Roughness?'' National
+  Bureau of Economic Research Working Paper w31981.
+
+\harvarditem[Diao, Leonard \harvardand\ Sing]{Mi Diao, Devon Leonard
+  \harvardand\ Tien~Foo Sing}{2017}{diao2017spatial}
+{\bf Diao, Mi, Devon Leonard, and Tien~Foo Sing.} 2017.
+  ``Spatial-difference-in-differences models for impact of new mass rapid
+  transit line on private housing values.'' {\em Regional Science and Urban
+  Economics}, 67:~64--77.
+
+\harvarditem[Dosovitskiy]{Alexey Dosovitskiy}{2020}{dosovitskiy2020image}
+{\bf Dosovitskiy, Alexey.} 2020. ``An image is worth 16x16 words: Transformers
+  for image recognition at scale.'' {\em arXiv preprint arXiv:2010.11929}.
+
+\harvarditem[Frandsen, Frölich \harvardand\ Melly]{Brigham~R. Frandsen, Markus
+  Frölich \harvardand\ Blaise Melly}{2012}{FRANDSEN2012}
+{\bf Frandsen, Brigham~R., Markus Frölich, and Blaise Melly.} 2012. ``Quantile
+  treatment effects in the regression discontinuity design.'' {\em Journal of
+  Econometrics}, 168(2):~382--395.
+
+\harvarditem[Gibbons \harvardand\ Machin]{Stephen Gibbons \harvardand\ Stephen
+  Machin}{2005}{gibbons2005valuing}
+{\bf Gibbons, Stephen, and Stephen Machin.} 2005. ``Valuing rail access using
+  transport innovations.'' {\em Journal of Urban Economics}, 57(1):~148--169.
+
+\harvarditem[Gibbons et~al.]{Stephen Gibbons, Teemu Lyytik{\"a}inen, Henry~G
+  Overman \harvardand\ Rosa Sanchis-Guarner}{2019}{gibbons2019new}
+{\bf Gibbons, Stephen, Teemu Lyytik{\"a}inen, Henry~G Overman, and Rosa
+  Sanchis-Guarner.} 2019. ``New road infrastructure: The effects on firms.''
+  {\em Journal of Urban Economics}, 110:~35--50.
+
+\harvarditem[Hettige]{Hemamala Hettige}{2006}{hettige2006}
+{\bf Hettige, Hemamala.} 2006. {\em When do rural roads benefit the poor and
+  how? An in-depth analysis based on case studies.} Asian Development Bank.
+
+\harvarditem[Hoogendoorn et~al.]{Sander Hoogendoorn, Jochem van Gemeren, Paul
+  Verstraten \harvardand\ Kees Folmer}{2019}{hoogendoorn2019house}
+{\bf Hoogendoorn, Sander, Jochem van Gemeren, Paul Verstraten, and Kees
+  Folmer.} 2019. ``House prices and accessibility: Evidence from a
+  quasi-experiment in transport infrastructure.'' {\em Journal of Economic
+  Geography}, 19(1):~57--87.
+
+\harvarditem[Huang]{Yiping Huang}{2016}{huang2016understanding}
+{\bf Huang, Yiping.} 2016. ``Understanding China's Belt \& Road initiative:
+  motivation, framework and assessment.'' {\em China Economic Review},
+  40:~314--321.
+
+\harvarditem[Kohlhase]{Janet~E Kohlhase}{1991}{kohlhase1991impact}
+{\bf Kohlhase, Janet~E.} 1991. ``The impact of toxic waste sites on housing
+  values.'' {\em Journal of Urban Economics}, 30(1):~1--26.
+
+\harvarditem[Levkovich, Rouwendal \harvardand\ Van~Marwijk]{Oleg Levkovich, Jan
+  Rouwendal \harvardand\ Rolf Van~Marwijk}{2016}{levkovich2016effects}
+{\bf Levkovich, Oleg, Jan Rouwendal, and Rolf Van~Marwijk.} 2016. ``The effects
+  of highway development on housing prices.'' {\em Transportation},
+  43(2):~379--405.
+
+\harvarditem[Li et~al.]{Shanjun Li, Jun Yang, Ping Qin \harvardand\ Shouyang
+  Chonabayashi}{2016}{li2016wheels}
+{\bf Li, Shanjun, Jun Yang, Ping Qin, and Shouyang Chonabayashi.} 2016.
+  ``Wheels of fortune: Subway expansion and property values in Beijing.'' {\em
+  Journal of Regional Science}, 56(5):~792--813.
+
+\harvarditem[Oates]{Wallace~E. Oates}{1969}{Oates1969}
+{\bf Oates, Wallace~E.} 1969. ``The Effects of Property Taxes and Local Public
+  Spending on Property Values: An Empirical Study of Tax Capitalization and the
+  Tiebout Hypothesis.'' {\em Journal of Political Economy}, 77(6):~957--971.
+
+\harvarditem[Oates]{Wallace~E. Oates}{1972}{Oates1972}
+{\bf Oates, Wallace~E.} 1972. {\em Fiscal Federalism.} New York:Harcourt Brace
+  Jovanovich.
+
+\harvarditem[{Ohio Department of Taxation}]{{Ohio Department of
+  Taxation}}{2020}{OhioRealPropertyTax}
+{\bf {Ohio Department of Taxation}.} 2020. ``Real Property Tax – General.''
+  Accessed: 2025-01-30.
+
+\harvarditem[{Ohio Department of Transportation}]{{Ohio Department of
+  Transportation}}{2023}{odot2023}
+{\bf {Ohio Department of Transportation}.} 2023. ``2023 Annual Report.''
+  Accessed: 2024-01-23.
+
+\harvarditem[{Peter G. Peterson Foundation}]{{Peter G. Peterson
+  Foundation}}{2024}{pgpf_htf_explained}
+{\bf {Peter G. Peterson Foundation}.} 2024. ``The Highway Trust Fund
+  Explained.'' Accessed: 2025-01-23.
+
+\harvarditem[{Public Service Department of Beavercreek Township}]{{Public
+  Service Department of Beavercreek Township}}{2025}{schroeder2025}
+{\bf {Public Service Department of Beavercreek Township}.} 2025. ``Road funding
+  \& maintenance in Beavercreek Township, Ohio.'' {\em Personal communication},
+  Email to Saani Rawat, January 21, 2025.
+
+\harvarditem[Suresh \harvardand\ Rawat]{Vikram Suresh \harvardand\ Saani
+  Rawat}{2025}{2025predicting}
+{\bf Suresh, Vikram, and Saani Rawat.} 2025. ``Predicting road quality in Ohio
+  using satellite images and Vision Transformers.'' Working paper.
+
+\harvarditem[{U.S. Department of Transportation}]{{U.S. Department of
+  Transportation}}{2022}{USDOT_BIL_Ohio}
+{\bf {U.S. Department of Transportation}.} 2022. ``The Bipartisan
+  Infrastructure Law Will Deliver for Ohio.'' Accessed: 2025-01-23.
+
+\harvarditem[Vaswani]{A Vaswani}{2017}{vaswani2017attention}
+{\bf Vaswani, A.} 2017. ``Attention is all you need.'' {\em Advances in Neural
+  Information Processing Systems}.
+
+\end{thebibliography}

@@ -10,7 +10,7 @@ The full set of treatment effects in Table \ref{tab:median_sale_amount_full} sup
     \label{tab:median_sale_amount_full}
     \begin{tabular}{p{3cm}cccc}
         \hline
-        \textbf{Year relative to vote} & \textbf{Estimate} & \textbf{Standard error} & \textbf{\textit{p-value}} & \textbf{Confidence interval} \\
+        \textbf{Year relative to vote} & \textbf{Estimate} & \textbf{Std. error} & \textbf{\textit{p-value}} & \textbf{Confidence interval} \\
         \hline
         $t - 3$  & 5,295   & 7,255  & 0.466  & [-8,926, 19,515] \\
         $t - 2$  & 247     & 6,969  & 0.972  & [-13,412, 13,907] \\
@@ -29,7 +29,7 @@ The full set of treatment effects in Table \ref{tab:median_sale_amount_full} sup
     \end{tabular} 
     \begin{tablenotes}
         \small
-        \item Supplements Figure 4 in text. Full set of treatment effect estimates of renewing road tax levies relative to cutting road tax levies from 3 years before the vote to 10 years after the vote. Covariates from Table \ref{tab:variable_means_sd} used in all regressions. Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year. A treatment effect of -\$21,684 means that four years after the vote, cities that vote to cut road taxes and its associated spending have houses that sell for \$21,684 less than cities that vote to renew road taxes and spending.
+        \item \textit{Notes:} Supplements Figure 4 in text. Full set of treatment effect estimates of cutting road tax levies relative to renewing road tax levies from 3 years before the vote to 10 years after the vote. Covariates from Table \ref{tab:variable_means_sd} used in all regressions. Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year. A treatment effect of -\$21,684 means that four years after the vote, cities that vote to cut road taxes and its associated spending have houses that sell for \$21,684 less than cities that vote to renew road taxes and spending.
     \end{tablenotes}
 \end{table}
 
@@ -39,7 +39,7 @@ The full set of treatment effects in Table \ref{tab:median_sale_amount_full} sup
     \label{tab:median_sale_amount_winsorized}
     \begin{tabular}{p{3cm}cccc}
         \hline
-        \textbf{Year relative to vote} & \textbf{Estimate} & \textbf{Standard error} & \textbf{\textit{p-value}} & \textbf{Confidence interval} \\
+        \textbf{Year relative to vote} & \textbf{Estimate} & \textbf{Std. error} & \textbf{\textit{p-value}} & \textbf{Confidence interval} \\
         \hline
         $t - 3$  & 286     & 6,334  & 0.964  & [-12,128, 12,701] \\
         $t - 2$  & 1,878   & 6,320  & 0.766  & [-10,509, 14,266] \\
@@ -58,7 +58,7 @@ The full set of treatment effects in Table \ref{tab:median_sale_amount_full} sup
     \end{tabular}
     \begin{tablenotes}
         \small
-        \item Supplements Figure 8 in text. Full set of treatment effect estimates of renewing road tax levies relative to cutting road tax levies from 3 years before the vote to 10 years after the vote, with 1\% winsorization applied to the data. Covariates from Table \ref{tab:variable_means_sd} used in all regressions. Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year. A treatment effect of -\$22,583 means that four years after the vote, cities that vote to cut road taxes and its associated spending have houses that sell for \$22,583 less than cities that vote to renew road taxes and spending.
+        \item \textit{Notes:} Supplements Figure 8 in text. Full set of treatment effect estimates of cutting road tax levies relative to renewing road tax levies from 3 years before the vote to 10 years after the vote, with 1\% winsorization applied to the data. Covariates from Table \ref{tab:variable_means_sd} used in all regressions. Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city-year. A treatment effect of -\$22,583 means that four years after the vote, cities that vote to cut road taxes and its associated spending have houses that sell for \$22,583 less than cities that vote to renew road taxes and spending.
     \end{tablenotes}
 \end{table}
 
@@ -141,6 +141,8 @@ The full set of treatment effects in Table \ref{tab:median_sale_amount_full} sup
 
 \section{Additional Robustness Tests} \label{sec:appxb}
 
+A fundamental RD assumption is that observations just above and below the threshold are comparable in all aspects except for treatment status. Table \ref{tab:covariate_discontinuity} presents balance tests across key community characteristics at the voting threshold. As shown, demographic and socioeconomic variables—including population size, poverty rates, educational attainment, employment status, and racial composition—exhibit no statistically significant discontinuities at the cutoff. The absence of any discontinuity suggests that our estimated effects on housing prices represent the impact of failing to renew road tax levies rather than pre-existing community differences. This balance verification via a formal RD test, using covariates as the outcome variable, further strengthens our conclusion that the observed housing price effects stem directly from decisions regarding road tax levies, not from underlying differences in community characteristics.
+
 \subsection{Covariate Discontinuity Tables}
 
 \begin{table}[!h]
@@ -168,7 +170,7 @@ The full set of treatment effects in Table \ref{tab:median_sale_amount_full} sup
     \end{tabularx}
     \begin{tablenotes}
         \small
-        \item \textit{Notes:} Estimates indicate the treatment effect of failing to renew a road maintenance tax levy on each covariate considered during our study. Confidence intervals are presented in square brackets.
+        \item \textit{Notes:} Estimates indicate the treatment effect of failing to renew a road maintenance tax levy on the value of each covariate considered during our study. 
     \end{tablenotes}
 \end{table}
 
