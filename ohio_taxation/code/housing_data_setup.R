@@ -10,6 +10,7 @@
 #           07/23/2024: added mean and sd info needed for the paper
 #           07/26/2024: computing top 10 renewals and cuts from road levies dataset 
 #           10/15/2024: created house price growth variable (relative to vote year and YOY)
+#           04/23/2025: Added logic to select either stata or csv housing files
 #==========================================================================================================#
 
 # loading packages
@@ -18,12 +19,20 @@ for (pkg in packages){
   library(pkg, character.only = TRUE)
 }
 
+# CHOOSE: dta or csv
+hs_file_type <- "dta"
+
 # global vars
 cutoff <- 50
 
 # specify the shared location
-shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
-
+if (hs_file_type == "dta") {
+  shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
+} else if (hs_file_type == "csv") {
+  shared <- paste0(data, "/housing")
+} else {
+  stop("Invalid 'hs_file_type': must be either 'dta' or 'csv'")
+}
 
 # covariates list 
 vars_list <- c("TENDIGIT_FIPS", "year" ,"pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
@@ -41,7 +50,7 @@ census <- haven::read_dta(paste0(data,"/census_property_9021.dta")) %>%
 
 # importing roads and census dataset. Selecting only renewals and levies that do not last forever. Separating into treatment and control groups.
 roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
-  select(-matches("yr_t_")) %>%
+  dplyr::select(-matches("yr_t_")) %>%
   filter(description == "R" & duration != "1000") %>%
   janitor::clean_names() %>%
   mutate(votes_pct_against = 100 - votes_pct_for) %>%
@@ -52,16 +61,30 @@ roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
 #  Importing Housing datasets as a list ----
 #============================================#
 # storing all housing dfs as a list
-dataset_names <- stringr::str_remove(list.files(paste0(shared),
-                                                pattern = "matches",
-                                                recursive = FALSE),
-                                     paste0(".", "dta")) 
+dataset_names <- if (hs_file_type == "dta") {
+  stringr::str_remove(
+    list.files(shared, pattern = "matches", recursive = FALSE),
+    "\\.dta$"
+  )
+} else {
+  stringr::str_remove(
+    list.files(shared, pattern = "matches", recursive = FALSE),
+    "\\.csv$"
+  )
+}
+
 # import data
-housing_dfs <- purrr::map(list.files(paste0(shared),
-                                     pattern = "matches",
-                                     recursive = FALSE,
-                                     full.names = TRUE),
-                          haven::read_dta) 
+housing_dfs <- if (hs_file_type == "dta") {
+  purrr::map(
+    list.files(shared, pattern = "matches", recursive = FALSE, full.names = TRUE),
+    haven::read_dta
+  )
+} else {
+  purrr::map(
+    list.files(shared, pattern = "matches", recursive = FALSE, full.names = TRUE),
+    readr::read_csv
+  )
+}
 # assign names to housing dfs
 housing_dfs <- stats::setNames(housing_dfs, dataset_names)
 
@@ -83,7 +106,7 @@ dfs <- purrr::map(housing_dfs, ~.x %>%
 # |- filtering ---- 
 # get colnames from t+10
 # yr_t_plus_names <- dfs$housing_roads_census_t_plus_10_matches %>% select(starts_with("yr_t_plus")) %>% colnames() %>% sort()
-yr_t_names <- dfs$housing_roads_census_t_plus_10_matches %>% select(starts_with("yr_t_")) %>% colnames() %>% sort()
+yr_t_names <- dfs$housing_roads_census_t_plus_10_matches %>% dplyr::select(starts_with("yr_t_")) %>% colnames() %>% sort()
 
 # create aggregate datasets 
 # Dataset contains the following indices:
@@ -239,10 +262,10 @@ top10_cuts <- roads_and_census %>%
 #   write_csv(here("data/outputs/tables/fips_list_for_google_earth.csv"))
 
 # roads_and_census %>% 
-#   filter(tendigit_fips %in% top10_ren$tendigit_fips) %>% select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 0) %>% head(20)
+#   filter(tendigit_fips %in% top10_ren$tendigit_fips) %>% dplyr::select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 0) %>% head(20)
 
 # roads_and_census %>% 
-  # filter(tendigit_fips %in% top10_cuts$tendigit_fips) %>% select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 1) %>% head(20)
+  # filter(tendigit_fips %in% top10_cuts$tendigit_fips) %>% dplyr::select(tendigit_fips, year, votes_pct_against, treated) %>% filter(treated == 1) %>% head(20)
 
 
 #==================================================#
@@ -266,13 +289,13 @@ top10_cuts <- roads_and_census %>%
 #          yr_t_plus_8 = year + 8,
 #          yr_t_plus_9 = year + 9,
 #          yr_t_plus_10 = year + 10) %>%
-#   select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
+#   dplyr::select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
 #   arrange(tendigit_fips, year)
 # 
 # hs_agg_mgd <- purrr::map(yrs, function(y){
 #   hs_agg %>% rename_with(~ y , year) %>% 
 #     inner_join(r_c_h, by = c("tendigit_fips", y)) %>%
-#     select(-starts_with("yr_t"), all_of(y)) %>%
+#     dplyr::select(-starts_with("yr_t"), all_of(y)) %>%
 #     relocate(y, .after = tendigit_fips) %>%
 #     mutate(median_sale_amount_growth = (median_sale_amount.x - median_sale_amount.y)/median_sale_amount.y ,
 #            mean_sale_amount_growth = (mean_sale_amount.x - mean_sale_amount.y)/mean_sale_amount.y,

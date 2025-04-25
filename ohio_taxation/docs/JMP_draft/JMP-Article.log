@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3.31) (preloaded format=pdflatex 2024.4.6)  12 MAR 2025 11:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  14 APR 2025 11:09
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -144,7 +144,7 @@ File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 107.
  (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
-File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
+File: pdftex.def 2024/04/13 v1.2c Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen161
 \Gin@req@width=\dimen162
@@ -186,16 +186,16 @@ LaTeX Warning: Command \underline  has changed.
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/comment\comment.sty
 \CommentStream=\write3
  Excluding comment 'comment') (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/footmisc\footmisc.sty
-Package: footmisc 2023/07/05 v6.0f a miscellany of footnote facilities
+Package: footmisc 2024/12/24 v6.0g a miscellany of footnote facilities
 \FN@temptoken=\toks26
 \footnotemargin=\dimen171
 \@outputbox@depth=\dimen172
-Package footmisc Info: Declaring symbol style bringhurst on input line 696.
-Package footmisc Info: Declaring symbol style chicago on input line 704.
-Package footmisc Info: Declaring symbol style wiley on input line 713.
-Package footmisc Info: Declaring symbol style lamport-robust on input line 724.
-Package footmisc Info: Declaring symbol style lamport* on input line 744.
-Package footmisc Info: Declaring symbol style lamport*-robust on input line 765.
+Package footmisc Info: Declaring symbol style bringhurst on input line 699.
+Package footmisc Info: Declaring symbol style chicago on input line 707.
+Package footmisc Info: Declaring symbol style wiley on input line 716.
+Package footmisc Info: Declaring symbol style lamport-robust on input line 727.
+Package footmisc Info: Declaring symbol style lamport* on input line 747.
+Package footmisc Info: Declaring symbol style lamport*-robust on input line 768.
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip54
@@ -380,7 +380,7 @@ Package: longtable 2023-11-01 v4.19 Multi-page Table package (DPC)
 \c@LT@chunks=\count301
 \LT@p@ftn=\toks28
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/colortbl\colortbl.sty
-Package: colortbl 2024/02/20 v1.0g Color table columns (DPC)
+Package: colortbl 2024/05/26 v1.0h Color table columns (DPC)
 \everycr=\toks29
 \minrowclearance=\skip69
 \rownum=\count302

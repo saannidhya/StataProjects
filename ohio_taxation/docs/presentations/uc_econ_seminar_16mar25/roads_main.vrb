@@ -1,0 +1,66 @@
+\frametitle{Variable Means \& Standard Deviation by Tax Levy Renewal Status}
+\scriptsize
+    \begin{longtable}{p{4cm}ccccc}
+        \caption{Variable Means \& Standard Deviation by Tax Levy Renewal Status} \label{tab:variable_means_sd} \\
+        \hline
+        Variable & \multicolumn{3}{c}{Global} & \multicolumn{2}{c}{Effective} \\
+        \cmidrule(lr){2-4} \cmidrule(lr){5-6}
+                 & Full Sample & Renewed & Cut & Renewed (Control) & Cut (Treatment) \\
+        \hline
+        \endfirsthead
+
+        \multicolumn{6}{c}{{\bfseries \tablename\ \thetable{} -- continued from previous slide}} \\
+        \hline
+        Variable & \multicolumn{3}{c}{Global} & \multicolumn{2}{c}{Effective} \\
+        \cmidrule(lr){2-4} \cmidrule(lr){5-6}
+                 & Full Sample & Renewed & Cut & Renewed (Control) & Cut (Treatment) \\
+        \hline
+        \endhead
+
+        \hline \multicolumn{6}{r}{{Continued on next slide}} \\
+        \endfoot
+
+        \hline
+        \endlastfoot
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%  Panel A (UPDATED)   %%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%
+        Population & 5,072 & 4,733 & 5,139 & 4,885 & 5,186 \\
+                   & (7,936) & (7,291) & (8,058) & (7,036) & (8,229) \\
+        Poverty Rate & 0.11 & 0.11 & 0.11 & 0.10 & 0.11 \\
+                     & (0.08) & (0.07) & (0.08) & (0.07) & (0.08) \\
+        \% with Kids & 0.39 & 0.40 & 0.39 & 0.39 & 0.39 \\
+                     & (0.08) & (0.08) & (0.08) & (0.07) & (0.08) \\
+        \% Households with Children under 18 & 0.09 & 0.09 & 0.09 & 0.09 & 0.08 \\[-2.3em]
+                                           & (0.06) & (0.05) & (0.06) & (0.06) & (0.05) \\
+        \% Less than High School Education & 0.16 & 0.18 & 0.15 & 0.18 & 0.16 \\[-2.3em]
+                                         & (0.11) & (0.12) & (0.11) & (0.12) & (0.10) \\
+        \% Some College Education & 0.25 & 0.24 & 0.25 & 0.24 & 0.25 \\[-2.3em]
+                                 & (0.06) & (0.06) & (0.06) & (0.07) & (0.06) \\
+        \% Renters & 0.20 & 0.20 & 0.20 & 0.19 & 0.20 \\
+                   & (0.11) & (0.10) & (0.11) & (0.09) & (0.11) \\
+        Unemployment Rate & 0.05 & 0.05 & 0.05 & 0.05 & 0.06 \\
+                         & (0.04) & (0.03) & (0.04) & (0.03) & (0.04) \\
+        \% White & 0.96 & 0.97 & 0.96 & 0.97 & 0.97 \\
+                 & (0.07) & (0.07) & (0.07) & (0.07) & (0.08) \\
+        \% Black & 0.02 & 0.02 & 0.02 & 0.02 & 0.02 \\
+                 & (0.07) & (0.06) & (0.07) & (0.07) & (0.07) \\
+        \% Married & 0.59 & 0.60 & 0.59 & 0.61 & 0.60 \\
+                   & (0.09) & (0.08) & (0.09) & (0.08) & (0.09) \\
+        \% Separated & 0.01 & 0.01 & 0.01 & 0.01 & 0.01 \\
+                     & (0.01) & (0.01) & (0.01) & (0.01) & (0.01) \\
+        Income Heterogeneity Index & 0.10 & 0.09 & 0.10 & 0.09 & 0.09 \\[-2.3em]
+                                 & (0.08) & (0.07) & (0.08) & (0.07) & (0.06) \\
+        Median Family Income & 61,018 & 58,761 & 61,467 & 59,934 & 60,370 \\[-2.3em]
+                             & (17,649) & (13,915) & (18,270) & (13,655) & (15,713) \\
+        \% Under 5 Years Old & 0.06 & 0.06 & 0.06 & 0.06 & 0.06 \\
+                             & (0.02) & (0.02) & (0.02) & (0.02) & (0.02) \\
+        \% Aged 5 to 17 & 0.20 & 0.21 & 0.20 & 0.20 & 0.20 \\
+                       & (0.05) & (0.04) & (0.05) & (0.04) & (0.05) \\
+        \% Aged 18 to 64 & 0.60 & 0.60 & 0.60 & 0.60 & 0.60 \\
+                         & (0.05) & (0.05) & (0.05) & (0.04) & (0.05) \\
+        \% Racial Minority & 0.04 & 0.03 & 0.04 & 0.03 & 0.03 \\
+                         & (0.07) & (0.07) & (0.07) & (0.08) & (0.07) \\
+        Number of Observations & 3,184 & 2,656 & 528 & 653 & 269 \\
+    \end{longtable}

@@ -1,6 +1,6 @@
 
 # takes in a dataset, an outcome variable and a covariate list and outputs a covariate list that gives the lowest p-value for treatment effect
-find_covs <- function(df, y, covs_list, dummies = NULL){
+find_covs <- function(df, y, covs_list, run_var = "votes_pct_against", cutoff = 50, dummies = NULL){
   
   # initialize
   cv_list <- NULL
@@ -9,7 +9,7 @@ find_covs <- function(df, y, covs_list, dummies = NULL){
   # RD without any covariates
   if (!is.null(dummies)){
     og <- rdrobust(y = df[[y]],
-                   x = df$votes_pct_against,
+                   x = df[[run_var]],
                    c = cutoff,
                    covs = df %>% select(all_of(dummies)),
                    all = TRUE)
