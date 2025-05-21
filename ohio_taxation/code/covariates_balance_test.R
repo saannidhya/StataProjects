@@ -8,6 +8,7 @@
 #           06/24/2024 : Updated the code to make it compatible with other files    
 #           07/25/2024 : Added t-3, t-2, t+1 housing datasets to the table for housing outcome
 #           08/15/2024 : Added t-3, t-2, t+1 housing datasets to the table for employment and wages outcomes
+#           05/15/2024 : Added dplyr::select to avoid function conflict
 #==========================================================================================================#
 
 library(kableExtra)
@@ -85,11 +86,11 @@ nrow(m.out$X)
 #=======================================#
 
 # plotting unadjusted mean differences between treated and untreated 
-balance_stats <- bal.tab(treated ~ ., data = roads_and_census %>% select(treated,all_of(covs_list)), un = TRUE, s.d.denom = "treated")
+balance_stats <- bal.tab(treated ~ ., data = roads_and_census %>% dplyr::select(treated,all_of(covs_list)), un = TRUE, s.d.denom = "treated")
 love.plot(balance_stats, thresholds = 0.2)
 
 covs_my_list <- c("pop", "poverty", "pctmin", "medfamy",  "pct18to64", "pctlesshs", "pctsinparhhld", "pctlt5")
-balance_stats <- bal.tab(treated ~ ., data = roads_and_census %>% select(treated,all_of(covs_my_list)), un = TRUE, s.d.denom = "treated")
+balance_stats <- bal.tab(treated ~ ., data = roads_and_census %>% dplyr::select(treated,all_of(covs_my_list)), un = TRUE, s.d.denom = "treated")
 love.plot(balance_stats, thresholds = 0.2)
 
 
@@ -108,7 +109,7 @@ weighted_roads_and_census <- roads_and_census %>% mutate(weights = w.out$weights
 # Need to take a subset of covariates and then do weighting based on those variables.
 
 # data("lalonde", package = "cobalt") #If not yet loaded
-# covs <- subset(lalonde, select = -c(treat, re78, nodegree, married))
+# covs <- subset(lalonde, dplyr::select = -c(treat, re78, nodegree, married))
 # lalonde$p.score <- glm(treat ~ age + educ + race + re74 + re75,
 #                        data = lalonde,
 #                        family = "binomial")$fitted.values
@@ -148,10 +149,10 @@ chr_lst <- unique(flatten_chr(covs_final))
 roads_and_census_2 <- roads_and_census %>% drop_na()  %>%
   filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) 
 
-roads_and_census_3 <- roads_and_census_2 %>% select(chr_lst[chr_lst != "pctsomecoll"], treated) %>% 
+roads_and_census_3 <- roads_and_census_2 %>% dplyr::select(chr_lst[chr_lst != "pctsomecoll"], treated) %>% 
   rename_with(~new_names[.x], .names = chr_lst[chr_lst != "pctsomecoll"])
 
-covs_bal_tab <- bal.tab(roads_and_census_3 %>% select(-treated) %>% 
+covs_bal_tab <- bal.tab(roads_and_census_3 %>% dplyr::select(-treated) %>% 
                           rename(),
                         treat = roads_and_census_3$treated)
 love.plot(covs_bal_tab, thresholds = 0.5, colors = c("#1e90ff"))
@@ -168,12 +169,12 @@ roads_and_census_std %>% group_by(treated) %>% summarize(across(chr_lst, list(me
          std_mean_diff = treated_1 - treated_0)
 
 
-# th <- roads_and_census %>% filter(treated == 1) %>% select(pctlesshs) %>% pull() 
+# th <- roads_and_census %>% filter(treated == 1) %>% dplyr::select(pctlesshs) %>% pull() 
 # 
 # mean(th)/sd(th) - mean(tu)/sd(tu)
 # 
 # 
-# tu <- roads_and_census %>% filter(treated == 0) %>% select(pctlesshs) %>% pull() 
+# tu <- roads_and_census %>% filter(treated == 0) %>% dplyr::select(pctlesshs) %>% pull() 
 # tu
 # mean(tu)/sd(tu)
 
@@ -186,14 +187,14 @@ roads_and_census_std %>% group_by(treated) %>% summarize(across(chr_lst, list(me
 # roads_and_census %>% View()
 
 # global: aggregate
-means_global_agg <- roads_and_census %>% select(all_of(covs_list)) %>%
+means_global_agg <- roads_and_census %>% dplyr::select(all_of(covs_list)) %>%
   summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                       sd = ~sd(., na.rm = TRUE))), count = n()) %>%
   pivot_longer(cols = everything(), names_to = "variable", values_to = "global_value") %>% 
   mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", "")) 
 # means_global_agg %>% print(n = 67)
 # global: passed and failed
-means_global_div <- roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>%
+means_global_div <- roads_and_census %>% dplyr::select(treated, votes_pct_against, all_of(covs_list)) %>%
   group_by(treated) %>%
   summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                       sd = ~sd(., na.rm = TRUE))), count = n()) %>%
@@ -208,17 +209,17 @@ means_global_div <- roads_and_census %>% select(treated, votes_pct_against, all_
 avg_bw <- mean(map_dbl(gs[4:length(gs)], ~round(.x$bws[1,],1)[[1]]))
 
 # effective 1: agg
-means_eff_agg <-   roads_and_census %>% select(votes_pct_against, all_of(covs_list)) %>%
-    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+means_eff_agg <-   roads_and_census %>% dplyr::select(votes_pct_against, all_of(covs_list)) %>%
+    filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
     summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                         sd = ~sd(., na.rm = TRUE))), count = n()) %>%
     pivot_longer(cols = everything(), names_to = "variable", values_to = "effective_value") %>% 
     mutate(statistic = str_extract(variable,"mean|sd"), variable = str_replace(variable, "_mean|_sd", ""))
 # means_eff_agg  %>% tail()
 # effective 1: passed and failed
-means_eff_div <-   roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>%
+means_eff_div <-   roads_and_census %>% dplyr::select(treated, votes_pct_against, all_of(covs_list)) %>%
     filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% 
-    select(-votes_pct_against) %>%
+    dplyr::select(-votes_pct_against) %>%
     group_by(treated) %>%
     summarize(across(everything(), list(mean = ~mean(., na.rm = TRUE), 
                                         sd = ~sd(., na.rm = TRUE))), count = n()) %>%
@@ -249,7 +250,7 @@ tbl1 %>%
   filter(variable %in% unique(flatten_chr(covs_final))) %>%
   mutate(across(where(is.numeric), ~round(., 2))) %>%
   relocate(variable, statistic, everything()) %>%
-  select(-effective_value) %>%
+  dplyr::select(-effective_value) %>%
   rename(`Global: Full Sample` = global_value, `Global: Failed levies` = global_treated_0, `Global: Passed levies` = global_treated_1,
          `Eff: Passed levies` = effective_treated_1, `Eff: Failed levies` = effective_treated_0)  %>%
   rowwise() %>% 
@@ -283,7 +284,7 @@ medfamy$mean_medfamy[2] - medfamy$mean_medfamy[1] # difference in means
 
 
 #==== loop to get covariates t-tests val and s.e for paper ====#
-df_eff <- roads_and_census %>% select(treated, votes_pct_against, all_of(covs_list)) %>%
+df_eff <- roads_and_census %>% dplyr::select(treated, votes_pct_against, all_of(covs_list)) %>%
   filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw))
 
 results <- list()
@@ -320,7 +321,7 @@ map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y) ) %>%
   # .[grepl("t_minus", names(.)) ] %>%
   bind_rows() %>%
   # filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% 
-  select(-votes_pct_against) %>%
+  dplyr::select(-votes_pct_against) %>%
   group_by(dataset) %>%
   summarize(global_mean_hp = mean(median_sale_amount), global_sd_hp = sd(median_sale_amount)) 
 
@@ -335,7 +336,7 @@ map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated =
 map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
   # .[grepl("t_minus", names(.)) ] %>% 
   bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
   group_by(dataset) %>%
   summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) 
 
@@ -343,7 +344,7 @@ map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated =
 map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
   # .[grepl("t_minus", names(.)) ] %>% 
   bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
   group_by(dataset, treated) %>%
   summarize(div_mean_hp = mean(median_sale_amount), div_sd_hp = sd(median_sale_amount)) %>% print(. , n = 28)
 
@@ -352,7 +353,7 @@ map2(dfs_agg_covs, names(dfs_agg_covs), ~  .x %>% mutate(dataset = .y, treated =
 
 # global: aggregate
 map2(dfs_emp_agg_per , names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
   group_by(dataset) %>%
   summarize(global_mean_hp = mean(avg_persons), global_sd_hp = sd(avg_persons)) 
 
@@ -365,7 +366,7 @@ map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, tre
 # effective 1: passed and failed
 map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
   .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
   group_by(dataset, treated) %>%
   summarize(div_mean_hp = mean(avg_persons), div_sd_hp = sd(avg_persons)) 
 
@@ -373,7 +374,7 @@ map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, tre
 
 # global: aggregate
 map2(dfs_emp_agg_per , names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
   group_by(dataset) %>%
   summarize(global_mean_hp = mean(tot_wages), global_sd_hp = sd(tot_wages)) 
 
@@ -386,7 +387,7 @@ map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, tre
 # effective 1: passed and failed
 map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
   .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
   group_by(dataset, treated) %>%
   summarize(div_mean_hp = mean(wages_per_cap), div_sd_hp = sd(wages_per_cap)) 
 
@@ -395,7 +396,7 @@ map2(dfs_emp_agg_per, names(dfs_emp_agg_per), ~  .x %>% mutate(dataset = .y, tre
 
 # global: aggregate
 map2(dfs_emp_agg_p , names(dfs_emp_agg_p), ~  .x %>% mutate(dataset = .y) ) %>% .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
   group_by(dataset) %>%
   summarize(global_mean_hp = mean(wages_per_emp), global_sd_hp = sd(wages_per_emp)) 
 
@@ -408,7 +409,7 @@ map2(dfs_emp_agg_p, names(dfs_emp_agg_p), ~  .x %>% mutate(dataset = .y, treated
 # effective 1: passed and failed
 map2(dfs_emp_agg_p, names(dfs_emp_agg_p), ~  .x %>% mutate(dataset = .y, treated = if_else(votes_pct_against > cutoff, 1, 0)) ) %>% 
   .[grepl("t_minus", names(.)) ] %>% bind_rows() %>%
-  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% select(-votes_pct_against) %>%
+  filter(between(votes_pct_against, cutoff - avg_bw, cutoff + avg_bw)) %>% dplyr::select(-votes_pct_against) %>%
   group_by(dataset, treated) %>%
   summarize(div_mean_hp = mean(wages_per_emp), div_sd_hp = sd(wages_per_emp)) 
 

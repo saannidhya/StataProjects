@@ -32,7 +32,7 @@ rd <- haven::read_dta(paste0(data,"/roads_and_census.dta"))
 # cleaning roads dataset: creating vote share variables, keeping the obs per fips per year closest to cutoff, adding fail flag
 # note: rds contains both additional and renewal road tax levies
 rds <- rd %>%
-  select(all_of(rd_var_list)) %>% 
+  dplyr::select(all_of(rd_var_list)) %>% 
   janitor::clean_names() %>%
   mutate(votes_pct_for = (votesfor / (votesfor + votesagainst))*100,
          votes_pct_for_cntr = abs(votes_pct_for - cutoff)) %>%
@@ -44,7 +44,7 @@ rds <- rd %>%
   mutate(fail_flg = if_else(votes_pct_for < cutoff, 1, 0))
 # rds_additional_vts: filtering out additional road tax levies, creating a flag to identify additional levies that passed. These will be contaminating our Treatment Effect.
 rds_additional_vts <- rds %>%
-  select(all_of(c("tendigit_fips","year", roads_vars, "votes_pct_for", "fail_flg"))) %>%
+  dplyr::select(all_of(c("tendigit_fips","year", roads_vars, "votes_pct_for", "fail_flg"))) %>%
   filter(description == "A") %>% 
   mutate(pass_flg = if_else(votes_pct_for >= cutoff, 1, 0))
 
@@ -92,7 +92,7 @@ dff <- dfs_agg_all_add %>%
 # Generating dfs_agg_pure from dfs_agg after eliminating contaminated obseravations ----
 # create separate datasets for t-3 up to t+10
 dfs_agg_pure <- purrr::map(df_names, ~ dff %>%  filter(dataset == .x)  %>% ungroup() %>%
-                             select(-c("taxtype","purpose2","description", "millagepercent","duration",
+                             dplyr::select(-c("taxtype","purpose2","description", "millagepercent","duration",
                                        "votesfor","votesagainst","votes_pct_for", "fail_flg","pass_flg",
                                        "numeric_df","break","group", "first_pass_flg","drop_flg")))
 names(dfs_agg_pure) <- paste0("housing_roads_census_", df_names, "_matches")

@@ -11,7 +11,7 @@ find_covs <- function(df, y, covs_list, run_var = "votes_pct_against", cutoff = 
     og <- rdrobust(y = df[[y]],
                    x = df[[run_var]],
                    c = cutoff,
-                   covs = df %>% select(all_of(dummies)),
+                   covs = df %>% dplyr::select(all_of(dummies)),
                    all = TRUE)
     # print("og ran with dummies")
   }
@@ -35,7 +35,7 @@ find_covs <- function(df, y, covs_list, run_var = "votes_pct_against", cutoff = 
       nw <- rdrobust(y = df[[y]],
                      x = df$votes_pct_against, 
                      c = cutoff, 
-                     covs = df %>% select(all_of(c(dummies, cv_list))),
+                     covs = df %>% dplyr::select(all_of(c(dummies, cv_list))),
                      all = TRUE)
       # print("nw ran with dummies")
     }
@@ -43,7 +43,7 @@ find_covs <- function(df, y, covs_list, run_var = "votes_pct_against", cutoff = 
       nw <- rdrobust(y = df[[y]],
                      x = df$votes_pct_against, 
                      c = cutoff, 
-                     covs = df %>% select(cv_list),
+                     covs = df %>% dplyr::select(cv_list),
                      all = TRUE)
     }
     nw_p <- nw$pv[[1]]
@@ -58,7 +58,7 @@ find_covs <- function(df, y, covs_list, run_var = "votes_pct_against", cutoff = 
       og <- rdrobust(y = df[[y]],
                      x = df$votes_pct_against,
                      c = cutoff,
-                     covs = df %>% select(cv_list) ,
+                     covs = df %>% dplyr::select(cv_list) ,
                      all = TRUE)
       og_p <- og$pv[[1]]
     }
@@ -132,7 +132,7 @@ find_covs_sign <- function(df, y, covs_list, sign = c("positive","negative")){
     nw <- rdrobust(y = df[[y]],
                    x = df$votes_pct_against, 
                    c = cutoff, 
-                   covs = df %>% select(cv_list) ,
+                   covs = df %>% dplyr::select(cv_list) ,
                    all = TRUE)
     nw_p <- nw$pv[[1]]
     nw_est <- nw$coef[[1]]
@@ -247,7 +247,7 @@ rdd_lm <- function(df, y, x, covs, cutoff = 50){
     rob <- rdrobust(y = df[[y]],
                     x = df[[x]],
                     c = cutoff,
-                    covs = df %>% select(covs) ,
+                    covs = df %>% dplyr::select(covs) ,
                     all = TRUE)
     
   } else {
@@ -263,7 +263,7 @@ rdd_lm <- function(df, y, x, covs, cutoff = 50){
   df <- df %>% mutate(x_c = .data[[x]] - cutoff,
                       treated = if_else(x_c >= 0, 1, 0),
                       treat_times_votes = x_c*treated) %>% 
-    select(c(y, x_c, treated, treat_times_votes, covs)) %>% 
+    dplyr::select(c(y, x_c, treated, treat_times_votes, covs)) %>% 
     filter(x_c >= -bws[["left"]] & x_c <= bws[["right"]])
   
   formula_str <- paste(y, "~", paste(c("x_c", "treated", "treat_times_votes", covs), collapse = " + "))
@@ -335,7 +335,7 @@ right_covs <- function(df, covs_list, num_covs = 3, cutoff = 50, pv_above_flag =
     rg <- rdrobust::rdrobust(y = df[[y]],
                              x = df[[running_var]], 
                              c = cutoff, 
-                             covs = df %>% select(x),
+                             covs = df %>% dplyr::select(x),
                              all = TRUE)
     
     if (coef_above_zero & pv_above_flag) {
@@ -357,7 +357,7 @@ right_covs <- function(df, covs_list, num_covs = 3, cutoff = 50, pv_above_flag =
 #   rg <- rdrobust::rdrobust(y = dfs_agg_covs$housing_roads_census_t_plus_10_matches$median_sale_amount,
 #                            x = dfs_agg_covs$housing_roads_census_t_plus_10_matches$votes_pct_against, 
 #                            c = cutoff, 
-#                            covs = dfs_agg_covs$housing_roads_census_t_plus_10_matches %>% select(x),
+#                            covs = dfs_agg_covs$housing_roads_census_t_plus_10_matches %>% dplyr::select(x),
 #                            all = TRUE)
 #   
 #   if (rg$coef[3] < 0 & rg$pv[3] < 0.05) return(x)

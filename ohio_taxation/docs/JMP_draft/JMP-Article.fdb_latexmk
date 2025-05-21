@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex JMP-Article"] 1741793450.54477 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1744643404.38473 0
+["bibtex JMP-Article"] 1747697460.72289 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1747697688.24062 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
-  "./aej_references.bib" 1741291713 17069 f577cc6e1698e81ea04520d04925fd54 ""
-  "JMP-Article.aux" 1744643402 18697 79f61790cde000d6f4259b5676cd769c "pdflatex"
+  "./aej_references.bib" 1747670798 17407 8094a5f6b93194b0031d94fb1957d832 ""
+  "JMP-Article.aux" 1747697684 18665 8b8d1fecb90282969423fd660bf8c14d "pdflatex"
   (generated)
   "JMP-Article.bbl"
   "JMP-Article.blg"
   (rewritten before read)
-["pdflatex"] 1744643398.59443 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1744643404.3861 0
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1738277282 81286 a24972354787ad66f4189952495c30ed ""
+["pdflatex"] 1747697680.38376 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1747697688.24201 0
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1745115934 81286 a24972354787ad66f4189952495c30ed ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0700.pk" 1737579311 8268 191349543146a4c053d7a8b3d482dfab ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1737579313 11548 9725287d5650551bd806f254213fceb9 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1095.pk" 1725996815 12668 7c05b1dffa2f85bd638c76b90eff227d ""
@@ -148,13 +148,13 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "JMP-Article.aux" 1744643402 18697 79f61790cde000d6f4259b5676cd769c "pdflatex"
-  "JMP-Article.bbl" 1741793450 10625 ad0970a883b1e9c6d7b2a109951a9c8c "bibtex JMP-Article"
-  "JMP-Article.out" 1744643402 4493 21c7de01062b2c6697b36817a5ebf91c "pdflatex"
-  "JMP-Article.tex" 1744643396 6271 822e893589ce3fb16c96d89fa27186aa ""
+  "JMP-Article.aux" 1747697684 18665 8b8d1fecb90282969423fd660bf8c14d "pdflatex"
+  "JMP-Article.bbl" 1747697461 9538 deba1b3e458ab7a3bac32148c091ceee "bibtex JMP-Article"
+  "JMP-Article.out" 1747697684 4493 e30647dd0d8b9c68f85a292bf68c2556 "pdflatex"
+  "JMP-Article.tex" 1747689370 6321 738219f27a8331ec123798363343ad12 ""
   "appendix.tex" 1741293171 18242 12331e2e9dda8f2ffc1330f802b49f0d ""
-  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1744643396 6271 822e893589ce3fb16c96d89fa27186aa ""
-  "data.tex" 1741645968 27958 b2f528594e3d49754b77489b00e10aaa ""
+  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1747689370 6321 738219f27a8331ec123798363343ad12 ""
+  "data.tex" 1747670798 30034 ceb57be1fe6e56bcc6b948bf4ec459bc ""
   "emp_strategy.tex" 1741618244 4669 ce9f5c9d9993ca32fd765f22efc0dd8e ""
   "images/cov_smoothness_incherfindahl.png" 1719384968 96219 f2c7e0d7952b8c42e58665a73bc8255e ""
   "images/cov_smoothness_medfamy.png" 1719384932 103396 4242c17683df9604fbb4431eaf171387 ""
@@ -179,11 +179,11 @@
   "images/tes_g_w_reg.png" 1740766303 6894 77808b0fcf0c2383364176aef30a49ff ""
   "images/tes_gs_reg.png" 1740765725 6930 36272641bd99477530ae1a6826fbd572 ""
   "images/tes_qte_re.png" 1734359049 8127 038959f1171e33e19271fd2987a9de80 ""
-  "images/tes_size_re.png" 1740768104 7608 ac53aedf628a060f11156ccbafce5e4a ""
+  "images/tes_size_75.png" 1747688213 7361 0e5e0052920c025c939a8e9afc573bc1 ""
   "images/votes_pct_against_histogram.png" 1708134432 34910 2ab2ad4a06488c5311893b5e98604a06 ""
-  "intro.tex" 1741645059 2528 e13d9f5d66320eaf8edd38938fa657c1 ""
+  "intro.tex" 1747688966 4708 aab140daa1d7939839b901a58251bc03 ""
   "lit_review.tex" 1741645732 8837 24984419ba719c69faf7c1a115c95dfa ""
-  "results.tex" 1741646777 38911 86781e9f03b821c4285d7bd8aaf1ec9e ""
+  "results.tex" 1747697678 40092 1022a6a29cf055a96a94e8b5aeb936c7 ""
   (generated)
   "JMP-Article.aux"
   "JMP-Article.log"

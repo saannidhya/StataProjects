@@ -3,7 +3,8 @@
 #           Need "stacked data" that controls for levy history and future elections.    
 # Name    : Saani Rawat
 # Created : 04/22/2025
-# Log     : 1. Created  the script
+# Log     : 1. 04/22/2025: Created  the script
+#           2. 05/07/2025: Added firms created and first destroyed variables
 #==========================================================================================================#
 
 
@@ -125,6 +126,45 @@ write.csv(emp_df_agg_yr, paste0(data, "/employment/emp_df_agg_yr.csv"), row.name
 
 
 
+#----------------------------------------------------------------------------------#
+# Firms created and firms destroyed variables
+#----------------------------------------------------------------------------------#
+
+# get one row per firm-year
+firm_year <- emp_df2 %>% dplyr::as_tibble() %>% filter(year <= 2019) %>% # removing 2020 as COVID year is giving data problems
+  distinct(tendigit_fips, unique_id, year)  
+
+# identify first and last year for each firm
+firm_span <- firm_year %>%                           
+  group_by(unique_id) %>%                            
+  summarise(first_year = min(year),
+            last_year  = max(year),
+            .groups     = "drop")
+
+min_sample_year <- min(firm_span$first_year, na.rm = TRUE)
+max_sample_year <- max(firm_span$last_year, na.rm = TRUE)
+
+# create new variables that indicates whether the firm was created or destroyed
+firm_year_flags <- firm_year %>% 
+                      left_join(firm_span, by = "unique_id") %>%         
+                      mutate(created   = as.integer(year == first_year & first_year > min_sample_year),
+                             destroyed = as.integer(year == last_year & last_year < max_sample_year))
+                    
+firm_churn <- firm_year_flags %>% 
+  group_by(tendigit_fips, year) %>%                  
+  summarise(firms_created   = sum(created,   na.rm = TRUE),
+            firms_destroyed = sum(destroyed, na.rm = TRUE),
+            .groups          = "drop")
+
+# Shows that series are stable
+firm_churn_year <- firm_churn %>% 
+  group_by(year) %>% 
+  summarise(firms_created   = sum(firms_created,   na.rm = TRUE),
+            firms_destroyed = sum(firms_destroyed, na.rm = TRUE),
+            .groups          = "drop")
+
+
+
 #------------------------------------------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------------------------------------------#
 #>                            Running Variable: Elections data
@@ -139,7 +179,16 @@ roads <- haven::read_dta("data/roads_and_census.dta") %>%
          votes_pct_against = votes_pct_against/100,
          hold_election = 1,
          margin_ds = margin*if_pass) %>% janitor::clean_names() %>%
-         select(tendigit_fips, year, subdivisionname, subdivisiontype, county, votes_pct_for, margin, margin_ds, taxtype, purpose2, description, millagepercent, duration, votesfor, votesagainst, votes_pct_for, votes_pct_against, hold_election, if_pass, margin, margin_ds)
+         select(tendigit_fips, year, subdivisionname, subdivisiontype, county, votes_pct_for, margin, margin_ds, taxtype, purpose2, description, millagepercent, duration, votesfor, votesagainst, votes_pct_for, votes_pct_against, hold_election, if_pass, margin, margin_ds,
+                # census variables
+                pop, medfamy, childpov, poverty, pctwithkids, pctsinparhhld, pctnokids, pctlesshs, pcthsgrad, pctsomecoll, pctbachelors, pctgraddeg, unemprate, pctrent, pctown, pctlt5, pct5to17, pct18to64, pct65pls, pctwhite, pctblack, pctamerind, pctapi, pctotherrace, pctmin, raceherfindahl, pcthisp, pctmarried, pctnevermarr, pctseparated, pctdivorced, lforcepartrate, incherfindahl
+         )
+roads %>% relocate(if_pass, .after = description)
+# census <- haven::read_dta("data/roads_and_census.dta") %>% 
+#   select(- all_of(c("taxtype", "purpose2", "description", "millagepercent", "duration", "votesfor", "votesagainst", "votes_pct_for", "votes_pct_against", "votesfor", "votesagainst", "duration", "votes_pct_for_cntr"))) %>% 
+#   select(-starts_with("yr_t_"))
+# 
+# colnames(census)
 
 # unique(roads$description)
 # roads %>% filter(description == "A") %>% filter(between(year, 2006, 2019))
@@ -155,12 +204,14 @@ roads_panel <- crossing(
   year = min(roads$year):max(roads$year), # year relative to election year
   cohort = sort(unique(roads$year)), # election year. All years in which an election was held
  ) %>% arrange(tendigit_fips, cohort, year) %>% 
-  inner_join(roads %>% filter(description == "A") %>% rename(cohort = year), by = c("tendigit_fips", "cohort"))  %>%
+  inner_join(roads %>% rename(cohort = year), by = c("tendigit_fips", "cohort"))  %>%
+  # inner_join(roads %>% filter(description == "A") %>% rename(cohort = year), by = c("tendigit_fips", "cohort"))  %>%
   mutate(across(
     !c(tendigit_fips, year, cohort),  # all columns except the keys
     ~ if_else(year != cohort, NA, .)  # set to NA unless year == cohort
   )) %>%
-  left_join(roads %>% filter(description == "A"), by = c("tendigit_fips", "year"))  
+  left_join(roads, by = c("tendigit_fips", "year"))
+  # left_join(roads %>% filter(description == "A"), by = c("tendigit_fips", "year"))  
 
 roads_panel <- roads_panel %>%
   mutate(across(
@@ -272,7 +323,7 @@ roads_panel_flags <- roads_panel %>%
   )
 
 # export to csv
-write_csv(roads_panel_flags, "data/roads_panel_flags.csv")
+write_csv(roads_panel_flags, "data/roads_panel_flags_all.csv")
 
 #------------------------------------------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------------------------------------------#
@@ -294,5 +345,18 @@ roads_emp_stacked_fips <- roads_panel_flags %>%
                 ~ ifelse(is.nan(.) | is.infinite(.), 0, .) ))
 
 # export to csv
-write_csv(roads_emp_stacked, "data/employment/roads_emp_stacked.csv")
-write_csv(roads_emp_stacked_fips, "data/employment/roads_emp_stacked_fips.csv")
+write_csv(roads_emp_stacked, "data/employment/roads_emp_stacked_all.csv")
+write_csv(roads_emp_stacked_fips, "data/employment/roads_emp_stacked_fips_all.csv")
+
+
+# Merging roads and firm creation and destruction data
+roads_firm_cr_stacked <- roads_panel_flags %>%
+  inner_join(firm_churn %>% select(tendigit_fips, year, firms_created) %>% filter(year > min_sample_year) , by = c("tendigit_fips", "year")) %>%
+  mutate(firms_created = ifelse(is.nan(firms_created) | is.infinite(firms_created), 0, firms_created))
+write_csv(roads_firm_cr_stacked, "data/employment/roads_firm_cr_stacked_all.csv")
+
+roads_firm_dr_stacked <- roads_panel_flags %>%
+  inner_join(firm_churn %>% select(tendigit_fips, year, firms_destroyed) %>% filter(year > min_sample_year) , by = c("tendigit_fips", "year")) %>%
+  mutate(firms_destroyed = ifelse(is.nan(firms_destroyed) | is.infinite(firms_destroyed), 0, firms_destroyed))
+write_csv(roads_firm_dr_stacked, "data/employment/roads_firm_dr_stacked_all.csv")
+

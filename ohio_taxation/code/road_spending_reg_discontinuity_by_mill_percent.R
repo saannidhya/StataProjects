@@ -7,6 +7,7 @@
 #       06/16/2023: 
 #       12/16/2024: updated the code to have t-1 as the reference point
 #       1/24/2024 : updating based on CFR 2010
+#       5/19/2024 : updated analysis based on different splits
 #================================================================================================================#
 
 
@@ -44,6 +45,11 @@ dfs_agg_mill_l_1.9 <- purrr::map2(dfs_agg_mill, mean_mill, ~ .x %>% filter(as.nu
 
 
 # adding covariates
+dfs_agg_gm_covs <- purrr::map(.x = dfs_agg_mill_g_1.9, ~ .x %>% 
+                                dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
+                                ungroup()
+)
+
 dfs_agg_gm_covs <- purrr::map(.x = dfs_agg_mill_g_1.9, ~ .x %>% 
                              dplyr::left_join(y = census, by = c("tendigit_fips","vote_year")) %>%
                              ungroup()
@@ -228,3 +234,67 @@ rdrobust(  y = y$median_sale_amount,
              select(c("pctblack", "")) ,
            all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary
 
+
+
+
+#=====================================================================================================#
+#=====================================================================================================#
+# Trying different splits: 75th Percentile  ----
+#=====================================================================================================#
+#=====================================================================================================#
+
+
+
+# 75th percentile breakpoint
+breakpoint <- quantile(as.numeric(roads_and_census$millagepercent, na.rm = TRUE), 0.75)[[1]]
+
+# Subsetting the sample
+dfs_agg_mill_covs_big <- purrr::map(dfs_agg_mill_covs, ~ .x %>% mutate(millagepercent = as.numeric(millagepercent)) %>% filter(millagepercent > breakpoint))
+
+
+# covs_final_big <- purrr::map(dfs_agg_mill_covs_big, ~find_covs(.x, y = "median_sale_amount", covs_list = covs_list))
+
+dfs_agg_mill_covs_big_w_tfe <- map(dfs_agg_mill_covs_big, ~ dummy_cols(.x, select_columns = c("year"), remove_first_dummy = TRUE) %>% relocate(starts_with("year_"), .after = "year"))
+
+dfs_agg_mill_covs_big_w_tfe_names <- map(dfs_agg_mill_covs_big_w_tfe, ~ colnames(.x) %>% grep("year_", ., value = TRUE))
+
+# covs_final_big_w_tfe <- map2(covs_final_big , dfs_agg_mill_covs_big_w_tfe_names, ~c(.x, .y))
+
+covs_final_big_w_tfe <- map2(covs_final, dfs_agg_mill_covs_big_w_tfe_names, ~c(.x, .y))
+covs_final_big_w_tfe$housing_roads_census_t_plus_4_matches <- c(
+  "pctwithkids", "pctrent", "pct5to17",
+  "pctamerind", "pctseparated",
+  "year_1996", "year_1997", "year_1998", "year_1999", "year_2000", "year_2001",
+  "year_2002", "year_2003", "year_2004", "year_2005", "year_2006", "year_2007",
+  "year_2008", "year_2009", "year_2010", "year_2011", "year_2012", "year_2013",
+  "year_2014", "year_2015", "year_2016", "year_2017", "year_2018", "year_2019",
+  "year_2020", "year_2021")
+covs_final_big_w_tfe$housing_roads_census_t_minus_1_matches <- c(
+  "pop", "poverty", "pctmin", "medfamy", "pct18to64", "pctsinparhhld",
+  "pctwithkids", "pctrent", "pct5to17", "pctamerind", "pctseparated",
+  "year_1996", "year_1997", "year_1998", "year_1999", "year_2000", "year_2001",
+  "year_2002", "year_2003", "year_2004", "year_2005", "year_2006", "year_2007",
+  "year_2008", "year_2009", "year_2010", "year_2011", "year_2012", "year_2013",
+  "year_2014", "year_2015", "year_2016", "year_2017", "year_2018", "year_2019",
+  "year_2020")
+
+ms_reg <- purrr::map2(covs_final_big_w_tfe, dfs_agg_mill_covs_big_w_tfe, .f = function(x,y){
+  rdrobust(  y = y$median_sale_amount,
+             x = y$votes_pct_against,
+             c = cutoff,
+             covs = y %>%
+               dplyr::select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
+})
+tes_ms_reg <- te_tables(ms_reg)
+plot_te(tes_ms_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = expression("Millage Size > 75"^"th"* " percentile")) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black", size = 1) + 
+  geom_point(aes(ord, robust_coef),  data = tes_ms_reg,  size = 3,  shape = 19,  color = "orange") 
+plot_te_recenter(tes_ms_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = expression("Millage Size > 75"^"th"* " percentile")) +
+  geom_hline(yintercept = tes_ms_reg %>% filter(ord == -1) %>% pull(robust_coef), linetype = "dashed", color = "black", size = 1) + 
+  geom_point(aes(ord, robust_coef),  data = tes_ms_reg,  size = 3,  shape = 19,  color = "orange") 
+
+tes_ms_reg %>% filter((ord >= 0)) %>%
+  dplyr::select(robust_coef) %>% pull %>% mean 
+
+# Takeaway: Bigger tax cuts lead to greater housing price decreases

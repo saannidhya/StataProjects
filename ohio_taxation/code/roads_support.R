@@ -7,6 +7,9 @@
 #           3. 2/26/2025: Added regression analysis for Road quality
 #================================================================================================================#
 
+library(fixest)
+library(MASS) 
+
 # specify the set up location
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
 data <- paste0(root,"/data")
@@ -222,7 +225,7 @@ housing_dfs$housing_roads_census_t_plus_0_matches %>%
   filter(year > 1991 & !is.na(SALE_AMOUNT)) %>% 
   summarize(mean = mean(SALE_AMOUNT), median = median(SALE_AMOUNT), sd = sd(SALE_AMOUNT))
 
--16441/170000
+# -16441/170000
 
 # Exporting areas with "close elections" starting 2010. output it as .Rdata.
 closest_votes %>% filter(max_year >= 2010) %>% pull(tendigit_fips) %>% unique %>% as.character() %>%
@@ -458,17 +461,241 @@ ggplot(data_change, aes(x = Levy_Status, y = Change_in_Rating, fill = Levy_Statu
   )
 
 # Regression analysis #
-above_roads <- readr::read_csv(paste0(data,"/roads/ohio/above/above_predictions_with_flag.csv"))
-below_roads <- readr::read_csv(paste0(data,"/roads/ohio/below/below_predictions_with_flag.csv"))
+above_roads <- readr::read_csv(paste0(data,"/roads/ohio/above/above_predictions_with_flag.csv")) %>% 
+  mutate(treat_flag = 1, # Above means these areas are above the cutoff for % votes against i.e. cut their renewal taxes 
+         road_quality_score = round(((predicted_label + confidence) / 3) * 99 + 1, 1),
+         road_quality_score2 = case_when(
+           predicted_label == 0 ~ 1 + (1 - 0.5*confidence) * 99 / 3 ,
+           TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.5*confidence * 99 / 3 
+         ) |> round(1)
+         )  %>%
+  mutate(year = stringr::str_extract(image, "(\\d{4}|\\d{2})(?=\\.jpg)"),
+         year = ifelse(nchar(year) == 2, paste0("20", year), year),
+         year = as.integer(year))
 
+below_roads <- readr::read_csv(paste0(data,"/roads/ohio/below/below_predictions_with_flag.csv")) %>% 
+  mutate(treat_flag = 0,
+         road_quality_score = round(((predicted_label + confidence) / 3) * 99 + 1, 1),
+         road_quality_score2 = case_when(
+           predicted_label == 0 ~ 1 + (1 - 0.5*confidence) * 99 / 3 ,
+           TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.5*confidence * 99 / 3 
+         ) |> round(1)
+         ) %>%
+  mutate(year = stringr::str_extract(image, "(\\d{4}|\\d{2})(?=\\.jpg)"),
+         year = ifelse(nchar(year) == 2, paste0("20", year), year),
+         year = as.integer(year))
+
+roads_close <- bind_rows(above_roads, below_roads) %>% mutate(did = post_election_flag*treat_flag)
+
+# before and after: treatment group
 road_above_lm <- lm(data = above_roads, formula = predicted_label ~ post_election_flag)
 summary(road_above_lm)
-
+# before and after: control group
 road_below_lm <- lm(data = below_roads, formula = predicted_label ~ post_election_flag)
 summary(road_below_lm)
 
+
+lm(data = roads_close %>% filter(post_election_flag == 0), formula = predicted_label ~ treat_flag ) %>% summary
+lm(data = roads_close %>% filter(post_election_flag == 1), formula = predicted_label ~ treat_flag ) %>% summary
+
+road_lm <- lm(data = roads_close, formula = road_quality_score2 ~  treat_flag + post_election_flag + treat_flag*post_election_flag)
+summary(road_lm)
+
 above_roads[above_roads$post_election_flag == 1, "predicted_label"] %>% pull(predicted_label) %>% mean
 below_roads[below_roads$post_election_flag == 1, "predicted_label"] %>% pull(predicted_label) %>% mean
+
+# Diff-in-Diff analysis #
+ 
+
+mean(roads_close$predicted_label)
+mean(above_roads$predicted_label)
+
+# group means 
+roads_close %>%
+  group_by(treat_flag, post_election_flag) %>%
+  summarize(mean = mean(predicted_label), sd = sd(predicted_label) ,
+            mean_score = mean(road_quality_score), sd_score = sd(road_quality_score) ,
+            mean_score2 = mean(road_quality_score2), sd_score2 = sd(road_quality_score2) 
+            # ,n = n()
+            )
+
+
+roads_lm <- lm(data = roads_close, formula = predicted_label ~ post_election_flag + treat_flag + did) 
+summary(roads_lm)
+
+# effect of cutting local road tax on road quality
+roads_did <- feols(predicted_label ~ did | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips) 
+summary(roads_did)
+
+model2 <- lm(predicted_label ~ treat_flag * post_election_flag, data = roads_close)
+# Cluster by township (tendigit_fips)
+coeftest(model2, vcov = vcovCL, cluster = ~year)
+
+model3 <- lm(road_quality_score ~ treat_flag * post_election_flag  + factor(County), data = roads_close)
+# Cluster by township (tendigit_fips)
+coeftest(model3, vcov = vcovCL, cluster = ~tendigit_fips)
+
+feols(road_quality_score ~ did  | post_election_flag + treat_flag, data = roads_close) %>% summary 
+feols(road_quality_score2 ~ did  | post_election_flag + treat_flag, data = roads_close) %>% summary 
+
+feols(road_quality_score ~ did  | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips) %>% summary 
+feols(road_quality_score2 ~ did  | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips) %>% summary 
+
+
+feols(road_quality_score ~ did  | post_election_flag + treat_flag, se = "jk", data = roads_close, cluster = ~year) %>% summary 
+
+feols(road_quality_score2 ~ did  | post_election_flag + treat_flag, data = roads_close, cluster = ~year) %>% summary 
+
+
+roads_close$tendigit_fips2 <- as.factor(roads_close$tendigit_fips)
+
+jhk <- feols(road_quality_score ~ did  | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips) %>%
+  boottest("did", B = 999, clustid = ~tendigit_fips, param = "did")
+
+m2  <- feols(road_quality_score2 ~ did | post_election_flag + treat_flag, data = roads_close)
+
+vcov_cr2 <- clubSandwich::vcovCR(m2, cluster = roads_close$tendigit_fips, type = "CR2")
+coef_test(m2, vcov = vcov_cr2, test = "Satterthwaite") 
+
+
+did_mod <- feols(
+  predicted_label ~ did | post_election_flag + treat_flag,
+  data = roads_close                       # <-- no SEs yet
+)
+summary(did_mod, vcov = ~ year)
+V_cr2 <- clubSandwich::vcovCR(did_mod,
+                              cluster = roads_close$tendigit_fips,
+                              type    = "CR2")        # small-sample adj. :contentReference[oaicite:3]{index=3}
+
+clubSandwich::coef_test(did_mod, vcov = V_cr2, test = "Satterthwaite") 
+
+V_cr3j <- summclust::vcov_CR3J(did_mod, cluster = "year")  # leverages leave-one-cluster-out :contentReference[oaicite:5]{index=5}
+keep <- names(coef(did_mod))          # returns "did"
+V_cr3j_trim <- V_cr3j[keep, keep, drop = FALSE]
+summary(did_mod, .vcov = V_cr3j_trim)  
+
+
+did_mod0 <- feols(predicted_label ~ did | post_election_flag + treat_flag,
+                  data = roads_close)
+
+boot_res <- fwildclusterboot::boottest(
+  did_mod0,
+  param    = "did",
+  clustid  = "tendigit_fips",   # OR c("tendigit_fips","year") for 2-way
+  B        = 9999           # draws
+  # bootwild = "rademacher"       # default, fastest :contentReference[oaicite:7]{index=7}
+)
+
+boot_res$p_val  
+
+roads_twp_yr <- roads_close |>
+  dplyr::group_by(tendigit_fips, year,
+                  treat_flag, post_election_flag) |>
+  dplyr::summarise(score = mean(road_quality_score2), .groups = "drop") |>
+  dplyr::mutate(did = treat_flag * post_election_flag)
+
+agg_mod <- feols(score ~ did | post_election_flag + treat_flag,
+                 data = roads_twp_yr)
+
+summary(agg_mod, vcov = ~ tendigit_fips)
+
+summary(did_mod,
+        vcov = ~ tendigit_fips,
+        ssc  = ssc(cluster.df = "conventional",   # or "min", default
+                   adj        = TRUE,            # HC1 vs HC0 factor
+                   cluster.adj = TRUE))          # Bell-McCaffrey adj. :contentReference[oaicite:10]{index=10}
+
+
+## Taking into account trinary outcome ##
+
+# 1. Option 1: Linear Probability Model
+# poor
+roads_close$poor_quality <- as.integer(roads_close$predicted_label == 0)
+did_poor <- feols(poor_quality ~ did | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips)
+summary(did_poor)
+
+# medium
+roads_close$medium_quality <- as.integer(roads_close$predicted_label == 1)
+did_medium <- feols(medium_quality ~ did | post_election_flag + treat_flag, data = roads_close, cluster = ~County)
+summary(did_medium)
+
+# good
+roads_close$good_quality <- as.integer(roads_close$predicted_label == 2)
+did_good <- feols(good_quality ~ did | post_election_flag + treat_flag, data = roads_close, cluster = ~County)
+summary(did_good)
+
+# 2. Option 2: Ordered Logit Model
+roads_close$did_interact <- roads_close$post_election_flag * roads_close$treat_flag
+roads_ord_did <- polr(factor(predicted_label) ~ did_interact + factor(post_election_flag) + factor(treat_flag), data = roads_close, method = "logistic")
+summary(roads_ord_did)
+
+# Using confidence variable
+
+#------------------------------------------#
+## RD regression within the bandwidth
+#------------------------------------------#
+
+roads_close
+
+roads_and_census %>% filter(tendigit_fips %in% unique(roads_close$tendigit_fips))
+
+yrs_tbl <- roads_close |>                          # 81×13
+  distinct(tendigit_fips, year) |>                 # keep only fips–year pairs
+  group_by(tendigit_fips) |>
+  summarise(img_years = list(year), .groups = "drop")
+
+elec_ok <- roads_and_census |>                     # 279×49
+  inner_join(yrs_tbl, by = "tendigit_fips") |>
+  rowwise() |>
+  mutate(
+    has_before = any(img_years <  year),           # at least one image earlier
+    has_after  = any(img_years >  year),           # at least one image later
+    keep       = has_before & has_after            # both must be TRUE
+  ) |>
+  ungroup() |>
+  filter(keep) |>                                  # ➊ only elections with B&A
+  select(-img_years, -has_before, -has_after, -keep) %>%
+  arrange(tendigit_fips, year)
+
+
+rd_df <- roads_close %>% 
+  left_join(elec_ok, by = c("tendigit_fips")) %>%
+  arrange(tendigit_fips, year.x) 
+
+rd_df_pre <- rd_df %>% filter(post_election_flag == 0)
+rd_df_post <- rd_df %>% filter(post_election_flag == 1)
+
+
+
+h_left  <- abs(min(rd_df_post$votes_pct_against, na.rm = TRUE) - cutoff)          # distance to the left-most point
+h_right <- abs(max(rd_df_post$votes_pct_against, na.rm = TRUE) - cutoff)          # distance to the right-most point
+
+rdrobust(  y = rd_df_pre$predicted_label,,
+           x = rd_df_pre$votes_pct_against,
+           c = cutoff,
+           bwselect = "manual",
+           h = c(h_left, h_right) ,
+           # covs = y %>%
+           #   dplyr::select(x) ,
+           all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = rd_df_pre$tendigit_fips) %>% summary
+
+rdrobust(  y = rd_df_post$predicted_label,
+           x = rd_df_post$votes_pct_against,
+           c = cutoff,
+           # bwselect = "manual",
+           h = c(h_left, h_right) ,
+           # covs = y %>%
+           #   dplyr::select(x) ,
+           all = TRUE) %>% summary
+
+rd_df_post %>%
+  group_by(treat_flag) %>%
+  summarize(mean = mean(predicted_label), sd = sd(predicted_label) ,
+            mean_score = mean(road_quality_score), sd_score = sd(road_quality_score) ,
+            mean_score2 = mean(road_quality_score2), sd_score2 = sd(road_quality_score2) 
+            # ,n = n()
+  )
+
 
 #==========================================================================================================#
 #  Q. Does one election change the probability of having another election?

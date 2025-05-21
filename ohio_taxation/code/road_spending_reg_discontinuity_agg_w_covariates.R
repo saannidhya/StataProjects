@@ -125,7 +125,7 @@ gs <- purrr::map2(covs_final, dfs_agg_covs, .f = function(x,y){
                                          x = y$votes_pct_against,
                                          c = cutoff,
                                          covs = y %>%
-                                           select(x) ,
+                                           dplyr::select(x) ,
                                          all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips) })
 purrr::walk2(names(gs), gs, .f = function(x, y) {
   print(paste0("Outcome variable is ",x))
@@ -158,7 +158,7 @@ gs_reg <- purrr::map2(covs_final_w_tfe, dfs_agg_covs_w_tfe, .f = function(x,y){
              x = y$votes_pct_against,
              c = cutoff,
              covs = y %>%
-               select(x) ,
+               dplyr::select(x) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 tes_gs_reg <- te_tables(gs_reg)
@@ -166,16 +166,16 @@ plot_te(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", su
 plot_te_recenter(tes_gs_reg, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
 tes_gs_reg %>% filter((ord >= 0)) %>%
-  select(robust_coef) %>% pull %>% mean
+  dplyr::select(robust_coef) %>% pull %>% mean
 
 # average effective bandwidth
-map_dbl(gs_reg[4:14], ~ .x$bws[1,1]) %>% mean
+mean_eff_bw <- map_dbl(gs_reg[4:14], ~ .x$bws[1,1]) %>% mean
 # 9.425709
 
-map_dbl(gs_reg[4:14], ~ .x$bws[1,1]) # Effective (h)
-map_dbl(gs_reg[4:14], ~ .x$bws[2,1]) # bias (b)
-map_dbl(gs_reg[4:14], ~ sum(.x$N) ) # Total obs
-map_dbl(gs_reg[4:14], ~ sum(.x$N_h) ) # Effective obs
+roads_and_census %>% 
+  filter(between(votes_pct_against, cutoff-mean_eff_bw, cutoff+mean_eff_bw)) %>%
+  pull(tendigit_fips) %>% unique
+
 
 
 #------------------------------------------------------------------------------------------------#
