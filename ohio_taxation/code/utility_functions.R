@@ -363,3 +363,18 @@ right_covs <- function(df, covs_list, num_covs = 3, cutoff = 50, pv_above_flag =
 #   if (rg$coef[3] < 0 & rg$pv[3] < 0.05) return(x)
 #   
 # }) %>% Filter(Negate(is.null), .)
+
+custom_lm <- function(df, covs, outcome = "median_sale_amount") {
+  # create treatment dummy
+  df$D <- ifelse(df$votes_pct_against > cutoff, 1, 0)
+  
+  # Create the formula for the regression
+  covs_formula <- paste(covs, collapse = " + ")
+  formula <- as.formula(paste(outcome, "~ votes_pct_against +", "votes_pct_against:D +", covs_formula)) 
+  
+  # Fit the linear model
+  model <- lm(formula, data = df)
+  
+  # Return the summary of the model
+  return(summary(model))
+}

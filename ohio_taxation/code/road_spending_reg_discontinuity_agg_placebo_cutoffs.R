@@ -14,7 +14,7 @@ library(xlsx)
 # placebo cutoffs
 placebo_cutoffs <- c(30, 40, 60, 70)
 
-gs_pb <- map(placebo_cutoffs , ~ map2(covs_final, dfs_agg_covs, .f = function(x,y){
+gs_pb <- map(placebo_cutoffs , ~ map2(covs_final_w_tfe , dfs_agg_covs_w_tfe , .f = function(x,y){
                               rdrobust(  y = y$median_sale_amount,
                                          x = y$votes_pct_against,
                                          c = .x,

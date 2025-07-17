@@ -12,6 +12,11 @@
   Shyamal Anadkat, et~al.} 2023. ``Gpt-4 technical report.'' {\em arXiv
   preprint arXiv:2303.08774}.
 
+\harvarditem[Albouy]{David Albouy}{2008}{albouy2008qol}
+{\bf Albouy, David.} 2008. ``Are Big Cities Bad Places to Live? Estimating
+  Quality of Life across Metropolitan Areas.'' National Bureau of Economic
+  Research NBER Working Paper No. 14472 14472. Revised December 2011.
+
 \harvarditem[Alesina \harvardand\ Tabellini]{Alberto Alesina \harvardand\ Guido
   Tabellini}{1990}{AlesinaTabellini1990}
 {\bf Alesina, Alberto, and Guido Tabellini.} 1990. ``A Positive Theory of
@@ -29,6 +34,14 @@
   ``Hedonic pricing when housing is endogenous: The value of access to the
   trans-Israel highway.'' {\em Journal of Regional Science}, 56(1):~134--155.
 
+\harvarditem[Biasi, Lafortune \harvardand\ Schönholzer]{Barbara Biasi, Julien
+  Lafortune \harvardand\ David Schönholzer}{2025}{biasi_what_2025}
+{\bf Biasi, Barbara, Julien Lafortune, and David Schönholzer.} 2025. ``What
+  {Works} and for {Whom}? {Effectiveness} and {Efficiency} of {School}
+  {Capital} {Investments} {Across} the {U}.{S}.*.'' {\em The Quarterly Journal
+  of Economics}, qjaf013. \_eprint:
+  https://academic.oup.com/qje/advance-article-pdf/doi/10.1093/qje/qjaf013/61946414/qjaf013.pdf.
+
 \harvarditem[Boesen]{Ulrik Boesen}{2021}{boesen2021}
 {\bf Boesen, Ulrik.} 2021. ``How Are Your State’s Roads Funded?'' Accessed:
   2025-01-23.
@@ -39,8 +52,21 @@
   specification error: A cautionary tale of cleaning data.'' {\em Journal of
   Labor Economics}, 23(2):~235--257.
 
+\harvarditem[Bom \harvardand\ Ligthart]{Pedro~R.D. Bom \harvardand\ Jenny~E.
+  Ligthart}{2009}{bom_ligthart2009_publiccapital}
+{\bf Bom, Pedro~R.D., and Jenny~E. Ligthart.} 2009. ``How Productive is Public
+  Capital? A Meta‑Regression Analysis.'' Andrew Young School of Policy
+  Studies, Georgia State University ICePP Working Paper No.\ 09‑12 09‑12,
+  Atlanta, GA. Meta‑regression on public capital productivity; estimates
+  unconditional meta-output elasticity at 0.146.
+
+\harvarditem[Boudot-Reddy \harvardand\ Butler]{Camille Boudot-Reddy
+  \harvardand\ Andr{\'e} Butler}{2024}{boudot2024paving}
+{\bf Boudot-Reddy, Camille, and Andr{\'e} Butler.} 2024. ``Paving the road to
+  re-election.'' {\em Journal of Public Economics}, 239:~105228.
+
 \harvarditem[Brasington]{David~M Brasington}{2002}{brasington2002}
-{\bf Brasington, David~M.} 2002. ``Edge versus center: finding common ground in
+{\bf Brasington, David~M.} 2002. ``Edge versus center: Finding common ground in
   the capitalization debate.'' {\em Journal of Urban Economics},
   52(3):~524--541.
 
@@ -85,9 +111,39 @@
   discontinuity design.'' {\em The Quarterly Journal of Economics},
   125(1):~215--261.
 
+\harvarditem[Chatterjee, Gibson \harvardand\ Rioja]{Santanu Chatterjee, John
+  Gibson \harvardand\ Felix Rioja}{2017}{chatterjee2017optimal}
+{\bf Chatterjee, Santanu, John Gibson, and Felix Rioja.} 2017. ``Optimal Public
+  Debt Redux.'' {\em Journal of Economic Dynamics and Control}, 83:~162--174.
+  Originally circulated as ICePP Working Paper No.\ 16‑13 at Georgia State
+  University.
+
+\harvarditem[Chaurey \harvardand\ Le]{Ritam Chaurey \harvardand\ Duong~Trung
+  Le}{2022}{chaurey2022}
+{\bf Chaurey, Ritam, and Duong~Trung Le.} 2022. ``Infrastructure maintenance
+  and rural economic activity: Evidence from India.'' {\em Journal of Public
+  Economics}, 214:~104725.
+
+\harvarditem[Chetty et~al.]{Raj Chetty, Adam Guren, Day Manoli \harvardand\
+  Andrea Weber}{2011}{chetty2011micro}
+{\bf Chetty, Raj, Adam Guren, Day Manoli, and Andrea Weber.} 2011. ``Are Micro
+  and Macro Labor Supply Elasticities Consistent? A Review of Evidence on the
+  Intensive and Extensive Margins.'' {\em American Economic Review},
+  101(3):~471--475.
+
 \harvarditem[{City of Hudson}]{{City of Hudson}}{2020}{hudson2020faq}
 {\bf {City of Hudson}.} 2020. ``Asphalt Road Resurfacing Frequently Asked
   Questions (FAQ's).'' Accessed: 2025-05-19.
+
+\harvarditem[Cooley]{Thomas~F Cooley}{1995}{cooley1995frontiers}
+{\bf Cooley, Thomas~F.} 1995. {\em Frontiers of business cycle research.}
+  Princeton University Press.
+
+\harvarditem[Currier, Glaeser \harvardand\ Kreindler]{Lauren Currier, Edward~L
+  Glaeser \harvardand\ Gabriel~E Kreindler}{2023}{currier2023}
+{\bf Currier, Lauren, Edward~L Glaeser, and Gabriel~E Kreindler.} 2023.
+  ``Infrastructure Inequality: Who Pays the Cost of Road Roughness?'' National
+  Bureau of Economic Research Working Paper w31981.
 
 \harvarditem[Diao, Leonard \harvardand\ Sing]{Mi Diao, Devon Leonard
   \harvardand\ Tien~Foo Sing}{2017}{diao2017spatial}
@@ -96,9 +152,21 @@
   transit line on private housing values.'' {\em Regional Science and Urban
   Economics}, 67:~64--77.
 
+\harvarditem[Donaldson \harvardand\ Hornbeck]{Dave Donaldson \harvardand\
+  Richard Hornbeck}{2016}{donaldson2016railroads}
+{\bf Donaldson, Dave, and Richard Hornbeck.} 2016. ``Railroads and American
+  economic growth: A “market access” approach.'' {\em The Quarterly Journal
+  of Economics}, 131(2):~799--858.
+
 \harvarditem[Dosovitskiy]{Alexey Dosovitskiy}{2020}{dosovitskiy2020image}
 {\bf Dosovitskiy, Alexey.} 2020. ``An image is worth 16x16 words: Transformers
   for image recognition at scale.'' {\em arXiv preprint arXiv:2010.11929}.
+
+\harvarditem[Edel \harvardand\ Sclar]{Matthew Edel \harvardand\ Elliott
+  Sclar}{1974}{edel1974taxes}
+{\bf Edel, Matthew, and Elliott Sclar.} 1974. ``Taxes, spending, and property
+  values: Supply adjustment in a Tiebout-Oates model.'' {\em Journal of
+  Political Economy}, 82(5):~941--954.
 
 \harvarditem[Frandsen, Frölich \harvardand\ Melly]{Brigham~R. Frandsen, Markus
   Frölich \harvardand\ Blaise Melly}{2012}{FRANDSEN2012}
@@ -111,12 +179,25 @@
 {\bf Gibbons, Stephen, and Stephen Machin.} 2005. ``Valuing rail access using
   transport innovations.'' {\em Journal of Urban Economics}, 57(1):~148--169.
 
+\harvarditem[Gonzalez-Navarro \harvardand\ Quintana-Domeque]{Marco
+  Gonzalez-Navarro \harvardand\ Climent
+  Quintana-Domeque}{2016}{gonzalez2016paving}
+{\bf Gonzalez-Navarro, Marco, and Climent Quintana-Domeque.} 2016. ``Paving
+  streets for the poor: Experimental analysis of infrastructure effects.'' {\em
+  Review of Economics and Statistics}, 98(2):~254--267.
+
 \harvarditem[Hoogendoorn et~al.]{Sander Hoogendoorn, Jochem van Gemeren, Paul
   Verstraten \harvardand\ Kees Folmer}{2019}{hoogendoorn2019house}
 {\bf Hoogendoorn, Sander, Jochem van Gemeren, Paul Verstraten, and Kees
   Folmer.} 2019. ``House prices and accessibility: Evidence from a
   quasi-experiment in transport infrastructure.'' {\em Journal of Economic
   Geography}, 19(1):~57--87.
+
+\harvarditem[Hsu \harvardand\ Shen]{Yu-Chin Hsu \harvardand\ Shu
+  Shen}{2024}{hsu2024dynamic}
+{\bf Hsu, Yu-Chin, and Shu Shen.} 2024. ``Dynamic regression discontinuity
+  under treatment effect heterogeneity.'' {\em Quantitative Economics},
+  15(4):~1035--1064.
 
 \harvarditem[Huang]{Yiping Huang}{2016}{huang2016understanding}
 {\bf Huang, Yiping.} 2016. ``Understanding China's Belt \& Road initiative:
@@ -126,6 +207,13 @@
 \harvarditem[Kohlhase]{Janet~E Kohlhase}{1991}{kohlhase1991impact}
 {\bf Kohlhase, Janet~E.} 1991. ``The impact of toxic waste sites on housing
   values.'' {\em Journal of Urban Economics}, 30(1):~1--26.
+
+\harvarditem[Kornfeld \harvardand\ Fraumeni]{Robert Kornfeld \harvardand\
+  Barbara~M. Fraumeni}{2022}{bea2020}
+{\bf Kornfeld, Robert, and Barbara~M. Fraumeni.} 2022. ``How Should We Measure
+  Infrastructure? The Case of Highways and Streets.'' U.S. Bureau of Economic
+  Analysis BEA Working Paper WP2022‑2. Updated depreciation and capital stock
+  estimates for highways and streets.
 
 \harvarditem[Levkovich, Rouwendal \harvardand\ Van~Marwijk]{Oleg Levkovich, Jan
   Rouwendal \harvardand\ Rolf Van~Marwijk}{2016}{levkovich2016effects}
@@ -169,10 +257,21 @@
   \& maintenance in Beavercreek Township, Ohio.'' {\em Personal communication},
   Email to Saani Rawat, January 21, 2025.
 
-\harvarditem[Suresh \harvardand\ Rawat]{Vikram Suresh \harvardand\ Saani
-  Rawat}{2025}{2025predicting}
-{\bf Suresh, Vikram, and Saani Rawat.} 2025. ``Predicting road quality in Ohio
-  using satellite images and Vision Transformers.'' Working paper.
+\harvarditem[Rioja]{Felix~K Rioja}{2003}{rioja2003}
+{\bf Rioja, Felix~K.} 2003. ``Filling potholes: Macroeconomic effects of
+  Maintenance versus New Investments in public infrastructure.'' {\em Journal
+  of Public Economics}, 87(9-10):~2281--2304.
+
+\harvarditem[Theisen \harvardand\ Emblem]{Theis Theisen \harvardand\
+  Anne~Wenche Emblem}{2021}{theisen2021road}
+{\bf Theisen, Theis, and Anne~Wenche Emblem.} 2021. ``The road to higher
+  prices: Will improved road standards lead to higher housing prices?'' {\em
+  The Journal of Real Estate Finance and Economics}, 62:~258--282.
+
+\harvarditem[{U.S. Bureau of Labor Statistics}]{{U.S. Bureau of Labor
+  Statistics}}{2024}{bls2023consumer}
+{\bf {U.S. Bureau of Labor Statistics}.} 2024. ``Consumer Expenditures in
+  2023.'' U.S. Bureau of Labor Statistics BLS Report. Published on BLS website.
 
 \harvarditem[{U.S. Department of Transportation}]{{U.S. Department of
   Transportation}}{2022}{USDOT_BIL_Ohio}
@@ -182,5 +281,12 @@
 \harvarditem[Vaswani]{A Vaswani}{2017}{vaswani2017attention}
 {\bf Vaswani, A.} 2017. ``Attention is all you need.'' {\em Advances in Neural
   Information Processing Systems}.
+
+\harvarditem[Wong et~al.]{Ho~Lun Wong, Yu Wang, Renfu Luo, Linxiu Zhang
+  \harvardand\ Scott Rozelle}{2017}{wong2017local}
+{\bf Wong, Ho~Lun, Yu Wang, Renfu Luo, Linxiu Zhang, and Scott Rozelle.} 2017.
+  ``Local governance and the quality of local infrastructure: Evidence from
+  village road projects in rural China.'' {\em Journal of Public Economics},
+  152:~119--132.
 
 \end{thebibliography}

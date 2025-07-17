@@ -36,7 +36,7 @@ covariate_list <- c("pctnokids" ,"pctgraddeg" ,"pctlt5" ,"pctblack" ,"raceherfin
 
 # importing roads and census dataset. Selecting only renewals and levies that do not last forever. Separating into treatment and control groups.
 roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
-  select(-matches("yr_t_")) %>%
+  dplyr::select(-matches("yr_t_")) %>%
   filter(description == "R" & duration != 1000) %>%
   janitor::clean_names() %>%
   mutate(treated = if_else(votes_pct_against >= cutoff, 1, 0))    
@@ -46,7 +46,7 @@ roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
 #|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
 
 cv_regs <- purrr::map(covariate_list, 
-           ~ rdrobust::rdrobust(y = roads_and_census %>% select(.x) %>% pull(), x = roads_and_census$votes_pct_against, c = cutoff, all = TRUE))
+           ~ rdrobust::rdrobust(y = roads_and_census %>% dplyr::select(.x) %>% pull(), x = roads_and_census$votes_pct_against, c = cutoff, all = TRUE))
 names(cv_regs) <- covariate_list
 
 te_cv_regs <- te_tables(cv_regs) %>% arrange(pval)

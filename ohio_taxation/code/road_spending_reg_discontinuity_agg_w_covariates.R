@@ -135,6 +135,7 @@ tes_gs <- te_tables(gs)
 plot_te(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 plot_te_recenter(tes_gs, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
+tes_gs %>% filter(ord >= 0) %>% select(robust_coef) %>% pull %>% mean 
 tes_gs %>% filter(ord >= 0) %>% select(robust_coef) %>% pull %>% mean / 166000
 
 # get mean optimal bandwidth
@@ -176,7 +177,52 @@ roads_and_census %>%
   filter(between(votes_pct_against, cutoff-mean_eff_bw, cutoff+mean_eff_bw)) %>%
   pull(tendigit_fips) %>% unique
 
+## log version ##
 
+covs_final_w_tfe_ln <- covs_final_w_tfe
+covs_final_w_tfe_ln$housing_roads_census_t_plus_5_matches <- c("pctwithkids", "unemprate", "pctrent", "pctlt5", "pctblack", "pop", "incherfindahl", "pctlesshs", "year_1997", "year_1998", "year_1999", "year_2000", "year_2001", "year_2002", "year_2003", "year_2004", "year_2005", "year_2006", "year_2007", "year_2008", "year_2009", "year_2010", "year_2011", "year_2012", "year_2013", "year_2014", "year_2015", "year_2016", "year_2017", "year_2018", "year_2019", "year_2020", "year_2021")
+covs_final_w_tfe_ln$housing_roads_census_t_plus_6_matches <- c("pctsinparhhld", "unemprate", "pctrent", "pct18to64", "pctmarried", "pctseparated", "year_1998", "year_1999", "year_2000", "year_2001", "year_2002", "year_2003", "year_2004", "year_2005", "year_2006", "year_2007", "year_2008", "year_2009", "year_2010", "year_2011", "year_2012", "year_2013", "year_2014", "year_2015", "year_2016", "year_2017", "year_2018", "year_2019", "year_2020", "year_2021")
+covs_final_w_tfe_ln$housing_roads_census_t_plus_7_matches <- c("poverty", "unemprate", "pctrent", "pct18to64", "pctblack", "incherfindahl", "pctseparated", "year_1999", "year_2000", "year_2001", "year_2002", "year_2003", "year_2004", "year_2005", "year_2006", "year_2007", "year_2008", "year_2009", "year_2010", "year_2011", "year_2012", "year_2013", "year_2014", "year_2015", "year_2016", "year_2017", "year_2018", "year_2019", "year_2020", "year_2021")
+
+
+
+gs_reg_ln <- purrr::map2(covs_final_w_tfe_ln, dfs_agg_covs_w_tfe, .f = function(x,y){
+  rdrobust(  y = log(y$median_sale_amount),
+             x = y$votes_pct_against,
+             c = cutoff,
+             covs = y %>%
+               dplyr::select(x) ,
+             all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
+})
+tes_gs_reg_ln <- te_tables(gs_reg_ln)
+plot_te(tes_gs_reg_ln, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+plot_te_recenter(tes_gs_reg_ln, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+
+tes_gs_reg_ln %>% filter((ord >= 0)) %>%
+  dplyr::select(robust_coef) %>% pull %>% mean
+
+exp(-0.1263689)-1
+
+# y <- dfs_agg_covs_w_tfe$housing_roads_census_t_plus_5_matches
+# # x <- covs_final_w_tfe$housing_roads_census_t_plus_5_matches
+# x <- c("pctwithkids", "unemprate", "pctrent", "pctlt5", "pctblack", "pop", "incherfindahl", "pctlesshs", "year_1997", "year_1998", "year_1999", "year_2000", "year_2001", "year_2002", "year_2003", "year_2004", "year_2005", "year_2006", "year_2007", "year_2008", "year_2009", "year_2010", "year_2011", "year_2012", "year_2013", "year_2014", "year_2015", "year_2016", "year_2017", "year_2018", "year_2019", "year_2020", "year_2021")
+# 
+# rdrobust(  y = log(y$median_sale_amount),
+#            x = y$votes_pct_against,
+#            c = cutoff,
+#            covs = y %>%
+#              dplyr::select(x) ,
+#            all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips) %>% summary
+
+## Comparing log vs level feasibility ##
+
+
+purrr::map2_dbl(dfs_agg_covs_w_tfe[4:14], covs_final_w_tfe[4:14], ~ custom_lm(.x, .y, outcome = "median_sale_amount")$r.squared) %>% mean
+purrr::map2_dbl(dfs_agg_covs_w_tfe[4:14], covs_final_w_tfe_ln[4:14], ~ custom_lm(.x, .y, outcome = "log(median_sale_amount)")$r.squared) %>% mean
+# log regressions have slightly higher R-squared values
+
+# ggplot(data = dfs_agg_covs$housing_roads_census_t_plus_2_matches ) +
+#   geom_point(aes(x = votes_pct_against, y = log(median_sale_amount) ))
 
 #------------------------------------------------------------------------------------------------#
 
@@ -233,7 +279,7 @@ g_regs_w <- purrr::map2(covs_final, dfs_agg_covs_winsored, .f = function(x,y){
   rdrobust(  y = y$median_sale_amount,
              x = y$votes_pct_against,
              c = cutoff,
-             covs = y %>% select(x) ,
+             covs = y %>% dplyr::select(x) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 tes_g_w <- te_tables(g_regs_w)
@@ -258,7 +304,7 @@ gs_reg_win <- purrr::map2(covs_final_win_tfe, dfs_agg_covs_win_tfe, .f = functio
              x = y$votes_pct_against,
              c = cutoff,
              covs = y %>%
-               select(x) ,
+               dplyr::select(x) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 
@@ -452,6 +498,10 @@ plot_te_recenter(tes_gs_reg_pure, title = "Treatment Effect Estimates: Median Ho
 
 map_dbl(gs_reg_pure, ~ .x$bws[1,1]) # eff bw
 map_dbl(gs_reg_pure, ~ .x$bws[2,1]) # bias bw
+
+map_dbl(gs_reg_pure, ~ sum(.x$N_h) ) # Effective obs
+map_dbl(gs_reg_pure, ~ sum(.x$N) ) # Total
+
 
 # total obs
 map_dbl(dfs_agg_pure_covs , ~ nrow(.x))

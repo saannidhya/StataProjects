@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  19 MAY 2025 19:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  16 JUL 2025 18:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -472,7 +472,11 @@ Package subcaption Info: The counter `subtable' was already defined by
 File: l3backend-pdftex.def 2024-03-14 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count321
 \l__pdf_internal_box=\box69
-) (JMP-Article.aux)
+) (JMP-Article.aux
+
+LaTeX Warning: Label `fig:pctseparated_sm' multiply defined.
+
+)
 \openout1 = `JMP-Article.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
@@ -572,301 +576,310 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 49.
  (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 57--65
+Underfull \hbox (badness 10000) in paragraph at lines 58--67
 
  []
 
 [0
 
-{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (intro.tex) (lit_review.tex [1] [2] [3]) [4] (data.tex [5]
+{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (intro.tex [1]) (lit_review.tex [2] [3] [4]
+Overfull \hbox (0.47334pt too wide) in paragraph at lines 25--26
+[]\OT1/cmr/bx/n/12 Road Qual-ity. \OT1/cmr/m/n/12 Mea-sur-ing road qual-ity re-mains em-pir-i-cally chal-leng-ing. []Cur-rier, Glaeser
+ []
+
+[5] [6] [7]) (data.tex [8]
 Overfull \hbox (7.75723pt too wide) in paragraph at lines 15--16
 \OT1/cmr/bx/n/12 Background. \OT1/cmr/m/n/12 Ohio con-sists of 88 coun-ties, each cov-er-ing about 464 miles$[]$ (1,200 kilometers$[]$).
  []
 
-[6] [7] [8] [9] [10]
-<images/rush_twp_champaign_aug16.jpg, id=292, 1181.91562pt x 704.6325pt>
+[9] [10] [11] [12] [13] [14]
+<images/rush_twp_champaign_aug16.jpg, id=404, 1181.91562pt x 704.6325pt>
 File: images/rush_twp_champaign_aug16.jpg Graphic file (type jpg)
 <use images/rush_twp_champaign_aug16.jpg>
-Package pdftex.def Info: images/rush_twp_champaign_aug16.jpg  used on input line 88.
+Package pdftex.def Info: images/rush_twp_champaign_aug16.jpg  used on input line 90.
 (pdftex.def)             Requested size: 277.15373pt x 165.23386pt.
-<images/hartford_twp_licking_sep21.jpg, id=293, 1181.91562pt x 704.6325pt>
+<images/hartford_twp_licking_sep21.jpg, id=405, 1181.91562pt x 704.6325pt>
 File: images/hartford_twp_licking_sep21.jpg Graphic file (type jpg)
 <use images/hartford_twp_licking_sep21.jpg>
-Package pdftex.def Info: images/hartford_twp_licking_sep21.jpg  used on input line 94.
+Package pdftex.def Info: images/hartford_twp_licking_sep21.jpg  used on input line 96.
 (pdftex.def)             Requested size: 277.15373pt x 165.23386pt.
- [11 <./images/rush_twp_champaign_aug16.jpg> <./images/hartford_twp_licking_sep21.jpg>] [12] [13]
-<images/votes_pct_against_histogram.png, id=318, 855.195pt x 622.325pt>
+ [15 <./images/rush_twp_champaign_aug16.jpg> <./images/hartford_twp_licking_sep21.jpg>] [16] [17]
+<images/votes_pct_against_histogram.png, id=443, 855.195pt x 622.325pt>
 File: images/votes_pct_against_histogram.png Graphic file (type png)
 <use images/votes_pct_against_histogram.png>
-Package pdftex.def Info: images/votes_pct_against_histogram.png  used on input line 140.
+Package pdftex.def Info: images/votes_pct_against_histogram.png  used on input line 207.
 (pdftex.def)             Requested size: 469.75502pt x 341.8335pt.
- [14 <./images/votes_pct_against_histogram.png (PNG copy)>]
-<images/rd_plot_year_5_after_vote.png, id=329, 817.0525pt x 594.22pt>
+ [18] [19 <./images/votes_pct_against_histogram.png (PNG copy)>]
+<images/rd_plot_year_5_after_vote.png, id=461, 848.16875pt x 508.90125pt>
 File: images/rd_plot_year_5_after_vote.png Graphic file (type png)
 <use images/rd_plot_year_5_after_vote.png>
-Package pdftex.def Info: images/rd_plot_year_5_after_vote.png  used on input line 154.
-(pdftex.def)             Requested size: 375.80544pt x 273.31732pt.
- [15]
-Overfull \hbox (47.82063pt too wide) in alignment at lines 167--174
+Package pdftex.def Info: images/rd_plot_year_5_after_vote.png  used on input line 221.
+(pdftex.def)             Requested size: 375.80544pt x 225.48581pt.
+ [20 <./images/rd_plot_year_5_after_vote.png (PNG copy)>]
+Overfull \hbox (47.82063pt too wide) in alignment at lines 234--241
  [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 174--182
+Overfull \hbox (47.82063pt too wide) in alignment at lines 241--249
  [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 182--185
+Overfull \hbox (47.82063pt too wide) in alignment at lines 249--252
  [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 185--188
+Overfull \hbox (47.82063pt too wide) in alignment at lines 252--255
  [] [] [] [] [] [] [] 
  []
 
 
-Underfull \hbox (badness 6125) in paragraph at lines 200--200
+Underfull \hbox (badness 6125) in paragraph at lines 267--267
 []|\OT1/cmr/m/n/12 % House-holds with
  []
 
 
-Underfull \hbox (badness 5578) in paragraph at lines 202--202
+Underfull \hbox (badness 5578) in paragraph at lines 269--269
 []|\OT1/cmr/m/n/12 % Less than High
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 220--220
+Underfull \hbox (badness 10000) in paragraph at lines 287--287
 []|\OT1/cmr/m/n/12 Median Fam-ily In-
  []
 
 
-Underfull \hbox (badness 1484) in paragraph at lines 230--230
+Underfull \hbox (badness 1484) in paragraph at lines 297--297
 []|\OT1/cmr/m/n/12 Number of Ob-ser-va-
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 188--232
+Overfull \hbox (47.82063pt too wide) in alignment at lines 255--299
  [] [] [] [] [] [] [] 
  []
 
-[16 <./images/rd_plot_year_5_after_vote.png (PNG copy)>] [17]) (emp_strategy.tex [18] [19]) (results.tex
-Underfull \hbox (badness 3895) in paragraph at lines 16--16
-[]|\OT1/cmr/m/n/12 Year rel-a-
+[21] [22]) (emp_strategy.tex [23] [24]) (results.tex [25] [26]
+Overfull \hbox (23.8768pt too wide) in paragraph at lines 90--120
+ [] 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]|\OT1/cmr/m/n/12 Treatment
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 19--19
-[]|\OT1/cmr/m/n/12 Standard
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 20--20
-[]|\OT1/cmr/m/n/12 Effective
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 20--20
-\OT1/cmr/m/n/12 band-width
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 22--22
-[]|\OT1/cmr/m/n/12 Effective
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 22--22
-\OT1/cmr/m/n/12 Ob-ser-va-
- []
-
-
-Underfull \hbox (badness 3343) in paragraph at lines 23--23
-[]|\OT1/cmr/m/n/12 Total Ob-
- []
-
-[20] [21]
-<images/tes_gs_reg.png, id=389, 535.2497pt x 341.02406pt>
+[27]
+<images/tes_gs_reg.png, id=543, 535.2497pt x 341.02406pt>
 File: images/tes_gs_reg.png Graphic file (type png)
 <use images/tes_gs_reg.png>
-Package pdftex.def Info: images/tes_gs_reg.png  used on input line 38.
+Package pdftex.def Info: images/tes_gs_reg.png  used on input line 176.
 (pdftex.def)             Requested size: 469.75502pt x 299.31114pt.
- [22 <./images/tes_gs_reg.png>] [23]
-<images/tes_covs_ua_reg.png, id=410, 535.2497pt x 341.02406pt>
+ [28] [29 <./images/tes_gs_reg.png>]
+<images/tes_covs_ua_reg.png, id=558, 535.2497pt x 341.02406pt>
 File: images/tes_covs_ua_reg.png Graphic file (type png)
 <use images/tes_covs_ua_reg.png>
-Package pdftex.def Info: images/tes_covs_ua_reg.png  used on input line 91.
+Package pdftex.def Info: images/tes_covs_ua_reg.png  used on input line 195.
 (pdftex.def)             Requested size: 469.75502pt x 299.31114pt.
- [24 <./images/tes_covs_ua_reg.png>]
-<images/tes_size_75.png, id=423, 528.47438pt x 328.22626pt>
+ [30 <./images/tes_covs_ua_reg.png>]
+<images/tes_size_75.png, id=573, 528.47438pt x 328.22626pt>
 File: images/tes_size_75.png Graphic file (type png)
 <use images/tes_size_75.png>
-Package pdftex.def Info: images/tes_size_75.png  used on input line 104.
+Package pdftex.def Info: images/tes_size_75.png  used on input line 208.
 (pdftex.def)             Requested size: 469.75502pt x 291.75484pt.
-
-Overfull \hbox (7.74536pt too wide) in paragraph at lines 136--136
+ [31 <./images/tes_size_75.png>]
+Overfull \hbox (7.74536pt too wide) in paragraph at lines 242--242
 []|\OT1/cmr/m/n/12 Percentile| 
  []
 
-<images/tes_qte_re.png, id=428, 581.92406pt x 401.24907pt>
+<images/tes_qte_re.png, id=585, 581.92406pt x 401.24907pt>
 File: images/tes_qte_re.png Graphic file (type png)
 <use images/tes_qte_re.png>
-Package pdftex.def Info: images/tes_qte_re.png  used on input line 160.
+Package pdftex.def Info: images/tes_qte_re.png  used on input line 270.
 (pdftex.def)             Requested size: 469.75502pt x 323.91402pt.
-[25] [26 <./images/tes_size_75.png>] [27 <./images/tes_qte_re.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 186--186
-[]|\OT1/cmr/m/n/12 Treatment
+[32] [33 <./images/tes_qte_re.png>]
+Overfull \hbox (36.93222pt too wide) in paragraph at lines 296--326
+ [] 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 190--190
-[]|\OT1/cmr/m/n/12 Effective Ob-
- []
-
-[28] [29]
-<images/tes_g_w_reg.png, id=470, 535.2497pt x 341.02406pt>
+[34] [35] [36]
+<images/tes_g_w_reg.png, id=627, 570.63188pt x 354.57469pt>
 File: images/tes_g_w_reg.png Graphic file (type png)
 <use images/tes_g_w_reg.png>
-Package pdftex.def Info: images/tes_g_w_reg.png  used on input line 243.
-(pdftex.def)             Requested size: 469.75502pt x 299.31114pt.
- [30] [31 <./images/tes_g_w_reg.png>] [32] [33]) (JMP-Article.bbl [34] [35]) [36] (appendix.tex
-Underfull \hbox (badness 7888) in paragraph at lines 13--13
+Package pdftex.def Info: images/tes_g_w_reg.png  used on input line 400.
+(pdftex.def)             Requested size: 469.75502pt x 291.89471pt.
+ [37 <./images/tes_g_w_reg.png>]
+Overfull \hbox (17.03629pt too wide) in paragraph at lines 414--430
+ [][] 
+ []
+
+[38] [39] [40] [41] [42]) (JMP-Article.bbl
+Underfull \hbox (badness 10000) in paragraph at lines 39--44
+[]\OT1/cmr/bx/n/12 Biasi, Bar-bara, Julien Lafor-tune, and David Sch^^?onholzer. \OT1/cmr/m/n/12 2025.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 39--44
+\OT1/cmr/m/n/12 ``What Works and for Whom? Ef-fec-tive-ness and Ef-fi-ciency of School
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 39--44
+\OT1/cmr/m/n/12 Cap-i-tal In-vest-ments Across the U.S.*.'' \OT1/cmr/m/it/12 The Quar-terly Jour-nal of Eco-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 39--44
+\OT1/cmr/m/it/12 nomics\OT1/cmr/m/n/12 , qjaf013. []eprint: https://academic.oup.com/qje/advance-article-
+ []
+
+[43] [44]) [45] (appendix.tex
+Underfull \hbox (badness 7888) in paragraph at lines 17--17
 []|\OT1/cmr/bx/n/12 Year rel-a-tive
  []
 
+[46
 
-Underfull \hbox (badness 7888) in paragraph at lines 42--42
-[]|\OT1/cmr/bx/n/12 Year rel-a-tive
- []
-
-[37
-
-] [38] [39]
-Underfull \hbox (badness 6125) in paragraph at lines 170--170
-[]|\OT1/cmr/m/n/12 % House-holds with
+] [47] [48]
+Underfull \hbox (badness 1509) in paragraph at lines 190--190
+[]|\OT1/cmr/m/n/12 % House-holds with Chil-
  []
 
 
-Underfull \hbox (badness 5578) in paragraph at lines 170--170
-[]|\OT1/cmr/m/n/12 % Less than High
+Underfull \hbox (badness 10000) in alignment at lines 190--190
+[][][][][] 
  []
 
-<images/cov_smoothness_pctrent.png, id=565, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctrent.png, id=743, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctrent.png Graphic file (type png)
 <use images/cov_smoothness_pctrent.png>
-Package pdftex.def Info: images/cov_smoothness_pctrent.png  used on input line 185.
+Package pdftex.def Info: images/cov_smoothness_pctrent.png  used on input line 206.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_poverty.png, id=566, 877.2775pt x 638.385pt>
+<images/cov_smoothness_poverty.png, id=744, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_poverty.png Graphic file (type png)
 <use images/cov_smoothness_poverty.png>
-Package pdftex.def Info: images/cov_smoothness_poverty.png  used on input line 192.
+Package pdftex.def Info: images/cov_smoothness_poverty.png  used on input line 213.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctwithkids.png, id=567, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctwithkids.png, id=745, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctwithkids.png Graphic file (type png)
 <use images/cov_smoothness_pctwithkids.png>
-Package pdftex.def Info: images/cov_smoothness_pctwithkids.png  used on input line 201.
+Package pdftex.def Info: images/cov_smoothness_pctwithkids.png  used on input line 222.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctsinparhhld.png, id=568, 877.2775pt x 638.385pt>
-File: images/cov_smoothness_pctsinparhhld.png Graphic file (type png)
-<use images/cov_smoothness_pctsinparhhld.png>
-Package pdftex.def Info: images/cov_smoothness_pctsinparhhld.png  used on input line 208.
+<images/cov_smoothness_pctwhite.png, id=746, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctwhite.png Graphic file (type png)
+<use images/cov_smoothness_pctwhite.png>
+Package pdftex.def Info: images/cov_smoothness_pctwhite.png  used on input line 229.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctlesshs.png, id=569, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctlesshs.png, id=747, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctlesshs.png Graphic file (type png)
 <use images/cov_smoothness_pctlesshs.png>
-Package pdftex.def Info: images/cov_smoothness_pctlesshs.png  used on input line 217.
+Package pdftex.def Info: images/cov_smoothness_pctlesshs.png  used on input line 238.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctsomecoll.png, id=570, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctsomecoll.png, id=748, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctsomecoll.png Graphic file (type png)
 <use images/cov_smoothness_pctsomecoll.png>
-Package pdftex.def Info: images/cov_smoothness_pctsomecoll.png  used on input line 224.
+Package pdftex.def Info: images/cov_smoothness_pctsomecoll.png  used on input line 245.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctblack.png, id=571, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctblack.png, id=749, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctblack.png Graphic file (type png)
 <use images/cov_smoothness_pctblack.png>
-Package pdftex.def Info: images/cov_smoothness_pctblack.png  used on input line 233.
+Package pdftex.def Info: images/cov_smoothness_pctblack.png  used on input line 254.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pop.png, id=572, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pop.png, id=750, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pop.png Graphic file (type png)
 <use images/cov_smoothness_pop.png>
-Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 240.
+Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 261.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
 
-LaTeX Warning: Float too large for page by 21.96622pt on input line 247.
+LaTeX Warning: Float too large for page by 36.46622pt on input line 268.
 
-<images/cov_smoothness_pctmarried.png, id=573, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctmarried.png, id=751, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctmarried.png Graphic file (type png)
 <use images/cov_smoothness_pctmarried.png>
-Package pdftex.def Info: images/cov_smoothness_pctmarried.png  used on input line 253.
+Package pdftex.def Info: images/cov_smoothness_pctmarried.png  used on input line 274.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctseparated.png, id=574, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctseparated.png, id=752, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctseparated.png Graphic file (type png)
 <use images/cov_smoothness_pctseparated.png>
-Package pdftex.def Info: images/cov_smoothness_pctseparated.png  used on input line 260.
+Package pdftex.def Info: images/cov_smoothness_pctseparated.png  used on input line 281.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_incherfindahl.png, id=575, 877.2775pt x 638.385pt>
+<images/cov_smoothness_incherfindahl.png, id=753, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_incherfindahl.png Graphic file (type png)
 <use images/cov_smoothness_incherfindahl.png>
-Package pdftex.def Info: images/cov_smoothness_incherfindahl.png  used on input line 269.
+Package pdftex.def Info: images/cov_smoothness_incherfindahl.png  used on input line 290.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_medfamy.png, id=576, 877.2775pt x 638.385pt>
+<images/cov_smoothness_medfamy.png, id=754, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_medfamy.png Graphic file (type png)
 <use images/cov_smoothness_medfamy.png>
-Package pdftex.def Info: images/cov_smoothness_medfamy.png  used on input line 276.
+Package pdftex.def Info: images/cov_smoothness_medfamy.png  used on input line 297.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctlt5.png, id=577, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctlt5.png, id=755, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctlt5.png Graphic file (type png)
 <use images/cov_smoothness_pctlt5.png>
-Package pdftex.def Info: images/cov_smoothness_pctlt5.png  used on input line 285.
+Package pdftex.def Info: images/cov_smoothness_pctlt5.png  used on input line 306.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pct5to17.png, id=578, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pct5to17.png, id=756, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pct5to17.png Graphic file (type png)
 <use images/cov_smoothness_pct5to17.png>
-Package pdftex.def Info: images/cov_smoothness_pct5to17.png  used on input line 292.
+Package pdftex.def Info: images/cov_smoothness_pct5to17.png  used on input line 313.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pct18to64.png, id=579, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pct18to64.png, id=757, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pct18to64.png Graphic file (type png)
 <use images/cov_smoothness_pct18to64.png>
-Package pdftex.def Info: images/cov_smoothness_pct18to64.png  used on input line 301.
+Package pdftex.def Info: images/cov_smoothness_pct18to64.png  used on input line 322.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctmin.png, id=580, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctmin.png, id=758, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctmin.png Graphic file (type png)
 <use images/cov_smoothness_pctmin.png>
-Package pdftex.def Info: images/cov_smoothness_pctmin.png  used on input line 308.
+Package pdftex.def Info: images/cov_smoothness_pctmin.png  used on input line 329.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
 
-LaTeX Warning: Float too large for page by 57.21585pt on input line 315.
+LaTeX Warning: Float too large for page by 57.21585pt on input line 336.
 
-[40
+<images/cov_smoothness_unemprate.png, id=759, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_unemprate.png Graphic file (type png)
+<use images/cov_smoothness_unemprate.png>
+Package pdftex.def Info: images/cov_smoothness_unemprate.png  used on input line 344.
+(pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
+<images/cov_smoothness_pctsinparhhld.png, id=760, 877.2775pt x 638.385pt>
+File: images/cov_smoothness_pctsinparhhld.png Graphic file (type png)
+<use images/cov_smoothness_pctsinparhhld.png>
+Package pdftex.def Info: images/cov_smoothness_pctsinparhhld.png  used on input line 351.
+(pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
+[49
 
-] [41 <./images/cov_smoothness_pctrent.png (PNG copy)> <./images/cov_smoothness_poverty.png (PNG copy)> <./images/cov_smoothness_pctwithkids.png (PNG copy)> <./images/cov_smoothness_pctsinparhhld.png (PNG copy)> <./images/cov_smoothness_pctlesshs.png (PNG copy)> <./images/cov_smoothness_pctsomecoll.png (PNG copy)> <./images/cov_smoothness_pctblack.png (PNG copy)> <./images/cov_smoothness_pop.png (PNG copy)>] [42 <./images/cov_smoothness_pctmarried.png (PNG copy)> <./images/cov_smoothness_pctseparated.png (PNG copy)> <./images/cov_smoothness_incherfindahl.png (PNG copy)> <./images/cov_smoothness_medfamy.png (PNG copy)> <./images/cov_smoothness_pctlt5.png (PNG copy)> <./images/cov_smoothness_pct5to17.png (PNG copy)> <./images/cov_smoothness_pct18to64.png (PNG copy)> <./images/cov_smoothness_pctmin.png (PNG copy)>]) [43
+] [50 <./images/cov_smoothness_pctrent.png (PNG copy)> <./images/cov_smoothness_poverty.png (PNG copy)> <./images/cov_smoothness_pctwithkids.png (PNG copy)> <./images/cov_smoothness_pctwhite.png (PNG copy)> <./images/cov_smoothness_pctlesshs.png (PNG copy)> <./images/cov_smoothness_pctsomecoll.png (PNG copy)> <./images/cov_smoothness_pctblack.png (PNG copy)> <./images/cov_smoothness_pop.png (PNG copy)>] [51 <./images/cov_smoothness_pctmarried.png (PNG copy)> <./images/cov_smoothness_pctseparated.png (PNG copy)> <./images/cov_smoothness_incherfindahl.png (PNG copy)> <./images/cov_smoothness_medfamy.png (PNG copy)> <./images/cov_smoothness_pctlt5.png (PNG copy)> <./images/cov_smoothness_pct5to17.png (PNG copy)> <./images/cov_smoothness_pct18to64.png (PNG copy)> <./images/cov_smoothness_pctmin.png (PNG copy)>] [52 <./images/cov_smoothness_unemprate.png (PNG copy)> <./images/cov_smoothness_pctsinparhhld.png (PNG copy)>] (model.tex [53
 
-] (JMP-Article.aux)
+] [54] [55] [56] [57] [58]
+Overfull \hbox (55.81151pt too wide) in paragraph at lines 227--228
+\OT1/cmr/m/n/12 rium con-di-tions un-der the ini-tial $\OML/cmm/m/it/12 ^^\[]$\OT1/cmr/m/n/12 . This pro-vides base-line val-ues for $\OMS/cmsy/m/n/12 f\OML/cmm/m/it/12 c[]; h[]; n[]; K[]; G[]; p[]; w[]; r[]\OMS/cmsy/m/n/12 g$\OT1/cmr/m/n/12 . 
+ []
+
+[59] [60] [61]
+Underfull \hbox (badness 10000) in alignment at lines 420--420
+[][][][][] 
+ []
+
+[62])) [63] (JMP-Article.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-03-14>
  ***********
+
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package rerunfilecheck Info: File `JMP-Article.out' has not changed.
-(rerunfilecheck)             Checksum: E30647DD0D8B9C68F85A292BF68C2556;4493.
+(rerunfilecheck)             Checksum: 8820B829C045892D6F79FC655A00BFCC;6735.
  ) 
 Here is how much of TeX's memory you used:
- 15589 strings out of 474424
- 252861 string characters out of 5740796
- 1965496 words of memory out of 5000000
- 37537 multiletter control sequences out of 15000+600000
+ 15817 strings out of 474424
+ 256904 string characters out of 5740796
+ 1967496 words of memory out of 5000000
+ 37637 multiletter control sequences out of 15000+600000
  574444 words of font info for 97 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,15n,79p,1989b,595s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on JMP-Article.pdf (44 pages, 2833985 bytes).
+ 75i,17n,79p,2025b,614s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on JMP-Article.pdf (64 pages, 3135743 bytes).
 PDF statistics:
- 728 PDF objects out of 1000 (max. 8388607)
- 145 named destinations out of 1000 (max. 500000)
- 326 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1119 PDF objects out of 1200 (max. 8388607)
+ 270 named destinations out of 1000 (max. 500000)
+ 432 words of extra memory for PDF output out of 10000 (max. 10000000)
 

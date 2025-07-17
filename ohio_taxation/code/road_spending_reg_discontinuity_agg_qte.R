@@ -536,10 +536,10 @@ t_minus_3_q8_covs <- c(Coef = -9020, Std_Err = 15188.72, Lower_95_CI = -38789.34
 t_minus_3_q9_covs <- c(Coef = -20057, Std_Err = 20316.07, Lower_95_CI = -59875.76, Upper_95_CI = 19761.76)
 
 # t_minus_2
-t_minus_2_q2_covs <- c(Coef = 0, Std_Err = 12628.4, Lower_95_CI = -24751.22, Upper_95_CI = 24751.22)
-# t_minus_2_q8_covs <- c(Coef = -31003, Std_Err = 16098.54, Lower_95_CI = -62555.57, Upper_95_CI = 549.568)
-# t_minus_2_q8_covs <- c(Coef = -26848, Std_Err = 19559.48, Lower_95_CI = -65183.88, Upper_95_CI = 11487.88)
-t_minus_2_q8_covs <- c(Coef = 0, Std_Err = 12628.4, Lower_95_CI = -24751.22, Upper_95_CI = 24751.22)
+# t_minus_2_q2_covs <- c(Coef = 0, Std_Err = 12628.4, Lower_95_CI = -24751.22, Upper_95_CI = 24751.22)
+t_minus_2_q2_covs <- c(Coef = -31003, Std_Err = 16098.54, Lower_95_CI = -62555.57, Upper_95_CI = 549.568)
+t_minus_2_q8_covs <- c(Coef = -26848, Std_Err = 19559.48, Lower_95_CI = -65183.88, Upper_95_CI = 11487.88)
+# t_minus_2_q8_covs <- c(Coef = 0, Std_Err = 12628.4, Lower_95_CI = -24751.22, Upper_95_CI = 24751.22)
 t_minus_2_q9_covs <- c(Coef = -34680, Std_Err = 19575.22, Lower_95_CI = -73046.72, Upper_95_CI = 3686.72)
 
 # t_minus_1

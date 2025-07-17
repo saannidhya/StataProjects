@@ -159,7 +159,7 @@ gs_gm <- purrr::map2(covs_final_gm, dfs_agg_gm_covs, .f = function(x,y){
                                  x = y$votes_pct_against,
                                  c = cutoff,
                                  covs = y %>%
-                                   select(x) ,
+                                   dplyr::select(x) ,
                                  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 tes_gs_gm <- te_tables(gs_gm)
@@ -181,7 +181,7 @@ gs_gm_tfe <- purrr::map2(covs_final_gm_w_tfe, dfs_agg_covs_gm_w_tfe, .f = functi
              x = y$votes_pct_against,
              c = cutoff,
              covs = y %>%
-               select(c('medfamy')) ,
+               dplyr::select(c('medfamy')) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
 })
 tes_gs_gm <- te_tables(gs_gm)
@@ -198,7 +198,7 @@ gs_lm <- purrr::map2(covs_final_lm, dfs_agg_lm_covs, .f = function(x,y){
              x = y$votes_pct_against,
              c = cutoff,
              covs = y %>%
-               select(x) ,
+               dplyr::select(x) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = y$tendigit_fips)
 })
 
@@ -217,7 +217,7 @@ gs_lm_tfe <- purrr::map2(dfs_agg_covs_lm_tfe_names, dfs_agg_covs_lm_w_tfe, .f = 
              x = y$votes_pct_against,
              c = cutoff,
              covs = y %>%
-               select(x) ,
+               dplyr::select(x) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
 })
 tes_gs_lm <- te_tables(gs_lm_tfe)
@@ -231,7 +231,7 @@ rdrobust(  y = y$median_sale_amount,
            x = y$votes_pct_against,
            c = cutoff,
            covs = y %>%
-             select(c("pctblack", "")) ,
+             dplyr::select(c("pctblack", "")) ,
            all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2) %>% summary
 
 

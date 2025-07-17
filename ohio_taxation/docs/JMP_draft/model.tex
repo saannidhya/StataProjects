@@ -1,0 +1,425 @@
+\subsection{Representative Household}
+The economy is populated by a representative, infinitely–lived household that maximizes utility over consumption\footnote{Since we don't have any random variables or distributions, we are not dealing with any expectations or expected utility.}, housing services, and local amenities while disliking labor (including commuting time).
+
+
+{\bf Preferences:}
+
+\begin{equation}
+U = \sum_{t=0}^{\infty} \beta^{t}\,u\bigl(c_t,h_t,A(G_t)\bigr),\qquad 0<\beta<1,
+\end{equation}
+where $c_t$ denotes non–housing consumption, $h_t$ the flow of housing services, and $A(G_t)$ the amenity derived from the public capital stock $G_t$.
+A convenient separable specification is
+
+% \begin{equation}
+%  u\bigl(c_t,h_t,A(G_t)\bigr)=\ln c_t + \alpha_h \ln h_t + \eta\ln A(G_t) - \frac{\kappa}{1+\theta}\Bigl[n_t\bigl(1+\phi(G_t)\bigr)\Bigr]^{1+\theta},\label{eq:utility}
+% \end{equation}
+
+\begin{equation}
+ u\bigl(c_t,h_t,A(G_t)\bigr)= \ln c_t + \alpha_h A(G_t)^\gamma \ln h_t - \frac{\kappa}{1+\theta}\Bigl[n_t\bigl(1+\phi(G_t)\bigr)\Bigr]^{1+\theta},\label{eq:utility}
+\end{equation}
+
+
+with $n_t$ hours of market work, $\phi(G_t)\ge0$ a commuting factor that rises as road quality falls, $\kappa>0$, and $\theta>0$ the inverse Frisch elasticity of labor supply, $\gamma > 0$ reflects elasticity of housing utility with respect to amenities (importantly road quality)
+
+{\bf Budget Constraint and Capital Accumulation:}
+
+Let $w_t$ be the real wage, $r_t$ the rental rate on private capital $K_t$, $p_{h,t}$ the price of housing services, $\tau_L$ the labor–income tax rate, and $\tau_H$ the (voted) property‐tax rate. The household’s per–period budget constraint is
+\begin{equation}
+ c_t + p_{h,t}h_t + i_t = (1-\tau_L)w_t n_t + r_tK_t - \tau_H p_{h,t}h_t,\label{eq:hhbudget}
+\end{equation}
+where $i_t$ denotes investment, and the private–capital law of motion is
+\begin{equation}
+K_{t+1}=(1-\delta_K)K_t + i_t, \qquad \delta_K\in(0,1).
+\end{equation}
+
+{\bf Optimality Conditions:}
+Maximization of \eqref{eq:utility} subject to \eqref{eq:hhbudget} yields:
+\begin{enumerate}
+  \item \textbf{Consumption–Saving Euler Equation:} The household equalizes the marginal utility of consuming an additional unit today to the discounted utility of saving it until tomorrow. In absence of capital income tax, this yields:
+
+    \begin{equation}
+    U_c(c_t, h_t, A(G_t)) = \beta U_c(c_{t+1}, h_{t+1}, A(G_{t+1})) \bigl[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K\bigr].
+    \end{equation}
+
+    which simplifies (under certainty and taking labor choices as separate) to
+    \begin{equation}
+    U_c(c_t,\cdot) = \beta U_c(c_{t+1},\cdot)\bigl(1 + r_{t+1} - \delta_K\bigr)
+    \end{equation}
+    in steady state. In other words, the marginal rate of intertemporal substitution equals the \((1 + \text{net return on capital})\) factor. This is the standard Euler equation ensuring optimal capital accumulation.
+
+    Moreover, 
+    \begin{equation}
+        \frac{1}{c_t} = \beta\,\frac{1}{c_{t+1}}\bigl(1+r_{t+1}-\delta_K\bigr);\label{eq:euler}
+    \end{equation}
+
+
+  \item \textbf{Labor--leisure trade–off:} The household chooses labor $n_t$ such that the marginal disutility of working (including commuting) equals the after-tax marginal benefit of earning wages. Formally,
+
+    \begin{align}
+    -U_n(c_t, h_t, A(G_t)) &= (1-\tau_L)w_t U_c(c_t, h_t, A(G_t))
+    \end{align}
+    where $U_n$ is the partial derivative of utility with respect to labor (negative due to disutility). Using our utility form, 
+    \begin{equation}
+    U_n = -\kappa \bigl[n_t(1+\phi(G_t))\bigr]^{\theta}(1+\phi(G_t)), \quad U_c = \frac{1}{c_t}.
+    \end{equation}
+    Thus, the condition becomes:
+    \begin{equation}
+    \kappa \bigl[n_t(1+\phi(G_t))\bigr]^{\theta}(1+\phi(G_t)) = \frac{(1-\tau_L)w_t}{c_t}.
+    \end{equation}
+
+    \begin{equation}
+        \kappa\bigl(1+\phi(G_t)\bigr)^{1+\theta}n_t^{\theta} = \frac{(1-\tau_L)w_t}{c_t};\label{eq:labor}
+    \end{equation}
+    
+    Intuitively, the marginal rate of substitution between leisure (or time) and consumption equals the real after-tax wage. An increase in commuting factor $\phi(G_t)$ (worse roads) raises the left-hand side (effective disutility of labor), leading the household to supply less labor for a given wage. This aligns with the idea that poor road quality reduces effective labor supply (households require higher compensation to work the same hours because commuting erodes their usable time).
+
+  \item \textbf{Housing demand}
+
+    The household chooses housing $h_t$ such that the marginal utility of housing relative to consumption equals its relative price. The FOC for $h_t$ is:
+    \begin{equation}
+    U_h(c_t, h_t, A(G_t)) = U_c(c_t, h_t, A(G_t)) \bigl(p_{h,t} + \tau_H p_{h,t}\bigr),
+    \end{equation}
+    or equivalently,
+    \begin{equation}
+    U_h = U_c \cdot (1+\tau_H)p_{h,t}.
+    \end{equation}
+    Here $p_{h,t}$ is the price of housing and $\tau_H p_{h,t}$ is the property tax per unit housing. In equilibrium, we can define the after-tax housing price as $q_t \equiv (1+\tau_H)p_{h,t}$. Then the condition becomes:
+    \begin{equation}
+    U_h = U_c \cdot q_t.
+    \end{equation}
+    % For example, with $U_h = \frac{\alpha_h}{h_t}$ and $U_c = \frac{1}{c_t}$, this condition gives:
+    For example, with $U_h = \frac{\alpha_h A(G_t)^\gamma}{h_t}$ and $U_c = \frac{1}{c_t}$, this condition gives:    
+    \begin{equation}
+    \frac{\alpha_h A(G_t)^\gamma}{h_t} = \frac{1}{c_t}q_t,
+    \end{equation}
+    or equivalently:
+    \begin{equation}
+    \alpha_h A(G_t)^\gamma c_t = q_t h_t.
+    \end{equation}
+    This means the household equates the marginal utility per dollar spent on housing to that of consumption. Intuitively, households will demand housing until the point where the utility gain from an extra unit of housing (which diminishes as $h_t$ increases due to diminishing returns) just equals the utility gain from spending those resources on general consumption.
+
+  \begin{equation}
+    \frac{\alpha_h A(G_t)^\gamma}{h_t} = \frac{(1+\tau_H)p_{h,t}}{c_t} \quad\Longrightarrow\quad p_{h,t} = \frac{\alpha_h A(G_t)^\gamma c_t}{(1+\tau_H)h_t}.
+  \end{equation}
+  
+\end{enumerate}
+
+
+
+\subsection{Representative Firm}
+A competitive firm produces output $Y_t$ with Cobb--Douglas technology
+\begin{equation}
+Y_t = K_t^{\alpha_k}\,(A_tL_t)^{1-\alpha_k},\qquad 0<\alpha_k<1,
+\end{equation}
+enforcing factor–price equalization
+\begin{equation}
+  w_t = (1-\alpha_k)\frac{Y_t}{L_t},\qquad r_t = \alpha_k\frac{Y_t}{K_t}.
+\end{equation}
+
+{\bf Profit Maximization.}
+The firm operates in a competitive market for inputs and output, so it hires labor and rents capital until factor prices equal their marginal products. In each period, the firm solves
+\begin{equation}
+\max_{K_t,L_t} \bigl\{F(K_t,L_t) - w_t L_t - r_t K_t\bigr\},
+\end{equation}
+taking wage $w_t$ and capital rental $r_t$ as given. The first-order conditions are:
+\begin{enumerate}
+    \item \textbf{Labor demand:}
+        \begin{equation}
+        w_t = (1-\alpha_k)K_t^{\alpha_k}(A_t L_t)^{-\alpha_k} = (1-\alpha_k)\frac{Y_t}{L_t}.
+        \end{equation}
+        This is the usual result that the real wage equals the marginal product of labor ($MP_L$).
+    \item \textbf{Capital demand:}
+        \begin{equation}
+        r_t = \alpha_k K_t^{\alpha_k-1}(A_t L_t)^{1-\alpha_k} = \alpha_k\frac{Y_t}{K_t}.
+        \end{equation}
+        Thus, the rental rate on capital equals the marginal product of capital ($MP_K$).
+\end{enumerate}
+Under constant returns and competitive markets, the firm earns zero economic profit in equilibrium (all output is paid out to factors). This means
+\begin{equation}
+Y_t = w_t L_t + r_t K_t
+\end{equation}
+in equilibrium. Because poor local roads can indirectly reduce effective labor supplied (households may choose smaller $L_t$) or even the productivity of labor (if $A_t$ were to depend on $G_t$), the equilibrium wage and output will adjust accordingly. In our model, we focus on the household-side mechanism; we do not explicitly insert $G_t$ into $F(\cdot)$, but one could imagine an extension where $A_t = A(G_t)$, making public infrastructure a productive externality that boosts TFP. That would reinforce the mechanism: a decline in $G_t$ would lower productivity and thus lower wages from the firm side as well. For now, wages change endogenously mainly due to labor supply shifts.
+
+\subsection{Government and Public Infrastructure}
+
+{\bf Taxation and Spending.}
+The government collects taxes and uses the revenue to finance road maintenance. Taxes have two components: an exogenous property tax $\tau_H$ (subject to voter approval) and an endogenous tax (such as $\tau_L$ on labor income, or potentially a lump-sum tax) that provides additional revenue. Denote by $T^{\text{exo}}_t$ the exogenous tax revenue from the voted levy, and $T^{\text{endo}}_t$ the endogenous tax revenue from other sources. For example, if $\tau_L$ is a labor tax, then $T^{\text{endo}}_t = \tau_L w_t n_t$, which varies with the economy and is therefore “endogenous”. The property tax revenue is $T^{\text{exo}}_t = \tau_H p_{h,t} h_t$ each period, directly tied to the housing market outcome.
+
+The government budget constraint is:
+\begin{equation}
+T^{\text{endo}}_t + T^{\text{exo}}_t = M_t,
+\end{equation}
+assuming all tax revenue is spent on road maintenance $M_t$. We abstract from any other government consumption or transfers.
+
+In a scenario where the road tax is cut (e.g., $\tau_H$ drops to zero after a failed levy vote), $T^{\text{exo}}_t$ falls exogenously. For a balanced budget, maintenance spending $M_t$ must be reduced by an equal amount. This captures the immediate fiscal impact of the tax cut, such as an observed 11\% loss in road maintenance funding empirically.
+
+
+% \subsection{Public‐Capital Dynamics}
+% Following \citeauthor{rioja2003}, road quality evolves according to
+% \begin{equation}
+% G_{t+1}=G_t\bigl(1-\delta_{G,t}\bigr),\quad \delta_{G,t}=\delta_G+\varphi\max\Bigl\{0,1-\frac{M_t}{\delta_G G_t}\Bigr\},\label{eq:roads}
+% \end{equation}
+% where $\delta_G$ is normal depreciation and $\varphi$ captures accelerated wear when $M_t<\delta_G G_t$.
+
+{\bf Public Capital (Roads) Accumulation.}
+The stock of public road infrastructure $G_t$ evolves over time depending on maintenance. We adopt a law of motion in line with \cite{rioja2003} to formalize how insufficient maintenance leads to infrastructure depreciation, whereas sufficient maintenance can maintain road quality\footnote{In this setup, roads can only be maintained, not improved.}. Let $\delta_G$ be the “normal” depreciation rate of roads (wear-and-tear if adequately maintained). Actual effective depreciation $\delta_{G,t}$ can exceed $\delta_G$ if maintenance is below the requirement. A convenient formulation is:
+
+\begin{equation}
+    G_{t+1} = G_t (1 - \delta_{G,t}) ,\label{eq:roads}
+\end{equation}
+
+where
+\begin{equation}
+\delta_{G,t} = \max\Bigl\{0, \varphi ( 1 - \frac{M_t}{\delta_G G_t} ) \Bigr\}.
+\end{equation}
+
+In words, if maintenance spending $M_t$ falls short of the amount needed to cover normal depreciation ($\delta_G G_t$), the depreciation rate increases proportionally to the shortfall. The parameter $\phi \ge 0$ governs how sensitive the infrastructure is to under-maintenance. For example, if $M_t$ is only half of $\delta_G G_t$, then $1 - \frac{M_t}{\delta_G G_t} = 0.5$, and $\delta_{G,t} = 0.5\phi$; this means roads wear out. If $M_t$ is zero (no upkeep), depreciation could jump substantially (if $\phi$ is large, $G_t$ may deteriorate very quickly). On the other hand, if $M_t$ is at least $\delta_G G_t$ (maintenance fully covers yearly wear), then $\delta_{G,t}=0$ (no deterioration). We also assume $\delta_{G,t}$ cannot go below 0 even if $M_t$ exceeds $\delta_G G_t$ (any extra maintenance beyond replacing depreciation might marginally improve roads but with diminishing returns). This Riojas-style law of motion captures the intuition that lack of maintenance shortens the life of existing public capital. Maintenance spending effectively slows down depreciation, preserving the infrastructure stock; cutting maintenance causes $G_t$ to decline faster over time. Importantly, a reduction in the road tax $\tau_H$ translates to lower $M_t$ and thus a gradual decline in $G_t$ over several periods. The deterioration in road quality will typically become noticeable after a few periods of under-maintenance, consistent with evidence that the negative effects on road conditions (and subsequently house prices) emerge with a lag. In our model, that lag is endogenously determined by the above law of motion – if $M_t$ drops at $t=0$, $G_t$ will depreciate a bit faster each period, compounding into a significant drop in infrastructure quality after some years.
+
+\subsection{Housing Market}
+
+Housing is treated as a tradable asset/consumption good in fixed supply. Let $\bar{H}$ denote the total housing stock (or housing services) available in the economy. We assume $\bar{H}$ is exogenously fixed (no new construction, to focus on valuation of a given stock). The Walrasian housing market clears each period, meaning the representative household’s demand for housing equals the available supply:
+\begin{equation}
+h_t = \bar{H},
+\end{equation}
+for all $t$. Because we have a representative household (or equivalently identical households each demanding $h_t$ and a total supply $\bar{H}$ per household), market clearing effectively pins down $h_t$ in equilibrium. The house price $p_{h,t}$ adjusts to ensure this equality. In other words, $p_{h,t}$ is determined such that the household’s first-order condition for housing (derived above) holds when $h_t=\bar{H}$. Using $U_h/U_c = (1+\tau_H)p_{h,t}$, we find:
+
+\begin{equation}
+    (1+\tau_H)p_{h,t} = \frac{U_h(c_t, h_t, A(G_t))}{U_c(c_t, h_t, A(G_t))}\Big|_{h_t=\bar{H}},
+\end{equation}
+
+which implicitly gives the equilibrium price $p_{h,t}$ as a function of $\bar{H}$ and other endogenous variables. Intuitively, $p_{h,t}$ will be high if housing is very valuable at the margin (e.g., large $\alpha_h$ or high $A(G_t)$ making housing attractive), and will fall if housing becomes less desirable (for example, if $A(G_t)$ drops due to road decay, lowering $U_h$ relative to $U_c$). Thus, a decline in road quality $G_t$ reduces the amenity value $A(G_t)$ and increases commuting disutility, both of which make housing less attractive to the household, thereby lowering the equilibrium house price $p_{h,t}$. This is the channel through which the public infrastructure shock is capitalized into property values, as described by Oates’s intuition on local public goods and house prices.
+
+\subsection{Competitive Equilibrium}
+
+We now define a recursive competitive equilibrium for this economy. Given an initial private capital stock $K_0$ and initial public capital (road quality) $G_0$, and a sequence of exogenous tax policy $\{\tau_{H,t}\}$ (with a drop in $\tau_H$ at the time of the tax cut shock), a competitive equilibrium is a sequence of allocations $\{c_t, h_t, n_t, K_{t+1}, L_t, M_t, G_t\}_{t\ge0}$ and prices $\{w_t, r_t, p_{h,t}\}_{t\ge0}$ such that:
+
+\begin{enumerate}
+    \item \textbf{Household Optimization:} Given prices and taxes, the representative household chooses $\{c_t, h_t, n_t, K_{t+1}\}$ to maximize its utility subject to its budget and accumulation constraints. The household’s choice satisfies the first-order optimality conditions described above (Euler equation, labor supply condition, and housing demand condition, etc.), and the transversality condition on capital holding.
+
+    \item \textbf{Firm Optimization:} The representative firm chooses inputs $\{K_t, L_t\}$ each period to maximize profit. In equilibrium, $L_t = n_t$ (labor market clears) and $K_t = K_t$ held by the household (capital market clears), and the wage and rental rates satisfy $w_t = F_L(K_t,L_t)$ and $r_t = F_K(K_t,L_t)$ as given by the Cobb-Douglas marginal products. This ensures the firm’s first-order conditions are met and profit is zero.
+
+    \item \textbf{Government Budget and Public Capital:} The government budget constraint holds each period: $T^{\text{endo}}_t + T^{\text{exo}}_t = M_t$, with $T^{\text{exo}}_t = \tau_{H,t} p_{h,t} h_t$ and $T^{\text{endo}}_t = \tau_L w_t n_t$. The road maintenance $M_t$ feeds into the law of motion for $G_t$: given $G_t$ at the start of period $t$, the next period’s public capital $G_{t+1}$ is determined by $G_{t+1} = G_t(1 - \delta_{G,t})$ with $\delta_{G,t}$ increasing if $M_t$ is insufficient (as specified above). The government sets $M_t$ according to the available tax revenue each period.
+
+    \item \textbf{Market Clearing:} All markets clear in equilibrium:
+    \begin{itemize}
+        \item \textbf{Goods market:} Output is used for private consumption, private investment, and public maintenance. The resource constraint each period is:
+        \begin{equation}
+        Y_t = c_t + i_t + M_t.
+        \end{equation}
+        Total output $Y_t$ produced by the firm equals the sum of household consumption $c_t$, private investment $i_t$, and government demand for road maintenance $M_t$.
+
+        \item \textbf{Labor market:} $L_t = n_t$. The labor supplied by the household equals labor demanded by the firm. The real wage adjusts such that this holds.
+
+        \item \textbf{Capital market:} The firm’s capital input equals the household’s capital stock: $K_t$ (used in production) = $K_t$ (owned by household). The rental rate $r_t$ adjusts to clear this market.
+
+        \item \textbf{Housing market:} $h_t = \bar{H}$. The total housing demanded by the household equals the fixed housing stock. The house price $p_{h,t}$ adjusts each period to clear the housing market.
+    \end{itemize}
+
+    \item \textbf{Consistency:} The expectations of the household are consistent with realized outcomes. In a deterministic steady-state scenario, this means the household correctly anticipates the path of prices and $G_t$. In a perfect-foresight or rational expectations equilibrium, the household foresees that a cut in $\tau_H$ implies lower future $M_t$ and thus a gradually declining $G_t$, factoring this into its decisions. The sequence $\{p_{h,t}\}$ reflects the present value of housing services given the expected decline in amenities.
+\end{enumerate}
+
+\subsection{Transitional Dynamics and Welfare Analysis}
+To analyze the transitional dynamics following a tax cut, we solve the model numerically under perfect foresight. The key steps are:
+
+\begin{enumerate}
+    \item \textbf{Calibration:} Assign parameter values based on empirical estimates or literature benchmarks. For example, $\beta$, $\alpha_h$, $\eta$, $\kappa$, $\theta$, $\delta_K$, $\delta_G$, and $\varphi$ are calibrated to match observed household behavior, infrastructure depreciation rates, and labor supply elasticities.
+
+    \item \textbf{Initial Steady State:} Compute the pre-tax-cut steady state by solving the equilibrium conditions under the initial $\tau_H$. This provides baseline values for $\{c_t, h_t, n_t, K_t, G_t, p_{h,t}, w_t, r_t\}$.
+
+    \item \textbf{Shock Implementation:} Introduce the tax cut by reducing $\tau_H$ at $t=0$. Solve the model forward to trace the path of endogenous variables $\{G_t, p_{h,t}, c_t, n_t, K_t\}$ as the economy transitions to the new steady state.
+
+    \item \textbf{Welfare Analysis:} Compute the household’s lifetime utility before and after the tax cut. Decompose the welfare change into short-run gains (higher disposable income) and long-run losses (lower amenities and higher commuting costs).
+
+    \item \textbf{Sensitivity Analysis:} Vary key parameters (e.g., $\varphi$, $\alpha_h$, $\theta$) to test the robustness of the results. Examine how the magnitude of the tax cut or alternative government policies (e.g., lump-sum taxes) affect outcomes.
+\end{enumerate}
+
+The numerical solution involves iterating on the household’s Euler equations, firm conditions, and government budget constraint while updating $G_t$ using its law of motion. This allows us to simulate the gradual decline in road quality and its impact on housing prices, labor supply, and overall welfare.
+
+\subsection{Discussion of Policy Shock}
+A permanent cut in the voted levy lowers $\tau_H$ exogenously. In the short run, disposable income rises, but $G_t$ is initially unchanged. Over time, reduced maintenance spending accelerates depreciation in equation \ref{eq:roads}, lowering $A(G_t)$ and raising $\phi(G_t)$; this depresses labor supply, housing demand, and therefore equilibrium house prices.
+
+\subsection{Common Criticisms and Responses}
+\begin{enumerate}
+  \item \textbf{No spatial heterogeneity.}\; Commentators may argue that ignoring multiple neighborhoods masks spatial spillovers. The model intentionally abstracts from space for tractability; future work can embed $G_t$ in a Rosen--Roback framework to capture cross‐location sorting.
+  \item \textbf{Representative agent assumption.}\; Heterogeneity in income or commuting preferences could attenuate price effects. Sensitivity analyses with quasi‐linear preferences or idiosyncratic $\phi(G_t)$ show qualitative robustness.
+  \item \textbf{Fixed housing stock.}\; Allowing new construction would introduce a supply elasticity that dampens price responses; empirical evidence suggests short‐run supply in many U.S. jurisdictions is quite inelastic.
+  \item \textbf{No direct productivity role for roads.}\; Incorporating $G_t$ into firm TFP $A_t$ would strengthen the negative output effect, making our results conservative.
+\end{enumerate}
+
+The DGE framework formalizes the intuition that road–maintenance tax cuts provide immediate relief but, by undermining infrastructure quality, erode local amenities and raise commuting costs, culminating in lower house values and welfare.
+
+\subsection{Derivations of Key Equations}
+
+\subsubsection{Derivation of the Euler Equation \ref{eq:euler}}
+
+Below \( U_c \equiv \partial u / \partial c \) and \( \lambda_t \) is the Lagrange multiplier on the period-\( t \) budget constraint.
+
+Set up the Lagrangian:
+
+\[
+L = \sum_{t=0}^\infty \beta^t \Big[u(c_t, h_t, A(G_t)) + \lambda_t \Big((1-\tau_L)w_t n_t + r_t K_t - \tau_H p_{h,t} h_t - c_t - p_{h,t} h_t - K_{t+1} + (1-\delta_K)K_t \Big)\Big].
+\]
+
+FOC w.r.t. consumption \( c_t \):
+
+\[
+\frac{\partial L}{\partial c_t} = 0 \quad \Longrightarrow \quad \beta^t U_c(c_t, h_t, A(G_t)) - \lambda_t = 0 \quad \Longrightarrow \quad \lambda_t = \beta^t U_c(c_t, h_t, A(G_t)). \tag{A1}
+\]
+
+FOC w.r.t. next-period capital \( K_{t+1} \):
+
+\[
+\frac{\partial L}{\partial K_{t+1}} = 0 \quad \Longrightarrow \quad -\lambda_t + \lambda_{t+1} \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big] = 0. \tag{A2}
+\]
+
+Combine (A1) and (A2):
+
+Insert \( \lambda_t \) and \( \lambda_{t+1} \) from (A1) into (A2):
+
+\[
+\beta^t U_c(c_t, h_t, A(G_t)) = \beta^{t+1} U_c(c_{t+1}, h_{t+1}, A(G_{t+1})) \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big].
+\]
+
+Divide both sides by \( \beta^t \) to obtain:
+
+\[
+U_c(c_t, h_t, A(G_t)) = \beta U_c(c_{t+1}, h_{t+1}, A(G_{t+1})) \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big].
+\]
+
+Why the derivative \( \frac{\partial n_{t+1}}{\partial K_{t+1}} \)? Capital chosen today affects tomorrow’s labor choice only through the household’s optimal plan. If, as we assume, labor in each period is chosen independently of the inherited capital stock, this derivative is zero and the term drops out, giving the familiar
+
+\[
+U_c(c_t, \cdot) = \beta U_c(c_{t+1}, \cdot) \bigl(1 + r_{t+1} - \delta_K\bigr),
+\]
+
+which is the standard Euler equation for intertemporal consumption smoothing.
+
+Equation 10 still contains the marginal utility of consumption \(U_c(\cdot)\). Because the one-period utility function chosen is:
+\[
+u(c_t, h_t, A(G_t)) = \ln c_t + \alpha_h \ln h_t + \eta \ln A(G_t) - \frac{\kappa}{1+\theta}\bigl[n_t(1+\phi(G_t))\bigr]^{1+\theta}, \tag{6}
+\]
+its partial derivative with respect to consumption is:
+\[
+U_c(c_t, h_t, A(G_t)) = \frac{\partial u}{\partial c_t} = \frac{1}{c_t}. \quad\text{(log utility)}
+\]
+
+{\bf Substituting \(U_c\) into the Euler Equation:}
+
+Start from Eq. 10:
+\[
+U_c(c_t,\cdot) = \beta\,U_c(c_{t+1},\cdot)\bigl(1 + r_{t+1} - \delta_K\bigr). \tag{10}
+\]
+
+Replace \(U_c\) with \(\frac{1}{c}\) (log utility):
+\[
+\frac{1}{c_t} = \beta\,\frac{1}{c_{t+1}}\bigl(1 + r_{t+1} - \delta_K\bigr).
+\]
+
+This is exactly Eq. 11:
+\[
+\boxed{\frac{1}{c_t} = \beta\,\frac{1}{c_{t+1}}\bigl(1 + r_{t+1} - \delta_K\bigr)}. \tag{11}
+\]
+
+{\bf Economic Interpretation}
+
+1. Intertemporal Trade-off
+An extra dollar of consumption today yields marginal utility \( \frac{1}{c_t} \). Saving that dollar instead raises tomorrow’s consumption by the gross return \( 1 + r_{t+1} - \delta_K \); the utility gain from that is \( \beta \frac{1 + r_{t+1} - \delta_K}{c_{t+1}} \). Optimality sets these equal, so households are indifferent between consuming now and investing for tomorrow.
+
+2. Consumption Growth Rule
+
+Rearranging gives a simple growth factor:
+
+\begin{equation*}
+\frac{c_{t+1}}{c_t} = \beta \bigl(1 + r_{t+1} - \delta_K\bigr).
+\end{equation*}
+
+If you calibrate \(\beta\) so that \(\beta \bigl(1 + r - \delta_K\bigr) = 1\) in steady state, consumption is constant along the balanced-growth path.
+
+With annual parameters like \(\beta = 0.96\) and \(r - \delta_K \approx 4\%\), the right-hand side is close to 1, implying very slow trend growth—consistent with many RBC calibrations.
+
+3. Policy Transmission
+
+Anything that moves the net return—e.g., a change in the capital rental rate because labor supply falls when road quality deteriorates—feeds directly into the path of \(c_t\). Hence Equation \ref{eq:euler} is the channel through which road-tax shock ultimately affects household consumption and welfare.
+
+
+\subsubsection{Labor--leisure trade–off }
+
+% Utility derivatives
+To derive the labor-leisure trade-off condition, we start by computing the partial derivatives of the utility function with respect to consumption and labor:
+
+For consumption:
+\begin{equation*}
+    u_c(c_t,h_t,n_t,G_t)=\frac{1}{c_t} \tag{B1}
+\end{equation*}
+
+% FOC for labour supply
+For labor, we have:
+\begin{equation*}
+\qquad
+u_n(c_t,h_t,n_t,G_t)=-\,\kappa\bigl[n_t\bigl(1+\varphi(G_t)\bigr)\bigr]^{\theta}\,\bigl(1+\varphi(G_t)\bigr). \tag{B2}
+\end{equation*}
+
+Optimal labour supply equates the marginal disutility of work to the after-tax marginal benefit of wages
+
+\begin{equation*}
+-\,u_n(c_t,h_t,n_t,G_t) \;=\;(1-\tau_L)\,w_t\,u_c(c_t,h_t,n_t,G_t) 
+\end{equation*}
+
+Using B1 and B2, we can rewrite this as:
+% Substitute the derivatives
+\begin{equation*}
+\kappa\bigl[n_t\bigl(1+\varphi(G_t)\bigr)\bigr]^{\theta}\bigl(1+\varphi(G_t)\bigr)
+    \;=\;\frac{(1-\tau_L)\,w_t}{c_t}
+\end{equation*}
+
+% Collect commuting terms
+This is exactly the condition we wanted to derive:
+\begin{equation*}
+\kappa\bigl(1+\varphi(G_t)\bigr)^{1+\theta}\,n_t^{\theta}
+      \;=\;\frac{(1-\tau_L)\,w_t}{c_t} 
+\end{equation*}
+
+% Solve for optimal hours
+\begin{equation*}
+        n_t \;=\;\Biggl[\,
+        \frac{(1-\tau_L)\,w_t}
+            {\kappa\,c_t\,\bigl(1+\varphi(G_t)\bigr)^{1+\theta}}
+        \Biggr]^{\!1/\theta}\!
+\end{equation*}
+
+
+\subsection{Model Calibration}
+
+The model parameters are calibrated based on empirical evidence and standard values from the literature. Table \ref{tab:calibration} summarizes the calibrated values used in the analysis.
+
+\begin{table}[htbp]
+\centering
+\caption{Baseline calibration and sensitivity ranges}
+\begin{tabularx}{\textwidth}{
+  >{\raggedright\arraybackslash}p{2.2cm}   % Parameter
+  >{\raggedright\arraybackslash}p{3.4cm}   % Block
+  >{\centering\arraybackslash}p{2.2cm}     % Baseline
+  >{\centering\arraybackslash}p{2.8cm}     % Sensitivity
+  >{\raggedright\arraybackslash}p{3.8cm}   % Source
+}
+\toprule
+\textbf{Parameter} & \textbf{Model block} & \textbf{Baseline} & \textbf{Sensitivity range} & \textbf{Key empirical source} \\ 
+\midrule
+$\beta$               & Household intertemporal utility             & $0.96$    & $0.94$–$0.99$          & \citet{cooley1995frontiers} \\ 
+$\alpha_h$            & Housing budget share                        & $0.35$                & $0.25$–$0.40$            & \citep{bls2023consumer} \\ 
+$\eta$              & Amenity utility weight                        & $0.15$                & $0.05$–$0.25$            & \citet{albouy2008qol} \\ 
+$\theta$                & Inverse Frisch elasticity labor supply    & $2$                & $1.5$–$4.0$            & \citet{chetty2011micro} \\ 
+$\kappa$              & Labor-disutility scale                 & $2.9$ & $2.9$        &  \cite{chatterjee2017optimal} \\ 
+$\alpha_k$            & Private-capital share                       & $0.30$                & $0.25$–$0.40$            & \citet{chatterjee2017optimal} \\ 
+$\delta_{K}$          & Private Capital depreciation (annual)       & $0.060$               & $0.04$–$0.08$            & \citet{cooley1995frontiers} \\ 
+$\delta_{G}$          & Road stock depreciation (annual)            & $0.020$               & $0.015$–$0.030$          & BEA highway accounts \citep{bea2020} \\ 
+$\varphi$             & Wear-and-tear exponent                      & $0.50$                & $0.25$–$0.75$            & \citet{rioja2003} \\ 
+$\gamma$              & Output elasticity of public capital         & $0.15$                & $0.08$–$0.25$            & \citet{bom_ligthart2009_publiccapital} \\ 
+$\phi(G)$         & semi-elasticity of commuting wrt roughness    & $-0.30$               & $-0.05$ – $-0.20$        & \citet{currier2023} \\ 
+\bottomrule
+\end{tabularx}
+\label{tab:calibration}
+\end{table}
+
+
+These values are chosen to reflect realistic economic conditions. For example, $\beta = 0.96$ corresponds to a 4\% annual discount rate, while $\delta_K = 0.05$ reflects typical depreciation rates for private capital. The labor disutility parameters $\kappa$ and $\theta$ are calibrated to match observed labor supply elasticities, and $\varphi$ captures the empirical sensitivity of road quality to maintenance shortfalls.

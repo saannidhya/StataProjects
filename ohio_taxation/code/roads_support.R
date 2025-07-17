@@ -5,10 +5,12 @@
 # Log     : 1. 1/12/2025: made a more formal update to code. Added Qs that each snippet answers.
 #           2. 1/16/2025: results from test run of fine-tuned gpt-4 model by Vikram
 #           3. 2/26/2025: Added regression analysis for Road quality
+#           4. 7/12/2025: checking which tendigit_fips and elections quality at different bandwidths
 #================================================================================================================#
 
 library(fixest)
 library(MASS) 
+library(tidyverse)
 
 # specify the set up location
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
@@ -403,89 +405,73 @@ lm_school$coefficients["road_cuts", "Std. Error"]
 
 #==========================================================================================================#
 #  Q. Does road quality actually change after the tax cuts?
-#     Preliminary results from test run.
+#     Results show they do.
 #==========================================================================================================#
 
-# before referendum	after referendum
-# passed the levy	1.07	1
-# failed the levy	1.39	0.93
+roads_and_census %>% dplyr::select(all_of(c("tendigit_fips", "year", "subdivisionname", "county", "description", "treated"))) %>%
+  filter(tendigit_fips == "3902982852")
 
-# Create the data
-data <- data.frame(
-  Time_of_Vote = rep(c("Before Referendum", "After Referendum"), each = 2),
-  Levy_Status = rep(c("Passed the Levy", "Failed the Levy"), 2),
-  Avg_Road_Quality_Rating = c(1.00, 1.375, 1.066667, 0.9310345)
-)
-
-# Set the correct order for the Time_of_Vote variable
-data$Time_of_Vote <- factor(data$Time_of_Vote, levels = c("Before Referendum", "After Referendum"))
-
-# Plot the data
-ggplot(data, aes(x = Time_of_Vote, y = Avg_Road_Quality_Rating, group = Levy_Status, color = Levy_Status)) +
-  geom_line(size = 1) +
-  geom_point(size = 3) +
-  labs(
-    title = "Road Quality Ratings Before and After Referendum",
-    x = "Time of the Vote",
-    y = "Avg Road Quality Rating",
-    color = "Levy Status"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "top"
-  )
-
-
-data_change <- data.frame(
-  Levy_Status = c("Passed the Levy", "Failed the Levy"),
-  Change_in_Rating = c(1.066667 - 1, 0.9310345 - 1.375)
-)
-
-ggplot(data_change, aes(x = Levy_Status, y = Change_in_Rating, fill = Levy_Status)) +
-  geom_bar(stat = "identity", width = 0.5) +  # Reduce bar width
-  labs(
-    title = "Change in Avg Road Quality Rating (Before and After Referendum)",
-    x = "Levy Status",
-    y = "Change in Avg Road Quality Rating",
-    fill = "Levy Status"
-  ) +
-  scale_fill_manual(values = c("Passed the Levy" = "lavender", "Failed the Levy" = "salmon")) + # Custom colors
-  theme_minimal(base_size = 14) +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
-    axis.title.x = element_text(size = 12, face = "bold"),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.text = element_text(size = 11),
-    legend.position = "none"  # Remove legend
-  )
+colnames(roads_and_census)
+roads_and_census %>% filter(tolower(trimws(subdivisionname)) == "thompson") %>%
+  relocate(treated, .after = description) 
 
 # Regression analysis #
 above_roads <- readr::read_csv(paste0(data,"/roads/ohio/above/above_predictions_with_flag.csv")) %>% 
   mutate(treat_flag = 1, # Above means these areas are above the cutoff for % votes against i.e. cut their renewal taxes 
          road_quality_score = round(((predicted_label + confidence) / 3) * 99 + 1, 1),
          road_quality_score2 = case_when(
-           predicted_label == 0 ~ 1 + (1 - 0.5*confidence) * 99 / 3 ,
+           predicted_label == 0 ~ 1 + (1 - 0.4*confidence) * 99 / 3 ,
            TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.5*confidence * 99 / 3 
-         ) |> round(1)
+         ) |> round(1) ,
+         road_quality_score3 = case_when(
+           predicted_label == 0 ~ (1 - 0.8*confidence) * 99 / 3 ,
+           TRUE                 ~ predicted_label * 99 / 3  + 0.8*confidence * 99 / 3         ) |> round(1) 
          )  %>%
   mutate(year = stringr::str_extract(image, "(\\d{4}|\\d{2})(?=\\.jpg)"),
          year = ifelse(nchar(year) == 2, paste0("20", year), year),
-         year = as.integer(year))
+         year = as.integer(year)) %>%
+  mutate(year_diff = abs(year - election_year)) %>% 
+  relocate(year, .after = election_year) %>%
+  relocate(year_diff, .after = year)
 
 below_roads <- readr::read_csv(paste0(data,"/roads/ohio/below/below_predictions_with_flag.csv")) %>% 
   mutate(treat_flag = 0,
          road_quality_score = round(((predicted_label + confidence) / 3) * 99 + 1, 1),
          road_quality_score2 = case_when(
-           predicted_label == 0 ~ 1 + (1 - 0.5*confidence) * 99 / 3 ,
-           TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.5*confidence * 99 / 3 
-         ) |> round(1)
+           predicted_label == 0 ~ 1 + (1 - 0.4*confidence) * 99 / 3 ,
+           TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.4*confidence * 99 / 3 
+         ) |> round(1),
+         road_quality_score3 = case_when(
+           predicted_label == 0 ~ (1 - 0.8*confidence) * 99 / 3 ,
+           TRUE                 ~ predicted_label * 99 / 3  + 0.8*confidence * 99 / 3         ) |> round(1) 
          ) %>%
   mutate(year = stringr::str_extract(image, "(\\d{4}|\\d{2})(?=\\.jpg)"),
          year = ifelse(nchar(year) == 2, paste0("20", year), year),
-         year = as.integer(year))
+         year = as.integer(year)) %>%
+  mutate(year_diff = abs(year - election_year)) %>% 
+  relocate(year, .after = election_year) %>%
+  relocate(year_diff, .after = year)
 
 roads_close <- bind_rows(above_roads, below_roads) %>% mutate(did = post_election_flag*treat_flag)
+
+# group means 
+roads_close %>%
+  group_by(treat_flag, post_election_flag) %>%
+  summarize(mean = mean(predicted_label), sd = sd(predicted_label) ,
+            mean_score = mean(road_quality_score), sd_score = sd(road_quality_score) ,
+            mean_score2 = mean(road_quality_score2), sd_score2 = sd(road_quality_score2) ,
+            mean_score3 = mean(road_quality_score3), sd_score3 = sd(road_quality_score3) ,
+            # ,n = n()
+  ) 
+  # select(treat_flag, post_election_flag, mean_score3, sd_score3)
+
+# for before referendum, what's the mean time-gap between election time and satellite photo time?
+mean(roads_close %>% filter(post_election_flag == 0) %>% pull(year_diff))
+# 2.28 years
+
+# for after referendum, what's the mean time-gap between election time and satellite photo time?
+mean(roads_close %>% filter(post_election_flag == 1) %>% pull(year_diff))
+# 3.31 years
 
 # before and after: treatment group
 road_above_lm <- lm(data = above_roads, formula = predicted_label ~ post_election_flag)
@@ -493,6 +479,13 @@ summary(road_above_lm)
 # before and after: control group
 road_below_lm <- lm(data = below_roads, formula = predicted_label ~ post_election_flag)
 summary(road_below_lm)
+
+# before and after: treatment group
+road_above_rqs_lm <- lm(data = above_roads, formula = road_quality_score2 ~ post_election_flag)
+summary(road_above_rqs_lm)
+# before and after: control group
+road_below_rqs_lm <- lm(data = below_roads, formula = road_quality_score2 ~ post_election_flag)
+summary(road_below_rqs_lm)
 
 
 lm(data = roads_close %>% filter(post_election_flag == 0), formula = predicted_label ~ treat_flag ) %>% summary
@@ -506,18 +499,8 @@ below_roads[below_roads$post_election_flag == 1, "predicted_label"] %>% pull(pre
 
 # Diff-in-Diff analysis #
  
-
 mean(roads_close$predicted_label)
 mean(above_roads$predicted_label)
-
-# group means 
-roads_close %>%
-  group_by(treat_flag, post_election_flag) %>%
-  summarize(mean = mean(predicted_label), sd = sd(predicted_label) ,
-            mean_score = mean(road_quality_score), sd_score = sd(road_quality_score) ,
-            mean_score2 = mean(road_quality_score2), sd_score2 = sd(road_quality_score2) 
-            # ,n = n()
-            )
 
 
 roads_lm <- lm(data = roads_close, formula = predicted_label ~ post_election_flag + treat_flag + did) 
@@ -696,6 +679,7 @@ rd_df_post %>%
             # ,n = n()
   )
 
+roads_and_census %>% filter(tendigit_fips == 3908939102)
 
 #==========================================================================================================#
 #  Q. Does one election change the probability of having another election?
@@ -736,4 +720,16 @@ roads_and_census %>%
 
 
 fail_yrs
+
+#==========================================================================================================#
+#  Q. What tendigit_fips qualify for road quality assessment, and at what bandwidth?
+#>
+#==========================================================================================================#
+
+
+
+roads_and_census %>%
+  mutate(votes_pct_against_ctr = votes_pct_against - 50) %>%
+  filter(between(votes_pct_against_ctr, -10,10) ) %>%
+  distinct(tendigit_fips)
 

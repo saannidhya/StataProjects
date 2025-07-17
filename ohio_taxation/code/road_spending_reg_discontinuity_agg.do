@@ -34,7 +34,9 @@ global p = "1"
 global q = "2"
 global bwselect = "mserd"
 
-foreach t of numlist -3/10 {
+// local t = 5
+// foreach t of numlist -3/10 {
+foreach t of numlist 1/10 {
 	local t_abs = abs(`t')		
 	if `t' < 0 {
 		local t_type = "t_minus"		
@@ -107,8 +109,9 @@ foreach t of numlist -3/10 {
 // 	savegraph("$plots/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_full.png") replace
 	* plot within the bandwidth selected by rdrobust
 // 	gen log_Y = log($Y)
-	binscatter $Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) nbins(80) linetype(lfit)  /// <- change nbins 
-	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' (`year')")  ///
+// 	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' - (`year')")  ///
+	binscatter $Y $X if votes_pct_against >= cutoff-`h_l' & votes_pct_against <= cutoff+`h_r', rd($cutoff) nbins(10) linetype(lfit) yscale(range(90000 130000)) ylabel(90000(10000)130000, grid)  /// <- change nbins 
+	xtitle("Percent of Votes Against Tax Levy") ytitle("`Y' - `t_abs' years after vote")  ///
 	savegraph("$plots/votes_pct_against/rd_plot_${Y}_`yr'_${kernel}_${bwselect}_${p}_${q}_within.png") replace
 
 	* generating an exportable table
