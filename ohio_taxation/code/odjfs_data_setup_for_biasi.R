@@ -5,6 +5,7 @@
 # Created : 04/22/2025
 # Log     : 1. 04/22/2025: Created  the script
 #           2. 05/07/2025: Added firms created and first destroyed variables
+#           3. 08/25/2025: Fixed some aggregation bugs. Produced Biasi-formatted tables for BLS regressions 
 #==========================================================================================================#
 
 
@@ -39,11 +40,21 @@ emp_df2 <- emp_df %>%
   distinct(unique_id, quarter, year, .keep_all = TRUE) %>%
   arrange(unique_id, year, quarter) 
 
+# unique(emp_df2$meei)
+# sort(unique(emp_df2$county_fips))
+# colnames(emp_df2)
+# emp_df2$county_fips <- substr(emp_df2$tendigit_fips, 3, 5)
+# emp_df2 %>% group_by(meei) %>% count()
+
+# View(emp_df2[1:100, ])
+
 # nrow(emp_df) - nrow(emp_df2) # 118. 2020 dups.. expected.
 
 # aggregate by tendigit_fips + year + quarter
 setDT(emp_df2)
 
+# Sort before using shift()
+setorder(emp_df2, unique_id, year, quarter)
 emp_df2[, `:=`(jobs_created   = pmax(persons - shift(persons, 1), 0),
                jobs_destroyed = pmax(shift(persons, 1) - persons, 0) ), by = unique_id]
 emp_df2[, naics_2digit := floor(naics / 1e4)]
@@ -56,24 +67,61 @@ emp_df_agg_qtr <- emp_df2[, .(
   jobs_destroyed = sum(jobs_destroyed, na.rm = TRUE)
 ), by = .(tendigit_fips, year, quarter)]
 
+# prepare dataset for yearly aggregation
+emp_df3 <- emp_df2[, .(num_employed = round(mean(persons, na.rm = TRUE)),
+                        wage = sum(wage, na.rm = TRUE)), by = .(unique_id, tendigit_fips, year, naics)]
+
+# Order for year-over-year flows
+setorder(emp_df3, unique_id, year)
+
+# Note: recreate jobs_created and jobs_destroyed to align periods, because we are aggregating to a different time period.
+emp_df3[, `:=`(jobs_created   = pmax(num_employed - shift(num_employed, 1), 0),
+               jobs_destroyed = pmax(shift(num_employed, 1) - num_employed, 0) ), by = unique_id]
+emp_df3[, naics_2digit := floor(naics / 1e4)]
+# View(emp_df3[1:1000, ])
+
 # Step 2: Aggregate at (tendigit_fips, year)
-emp_df_agg_yr <- emp_df_agg_qtr[, .(
-  num_employed = round(mean(num_employed, na.rm = TRUE)),
+emp_df_agg_yr <- emp_df3[, .(
+  num_employed = round(sum(num_employed, na.rm = TRUE)),
   wage = sum(wage, na.rm = TRUE),
   jobs_created = sum(jobs_created, na.rm = TRUE),
-  jobs_destroyed = sum(jobs_destroyed, na.rm = TRUE)
+  jobs_destroyed = sum(jobs_destroyed, na.rm = TRUE),
+  num_firms = n_distinct(unique_id),
+  num_employed_per_firm = round(sum(num_employed, na.rm = TRUE) / n_distinct(unique_id))
 ), by = .(tendigit_fips, year)]
 
 # Step 3: Add wage per employee
 # emp_df_agg_qtr[, wage_per_emp := round(wage / num_employed)]
-emp_df_agg_yr[, `:=`( wage_per_emp = round(wage / num_employed),
-                      job_creation_rate = round(jobs_created / num_employed, 3),
-                      job_destruction_rate = round(jobs_destroyed / num_employed, 3))]
+emp_df_agg_yr[, `:=`( wage_per_emp = ifelse(num_employed == 0, 0, round(wage / num_employed)),
+            job_creation_rate = ifelse(num_employed == 0, 0, round(jobs_created / num_employed)),
+            job_destruction_rate = ifelse(num_employed == 0, 0, round(jobs_destroyed / num_employed)))]
 
-summary(emp_df_agg_yr)
+# reasonable numbers: 5.5MM people employed in 2019, total wages 
+emp_df_agg_yr %>% 
+  group_by(year) %>%
+  summarise(num_employed = sum(num_employed, na.rm = TRUE),
+            wage = sum(wage, na.rm = TRUE),
+            jobs_created = sum(jobs_created, na.rm = TRUE),
+            jobs_destroyed = sum(jobs_destroyed, na.rm = TRUE),
+            num_firms = sum(num_firms, na.rm = TRUE)
+          )
 
-length(unique(emp_df_agg_yr$tendigit_fips)) # 1600 fips
+length(unique(emp_df_agg_yr$tendigit_fips))
+length(unique(emp_df_agg_yr$year))
 
+# Check for unbalanced panel in emp_df_agg_yr
+# panel_check <- emp_df_agg_yr %>%
+#   group_by(tendigit_fips) %>%
+#   summarise(
+#     num_years = n(),
+#     years_present = list(sort(year)),
+#     .groups = 'drop'
+#   ) %>%
+#   filter(num_years < 15) %>%
+#   arrange(num_years)
+# panel_check
+
+# summary(emp_df_agg_yr)
 
 # Getting industry-specific employment data
 
@@ -93,18 +141,10 @@ names(agg_list) <- valid_naics
 for (i in seq_along(valid_naics)) {
   naics_code <- valid_naics[i]
   
-  # Subset and aggregate
-  
-  # qtr
-  emp_df_agg_qtr_ <- emp_df2[naics_2digit == naics_code, .(
-    num_employed = sum(round(persons), na.rm = TRUE),
-    wage = sum(wage, na.rm = TRUE),
-    jobs_created = sum(jobs_created, na.rm = TRUE),
-    jobs_destroyed = sum(jobs_destroyed, na.rm = TRUE)
-  ), by = .(naics_2digit, tendigit_fips, year, quarter)]
+  # Subset and aggregate  
   # year
-  agg_list[[i]] <- emp_df_agg_qtr_[naics_2digit == naics_code, .(
-    num_employed = round(mean(num_employed, na.rm = TRUE)),
+  agg_list[[i]] <- emp_df3[naics_2digit == naics_code, .(
+    num_employed = round(sum(num_employed, na.rm = TRUE)),
     wage = sum(wage, na.rm = TRUE),
     jobs_created = sum(jobs_created, na.rm = TRUE),
     jobs_destroyed = sum(jobs_destroyed, na.rm = TRUE)
@@ -119,6 +159,9 @@ emp_df_agg_by_naics[, `:=`( wage_per_emp = round(wage / num_employed),
                       job_creation_rate = round(jobs_created / num_employed, 3),
                       job_destruction_rate = round(jobs_destroyed / num_employed, 3))]
 
+# names(emp_df_agg_by_naics)
+# View(emp_df_agg_by_naics)
+# summary(emp_df_agg_by_naics)
 
 # export to csv
 write.csv(emp_df_agg_by_naics, paste0(data, "/employment/employment_data_agg_by_naics.csv"), row.names = FALSE)
@@ -131,37 +174,37 @@ write.csv(emp_df_agg_yr, paste0(data, "/employment/emp_df_agg_yr.csv"), row.name
 #----------------------------------------------------------------------------------#
 
 # get one row per firm-year
-firm_year <- emp_df2 %>% dplyr::as_tibble() %>% filter(year <= 2019) %>% # removing 2020 as COVID year is giving data problems
-  distinct(tendigit_fips, unique_id, year)  
+# firm_year <- emp_df2 %>% dplyr::as_tibble() %>% filter(year <= 2019) %>% # removing 2020 as COVID year is giving data problems
+#   distinct(tendigit_fips, unique_id, year)  
 
 # identify first and last year for each firm
-firm_span <- firm_year %>%                           
-  group_by(unique_id) %>%                            
-  summarise(first_year = min(year),
-            last_year  = max(year),
-            .groups     = "drop")
+# firm_span <- firm_year %>%                           
+#   group_by(unique_id) %>%                            
+#   summarise(first_year = min(year),
+#             last_year  = max(year),
+#             .groups     = "drop")
 
-min_sample_year <- min(firm_span$first_year, na.rm = TRUE)
-max_sample_year <- max(firm_span$last_year, na.rm = TRUE)
+# min_sample_year <- min(firm_span$first_year, na.rm = TRUE)
+# max_sample_year <- max(firm_span$last_year, na.rm = TRUE)
 
-# create new variables that indicates whether the firm was created or destroyed
-firm_year_flags <- firm_year %>% 
-                      left_join(firm_span, by = "unique_id") %>%         
-                      mutate(created   = as.integer(year == first_year & first_year > min_sample_year),
-                             destroyed = as.integer(year == last_year & last_year < max_sample_year))
+# # create new variables that indicates whether the firm was created or destroyed
+# firm_year_flags <- firm_year %>% 
+#                       left_join(firm_span, by = "unique_id") %>%         
+#                       mutate(created   = as.integer(year == first_year & first_year > min_sample_year),
+#                              destroyed = as.integer(year == last_year & last_year < max_sample_year))
                     
-firm_churn <- firm_year_flags %>% 
-  group_by(tendigit_fips, year) %>%                  
-  summarise(firms_created   = sum(created,   na.rm = TRUE),
-            firms_destroyed = sum(destroyed, na.rm = TRUE),
-            .groups          = "drop")
+# firm_churn <- firm_year_flags %>% 
+#   group_by(tendigit_fips, year) %>%                  
+#   summarise(firms_created   = sum(created,   na.rm = TRUE),
+#             firms_destroyed = sum(destroyed, na.rm = TRUE),
+#             .groups          = "drop")
 
-# Shows that series are stable
-firm_churn_year <- firm_churn %>% 
-  group_by(year) %>% 
-  summarise(firms_created   = sum(firms_created,   na.rm = TRUE),
-            firms_destroyed = sum(firms_destroyed, na.rm = TRUE),
-            .groups          = "drop")
+# # Shows that series are stable
+# firm_churn_year <- firm_churn %>% 
+#   group_by(year) %>% 
+#   summarise(firms_created   = sum(firms_created,   na.rm = TRUE),
+#             firms_destroyed = sum(firms_destroyed, na.rm = TRUE),
+#             .groups          = "drop")
 
 
 
@@ -182,8 +225,8 @@ roads <- haven::read_dta("data/roads_and_census.dta") %>%
          select(tendigit_fips, year, subdivisionname, subdivisiontype, county, votes_pct_for, margin, margin_ds, taxtype, purpose2, description, millagepercent, duration, votesfor, votesagainst, votes_pct_for, votes_pct_against, hold_election, if_pass, margin, margin_ds,
                 # census variables
                 pop, medfamy, childpov, poverty, pctwithkids, pctsinparhhld, pctnokids, pctlesshs, pcthsgrad, pctsomecoll, pctbachelors, pctgraddeg, unemprate, pctrent, pctown, pctlt5, pct5to17, pct18to64, pct65pls, pctwhite, pctblack, pctamerind, pctapi, pctotherrace, pctmin, raceherfindahl, pcthisp, pctmarried, pctnevermarr, pctseparated, pctdivorced, lforcepartrate, incherfindahl
-         )
-roads %>% relocate(if_pass, .after = description)
+         ) %>% relocate(if_pass, .after = description) %>%
+         filter(description == "A") # Biasi is for new levies only
 # census <- haven::read_dta("data/roads_and_census.dta") %>% 
 #   select(- all_of(c("taxtype", "purpose2", "description", "millagepercent", "duration", "votesfor", "votesagainst", "votes_pct_for", "votes_pct_against", "votesfor", "votesagainst", "duration", "votes_pct_for_cntr"))) %>% 
 #   select(-starts_with("yr_t_"))
@@ -212,6 +255,8 @@ roads_panel <- crossing(
   )) %>%
   left_join(roads, by = c("tendigit_fips", "year"))
   # left_join(roads %>% filter(description == "A"), by = c("tendigit_fips", "year"))  
+View(roads_panel)
+# unique(roads$description)
 
 roads_panel <- roads_panel %>%
   mutate(across(
@@ -232,7 +277,9 @@ roads_panel <- roads_panel %>%
 # Creating levy proposal (EL's) and levy authorization (DL's) flags MANUALLY
 #------------------------------------------------------------------------------------------------------------------#
 
+roads_panel <- roads_panel %>% arrange(tendigit_fips, cohort, year)
 roads_panel_flags <- roads_panel %>%
+  dplyr::group_by(tendigit_fips, cohort) %>%
   mutate(
     ### History variables ###
     EL_0 = if_else(hold_election == 1, 1, 0) |> replace_na(0),
@@ -322,8 +369,10 @@ roads_panel_flags <- roads_panel %>%
     
   )
 
+# View(roads_panel_flags)
+
 # export to csv
-write_csv(roads_panel_flags, "data/roads_panel_flags_all.csv")
+# write_csv(roads_panel_flags, "data/roads_panel_flags.csv")
 
 #------------------------------------------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------------------------------------------#
@@ -337,26 +386,62 @@ roads_emp_stacked <- roads_panel_flags %>%
   inner_join(emp_df_agg_yr, by = c("tendigit_fips", "year")) %>%
   mutate(across(c(wage_per_emp, job_creation_rate, job_destruction_rate),
         ~ ifelse(is.nan(.) | is.infinite(.), 0, .) ))
+colnames(roads_emp_stacked)
+View(roads_emp_stacked)
+
+# unique(emp_df_agg_by_naics$naics_2digit)
+roads_emp_stacked_by_naics <- purrr::map( unique(emp_df_agg_by_naics$naics_2digit), function(naics) {
+                    roads_panel_flags %>%
+                      inner_join(emp_df_agg_by_naics %>% filter(naics_2digit == naics) , by = c("tendigit_fips", "year")) %>%
+                      mutate(naics_code = naics) %>%
+                      relocate(naics_2digit, .after = year) %>%
+                      filter(year >= cohort - 5 & year <= cohort + 10)
+                    }) %>% bind_rows()
+
+# roads_emp_stacked_by_naics <- roads_panel_flags %>%
+#   inner_join(emp_df_agg_by_naics, by = c("tendigit_fips", "year"), relationship = "many-to-many") %>%
+#   mutate(across(c(wage_per_emp, job_creation_rate, job_destruction_rate),
+#                 ~ ifelse(is.nan(.) | is.infinite(.), 0, .) )) %>%
+#   relocate(naics_2digit, .after = year) %>%
+#   arrange(naics_2digit, tendigit_fips, cohort, year)
+
+# View(roads_emp_stacked_by_naics)
 
 
-roads_emp_stacked_fips <- roads_panel_flags %>%
-  inner_join(emp_df_agg_by_naics, by = c("tendigit_fips", "year")) %>%
-  mutate(across(c(wage_per_emp, job_creation_rate, job_destruction_rate),
-                ~ ifelse(is.nan(.) | is.infinite(.), 0, .) ))
+# Only keeping "clean controls" i.e. controls that never passed an election in t+1 to t+10 i.e. # Remove control obs that have if_pass == 1 in years t+1 to t+10 after cohort. This will ensure that we only keep "clean controls", equivalent to the "never treated" group in Biasi.
+
+# Aggregated
+roads_emp_stacked2 <- roads_emp_stacked %>%
+  group_by(tendigit_fips, cohort) %>%
+  mutate(treated = if_else(any(cohort == year & if_pass == 1), 1, 0),
+         control = if_else(any(cohort == year & if_pass == 0), 1, 0)) %>%
+  relocate(treated, .after = if_pass) %>%
+  relocate(control, .after = treated) %>%
+  group_by(tendigit_fips, cohort) %>%
+  mutate(future_pass = any(year > cohort & year <= cohort + 10 & if_pass == 1, na.rm = TRUE)) %>%
+  filter(!(control == 1 & future_pass == TRUE)) %>%
+  select(-c(treated, control, future_pass)) %>%
+  ungroup()
+# View(roads_emp_stacked2)
+
+
+# By NAICS
+roads_emp_stacked_by_naics2 <- roads_emp_stacked_by_naics %>%
+  group_by(naics_2digit, tendigit_fips, cohort) %>%
+  mutate(treated = if_else(any(cohort == year & if_pass == 1), 1, 0),
+         control = if_else(any(cohort == year & if_pass == 0), 1, 0)) %>%
+  relocate(treated, .after = if_pass) %>%
+  relocate(control, .after = treated) %>%
+  group_by(naics_2digit, tendigit_fips, cohort) %>%
+  mutate(future_pass = any(year > cohort & year <= cohort + 10 & if_pass == 1, na.rm = TRUE)) %>%
+  filter(!(control == 1 & future_pass == TRUE)) %>%
+  select(-c(treated, control, future_pass)) %>%
+  ungroup() 
+
+nrow(roads_emp_stacked_by_naics2)
+# View(roads_emp_stacked_by_naics2)
 
 # export to csv
-write_csv(roads_emp_stacked, "data/employment/roads_emp_stacked_all.csv")
-write_csv(roads_emp_stacked_fips, "data/employment/roads_emp_stacked_fips_all.csv")
-
-
-# Merging roads and firm creation and destruction data
-roads_firm_cr_stacked <- roads_panel_flags %>%
-  inner_join(firm_churn %>% select(tendigit_fips, year, firms_created) %>% filter(year > min_sample_year) , by = c("tendigit_fips", "year")) %>%
-  mutate(firms_created = ifelse(is.nan(firms_created) | is.infinite(firms_created), 0, firms_created))
-write_csv(roads_firm_cr_stacked, "data/employment/roads_firm_cr_stacked_all.csv")
-
-roads_firm_dr_stacked <- roads_panel_flags %>%
-  inner_join(firm_churn %>% select(tendigit_fips, year, firms_destroyed) %>% filter(year > min_sample_year) , by = c("tendigit_fips", "year")) %>%
-  mutate(firms_destroyed = ifelse(is.nan(firms_destroyed) | is.infinite(firms_destroyed), 0, firms_destroyed))
-write_csv(roads_firm_dr_stacked, "data/employment/roads_firm_dr_stacked_all.csv")
+write_csv(roads_emp_stacked2, "data/employment/roads_emp_stacked.csv")
+write_csv(roads_emp_stacked_by_naics2, "data/employment/roads_emp_stacked_by_naics.csv")
 

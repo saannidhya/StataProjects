@@ -4,6 +4,7 @@
 # Created : 05/08/2025
 # Log     : 1. 05/08/2025: Created the file
 #> 
+#> This script analyzes the impact of passing a road tax levy for additional funding on property tax revenue and public works spending.
 #==========================================================================================================#
 
 

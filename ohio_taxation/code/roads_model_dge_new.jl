@@ -26,6 +26,7 @@
 # Date  : 2025-07-16
 # -----------------------------------------------------------------------------
 
+using Printf
 using Plots
 using Random
 
@@ -33,24 +34,25 @@ using Random
 # Baseline parameter values from Table 14 in paper (annual units where relevant).
 # Feel free to edit τL, τH, and HBAR to explore scenarios.
 
-const β    = 0.96      # Discount factor. Table 14 baseline.
+const β    = 0.98      # Discount factor. Table 14 baseline.
 const αh   = 0.35      # Housing budget share weight in utility. Table 14 baseline.
 const ηA   = 0.15      # Amenity utility weight exponent in A(G). Table 14 baseline (η).
-const θ    = 2.0       # Inverse Frisch elasticity. Table 14 baseline.
+# const θ    = 2.0       # Inverse Frisch elasticity. Table 14 baseline.
+const θ    = 2.5       # Inverse Frisch elasticity. Give Frisch elasticity of 0.4.
 # const κ    = 2.9       # Labor disutility scale. Table 14 baseline.
 const κ    = 25.0       # Labor disutility scale. Table 14 baseline.
 const αk   = 0.30      # Capital share in production. Table 14 baseline.
 const δK   = 0.06      # Private capital depreciation (annual). Table 14 baseline.
 const δG   = 0.02      # Road stock depreciation (annual). Table 14 baseline.
 const φwear = 0.50     # Wear-and-tear exponent in Riojas law (NOT used in interior SS).
-const γY   = 0.15      # Output elasticity of public capital (unused here; production omits G).
-const ψcomm = 0.30     # |semi-elasticity| commuting wrt G (Table row shows −0.30 ⇒ ψ>0). See below.
+# const γY   = 0.15      # Output elasticity of public capital (unused here; production omits G).
+const ψcomm = 0.30     # semi-elasticity of commuting cost wrt roughness i.e. as G falls by 1 unit, commuting cost rises by ψcomm percent.
 
 # Tax rates: choose reasonable baselines; adjust to match your data.
 # (Not in Table 14; set by user / data moments.)
 const τL   = 0.05      # Labor State income tax rate (endogenous revenue source).
-# const τH   = 0.025     # Property / voted road levy tax rate.
-const τH   = 0.0     # Property / voted road levy tax rate.
+const τH   = 0.025     # Property / voted road levy tax rate.
+# const τH   = 0.0     # Property / voted road levy tax rate.
 
 # Housing stock (per household units of housing services). Normalization.
 const HBAR = 1.0       # You can scale; affects level of ph but not ratios.
@@ -66,32 +68,26 @@ const EPS_C = 1.0e-12   # Floor for c to avoid div-by-zero.
 
 # ============ 1. Functional Forms ===============================================
 # Amenity from roads A(G): choose simple power form A(G) = G^ηA (with G>0). 
-# Utility enters as A(G)^1 in this baseline (γAmen = 1).  You can strengthen the
-# effect by changing γAmen below if you want A(G)^γAmen; we default to 1 so that
-# ηA alone controls curvature.
-
-const γAmen = 1.0
 
 @inline function Amenity(G::Float64)
-    Gp = max(G, EPS_G)              # protect domain. Govt spending G must be positive. 
-    return Gp^ηA                    # A(G) = G^ηA
-end
-
-@inline function AmenityTerm(G::Float64)
-    return Amenity(G)^γAmen         # A(G)^γAmen
+    Gp = max(G, EPS_G)
+    return Gp^ηA         
 end
 
 # Commuting wedge 1+φ(G): we want this to RISE as G FALLS.  We use
-# (1+φ(G)) = (G/E)^(-ψcomm), with E=1 normalization ⇒ (1+φ(G)) = G^(-ψcomm).
-# Thus φ(G) = G^(-ψcomm) - 1 ≥ 0 for G<=1; if G>1 the wedge <1 (good roads).
+# (1+φ(G)) = (G)^(-ψcomm)
+# Thus φ(G) = G^(-ψcomm) - 1 ≥ 0 for G <= 1; if G > 1 the wedge < 1 (good roads)
 
-@inline function OnePlusPhi(G::Float64)
-    Gp = max(G, EPS_G)
-    return Gp^(-ψcomm)
-end
-
+# @inline function OnePlusPhi(G::Float64)
+#     Gp = max(G, EPS_G)
+#     return Gp^(-ψcomm)
+# end
+# @inline function Phi(G::Float64)
+#     return OnePlusPhi(G) - 1.0
+# end
 @inline function Phi(G::Float64)
-    return OnePlusPhi(G) - 1.0
+    Gp = max(G, EPS_G)
+    return (Gp)^(-ψcomm)
 end
 
 # ============ 2. Precomputed constants from parameters ==========================
@@ -136,12 +132,12 @@ end
 
 # ============ 4. Inner root: ph given n =========================================
 # Solve F_ph(ph; n) = 0 with a robust bracketed bisection.
-# Equation: ph = [αh * AmenityTerm(G(n,ph)) / (1+τH)] * [c(n,ph) / HBAR]
+# Equation: ph = [αh * Amenity(G(n,ph)) / (1+τH)] * [c(n,ph) / HBAR]
 
 function F_ph(ph::Float64, n::Float64)
     G = G_of_n_ph(n, ph)
     c = c_of_n_ph(n, ph)
-    target = (αh * AmenityTerm(G) / (1 + τH)) * (c / HBAR)
+    target = (αh * Amenity(G) / (1 + τH)) * (c / HBAR)
     return ph - target
 end
 
@@ -196,7 +192,7 @@ end
 # Solve n = n_impl(n)  (where c,G depend on ph*(n)).
 
 function n_implied(c::Float64, G::Float64)
-    denom = κ * c * (OnePlusPhi(G))^(1 + θ)
+    denom = κ * c * (1 + Phi(G))^(1 + θ)
     return ((1 - τL) * w_ss / denom)^(1 / θ)
 end
 
@@ -287,27 +283,27 @@ println(ss)
 
 # SS when you cut property tax to 0.025
 # ---- Roads DGE Baseline Steady State ----
-# n   = 0.334522
-# Y   = 0.531898
-# K   = 1.569535
-# c   = 0.415506
-# ph  = 0.144138
-# M   = 0.022220
-# G   = 1.110994
-# w   = 1.113018
-# r   = 0.101667
+# n   = 0.181252
+# Y   = 0.318677
+# K   = 1.188971
+# c   = 0.234309
+# ph  = 0.075027
+# M   = 0.013029
+# G   = 0.651467
+# w   = 1.230734
+# r   = 0.080408
 
 # SS when you cut property tax to 0
 # ---- Roads DGE Baseline Steady State ----
-# n   = 0.308820
-# Y   = 0.491031
-# K   = 1.448944
-# c   = 0.386908
-# ph  = 0.132373
-# M   = 0.017186
-# G   = 0.859304
-# w   = 1.113018
-# r   = 0.101667
+# n   = 0.175420
+# Y   = 0.308422
+# K   = 1.150712
+# c   = 0.228585
+# ph  = 0.072936
+# M   = 0.010795
+# G   = 0.539739
+# w   = 1.230734
+# r   = 0.080408
 
 
 
@@ -376,7 +372,7 @@ println(ss)
 # 8.2  Scalar residual in n_t when G_t is given
 # ---------------------------------------------------------------------------
 # Let c_ls(n,G) = (1-τL) w(n) / [κ * (1+φ(G))^(1+θ) * n^θ].     (from Labor FOC)
-# Let ph(c,G)  = (αh * AmenityTerm(G) / (1+τH)) * (c / HBAR).   (from Housing FOC)
+# Let ph(c,G)  = (αh * Amenity(G) / (1+τH)) * (c / HBAR).   (from Housing FOC)
 # M(n,G) = τL*w(n)*n + τH*ph(c_ls(n,G),G)*HBAR.                 (Govt budget)
 # Resource ⇒ c_res(n,G) = Y(n) - δK*K(n) - M(n,G).
 # Residual: F_static(n;G) = c_ls(n,G) - c_res(n,G) = 0.
@@ -424,12 +420,12 @@ end
 
 # Labor-FOC-implied consumption when G is exogenous (using w_ss constant shortcut)
 @inline function c_ls_of_n_G(n::Float64, G::Float64)
-    return ((1 - τL) * w_ss) / (κ * (OnePlusPhi(G))^(1 + θ) * n^θ)
+    return ((1 - τL) * w_ss) / (κ * (1 + Phi(G))^(1 + θ) * n^θ)
 end
 
 # ph given c,G (closed form)
 @inline function ph_of_c_G(c::Float64, G::Float64)
-    return (αh * AmenityTerm(G) / (1 + τH)) * (c / HBAR)
+    return (αh * Amenity(G) / (1 + τH)) * (c / HBAR)
 end
 
 # Govt maintenance revenue when G exogenous and we use w_ss shortcut
@@ -583,8 +579,6 @@ show_convergence(sim3)
 # r   = 0.101667
 # )
 
-(0.017186-0.022220)/0.022220  # -0.2247 drop in maintenance revenue when cutting property tax from 0.025 to 0. Higher than 11%.
-
 # --- Pre-shock convergence demo (show all periods) ---
 #     t          G_t          n_t          c_t         ph_t
 #     0     3.000000     0.450866     0.559243     0.225171
@@ -713,16 +707,23 @@ G_disturbed = sim3.G .+ disturbance
 plot(0:40, G_disturbed, xlabel="Time (t)", ylabel="G_t", title="Road Stock Dynamics with Disturbance", legend=false, ylim=(0.6, 1.15))
 plot!(0:40, fill(1.110994, 41), label="Steady State G*", linestyle=:dash)
 (0.8596596828423505- 1.110994)/1.110994
+# Save the plot to the specified folder
+savefig("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/images/model_roads.png")
+
 # -23% drop in roads when you cut property tax to 0. 
 
 plot(0:40, sim3.n, xlabel="Time (t)", ylabel="Labor Share", title="Labor Share Dynamics", legend=false, ylim=(0.23, 0.35))
 plot!(0:40, fill(0.333560, 41), label="Steady State n*", linestyle=:dash)
+savefig("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/images/model_labor.png")
 
 plot(0:40, sim3.c, xlabel="Time (t)", ylabel="Consumption", title="Consumption Dynamics", legend=false, ylim=(0.1, 0.45))
 plot!(0:40, fill(0.417905, 41), label="Steady State c*", linestyle=:dash)
+savefig("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/images/model_consumption.png")
+
 
 plot(0:40, sim3.ph, xlabel="Time (t)", ylabel="House Price", title="House Price Dynamics", legend=false, ylim=(0.1, 0.15))
 plot!(0:40, fill(0.148594, 41), label="Steady State ph*", linestyle=:dash)
+savefig("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/images/model_houseprice.png")
 
     # t          G_t          n_t          c_t         ph_t
     # 0     1.110994     0.333560     0.417905     0.148594

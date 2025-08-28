@@ -730,6 +730,6 @@ fail_yrs
 
 roads_and_census %>%
   mutate(votes_pct_against_ctr = votes_pct_against - 50) %>%
-  filter(between(votes_pct_against_ctr, -10,10) ) %>%
+  filter(between(votes_pct_against_ctr, -14,14) ) %>%
   distinct(tendigit_fips)
 

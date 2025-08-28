@@ -17,6 +17,7 @@
 			 21mar2024  SR Added new 2023 data provided by ODJFS (up to 3Q23)
 			  8Aug2024	SR Updating to include 4Q23
 			 29jan2025  SR Updating to include up to 2Q24
+			 20Aug2025  SR Updated script to include up to 4Q24 for Dr. Jones and Tarim from Fort Washington Capital Partners Group
 \*=================================================================================================*/
 
 *setting up macro variables;
@@ -26,7 +27,7 @@
 %let in_loc = C:\QCEW Data - Ohio\ES202;
 %let out_csv = &in_loc.\extracts;
 
-libname in ("&in_loc.","&in_loc.\2021","&in_loc.\2022","&in_loc.\2023");
+libname in ("&in_loc.","&in_loc.\2021","&in_loc.\2022","&in_loc.\2023", "&in_loc.\2024");
 libname out "&in_loc.\extracts";
 libname data "&data.";
 
@@ -207,6 +208,24 @@ proc import
     dbms=xlsx 
     replace;
 run;
+proc import 
+    datafile="&in_loc.\2024\UCMA 3Q24.xlsx"
+    out=df_2024q3 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2024\UCMA 4Q24.xlsx"
+    out=df_2024q4 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
 
 /*'Reporting Unit Description'n = RUD*/
 
@@ -234,7 +253,7 @@ run;
 %mend ;
 %loop(qtr_list = 2019q1 2019q2 2019q3 2019q4 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2 2021q3 2021q4 2022q1 2022q2 2022q3 2022q4);
 /*%loop(qtr_list = 2022q1 2022q2 2022q3 2022q4)*/
-%loop(qtr_list = 2023q1 2023q2 2023q3 2023q4 2024q1 2024q2)
+%loop(qtr_list = 2023q1 2023q2 2023q3 2023q4 2024q1 2024q2 2024q3 2024q4)
 
 
 *removing illegible entries using EINs (see ohio_data_checks.sas for more details);
@@ -283,7 +302,7 @@ quit;
 
 *21,159,278 obs;*append all years together (2006 onwards) and exporting as sas dataset;
 proc sql;
-	create table out.masterfile_2006q1_2024q2	(where = (strip(EIN) ^= "043583679" and 
+	create table out.masterfile_2006q1_2024q4	(where = (strip(EIN) ^= "043583679" and 
 														  strip(EIN) ^= "201731623" and 
 														  strip(EIN) ^= "462603341" and meei ^= 2)) 
 				as 
@@ -355,6 +374,12 @@ proc sql;
 		   outer union corr
 	   select *
 	   	  from df_2024q2
+		   outer union corr
+	   select *
+	   	  from df_2024q3
+		   outer union corr
+	   select *
+	   	  from df_2024q4
 	;
 quit;
 
@@ -364,14 +389,14 @@ quit;
 proc sql;
 	create table count as
 		select year, quarter, COUNT(*) AS ObsCount
-			from out.masterfile_2006q1_2024q2
+			from out.masterfile_2006q1_2024q4
 				group by year, quarter
 ;
 quit;
 proc sql;
 	create table empl as
 		select *, mean(m1,m2,m2) AS avg_persons
-			from out.masterfile_2006q1_2022q4
+			from out.masterfile_2006q1_2024q4
 				group by year, quarter
 ;
 quit;
@@ -385,7 +410,7 @@ quit;
 proc sql;
 	create table wage as
 		select year, quarter, sum(wage) AS wages
-			from out.masterfile_2006q1_2024q2
+			from out.masterfile_2006q1_2024q4
 				group by year, quarter
 ;
 quit;
@@ -403,7 +428,7 @@ RUN;
                 , x_lab = "Date"
                 , y_lab = "wages"
                 , title = "Ohio Aggregate quarterly wages"
-                , subtitle = "2006 - 2022"
+                , subtitle = "2006 - 2024"
                 , legend_hide = 0
                 , y_scale = Dollar9.
                 , highlight_x_start = "31MAR2020"D
@@ -415,8 +440,8 @@ RUN;
 *	Converting the exported SAS dataset into a Stata dataset
 *----------------------------------------------------------------------------------------;
 proc export 
-		    data=out.masterfile_2006q1_2024q2
-		    outfile="&out_csv.\masterfile_2006q1_2024q2.dta" 
+		    data=out.masterfile_2006q1_2024q4
+		    outfile="&out_csv.\masterfile_2006q1_2024q4.dta" 
 		    dbms=dta 
 		    replace;
 run;
@@ -427,7 +452,7 @@ run;
 proc sql;
 	create table unique_addresses as
 		select distinct address, city, state, county, zip
-			from out.masterfile_2006q1_2021q2;
+			from out.masterfile_2006q1_2024q4;
 quit;
 * 1,211,442 obs. Some are blank.;
 

@@ -25,8 +25,8 @@ global shared "\\cobshares.uccob.uc.edu\economics$\Julia\roads"
 
 
 * import agg;
-// import delimited "${data}/employment/roads_emp_stacked.csv", clear
-import delimited "${data}/employment/roads_emp_stacked_all.csv", clear
+import delimited "${data}/employment/roads_emp_stacked.csv", clear
+// import delimited "${data}/employment/roads_emp_stacked_all.csv", clear
 
 gen zero = 0
 label var zero "0"
@@ -39,6 +39,10 @@ gen ln_jobs_destroyed = log(jobs_destroyed)
 
 egen baseline_emp = max(cond(year == 2006, num_employed, .)), by(tendigit_fips)
 
+format tendigit_fips %10.0f
+
+gen county_code = floor(tendigit_fips/100000)
+
 * levy election history and future
 global D_lag = "dl_5 dl_4 dl_3 dl_2 dl_1"
 global D_lead = "dl1 dl2 dl3 dl4 dl5 dl6 dl7 dl8 dl9 dl10"
@@ -48,8 +52,9 @@ global M_lag = "ml_1 ml_2 ml_3 ml_4 ml_5 ml_6 ml_7 ml_8 ml_9 ml_10"
 global M_lead = "ml1 ml2 ml3 ml4 ml5 ml6 ml7 ml8 ml9 ml10"
 
 global model = "$D_lag $D_lead $E_lead  $E_lag  $M_lag $M_lead"
-global FE = "tendigit_fips cohort year"
+global FE = "tendigit_fips#cohort county_code#cohort#year"
 // global FE = "tendigit_fips year"
+/* I want TENDIGIT_FIPS x cohort AND county x cohort x year F.Es  */
 
 // reghdfe jobs_created $model [aw = baseline_emp], a($FE_test) cluster(tendigit_fips)
 // reghdfe jobs_destroyed $model, a($FE_test) cluster(tendigit_fips)
@@ -67,11 +72,14 @@ gen coef3 = .
 gen up3 = .
 gen down3 = .
 
-gen x = _n-6
+gen x = _n-6 // subtracts 6 from _n (where _n is the obs counter)
 replace x = . if x > 10
-eststo nume_linear: reghdfe ln_jobs_created $model, a($FE) cl(tendigit_fips) 
+eststo nume_linear: reghdfe ln_wage $model, a($FE) cl(tendigit_fips) // Notice no controls in Biasi equation
 
 local t = invttail(`e(df_r)', .025) // Find the critical value for a t-distribution with e(df_r) degrees of freedom at the 2.5% tail, and save it into local macro t
+
+/* global t = invttail(`e(df_r)', .025) // Find the critical value for a t-distribution with e(df_r) degrees of freedom at the 2.5% tail, and save it into local macro t */
+
 
 // This code takes coefs from dl1 to dl10 (leads) and "additively" adds the coef, and coinfidence interval [down3,up3] to the data table so that they can be used later 
 replace coef3 = _b[dl1] if x == 1
@@ -91,25 +99,25 @@ forvalues n = 2/10 {
 local k = 1
 forvalues n = 5(-1)1 {
 	replace coef2 = _b[dl_`n'] if x == -`n'
-	replace up2 = _b[dl_`n'] + ((`t')*_se[dl_`n'])	if x == -`n'
-	replace down2 = _b[dl_`n'] - ((`t')*_se[dl_`n'])	if x == -`n'
+	replace up2 = _b[dl_`n'] + (($t)*_se[dl_`n'])	if x == -`n'
+	replace down2 = _b[dl_`n'] - (($t)*_se[dl_`n'])	if x == -`n'
 	replace x = -`n' if x == -`n'
 	local k = `k' + 1
 }
-	replace coef2 = 0 if x == 0
-	replace up2 = 0 if x == 0
-	replace down2 = 0 if x == 0
-	replace coef3 = 0 if x == 0
-	replace up3 = 0 if x == 0
-	replace down3 = 0 if x == 0
-	
-	local k = `k' + 1
+replace coef2 = 0 if x == 0
+replace up2 = 0 if x == 0
+replace down2 = 0 if x == 0
+replace coef3 = 0 if x == 0
+replace up3 = 0 if x == 0
+replace down3 = 0 if x == 0
+
+local k = `k' + 1
 
 // This code takes coefs from D1 to D10 (leads) and stores the coef, and confidence interval to the data table so that they can be used later
 forvalues n = 1(1)10 {
 	replace coef2 = _b[dl`n']	if x == `n'
-	replace up2 = _b[dl`n'] + ((`t')*_se[dl`n'])	if x == `n'
-	replace down2 = _b[dl`n'] - ((`t')*_se[dl`n']) if x == `n'
+	replace up2 = _b[dl`n'] + (($t)*_se[dl`n'])	if x == `n'
+	replace down2 = _b[dl`n'] - (($t)*_se[dl`n']) if x == `n'
 	local k = `k' + 1
 }
 gen x2 = x - 0.2

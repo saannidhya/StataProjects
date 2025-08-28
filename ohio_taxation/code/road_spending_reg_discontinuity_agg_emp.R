@@ -8,7 +8,8 @@
 #        3. 05/03/2024: Added Wages per person variable. Found that the effect is significant for wages per person.
 #        4. 05/04/2024: Doing industry level analysis
 #        5. 07/23/2024: Created confidence interval graph for Dr. B's high-poverty regression
-#        5. 11/19/2024: Update confidence interval graph for Dr. B's high-poverty regression
+#        6. 11/19/2024: Update confidence interval graph for Dr. B's high-poverty regression
+#        7. 08/26/2025: Building on data for Biasi and new methodology
 #================================================================================================================#
 
 # loading packages
@@ -44,6 +45,7 @@ covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pc
 roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
   select(-matches("yr_t_")) %>%
   filter(description == "R" & duration != "1000") %>%
+    # filter(description == "A" & duration != "1000") %>%
   janitor::clean_names() %>%
   mutate(votes_pct_against = 100 - votes_pct_for) %>%
   mutate(treated = if_else(votes_pct_against > cutoff, 1, 0)) %>%
@@ -94,6 +96,8 @@ dfs_emp_ln_agg <- purrr::map(list.files(paste0(data,"/employment"),
 # assign names to housing dfs
 dfs_emp_agg <- stats::setNames(dfs_emp_agg, emp_dataset_names)
 dfs_emp_ln_agg <- stats::setNames(dfs_emp_ln_agg, emp_dataset_names)
+
+View(dfs_emp_agg$yr_t_plus_5[1:10000,])
 
 # Also importing employment datasets by industry
 emp_by_ind_names <- stringr::str_remove(list.files(paste0(data,"/employment/industry"),
@@ -842,3 +846,88 @@ tes_ln_emp_high_pov <- data.frame(conf_int_low, conf_int_high, robust_coef, ord)
 plot_te(tes_ln_emp_high_pov, title = "Treatment Effects: Average wages per worker in High-poverty areas", subtitle = "Poverty level 14% or higher")
 
 
+
+
+#================================================================================#
+# Date: 08/26/2025
+# New levies only
+#================================================================================#
+
+emp_df_agg_yr <- readr::read_csv(paste0(data, "/employment/emp_df_agg_yr.csv"))
+
+roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>%
+  select(-matches("yr_t_")) %>%
+  filter(description == "A" & duration != "1000") %>%
+  janitor::clean_names() %>%
+  mutate(votes_pct_against = 100 - votes_pct_for) %>%
+  mutate(treated = if_else(votes_pct_against > cutoff, 1, 0)) %>%
+  mutate(yr_t_minus_3 = year - 3,
+         yr_t_minus_2 = year - 2,
+         yr_t_minus_1 = year - 1,
+         yr_t_plus_0 = year,
+         yr_t_plus_1 = year + 1,
+         yr_t_plus_2 = year + 2,
+         yr_t_plus_3 = year + 3,
+         yr_t_plus_4 = year + 4,
+         yr_t_plus_5 = year + 5,
+         yr_t_plus_6 = year + 6,
+         yr_t_plus_7 = year + 7,
+         yr_t_plus_8 = year + 8,
+         yr_t_plus_9 = year + 9,
+         yr_t_plus_10 = year + 10) %>%
+  select(tendigit_fips, year, starts_with("yr_"), everything()) %>% 
+  arrange(tendigit_fips, year)
+
+# years 
+yrs <- c(paste0("yr_t_minus_",as.character(1:3)), paste0("yr_t_plus_",as.character(0:10)))
+
+ess <- purrr::map(yrs, ~ emp_df_agg_yr %>% 
+                    janitor::clean_names() %>%
+                    arrange(tendigit_fips, year) %>%
+                    mutate(es_flag = 1) %>%
+                    rename({{.x}} := year)) 
+                    # arrange(tendigit_fips, {{.x}})                  
+names(ess) <- yrs
+
+#========================================================================================================#
+# Merging labor data and roads (using TENDIGIT_FIPS and year variable : t periods ahead and behind) ----
+# Keeping only matches (to keep non-matches too, use full_join insted)
+#========================================================================================================#
+
+mgd_ess <- purrr::map2(ess, yrs, function(x, y){
+                              x %>% inner_join(roads_and_census, by = c("tendigit_fips", y))
+        })
+names(mgd_ess) <- paste0(gsub("^yr", "labor_roads_census", names(mgd_ess)), "_matches")
+
+purrr::imap(mgd_ess, ~ write.csv(.x, paste0(data,"/employment/", .y, ".csv"), row.names = FALSE))
+beepr::beep("mario")
+
+
+
+# colnames(ess$yr_t_plus_9)
+# View(mgd_ess$labor_roads_census_t_plus_7_matches)
+
+
+# Create summary statistics for all time periods
+# summary_stats_all <- map_dfr(mgd_ess, ~ {
+#   .x %>%
+#     group_by(treated) %>%
+#     summarize(across(starts_with("num_"), list(mean = mean, median = median, sd = sd), .names = "{.col}_{.fn}"), .groups = "drop")
+# }, .id = "time_period") %>%
+#   mutate(time_period = str_replace(time_period, "labor_roads_census_", "")) %>%
+#   mutate(time_period = str_replace(time_period, "_matches", ""))
+
+# # Create a more readable table
+# summary_table <- summary_stats_all %>%
+#   pivot_longer(cols = -c(time_period, treated), 
+#                names_to = "variable", 
+#                values_to = "value") %>%
+#   separate(variable, into = c("var_name", "stat"), sep = "_(?=mean|median|sd)$") %>%
+#   pivot_wider(names_from = stat, values_from = value) %>%
+#   arrange(time_period, treated, var_name)
+
+# # View(summary_stats_all)
+
+# # Display the table
+# knitr::kable(summary_table, digits = 3, 
+#              caption = "Summary Statistics by Treatment Status Across Time Periods")

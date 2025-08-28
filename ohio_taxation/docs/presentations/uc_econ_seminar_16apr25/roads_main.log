@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  16 APR 2025 11:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3.31) (preloaded format=pdflatex 2024.4.6)  9 AUG 2025 15:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**"c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/presentations/uc_econ_seminar_16mar25/roads_main.tex"
-(c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/presentations/uc_econ_seminar_16mar25/roads_main.tex
+**"c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/presentations/uc_econ_seminar_16apr25/roads_main.tex"
+(c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/presentations/uc_econ_seminar_16apr25/roads_main.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-03-14>
 (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/beamer\beamer.cls
@@ -140,7 +140,7 @@ File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 107.
  (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
-File: pdftex.def 2024/04/13 v1.2c Graphics/color driver for pdftex
+File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen175
 \Gin@req@width=\dimen176
@@ -1092,14 +1092,14 @@ Package rerunfilecheck Info: File `roads_main.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  24250 strings out of 474424
- 482804 string characters out of 5740796
+ 482806 string characters out of 5740796
  1965496 words of memory out of 5000000
  45945 multiletter control sequences out of 15000+600000
  571347 words of font info for 82 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,19n,123p,708b,764s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcsx1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcss1095.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss9.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmssi9.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on roads_main.pdf (42 pages, 31366997 bytes).
+Output written on roads_main.pdf (42 pages, 31366996 bytes).
 PDF statistics:
  4122 PDF objects out of 4296 (max. 8388607)
  148 named destinations out of 1000 (max. 500000)

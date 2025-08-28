@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: roads_model_dge.aux
+Reallocating 'name_of_file' (item size: 1) to 4 items.
+The style file: aea.bst
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+Database file #1: aej_references.bib
+You've used 6 entries,
+            2695 wiz_defined-function locations,
+            630 strings with 5166 characters,
+and the built_in function-call counts, 33779 in all, are:
+= -- 5638
+> -- 348
+< -- 0
++ -- 2720
+- -- 108
+* -- 3013
+:= -- 6643
+add.period$ -- 45
+call.type$ -- 6
+change.case$ -- 78
+chr.to.int$ -- 6
+cite$ -- 6
+duplicate$ -- 84
+empty$ -- 240
+format.name$ -- 111
+if$ -- 6055
+int.to.chr$ -- 5
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 25
+num.names$ -- 66
+pop$ -- 6
+preamble$ -- 1
+purify$ -- 90
+quote$ -- 0
+skip$ -- 75
+stack$ -- 0
+substring$ -- 8091
+swap$ -- 33
+text.length$ -- 84
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 22
+warning$ -- 0
+while$ -- 147
+width$ -- 0
+write$ -- 33
