@@ -1,0 +1,26 @@
+
+
+% Bibstyle aea.bst version 2009.05.20
+
+\begin{thebibliography}{xx}
+
+\harvarditem[Biasi, Lafortune \harvardand\ Schönholzer]{Barbara Biasi, Julien
+  Lafortune \harvardand\ David Schönholzer}{2025}{biasi_what_2025}
+{\bf Biasi, Barbara, Julien Lafortune, and David Schönholzer.} 2025. ``What
+  Works and for Whom? Effectiveness and Efficiency of School Capital
+  Investments Across the U.S.'' {\em The Quarterly Journal of Economics}.
+
+\harvarditem[Cellini, Ferreira \harvardand\ Rothstein]{Stephanie~R Cellini,
+  Fernando Ferreira \harvardand\ Jesse Rothstein}{2010}{cellini2010value}
+{\bf Cellini, Stephanie~R, Fernando Ferreira, and Jesse Rothstein.} 2010. ``The
+  value of school facility investments: Evidence from a dynamic regression
+  discontinuity design.'' {\em The Quarterly Journal of Economics},
+  125(1):~215--261.
+
+\harvarditem[Neilson \harvardand\ Zimmerman]{Christopher~A Neilson \harvardand\
+  Seth~D Zimmerman}{2014}{neilson2014effect}
+{\bf Neilson, Christopher~A, and Seth~D Zimmerman.} 2014. ``The effect of
+  school construction on test scores, school enrollment, and home prices.''
+  {\em Journal of Public Economics}, 120:~18--31.
+
+\end{thebibliography}

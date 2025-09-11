@@ -2,7 +2,8 @@
 # Purpose : Employment: Data Benchmarking    
 # Name    : Saani Rawat
 # Created : 08/21/2025
-# Log     : 1. 
+# Log     : 
+# 1. 09/01/2025:  Added benchmarking based on newly geocoded masterfile_2006q1_2024q4_full.csv
 #==========================================================================================================#
 
 
@@ -71,9 +72,9 @@ emp_df3 <- emp_df2 %>%
   #        source = "our data")
 
 
-colnames(emp_df2)
+# colnames(emp_df2)
 
-View(emp_df3)
+# View(emp_df3)
 
 
 #----------------------------------------------------------------------------------#
@@ -88,7 +89,7 @@ emp_comp <- rbind(emp_df3, oh_qcew) %>%
     date = zoo::as.yearqtr(paste(year, quarter), format = "%Y %q")
   )
 
-View(emp_comp)
+# View(emp_comp)
 
 emp_coverage <- emp_comp %>%
   select(date, average_employment, source) %>%
@@ -105,7 +106,7 @@ emp_coverage <- emp_comp %>%
 #----------------------------------------------------------------------------------#
 
 # average employment
-ggplot(emp_comp, aes(x = date, y = average_employment / 1e6, color = source, group = source)) +
+avg_emp_plot <- ggplot(emp_comp, aes(x = date, y = average_employment / 1e6, color = source, group = source)) +
   geom_line(size = 1) +
   labs(
     title = "Average Employment (in MMs): Our Data vs QCEW Report",
@@ -114,17 +115,34 @@ ggplot(emp_comp, aes(x = date, y = average_employment / 1e6, color = source, gro
   ) +
   theme_minimal()
 
+ggsave(
+  filename = file.path(plots, "avg_employment_odjfs_vs_qcew.png"),
+  plot = avg_emp_plot,
+  width = 8,
+  height = 4.5,
+  dpi = 300
+)
+
 # total wages
-ggplot(emp_comp, aes(x = date, y = total_wages/1e6, color = source, group = source)) +
+emp_wages_plot <- ggplot(emp_comp, aes(x = date, y = total_wages/1e6, color = source, group = source)) +
   geom_line(size = 1) +
   labs(
     title = "Total Wages (in BNs): Our Data vs QCEW Report",
     x = "Quarter",
     y = "Total Wages (in BNs)"
   ) +
-  theme_minimal()
+  theme_minimal() 
 
-ggplot(emp_comp, aes(x = date, y = avg_wage_per_person, color = source, group = source)) +
+ggsave(
+  filename = file.path(plots, "total_wages_odjfs_vs_qcew.png"),
+  plot = emp_wages_plot,
+  width = 8,
+  height = 4.5,
+  dpi = 300
+)
+
+# average wage per person
+emp_avg_wage_plot <- ggplot(emp_comp, aes(x = date, y = avg_wage_per_person, color = source, group = source)) +
   geom_line(size = 1) +
   labs(
     title = "Average Wage per Person: Our Data vs QCEW Report",
@@ -132,3 +150,11 @@ ggplot(emp_comp, aes(x = date, y = avg_wage_per_person, color = source, group = 
     y = "Average Wage per Person (in USD)"
   ) +
   theme_minimal()
+
+ggsave(
+  filename = file.path(plots, "avg_wage_per_person_odjfs_vs_qcew.png"),
+  plot = emp_avg_wage_plot,
+  width = 8,
+  height = 4.5,
+  dpi = 300
+)

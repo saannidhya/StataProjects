@@ -447,156 +447,153 @@ Figure \ref{fig:model_houseprices} compares the model-implied house-price respon
 
 Overall, the calibrated model reproduces the targeted steady-state effects (about \(-23\%\) in roads, \(-9\%\) in house prices, and \(-11\%\) in maintenance) and generates transitional dynamics for house prices that closely follow the empirical path while remaining slightly less sharp at the short-run trough.
 
-%------------------------------------------------------
-% Commented out for brevity; can be included if needed
-%------------------------------------------------------
 
-\subsection{Model Limitations}
-\begin{enumerate}
-  \item \textbf{No spatial heterogeneity.}\; We currently ignore spatial heterogeneity. The model intentionally abstracts from space for tractability; future work can embed $G_t$ in a Rosen--Roback framework to capture cross‐location sorting.
-  \item \textbf{Representative agent assumption.}\; Heterogeneity in income or commuting preferences could attenuate price effects. Sensitivity analyses with quasi‐linear preferences or idiosyncratic $\phi(G_t)$ show qualitative robustness.
-  \item \textbf{Fixed housing stock.}\; Allowing new construction would introduce a supply elasticity that dampens price responses; empirical evidence suggests short‐run supply in many U.S. jurisdictions is quite inelastic.
-  \item \textbf{No direct productivity role for roads.}\; Incorporating $G_t$ into firm TFP $A_t$ would strengthen the negative output effect, making our results conservative.
-\end{enumerate}
+% \subsection{Model Limitations}
+% \begin{enumerate}
+%   \item \textbf{No spatial heterogeneity.}\; We currently ignore spatial heterogeneity. The model intentionally abstracts from space for tractability; future work can embed $G_t$ in a Rosen--Roback framework to capture cross‐location sorting.
+%   \item \textbf{Representative agent assumption.}\; Heterogeneity in income or commuting preferences could attenuate price effects. Sensitivity analyses with quasi‐linear preferences or idiosyncratic $\phi(G_t)$ show qualitative robustness.
+%   \item \textbf{Fixed housing stock.}\; Allowing new construction would introduce a supply elasticity that dampens price responses; empirical evidence suggests short‐run supply in many U.S. jurisdictions is quite inelastic.
+%   \item \textbf{No direct productivity role for roads.}\; Incorporating $G_t$ into firm TFP $A_t$ would strengthen the negative output effect, making our results conservative.
+% \end{enumerate}
 
-The DGE framework formalizes the intuition that road–maintenance tax cuts provide immediate relief but, by undermining infrastructure quality, erode local amenities and raise commuting costs, culminating in lower house values and welfare.
+% The DGE framework formalizes the intuition that road–maintenance tax cuts provide immediate relief but, by undermining infrastructure quality, erode local amenities and raise commuting costs, culminating in lower house values and welfare.
 
-\subsection{Derivations of Key Equations}
+% \subsection{Derivations of Key Equations}
 
-\subsubsection{Derivation of the Euler Equation \ref{eq:euler}}
+% \subsubsection{Derivation of the Euler Equation \ref{eq:euler}}
 
-Below \( U_c \equiv \partial u / \partial c \) and \( \lambda_t \) is the Lagrange multiplier on the period-\( t \) budget constraint.
+% Below \( U_c \equiv \partial u / \partial c \) and \( \lambda_t \) is the Lagrange multiplier on the period-\( t \) budget constraint.
 
-Set up the Lagrangian:
+% Set up the Lagrangian:
 
-\[
-L = \sum_{t=0}^\infty \beta^t \Big[u(c_t, h_t, A(G_t)) + \lambda_t \Big((1-\tau_L)w_t n_t + r_t K_t - \tau_H p_{h,t} h_t - c_t - p_{h,t} h_t - K_{t+1} + (1-\delta_K)K_t \Big)\Big].
-\]
+% \[
+% L = \sum_{t=0}^\infty \beta^t \Big[u(c_t, h_t, A(G_t)) + \lambda_t \Big((1-\tau_L)w_t n_t + r_t K_t - \tau_H p_{h,t} h_t - c_t - p_{h,t} h_t - K_{t+1} + (1-\delta_K)K_t \Big)\Big].
+% \]
 
-FOC w.r.t. consumption \( c_t \):
+% FOC w.r.t. consumption \( c_t \):
 
-\[
-\frac{\partial L}{\partial c_t} = 0 \quad \Longrightarrow \quad \beta^t U_c(c_t, h_t, A(G_t)) - \lambda_t = 0 \quad \Longrightarrow \quad \lambda_t = \beta^t U_c(c_t, h_t, A(G_t)). \tag{A1}
-\]
+% \[
+% \frac{\partial L}{\partial c_t} = 0 \quad \Longrightarrow \quad \beta^t U_c(c_t, h_t, A(G_t)) - \lambda_t = 0 \quad \Longrightarrow \quad \lambda_t = \beta^t U_c(c_t, h_t, A(G_t)). \tag{A1}
+% \]
 
-FOC w.r.t. next-period capital \( K_{t+1} \):
+% FOC w.r.t. next-period capital \( K_{t+1} \):
 
-\[
-\frac{\partial L}{\partial K_{t+1}} = 0 \quad \Longrightarrow \quad -\lambda_t + \lambda_{t+1} \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big] = 0. \tag{A2}
-\]
+% \[
+% \frac{\partial L}{\partial K_{t+1}} = 0 \quad \Longrightarrow \quad -\lambda_t + \lambda_{t+1} \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big] = 0. \tag{A2}
+% \]
 
-Combine (A1) and (A2):
+% Combine (A1) and (A2):
 
-Insert \( \lambda_t \) and \( \lambda_{t+1} \) from (A1) into (A2):
+% Insert \( \lambda_t \) and \( \lambda_{t+1} \) from (A1) into (A2):
 
-\[
-\beta^t U_c(c_t, h_t, A(G_t)) = \beta^{t+1} U_c(c_{t+1}, h_{t+1}, A(G_{t+1})) \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big].
-\]
+% \[
+% \beta^t U_c(c_t, h_t, A(G_t)) = \beta^{t+1} U_c(c_{t+1}, h_{t+1}, A(G_{t+1})) \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big].
+% \]
 
-Divide both sides by \( \beta^t \) to obtain:
+% Divide both sides by \( \beta^t \) to obtain:
 
-\[
-U_c(c_t, h_t, A(G_t)) = \beta U_c(c_{t+1}, h_{t+1}, A(G_{t+1})) \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big].
-\]
+% \[
+% U_c(c_t, h_t, A(G_t)) = \beta U_c(c_{t+1}, h_{t+1}, A(G_{t+1})) \Big[(1-\tau_L)w_{t+1} \frac{\partial n_{t+1}}{\partial K_{t+1}} + r_{t+1} + 1 - \delta_K \Big].
+% \]
 
-Why the derivative \( \frac{\partial n_{t+1}}{\partial K_{t+1}} \)? Capital chosen today affects tomorrow’s labor choice only through the household’s optimal plan. If, as we assume, labor in each period is chosen independently of the inherited capital stock, this derivative is zero and the term drops out, giving the familiar
+% Why the derivative \( \frac{\partial n_{t+1}}{\partial K_{t+1}} \)? Capital chosen today affects tomorrow’s labor choice only through the household’s optimal plan. If, as we assume, labor in each period is chosen independently of the inherited capital stock, this derivative is zero and the term drops out, giving the familiar
 
-\[
-U_c(c_t, \cdot) = \beta U_c(c_{t+1}, \cdot) \bigl(1 + r_{t+1} - \delta_K\bigr),
-\]
+% \[
+% U_c(c_t, \cdot) = \beta U_c(c_{t+1}, \cdot) \bigl(1 + r_{t+1} - \delta_K\bigr),
+% \]
 
-which is the standard Euler equation for intertemporal consumption smoothing.
+% which is the standard Euler equation for intertemporal consumption smoothing.
 
-Equation 10 still contains the marginal utility of consumption \(U_c(\cdot)\). Because the one-period utility function chosen is:
-\[
-u(c_t, h_t, A(G_t)) = \ln c_t + \alpha_h \ln h_t + \eta \ln A(G_t) - \frac{\kappa}{1+\theta}\bigl[n_t(1+\phi(G_t))\bigr]^{1+\theta}, \tag{6}
-\]
-its partial derivative with respect to consumption is:
-\[
-U_c(c_t, h_t, A(G_t)) = \frac{\partial u}{\partial c_t} = \frac{1}{c_t}. \quad\text{(log utility)}
-\]
+% Equation 10 still contains the marginal utility of consumption \(U_c(\cdot)\). Because the one-period utility function chosen is:
+% \[
+% u(c_t, h_t, A(G_t)) = \ln c_t + \alpha_h \ln h_t + \eta \ln A(G_t) - \frac{\kappa}{1+\theta}\bigl[n_t(1+\phi(G_t))\bigr]^{1+\theta}, \tag{6}
+% \]
+% its partial derivative with respect to consumption is:
+% \[
+% U_c(c_t, h_t, A(G_t)) = \frac{\partial u}{\partial c_t} = \frac{1}{c_t}. \quad\text{(log utility)}
+% \]
 
-{\bf Substituting \(U_c\) into the Euler Equation:}
+% {\bf Substituting \(U_c\) into the Euler Equation:}
 
-Start from Eq. 10:
-\[
-U_c(c_t,\cdot) = \beta\,U_c(c_{t+1},\cdot)\bigl(1 + r_{t+1} - \delta_K\bigr). \tag{10}
-\]
+% Start from Eq. 10:
+% \[
+% U_c(c_t,\cdot) = \beta\,U_c(c_{t+1},\cdot)\bigl(1 + r_{t+1} - \delta_K\bigr). \tag{10}
+% \]
 
-Replace \(U_c\) with \(\frac{1}{c}\) (log utility):
-\[
-\frac{1}{c_t} = \beta\,\frac{1}{c_{t+1}}\bigl(1 + r_{t+1} - \delta_K\bigr).
-\]
+% Replace \(U_c\) with \(\frac{1}{c}\) (log utility):
+% \[
+% \frac{1}{c_t} = \beta\,\frac{1}{c_{t+1}}\bigl(1 + r_{t+1} - \delta_K\bigr).
+% \]
 
-This is exactly Eq. 11:
-\[
-\boxed{\frac{1}{c_t} = \beta\,\frac{1}{c_{t+1}}\bigl(1 + r_{t+1} - \delta_K\bigr)}. \tag{11}
-\]
+% This is exactly Eq. 11:
+% \[
+% \boxed{\frac{1}{c_t} = \beta\,\frac{1}{c_{t+1}}\bigl(1 + r_{t+1} - \delta_K\bigr)}. \tag{11}
+% \]
 
-{\bf Economic Interpretation}
+% {\bf Economic Interpretation}
 
-1. Intertemporal Trade-off
-An extra dollar of consumption today yields marginal utility \( \frac{1}{c_t} \). Saving that dollar instead raises tomorrow’s consumption by the gross return \( 1 + r_{t+1} - \delta_K \); the utility gain from that is \( \beta \frac{1 + r_{t+1} - \delta_K}{c_{t+1}} \). Optimality sets these equal, so households are indifferent between consuming now and investing for tomorrow.
+% 1. Intertemporal Trade-off
+% An extra dollar of consumption today yields marginal utility \( \frac{1}{c_t} \). Saving that dollar instead raises tomorrow’s consumption by the gross return \( 1 + r_{t+1} - \delta_K \); the utility gain from that is \( \beta \frac{1 + r_{t+1} - \delta_K}{c_{t+1}} \). Optimality sets these equal, so households are indifferent between consuming now and investing for tomorrow.
 
-2. Consumption Growth Rule
+% 2. Consumption Growth Rule
 
-Rearranging gives a simple growth factor:
+% Rearranging gives a simple growth factor:
 
-\begin{equation*}
-\frac{c_{t+1}}{c_t} = \beta \bigl(1 + r_{t+1} - \delta_K\bigr).
-\end{equation*}
+% \begin{equation*}
+% \frac{c_{t+1}}{c_t} = \beta \bigl(1 + r_{t+1} - \delta_K\bigr).
+% \end{equation*}
 
-If you calibrate \(\beta\) so that \(\beta \bigl(1 + r - \delta_K\bigr) = 1\) in steady state, consumption is constant along the balanced-growth path.
+% If you calibrate \(\beta\) so that \(\beta \bigl(1 + r - \delta_K\bigr) = 1\) in steady state, consumption is constant along the balanced-growth path.
 
-With annual parameters like \(\beta = 0.96\) and \(r - \delta_K \approx 4\%\), the right-hand side is close to 1, implying very slow trend growth—consistent with many RBC calibrations.
+% With annual parameters like \(\beta = 0.96\) and \(r - \delta_K \approx 4\%\), the right-hand side is close to 1, implying very slow trend growth—consistent with many RBC calibrations.
 
-3. Policy Transmission
+% 3. Policy Transmission
 
-Anything that moves the net return—e.g., a change in the capital rental rate because labor supply falls when road quality deteriorates—feeds directly into the path of \(c_t\). Hence Equation \ref{eq:euler} is the channel through which road-tax shock ultimately affects household consumption and welfare.
+% Anything that moves the net return—e.g., a change in the capital rental rate because labor supply falls when road quality deteriorates—feeds directly into the path of \(c_t\). Hence Equation \ref{eq:euler} is the channel through which road-tax shock ultimately affects household consumption and welfare.
 
 
-\subsubsection{Labor--leisure trade–off }
+% \subsubsection{Labor--leisure trade–off }
 
-% Utility derivatives
-To derive the labor-leisure trade-off condition, we start by computing the partial derivatives of the utility function with respect to consumption and labor:
+% % Utility derivatives
+% To derive the labor-leisure trade-off condition, we start by computing the partial derivatives of the utility function with respect to consumption and labor:
 
-For consumption:
-\begin{equation*}
-    u_c(c_t,h_t,n_t,G_t)=\frac{1}{c_t} \tag{B1}
-\end{equation*}
+% For consumption:
+% \begin{equation*}
+%     u_c(c_t,h_t,n_t,G_t)=\frac{1}{c_t} \tag{B1}
+% \end{equation*}
 
-% FOC for labour supply
-For labor, we have:
-\begin{equation*}
-\qquad
-u_n(c_t,h_t,n_t,G_t)=-\,\kappa\bigl[n_t\bigl(1+\phi(G_t)\bigr)\bigr]^{\theta}\,\bigl(1+\phi(G_t)\bigr). \tag{B2}
-\end{equation*}
+% % FOC for labour supply
+% For labor, we have:
+% \begin{equation*}
+% \qquad
+% u_n(c_t,h_t,n_t,G_t)=-\,\kappa\bigl[n_t\bigl(1+\phi(G_t)\bigr)\bigr]^{\theta}\,\bigl(1+\phi(G_t)\bigr). \tag{B2}
+% \end{equation*}
 
-Optimal labour supply equates the marginal disutility of work to the after-tax marginal benefit of wages
+% Optimal labour supply equates the marginal disutility of work to the after-tax marginal benefit of wages
 
-\begin{equation*}
--\,u_n(c_t,h_t,n_t,G_t) \;=\;(1-\tau_L)\,w_t\,u_c(c_t,h_t,n_t,G_t) 
-\end{equation*}
+% \begin{equation*}
+% -\,u_n(c_t,h_t,n_t,G_t) \;=\;(1-\tau_L)\,w_t\,u_c(c_t,h_t,n_t,G_t) 
+% \end{equation*}
 
-Using B1 and B2, we can rewrite this as:
-% Substitute the derivatives
-\begin{equation*}
-\kappa\bigl[n_t\bigl(1+\phi(G_t)\bigr)\bigr]^{\theta}\bigl(1+\phi(G_t)\bigr)
-    \;=\;\frac{(1-\tau_L)\,w_t}{c_t}
-\end{equation*}
+% Using B1 and B2, we can rewrite this as:
+% % Substitute the derivatives
+% \begin{equation*}
+% \kappa\bigl[n_t\bigl(1+\phi(G_t)\bigr)\bigr]^{\theta}\bigl(1+\phi(G_t)\bigr)
+%     \;=\;\frac{(1-\tau_L)\,w_t}{c_t}
+% \end{equation*}
 
-% Collect commuting terms
-This is exactly the condition we wanted to derive:
-\begin{equation*}
-\kappa\bigl(1+\phi(G_t)\bigr)^{1+\theta}\,n_t^{\theta}
-      \;=\;\frac{(1-\tau_L)\,w_t}{c_t} 
-\end{equation*}
+% % Collect commuting terms
+% This is exactly the condition we wanted to derive:
+% \begin{equation*}
+% \kappa\bigl(1+\phi(G_t)\bigr)^{1+\theta}\,n_t^{\theta}
+%       \;=\;\frac{(1-\tau_L)\,w_t}{c_t} 
+% \end{equation*}
 
-% Solve for optimal hours
-\begin{equation*}
-        n_t \;=\;\Biggl[\,
-        \frac{(1-\tau_L)\,w_t}
-            {\kappa\,c_t\,\bigl(1+\phi(G_t)\bigr)^{1+\theta}}
-        \Biggr]^{\!1/\theta}\!
-\end{equation*}
+% % Solve for optimal hours
+% \begin{equation*}
+%         n_t \;=\;\Biggl[\,
+%         \frac{(1-\tau_L)\,w_t}
+%             {\kappa\,c_t\,\bigl(1+\phi(G_t)\bigr)^{1+\theta}}
+%         \Biggr]^{\!1/\theta}\!
+% \end{equation*}
 

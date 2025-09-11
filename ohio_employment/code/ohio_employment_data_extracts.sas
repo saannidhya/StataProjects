@@ -18,6 +18,7 @@
 			  8Aug2024	SR Updating to include 4Q23
 			 29jan2025  SR Updating to include up to 2Q24
 			 20Aug2025  SR Updated script to include up to 4Q24 for Dr. Jones and Tarim from Fort Washington Capital Partners Group
+			  5Sep2025  SR Removed special characters like "->" preventing ArcGIS Geocoding and Spatial Join for masterfile_2006q1_2024q4_full_cleaned.csv and masterfile_2006q1_2024q4_full.csv
 \*=================================================================================================*/
 
 *setting up macro variables;
@@ -26,6 +27,7 @@
 %let data_gis = &data.\address_geocoding\address_geocoding_arcgis;
 %let in_loc = C:\QCEW Data - Ohio\ES202;
 %let out_csv = &in_loc.\extracts;
+%let tax_emp_loc = C:\Users\rawatsa\OneDrive - University of Cincinnati\StataProjects\ohio_taxation\data\employment;
 
 libname in ("&in_loc.","&in_loc.\2021","&in_loc.\2022","&in_loc.\2023", "&in_loc.\2024");
 libname out "&in_loc.\extracts";
@@ -552,3 +554,66 @@ quit;
 /*							strip(lowcase(a.state)) = strip(lowcase(b.state_)) */
 /*							;*/
 /*quit;*/
+
+
+*----------------------------------------------------------------------------------------------------------
+*	Importing and cleaning masterfile_2006q1_2024q4_full.csv
+*	Only "usual" addresses were matched by ArcGIS Pro Geocoding + Spatial join
+*----------------------------------------------------------------------------------------------------------;
+
+/*proc import datafile="&out_csv.\masterfile_2006q1_2024q4.dta" dbms=dta replace out=masterfile_2006q1_2024q4; run;*/
+
+proc sql;
+	create table fgfg as
+	select *
+	from out.masterfile_2006q1_2024q4 (obs = 29237)
+;
+quit;
+
+*importing and removing text issues;
+proc sql;
+	create table masterfile_2006q1_2024q4 as
+		select  Year,
+				Quarter,
+				Pad,
+				UIN,
+				RepUnit,
+				EIN,
+				PUIN,
+				PRUN,
+				SUIN,
+				SRUN,
+				Legal,
+				Trade,
+				strip(lowcase(address)) as Address,
+				strip(lowcase(city)) as City,
+				State,
+				Zip,
+				Zip4,
+				RUD,
+				meei,
+				OrgType,
+				County,
+				naics,
+				M1,
+				M2,
+				M3,
+				Wage,
+				pl_zip
+			from out.masterfile_2006q1_2024q4
+				where address is not missing and 
+					  not strip(lowcase(address)) in ("**address needed**", "** address needed **", ".", "0",",", "1", "'","none", "no address provided") and
+					   (index(Legal, '') = 0) and (index(Trade, '') = 0) and
+					  (index(address, '') = 0) and (index(city, '') = 0) /* removes observations with this special character */
+;
+quit;
+
+*----------------------------------------------------------------------------------------
+*	exporting cleaned masterfile_2006q1_2024q4_full_cleaned dataset to a csv file for ArcGIS Pro
+*----------------------------------------------------------------------------------------;
+proc export data=masterfile_2006q1_2024q4
+   outfile="&tax_emp_loc.\masterfile_2006q1_2024q4_clean.csv"
+   dbms=csv replace;
+   putnames=yes;
+run;
+

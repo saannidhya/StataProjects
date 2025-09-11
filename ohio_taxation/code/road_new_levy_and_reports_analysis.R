@@ -1,4 +1,11 @@
-
+#=========================================================================================================================================#
+# Purpose : Does passing road tax levy for additional funding lead to more property tax revenue? 
+# Name    : Saani Rawat
+# Created : 08/26/2025
+# Log     : 1. 08/26/2025: Created the file
+#> 
+#> This script analyzes the impact of passing a road tax levy for additional funding on property tax revenue and public works spending.
+#=========================================================================================================================================#
 
 # Setup 
 library(tidyverse)
@@ -75,11 +82,6 @@ twp_name_fips_map <- readxl::read_excel("data/ohio-only-all-geocodes-2016-edited
                               TRUE ~ township)) %>%
   distinct(fips, township, county, .keep_all = TRUE)
 
-# check duplicates
-# twp_name_fips_map %>% group_by(township, county) %>% filter(n() > 1) %>% arrange(township, county) %>% as.data.frame()
-
-# twp_name_fips_map %>% filter(str_detect(township, regex("west chester", ignore_case = TRUE))) 
-
 
 #==========================================================================================#
 # Deflating to 2010 dollars
@@ -99,8 +101,7 @@ twp_real_2010_sep <- twp_real_2010 %>%
   filter(property_tax != 0 | public_works != 0) %>%
   arrange(township, county, year)
 
-# 2 township, countyp
-
+# Adding tendigit_fips to govt spending/revenue data
 twp_real_2010_sep2 <- twp_real_2010_sep %>%
   left_join(twp_name_fips_map, by = c("township", "county")) %>%
   relocate(fips, .before = township) %>%
@@ -112,26 +113,11 @@ twp_real_2010_sep2 <- twp_real_2010_sep %>%
 # Extracting relevant spending/revenue info i.e. around the elections
 #==========================================================================================#
 
+# Set time window
 L <- 1; W <- 3
 
-# events <- roads_a %>%
-#   mutate(t_start = year + L)
-# 
-# 
-# stack <- events %>%
-#   rename(election_year = year) %>%
-#   tidyr::crossing(k = -W:W) %>%
-#   mutate(fiscal_year = election_year + k)  %>%
-#   rename(fips = tendigit_fips)
-# 
-# stack2 <- stack %>% left_join(twp_real_2010_sep2, by = c("fips","fiscal_year"))
-# 
-# View(stack2)
-
-
 events2 <- roads_a %>%
-  # keep township additional/“A” elections only (you already filtered; keep it explicit)
-  filter(toupper(subdivisiontype) == "TOWNSHIP", description %in% c("A", "-999")) %>%
+  filter(toupper(subdivisiontype) == "TOWNSHIP", description %in% c("A", "-999")) %>% # keep township additional/“A” elections only
   rename(fips = tendigit_fips, election_year = year) %>%
   arrange(fips, election_year) %>%
   group_by(fips) %>%
@@ -145,7 +131,10 @@ events2 <- roads_a %>%
          has_next_in_window = !is.na(next_election_year) & (next_election_year - election_year) <= (W + L),
          has_prev_in_window = !is.na(prev_election_year) & (election_year - prev_election_year) <= (W + L))
 
-# build stacked event-time rows and join finance (already deflated to 2010$)
+
+# View(roads_a)
+# View(events2)
+# build stacked event-time rows and join finance (already deflated to 2010 $)
 # Note: We only right-truncate the post window if there is a next election within the window. We don't left-truncate the pre window as we what has happened in the past (in terms of "monetary jumps", not election results per se) is not affected by  concurrent election (reasonable assumption) and we also will lose even more data.
 stack_trunc <- events2 %>%
   tidyr::crossing(k = -W:W) %>%
@@ -200,16 +189,25 @@ ev_tax_long <- ev_tax %>% select(-c("pre_pw", "post_pw","d_tax","d_pw")) %>%
     values_to = "tax_amount"
   ) %>%
   mutate(post = ifelse(period == "post_tax", 1, 0),
-         treat = pass*post)
+         treat = pass*post,
+         ln_tax_amount = log(tax_amount))
+# 532 rows
 
-ev_tax_long %>%
+ev_tax_long %>% 
   group_by(pass, post) %>%
   summarise(count = n(),
             mean_tax = mean(tax_amount, na.rm = TRUE),
             median_tax = median(tax_amount, na.rm = TRUE),
             sd_tax = sd(tax_amount, na.rm = TRUE),
-            .groups = "drop")
+            .groups = "drop") 
 
+# ev_tax_long %>%
+#   group_by(pass, post) %>%
+#   summarise(count = n(),
+#             ln_mean_tax = mean(ln_tax_amount, na.rm = TRUE),
+#             ln_median_tax = median(ln_tax_amount, na.rm = TRUE),
+#             ln_sd_tax = sd(ln_tax_amount, na.rm = TRUE),
+#             .groups = "drop")  
 
 # Public Works Spending # 
 ev_pw_long <- ev_tax %>% select(-c("pre_tax", "post_tax","d_tax","d_pw")) %>%
@@ -221,8 +219,8 @@ ev_pw_long <- ev_tax %>% select(-c("pre_tax", "post_tax","d_tax","d_pw")) %>%
   mutate(post = ifelse(period == "post_pw", 1, 0),
          treat = pass*post,
          ln_pw_amount = log(pw_amount)
-         )
-View(ev_pw_long)
+         ) 
+# View(ev_pw_long)
 
 # comparison of means: pre-post for pass-fail
 ev_pw_long %>%
@@ -232,13 +230,13 @@ ev_pw_long %>%
             median_pw = median(pw_amount, na.rm = TRUE),
             sd_pw = sd(pw_amount, na.rm = TRUE),
             .groups = "drop")
-ev_pw_long %>%
-  group_by(pass, post) %>%
-  summarise(count = n(),
-            ln_mean_pw = mean(ln_pw_amount, na.rm = TRUE),
-            ln_median_pw = median(ln_pw_amount, na.rm = TRUE),
-            ln_sd_pw = sd(ln_pw_amount, na.rm = TRUE),
-            .groups = "drop")            
+# ev_pw_long %>%
+#   group_by(pass, post) %>%
+#   summarise(count = n(),
+#             ln_mean_pw = mean(ln_pw_amount, na.rm = TRUE),
+#             ln_median_pw = median(ln_pw_amount, na.rm = TRUE),
+#             ln_sd_pw = sd(ln_pw_amount, na.rm = TRUE),
+#             .groups = "drop")            
 
 
 #==========================================================================================#
@@ -255,11 +253,11 @@ evsum2 <- evsum %>%
     ln_pre_tax = ifelse(npre_tax > 0, lz(pre_tax), NA_real_),
     ln_pre_pw  = ifelse(npre_pw > 0,  lz(pre_pw ), NA_real_)
   )
-View(evsum2)
+# View(evsum2)
 ev_tax_did <- evsum2 %>% filter(!is.na(dln_tax))
 ev_pw_did  <- evsum2 %>% filter(!is.na(dln_pw))
-View(ev_pw_did)
-View(ev_tax_did)
+# View(ev_pw_did)
+# View(ev_tax_did)
 
 # Difference-in-means with a baseline control; cluster by fips
 m_tax = feols(dln_tax ~ pass + ln_pre_tax, data = ev_tax_did, vcov = ~fips)
@@ -268,6 +266,16 @@ etable(m_tax, m_pw, se.below = TRUE)
 
 summary(m_tax)
 summary(m_pw)
+# View(ev_tax_did)
+
+ev_tax_did %>%
+  mutate(d_tax = post_tax - pre_tax) %>%
+  group_by(pass) %>%
+  summarise(mean_d_tax = mean(d_tax, na.rm = TRUE),
+            median_d_tax = median(d_tax, na.rm = TRUE),
+            sd_d_tax = sd(d_tax, na.rm = TRUE),
+            count = n(),
+            .groups = "drop")
 
 ev_tax_did %>%
   group_by(pass) %>%
@@ -302,6 +310,8 @@ boot_beta <- replicate(B, {
 })
 quantile(boot_beta, c(.025,.5,.975))
 
+colnames(roads_a)
+mean(as.numeric(roads_a[["millagepercent"]]), na.rm = TRUE)
 
 # Key Findings:
 # Using collapsed difference-in-differences at the election level with right-truncated windows, we find that passing an additional road-funding levy raises township property-tax revenues by about 9–10% and public-works spending by about 9% relative to failed elections. Median regressions yield similar effects (≈14% and 9% respectively), indicating that results are not driven by outliers. These estimates establish a strong and economically meaningful first stage: the levy pass generates higher budgets.
