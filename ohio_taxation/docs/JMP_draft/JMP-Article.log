@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  11 SEP 2025 14:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  15 SEP 2025 13:26
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -854,29 +854,28 @@ Package pdftex.def Info: images/bw_sensitivity_of_means.png  used on input line 
 
  <./images/bw_sensitivity_of_means.png>] (model.tex [54
 
-] [55] [56] [57] [58] [59] [60] [61] [62]
-Overfull \hbox (55.81151pt too wide) in paragraph at lines 351--352
+] [55] [56] [57] [58] [59] [60] [61]
+Overfull \hbox (55.81151pt too wide) in paragraph at lines 366--367
 \OT1/cmr/m/n/12 rium con-di-tions un-der the ini-tial $\OML/cmm/m/it/12 ^^\[]$\OT1/cmr/m/n/12 . This pro-vides base-line val-ues for $\OMS/cmsy/m/n/12 f\OML/cmm/m/it/12 c[]; h[]; n[]; K[]; G[]; p[]; w[]; r[]\OMS/cmsy/m/n/12 g$\OT1/cmr/m/n/12 . 
  []
 
-
-Underfull \hbox (badness 10000) in alignment at lines 398--398
+[62]
+Underfull \hbox (badness 10000) in alignment at lines 413--413
 [][][][][] 
  []
 
-[63] [64]
-<images/model_dynamics_recalibrated.png, id=975, 1387.584pt x 698.8509pt>
+<images/model_dynamics_recalibrated.png, id=965, 1387.584pt x 698.8509pt>
 File: images/model_dynamics_recalibrated.png Graphic file (type png)
 <use images/model_dynamics_recalibrated.png>
-Package pdftex.def Info: images/model_dynamics_recalibrated.png  used on input line 421.
+Package pdftex.def Info: images/model_dynamics_recalibrated.png  used on input line 436.
 (pdftex.def)             Requested size: 422.77664pt x 212.9306pt.
- [65 <./images/model_dynamics_recalibrated.png>]
-<images/model_vs_empirical_estimates_recalibrated.png, id=986, 711.1368pt x 422.0568pt>
+[63] [64]
+<images/model_vs_empirical_estimates_recalibrated.png, id=984, 711.1368pt x 422.0568pt>
 File: images/model_vs_empirical_estimates_recalibrated.png Graphic file (type png)
 <use images/model_vs_empirical_estimates_recalibrated.png>
-Package pdftex.def Info: images/model_vs_empirical_estimates_recalibrated.png  used on input line 440.
+Package pdftex.def Info: images/model_vs_empirical_estimates_recalibrated.png  used on input line 455.
 (pdftex.def)             Requested size: 375.80544pt x 223.03857pt.
- [66 <./images/model_vs_empirical_estimates_recalibrated.png>] [67] [68])) [69] (JMP-Article.aux)
+ [65 <./images/model_dynamics_recalibrated.png>] [66 <./images/model_vs_empirical_estimates_recalibrated.png>] [67] [68])) [69] (JMP-Article.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-03-14>
@@ -886,20 +885,20 @@ L3 programming layer <2024-03-14>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `JMP-Article.out' has not changed.
-(rerunfilecheck)             Checksum: 4FB45B347C6D9F1CE927C2BC09E5C0F1;7550.
+(rerunfilecheck)             Checksum: 56A1E97CE17202B005BEF4F2D848359F;7550.
  ) 
 Here is how much of TeX's memory you used:
- 15881 strings out of 474424
- 258310 string characters out of 5740796
+ 15886 strings out of 474424
+ 258415 string characters out of 5740796
  1966496 words of memory out of 5000000
- 37661 multiletter control sequences out of 15000+600000
+ 37667 multiletter control sequences out of 15000+600000
  574444 words of font info for 97 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,17n,79p,2025b,616s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on JMP-Article.pdf (70 pages, 3553157 bytes).
+Output written on JMP-Article.pdf (70 pages, 3556782 bytes).
 PDF statistics:
- 1203 PDF objects out of 1440 (max. 8388607)
- 310 named destinations out of 1000 (max. 500000)
+ 1206 PDF objects out of 1440 (max. 8388607)
+ 309 named destinations out of 1000 (max. 500000)
  487 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -141,6 +141,8 @@ tes_gs %>% filter(ord >= 0) %>% select(robust_coef) %>% pull %>% mean / 166000
 # get mean optimal bandwidth
 purrr::walk2(gs, names(gs), ~print(paste0("Eff. Bandwidth (h) for ", .y, ": " , round(.x$bws[1,],1))))
 
+# tes_gs_bw <- purrr::map_dbl(gs[4:length(gs)], ~ round(.x$bws[1,1],1)  ) %>% mean
+
 #==============================================#
 # Adding Time Fixed Effects
 #==============================================#

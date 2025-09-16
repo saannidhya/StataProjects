@@ -37,19 +37,31 @@ with $n_t$ hours of market work, $\phi(G_t)\ge0$ a commuting factor that rises a
 
 \vskip 0.3cm
 
-{\bf Budget Constraint and Capital Accumulation:}
+{\bf Budget Constraint and Capital/Housing Accumulation:}
 
-Let $w_t$ be the real wage, $r_t$ the rental rate on private capital $K_t$, $p_{h,t}$ the price of housing services, $\tau_L$ the labor–income tax rate, and $\tau_H$ the (voted) property‐tax rate. The household’s per–period budget constraint is
+Let $w_t$ be the real wage, $r_t$ the rental rate on private capital $K_t$, $p_{h,t}$ the \emph{pre–tax} purchase price of one unit of housing stock, $\tau_L$ the labor–income tax rate, and $\tau_H$ the property‐tax rate levied on the \emph{value of the housing stock}. The household’s period budget is written in Tobin’s-$q$ form:
 \begin{equation}
- c_t + p_{h,t}h_t + i_t = (1-\tau_L)w_t n_t + r_tK_t - \tau_H p_{h,t}h_t,\label{eq:hhbudget}
+c_t \;+\; i_t \;+\; p_{h,t}\,x_t \;+\; \underbrace{\tau_H\,p_{h,t}\,H_t}_{\text{property tax on holdings}}
+\;=\; (1-\tau_L)w_t n_t \;+\; r_t K_t \;+\; \Pi_t,
+\label{eq:hhbudget_asset}
 \end{equation}
-where $i_t$ denotes investment, and the private–capital law of motion is
+where $x_t$ is net housing investment and $i_t$ is private–capital investment. The laws of motion are
+\begin{align}
+K_{t+1}&=(1-\delta_K)K_t + i_t,\qquad \delta_K\in(0,1),\\
+H_{t+1}&=(1-\delta_H)H_t + x_t,\qquad \delta_H\in(0,1).
+\end{align}
+Equivalently, eliminating $x_t$,
 \begin{equation}
-K_{t+1}=(1-\delta_K)K_t + i_t, \qquad \delta_K\in(0,1).
+c_t + i_t + p_{h,t}H_{t+1} - p_{h,t}(1-\delta_H)H_t + \tau_H p_{h,t}H_t
+= (1-\tau_L)w_t n_t + r_t K_t
+\label{eq:hhbudget_asset_stock}
 \end{equation}
 
 {\bf Optimality Conditions:}
-Maximization of \eqref{eq:utility} subject to \eqref{eq:hhbudget} yields:
+
+Maximization of \eqref{eq:utility} subject to \eqref{eq:hhbudget_asset}–\eqref{eq:hhbudget_asset_stock} yields:
+
+
 \begin{enumerate}
   \item \textbf{Consumption–Saving Euler Equation:} The household equalizes the marginal utility of consuming an additional unit today to the discounted utility of saving it until tomorrow. In absence of capital income tax, this yields:
 
@@ -96,34 +108,34 @@ Maximization of \eqref{eq:utility} subject to \eqref{eq:hhbudget} yields:
 
     Intuitively, the marginal rate of substitution between leisure (or time) and consumption equals the real after-tax wage. An increase in commuting factor $\phi(G_t)$ (worse roads) raises the left-hand side (effective disutility of labor), leading the household to supply less labor for a given wage. This aligns with the idea that poor road quality reduces effective labor supply (households require higher compensation to work the same hours because commuting erodes their usable time).
 
-  \item \textbf{Housing demand}
-
-    The household chooses housing $h_t$ such that the marginal utility of housing relative to consumption equals its relative price. The FOC for $h_t$ is:
-    \begin{equation}
-    U_h(c_t, h_t, A(G_t)) = U_c(c_t, h_t, A(G_t)) \bigl(p_{h,t} + \tau_H p_{h,t}\bigr),
-    \end{equation}
-    or equivalently,
-    \begin{equation}
-    U_h = U_c \cdot (1+\tau_H)p_{h,t}.
-    \end{equation}
-    Here $p_{h,t}$ is the price of housing and $\tau_H p_{h,t}$ is the property tax per unit housing. In equilibrium, we can define the after-tax housing price as $q_t \equiv (1+\tau_H)p_{h,t}$. Then the condition becomes:
-    \begin{equation}
-    U_h = U_c \cdot q_t.
-    \end{equation}
-    % For example, with $U_h = \frac{\alpha_h}{h_t}$ and $U_c = \frac{1}{c_t}$, this condition gives:
-    For example, with $U_h = \frac{\alpha_h A(G_t)}{h_t}$ and $U_c = \frac{1}{c_t}$, this condition gives:
-    \begin{equation}
-    \frac{\alpha_h A(G_t)}{h_t} = \frac{1}{c_t}q_t,
-    \end{equation}
-    or equivalently:
-    \begin{equation}
-    \alpha_h A(G_t) c_t = q_t h_t.
-    \end{equation}
-    This means the household equates the marginal utility per dollar spent on housing to that of consumption. Intuitively, households will demand housing until the point where the utility gain from an extra unit of housing (which diminishes as $h_t$ increases due to diminishing returns) just equals the utility gain from spending those resources on general consumption.
+  \item \textbf{Housing asset Euler (perfect foresight):}
+  Let $u_{c,t}=1/c_t$ and $u_{H,t}=\alpha_h A(G_t)/H_t$. The FOC with respect to $H_{t+1}$ gives
+  \begin{equation}
+  p_{h,t}\,u_{c,t}
+  \;=\; \beta\Big[u_{H,t+1} \;+\; u_{c,t+1}\,(1-\delta_H-\tau_H)\,p_{h,t+1}\Big],
+  \label{eq:euler_H_util}
+  \end{equation}
+  or, in consumption units,
+  \begin{equation}
+    p_{h,t}
+    \;=\; \beta\,\frac{c_t}{c_{t+1}}
+    \Big[
+    (1-\delta_H-\tau_H)\,p_{h,t+1}
+    + \alpha_h\,A(G_{t+1})\,\frac{c_{t+1}}{H_{t+1}}
+    \Big]
+    \label{eq:euler_H_cons}
+  \end{equation}
 
   \begin{equation}
-    \frac{\alpha_h A(G_t)}{h_t} = \frac{(1+\tau_H)p_{h,t}}{c_t} \quad\Longrightarrow\quad p_{h,t} = \frac{\alpha_h A(G_t) c_t}{(1+\tau_H)h_t}.
+    p_{h,t}
+    \;=\;
+    \beta\Big[
+    (1-\delta_H-\tau_H)\,\frac{c_t}{c_{t+1}}\,p_{h,t+1}
+    + \alpha_h\,A(G_{t+1})\,\frac{c_t}{H_{t+1}}
+    \Big].
+  \label{eq:euler_H_cons2}
   \end{equation}
+  The bracketed terms are, respectively, the \emph{after–tax, after–depreciation resale value} next period and the \emph{service dividend} (marginal value of one more unit of housing services) next period. The property tax $\tau_H$ acts as a holding cost on the stock.
   
 \end{enumerate}
 
@@ -200,17 +212,20 @@ In words, if maintenance spending $M_t$ falls short of the amount needed to cove
 
 \subsection{Housing Market}
 
-Housing is treated as a tradable asset/consumption good in fixed supply. Let $\bar{H}$ denote the total housing stock (or housing services) available in the economy. We assume $\bar{H}$ is exogenously fixed (no new construction, to focus on valuation of a given stock). The Walrasian housing market clears each period, meaning the representative household’s demand for housing equals the available supply:
+Housing is a tradable asset in \emph{fixed} aggregate supply $\bar H$. With a representative household, market clearing is
 \begin{equation}
-h_t = \bar{H},
+H_t \;=\; \bar H \quad \text{for all } t.
+\label{eq:housing_clearing}
 \end{equation}
-for all $t$. Because we have a representative household (or equivalently identical households each demanding $h_t$ and a total supply $\bar{H}$ per household), market clearing effectively pins down $h_t$ in equilibrium. The house price $p_{h,t}$ adjusts to ensure this equality. In other words, $p_{h,t}$ is determined such that the household’s first-order condition for housing (derived above) holds when $h_t=\bar{H}$. Using $U_h/U_c = (1+\tau_H)p_{h,t}$, we find:
-
+Given \eqref{eq:housing_clearing}, the price $p_{h,t}$ is determined by the housing Euler \eqref{eq:euler_H_cons} and the paths of $\{c_t,G_t\}$. In steady state, substituting $c_{t+1}\!=\!c_t\!=\!c$, $H_{t+1}\!=\!H_t\!=\!H\!=\!\bar H$, $G_{t+1}\!=\!G_t\!=\!G$, $p_{h,t+1}\!=\!p_{h,t}\!=\!p_h$ into \eqref{eq:euler_H_cons} yields the user–cost formula:
 \begin{equation}
-    (1+\tau_H)p_{h,t} = \frac{U_h(c_t, h_t, A(G_t))}{U_c(c_t, h_t, A(G_t))}\Big|_{h_t=\bar{H}},
+p_h \;=\; \frac{\alpha_h\,A(G)\,\dfrac{c}{H}}{\rho+\delta_H+\tau_H},
+\qquad \rho \equiv \frac{1}{\beta}-1 .
+\label{eq:user_cost}
 \end{equation}
 
-which implicitly gives the equilibrium price $p_{h,t}$ as a function of $\bar{H}$ and other endogenous variables. Intuitively, $p_{h,t}$ will be high if housing is very valuable at the margin (e.g., large $\alpha_h$ or high $A(G_t)$ making housing attractive), and will fall if housing becomes less desirable (for example, if $A(G_t)$ drops due to road decay, lowering $U_h$ relative to $U_c$). Thus, a decline in road quality $G_t$ reduces the amenity value $A(G_t)$ and increases commuting disutility, both of which make housing less attractive to the household, thereby lowering the equilibrium house price $p_{h,t}$. This is the channel through which the public infrastructure shock is capitalized into property values, as described by Oates’s intuition on local public goods and house prices.
+Better roads ($A(G)$ higher) raise valuation, higher user cost ($\rho+\delta_H+\tau_H$) lowers it. Larger $H$ reduces marginal service value (log utility), lowering $p_h$ ceteris paribus.
+
 
 \subsection{Competitive Equilibrium}
 

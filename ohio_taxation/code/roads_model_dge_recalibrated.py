@@ -5,13 +5,14 @@ This module implements a dynamic general equilibrium model to analyze
 the economic impacts and optimal strategies for road maintenance.
 
 Author: Saani Rawat
-Date: 08/10/2025
-Version: 1.0
+Version: 1.0, Date: 08/10/2025
+Version: 2.0, Date: 09/15/2025
 
 Log:
     08/10/2025 - Initial model implementation
     08/11/2025 - Added detailed comments and parameter documentation
     08/13/2025 - Recalibrated model parameters to improve fit with empirical data
+    09/15/2025 - Updated the model and implementation after adding housing as a storable asset
 
 Dependencies:
     - numpy
@@ -20,7 +21,7 @@ Dependencies:
     - pandas
 
 Usage:
-    python roads_model_dge.py
+    python roads_model_dge_recalibrated.py
 """
 
 # Recalibration & run evidence for Saani's DGE model with tau_H fixed at 0.015
@@ -36,14 +37,14 @@ from typing import Tuple, Dict, Any
 from scipy.optimize import root, minimize, Bounds
 
 # ------------- Fixed structural parameters -------------
-beta = 0.96
-deltaK = 0.06
-alpha_k = 0.30
-kappa = 2.9
-theta = 2.0
-alpha_h = 0.35
-Hbar = 1.0
-A_TFP = 1.0
+beta = 0.96           # Discount factor
+deltaK = 0.06         # Depreciation rate of capital
+alpha_k = 0.30        # Capital share in production
+kappa = 2.9           # Inverse Frisch elasticity of labor supply
+theta = 2.0           # Elasticity of substitution between housing and other goods
+alpha_h = 0.35        # Housing share in utility
+Hbar = 1.0            # Fixed housing stock
+A_TFP = 1.0          # Total factor productivity
 
 # Derived
 r_ss = deltaK + 1.0/beta - 1.0
@@ -170,6 +171,18 @@ dG = v1['G']/v0['G'] - 1.0
 dq = v1['q']/v0['q'] - 1.0
 dM = v1['M']/v0['M'] - 1.0
 
+
+eta, gamma, tau_L, deltaG_norm, tau_H, psi
+# (0.42044675630610195, 0.05720788533188241, 0.04640807566566141, 0.04268157329184511, 0.015, 0.44586411335082793)
+ss0, v0
+# >>> ss0, v0
+# (array([0.65449737, 3.07082155, 0.75080137]), {'n': 0.6544973743757916, 'K': 3.0708215537329737, 'G': 0.7508013718204255, 'Y': 1.04066730432062, 'w': 1.1130176247371335, 'M': 0.03756137740077858, 'c': 0.818856633695863, 'q': 0.2540626538059184, 'p_h': 0.25030803330632356})
+ss1, v1 
+# >>> ss1, v1 
+# (array([0.64719635, 3.03656603, 0.57811665]), {'n': 0.6471963486011582, 'K': 3.036566034626442, 'G': 0.5781166467852663, 'Y': 1.0290584895122956, 'w': 1.1130176247371335, 'M': 0.03342963697197449, 'c': 0.8134348904627345, 'q': 0.22611585689744268, 'p_h': 0.22611585689744268})
+dG, dq, dM
+(-0.23000054543914905, -0.10999962603643676, -0.10999970487553101)
+
 print("=== Recalibration with tau_H fixed at 0.015 ===")
 print("Success:", res_success, "| objective:", err_star)
 print("Params:")
@@ -245,7 +258,7 @@ cutp = simulate_path(T, cut=True,  pars=pars, tau_H_baseline=tauH_fixed, K0=K0, 
 # model results
 fig2, axes2 = plt.subplots(2, 3, figsize=(15, 10))
 fig2.suptitle('Percentage Changes from Baseline After Housing Tax Cut', fontsize=16)
-
+time_axis = np.arange(0, T+1)
 for i, (title, var) in enumerate(variables):
     row = i // 3
     col = i % 3
@@ -337,7 +350,8 @@ pre_treatment_time = np.arange(-3, 0)  # t-3, t-2, t-1
 pre_treatment_zeros = [0, 0, 0]  # Model shows no change before treatment
 
 # For post-treatment, skip every other period to represent 6-month intervals
-post_treatment_indices = np.arange(0, min(len(cutp['q']), 21), 2)  # Every 2nd period
+# post_treatment_indices = np.arange(0, min(len(cutp['q']), 21), 2)  # Every 2nd period
+post_treatment_indices = np.arange(0, min(len(cutp['q']), 101), 10)  # Every 10th period
 post_treatment_time = np.arange(0, len(post_treatment_indices))  # t=0 to t=10
 model_pct_q = [(cutp['q'][t] / base['q'][t] - 1) * 100 for t in post_treatment_indices]
 
@@ -379,6 +393,7 @@ ax3.tick_params(axis='both', which='major', labelsize=11, width=1.2)
 ax3.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1f}'))
 
 plt.tight_layout()
+plt.show()
 
 # Save the plot to specified location
 save_path = r"C:\Users\rawatsa\OneDrive - University of Cincinnati\Applied Economics Program\PhD\classes\summer 2025\dissertation_proposal\presentation\images\model_vs_empirical_estimates_recalibrated.png"

@@ -6,6 +6,7 @@
 #           2. 1/16/2025: results from test run of fine-tuned gpt-4 model by Vikram
 #           3. 2/26/2025: Added regression analysis for Road quality
 #           4. 7/12/2025: checking which tendigit_fips and elections quality at different bandwidths
+#           5. 9/12/2025: Added code to check sample sizes for road quality analysis
 #================================================================================================================#
 
 library(fixest)
@@ -462,7 +463,7 @@ roads_close %>%
             mean_score2 = mean(road_quality_score2), sd_score2 = sd(road_quality_score2) ,
             mean_score3 = mean(road_quality_score3), sd_score3 = sd(road_quality_score3) ,
             # ,n = n()
-  ) 
+  ) %>% print(width = Inf)
   # select(treat_flag, post_election_flag, mean_score3, sd_score3)
 
 # for before referendum, what's the mean time-gap between election time and satellite photo time?
@@ -613,6 +614,28 @@ roads_ord_did <- polr(factor(predicted_label) ~ did_interact + factor(post_elect
 summary(roads_ord_did)
 
 # Using confidence variable
+
+#==========================================#
+# Small sample problem
+#==========================================#
+
+# road elections within mean effective bandwidth
+roads_and_census_close <- roads_and_census %>% filter(between(votes_pct_against, cutoff - 6, cutoff + 6)) %>% 
+  filter((tolower(subdivisiontype) == "township") & (year >= 2006)) 
+
+# Every single township we analyzed for road quality was indexed a "close election"
+roads_close %>% select(tendigit_fips) %>% distinct() %>% 
+      left_join(roads_and_census_close %>% select(tendigit_fips) %>% mutate(match = 1), by = "tendigit_fips") %>% print(n = Inf)
+
+# However, how many "close elections" were actually analyzed for road quality?
+roads_and_census_close %>% select(tendigit_fips) %>% distinct() %>% 
+    left_join(roads_close %>% select(tendigit_fips) %>% distinct() %>% mutate(match = 1), by = "tendigit_fips") %>% 
+    group_by(match) %>% summarize(n = n())
+# Only 14% of the "close elections" were analyzed for road quality, mainly due to lack of "before and after" images for each area.
+# Reasons for small sample size:
+#' 1. Only townships
+#' 2. Only elections after 2006
+#' 3. Only elections with images both before and after election year
 
 #------------------------------------------#
 ## RD regression within the bandwidth
