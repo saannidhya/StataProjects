@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex roads_model_dge"] 1755985011.80564 "roads_model_dge.aux" "roads_model_dge.bbl" "roads_model_dge" 1755985016.36761 0
+["bibtex roads_model_dge"] 1758056998.0539 "roads_model_dge.aux" "roads_model_dge.bbl" "roads_model_dge" 1758057043.42254 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
   "./aej_references.bib" 1755135223 24880 109efcca5b2cefdf6e646245056d6b7c ""
-  "roads_model_dge.aux" 1755985014 4315 4916b3f7835809e8c3eac4660876cbc8 "pdflatex"
+  "roads_model_dge.aux" 1758057041 6042 7fb83c0ffc45fb606f8e6ec4c9b1dca3 "pdflatex"
   (generated)
   "roads_model_dge.bbl"
   "roads_model_dge.blg"
   (rewritten before read)
-["pdflatex"] 1755985012.38787 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/roads_model_dge.tex" "roads_model_dge.pdf" "roads_model_dge" 1755985016.36858 0
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1755826673 82388 e1001d480eb22180cfbcc7c96758e920 ""
+["pdflatex"] 1758057037.28246 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/roads_model_dge.tex" "roads_model_dge.pdf" "roads_model_dge" 1758057043.42382 0
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1756581492 83986 f8eb18fc09af2505e4d73e14b16d5d60 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1200.pk" 1718906654 14064 c87259808bd803f772ae77c6ebf4ae70 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1714697604 24236949 73babde6043cf70b9c97c581277a0b92 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/tcrm1200.tfm" 993062508 1444 95ffe0f19b974d50849790c8225c7ef7 ""
@@ -134,14 +134,14 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/roads_model_dge.tex" 1753580256 2453 11fe6ba30b9426d205545b8904e99529 ""
-  "images/model_dynamics_recalibrated.png" 1755132853 127068 0d72f4900754653843836cd23a1de541 ""
-  "images/model_vs_empirical_estimates_recalibrated.png" 1755132572 354673 fd4a88fba6805e7a479b5c6ff3e53a20 ""
-  "model.tex" 1755984992 41477 d5f3dd8aed50daa0a05f641dbfd2e72a ""
-  "roads_model_dge.aux" 1755985014 4315 4916b3f7835809e8c3eac4660876cbc8 "pdflatex"
-  "roads_model_dge.bbl" 1755985012 1958 2e9dbaed9dae6ec4a8acaaf2a83c7f5c "bibtex roads_model_dge"
-  "roads_model_dge.out" 1755985014 2456 ecc0635e60cf367faa949e5ff48b7568 "pdflatex"
-  "roads_model_dge.tex" 1753580256 2453 11fe6ba30b9426d205545b8904e99529 ""
+  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/roads_model_dge.tex" 1758053278 2454 18b0089ed58f1f8431d0f6d08309825b ""
+  "images/model_dynamics_house.png" 1757987143 106980 cf9fc78393f9e139dd5a566df8eb50eb ""
+  "images/model_vs_empirical_estimates_house.png" 1757985080 323334 677671b0939e2ceb12ae83f33a1b0889 ""
+  "model.tex" 1758057035 48363 d68ef76cba17954113e1c70fe37a6013 ""
+  "roads_model_dge.aux" 1758057041 6042 7fb83c0ffc45fb606f8e6ec4c9b1dca3 "pdflatex"
+  "roads_model_dge.bbl" 1758056998 1563 2645f21f7532c22b183a6e05192c8f98 "bibtex roads_model_dge"
+  "roads_model_dge.out" 1758057041 3321 6135eb063d9ad4195cc7f8bce06ea300 "pdflatex"
+  "roads_model_dge.tex" 1758053278 2454 18b0089ed58f1f8431d0f6d08309825b ""
   (generated)
   "roads_model_dge.aux"
   "roads_model_dge.log"

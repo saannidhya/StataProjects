@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1752079765.00931 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JpubE/roads_paper_highlights.tex" "roads_paper_highlights.pdf" "roads_paper_highlights" 1752079766.5086 0
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1751674764 82388 e1001d480eb22180cfbcc7c96758e920 ""
+["pdflatex"] 1758051997.29588 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JpubE/roads_paper_highlights.tex" "roads_paper_highlights.pdf" "roads_paper_highlights" 1758051999.51561 0
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1756581492 83986 f8eb18fc09af2505e4d73e14b16d5d60 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1200.pk" 1718906654 14064 c87259808bd803f772ae77c6ebf4ae70 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1714697604 24236949 73babde6043cf70b9c97c581277a0b92 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/tcrm1200.tfm" 993062508 1444 95ffe0f19b974d50849790c8225c7ef7 ""
@@ -68,10 +68,10 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/tools/verbatim.sty" 1700599895 7500 db31c3d04f8bc9010e47a5efbbace9ff ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/tools/xspace.sty" 1700599895 4545 9f5ea23ab1c91476c42749893f790666 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
-  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JpubE/roads_paper_highlights.tex" 1752079764 1594 7ec3342add58092ff3cd92a0f526c8be ""
+  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JpubE/roads_paper_highlights.tex" 1752079806 1594 7ec3342add58092ff3cd92a0f526c8be ""
   "ouparticle.cls" 1721952970 7335 f6e42a474de54cb1da42908d02753603 ""
-  "roads_paper_highlights.aux" 1752079766 52 877aca82ae2461fd536a1dbdff16e17d "pdflatex"
-  "roads_paper_highlights.tex" 1752079764 1594 7ec3342add58092ff3cd92a0f526c8be ""
+  "roads_paper_highlights.aux" 1758051999 52 877aca82ae2461fd536a1dbdff16e17d "pdflatex"
+  "roads_paper_highlights.tex" 1752079806 1594 7ec3342add58092ff3cd92a0f526c8be ""
   (generated)
   "roads_paper_highlights.aux"
   "roads_paper_highlights.log"

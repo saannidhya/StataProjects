@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex JMP-Article"] 1757633514.8696 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1757957198.19763 0
+["bibtex JMP-Article"] 1758127801.06324 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1758128139.10057 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
-  "./aej_references.bib" 1755135223 24880 109efcca5b2cefdf6e646245056d6b7c ""
-  "JMP-Article.aux" 1757957196 26443 ed9cff062e2e905af4c78625ba031315 "pdflatex"
+  "./aej_references.bib" 1758061757 24744 8ed97dda338b2aa1a8e26af4f261a6a5 ""
+  "JMP-Article.aux" 1758128136 27136 0d5cebf61f9b01531ab3400c2735c23a "pdflatex"
   (generated)
   "JMP-Article.bbl"
   "JMP-Article.blg"
   (rewritten before read)
-["pdflatex"] 1757957191.08218 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1757957198.19931 0
+["pdflatex"] 1758128131.09563 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1758128139.10214 0
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1756581492 83986 f8eb18fc09af2505e4d73e14b16d5d60 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0700.pk" 1737579311 8268 191349543146a4c053d7a8b3d482dfab ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1737579313 11548 9725287d5650551bd806f254213fceb9 ""
@@ -63,6 +63,7 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1247596667 32762 7fee39e011c23b3589931effd97b9702 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1247596667 32726 39f0f9e62e84beb801509898a605dbd5 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1247596667 32569 5e5ddc8df908dea60932f3c484a54c0d ""
+  "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb" 1247596667 32587 65067f817f408bc71a7312f3d9828a9b ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1247596666 32716 08e384dc442464e7285e891af9f45947 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1247596667 32626 5abc8bb2f28aa647d4c70f8ea38cc0d3 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1247596667 37944 359e864bd06cde3b1cf57bb20757fb06 ""
@@ -153,14 +154,14 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "JMP-Article.aux" 1757957196 26443 ed9cff062e2e905af4c78625ba031315 "pdflatex"
-  "JMP-Article.bbl" 1757633515 14554 db460989663be9a209974ee310d874e9 "bibtex JMP-Article"
-  "JMP-Article.out" 1757957196 7550 56a1e97ce17202b005bef4f2d848359f "pdflatex"
-  "JMP-Article.tex" 1757034791 7051 85f9d05d78167cdfcc556407fd1c4357 ""
+  "JMP-Article.aux" 1758128136 27136 0d5cebf61f9b01531ab3400c2735c23a "pdflatex"
+  "JMP-Article.bbl" 1758127801 14029 9b7370a8c3e972f6e19e0e55a58efa86 "bibtex JMP-Article"
+  "JMP-Article.out" 1758128136 7684 2ffe4c489a47ef52ca4d24cc46a470b9 "pdflatex"
+  "JMP-Article.tex" 1758126706 7175 854d85c291be31f3760a770674194597 ""
   "appendix.tex" 1755480196 20499 5f393248d61b57b0fab9171ea0d3ce9d ""
-  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1757034791 7051 85f9d05d78167cdfcc556407fd1c4357 ""
+  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1758126706 7175 854d85c291be31f3760a770674194597 ""
   "data.tex" 1752068951 35634 e39b5926778be2a64ceb46695df596f6 ""
-  "emp_strategy.tex" 1750535149 4668 c92bbcf8e72d83caddf721ee407f69a9 ""
+  "emp_strategy.tex" 1758051993 4670 d07300ec454dbdc91893d100fa53fce1 ""
   "images/bw_sensitivity_of_means.png" 1755206608 13944 86b67d36354a5ec6d7b50ebd8e718797 ""
   "images/cov_smoothness_incherfindahl.png" 1719384968 96219 f2c7e0d7952b8c42e58665a73bc8255e ""
   "images/cov_smoothness_medfamy.png" 1719384932 103396 4242c17683df9604fbb4431eaf171387 ""
@@ -181,8 +182,8 @@
   "images/cov_smoothness_poverty.png" 1719384914 85241 88e9e6856e452f98a40c4fb5ffa08619 ""
   "images/cov_smoothness_unemprate.png" 1719384930 84314 fea4112f4e64aa6e0c244dfb1fe18806 ""
   "images/hartford_twp_licking_sep21.jpg" 1736819415 555944 fa7667798a618e5c0479ba71014e563c ""
-  "images/model_dynamics_recalibrated.png" 1755132853 127068 0d72f4900754653843836cd23a1de541 ""
-  "images/model_vs_empirical_estimates_recalibrated.png" 1755132572 354673 fd4a88fba6805e7a479b5c6ff3e53a20 ""
+  "images/model_dynamics_house.png" 1757987143 106980 cf9fc78393f9e139dd5a566df8eb50eb ""
+  "images/model_vs_empirical_estimates_house.png" 1757985080 323334 677671b0939e2ceb12ae83f33a1b0889 ""
   "images/rd_plot_year_5_after_vote.png" 1749759973 37184 991bed7c87bbd99aec62d5abe6360f8e ""
   "images/rush_twp_champaign_aug16.jpg" 1731196904 487992 701814de0214a3e192ff30fdaa5a1f2c ""
   "images/tes_covs_ua_reg.png" 1740767283 6316 fc2787c3b91fdbc0306d450dbc81dff8 ""
@@ -193,7 +194,7 @@
   "images/votes_pct_against_histogram.png" 1708134432 34910 2ab2ad4a06488c5311893b5e98604a06 ""
   "intro.tex" 1757035080 5550 53cbecdc0b8c61872e227a77e5fb3508 ""
   "lit_review.tex" 1752075970 16935 f80cf6cf65f018bd5e34d3f47d8de56a ""
-  "model.tex" 1757957187 40423 5b53e7695786587e38be679c5f0146ea ""
+  "model.tex" 1758128129 49588 9cf06c37e2aa427d9889cba6962352bf ""
   "results.tex" 1752157497 60522 7e93430b598936fd9b7644b47384b75b ""
   (generated)
   "JMP-Article.aux"

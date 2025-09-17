@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  23 AUG 2025 17:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  16 SEP 2025 17:10
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -578,33 +578,38 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.49 \end{equation}
-                    [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]
-Overfull \hbox (55.81151pt too wide) in paragraph at lines 351--352
+l.48 \begin{align}
+                   [1]
+Overfull \hbox (213.62677pt too wide) in paragraph at lines 75--77
+\OT1/cmr/m/n/12 In other words, the marginal rate of in-tertem-po-ral sub-sti-tu-tion equals the $(1 + [])$
+ []
+
+[2] [3] [4] [5] [6] [7] [8] [9] [10]
+Overfull \hbox (55.81151pt too wide) in paragraph at lines 388--389
 \OT1/cmr/m/n/12 rium con-di-tions un-der the ini-tial $\OML/cmm/m/it/12 ^^\[]$\OT1/cmr/m/n/12 . This pro-vides base-line val-ues for $\OMS/cmsy/m/n/12 f\OML/cmm/m/it/12 c[]; h[]; n[]; K[]; G[]; p[]; w[]; r[]\OMS/cmsy/m/n/12 g$\OT1/cmr/m/n/12 . 
  []
 
 [11]
-Underfull \hbox (badness 10000) in alignment at lines 398--398
+Underfull \hbox (badness 10000) in alignment at lines 437--437
 [][][][][] 
  []
 
-[12] [13]
-<images/model_dynamics_recalibrated.png, id=253, 1387.584pt x 698.8509pt>
-File: images/model_dynamics_recalibrated.png Graphic file (type png)
-<use images/model_dynamics_recalibrated.png>
-Package pdftex.def Info: images/model_dynamics_recalibrated.png  used on input line 421.
+<images/model_dynamics_house.png, id=250, 1387.584pt x 698.8509pt>
+File: images/model_dynamics_house.png Graphic file (type png)
+<use images/model_dynamics_house.png>
+Package pdftex.def Info: images/model_dynamics_house.png  used on input line 461.
 (pdftex.def)             Requested size: 422.77664pt x 212.9306pt.
-<images/model_vs_empirical_estimates_recalibrated.png, id=258, 711.1368pt x 422.0568pt>
-File: images/model_vs_empirical_estimates_recalibrated.png Graphic file (type png)
-<use images/model_vs_empirical_estimates_recalibrated.png>
-Package pdftex.def Info: images/model_vs_empirical_estimates_recalibrated.png  used on input line 440.
+[12] [13]
+<images/model_vs_empirical_estimates_house.png, id=274, 711.1368pt x 422.0568pt>
+File: images/model_vs_empirical_estimates_house.png Graphic file (type png)
+<use images/model_vs_empirical_estimates_house.png>
+Package pdftex.def Info: images/model_vs_empirical_estimates_house.png  used on input line 481.
 (pdftex.def)             Requested size: 375.80544pt x 223.03857pt.
 
 
-LaTeX Warning: Reference `fig:tes_hp' on page 14 undefined on input line 446.
+LaTeX Warning: Reference `fig:tes_hp' on page 14 undefined on input line 487.
 
-[14 <./images/model_dynamics_recalibrated.png>]) (roads_model_dge.bbl [15 <./images/model_vs_empirical_estimates_recalibrated.png>]) [16] (roads_model_dge.aux)
+[14 <./images/model_dynamics_house.png> <./images/model_vs_empirical_estimates_house.png>] [15] [16] [17] [18] [19]) (roads_model_dge.bbl) [20] (roads_model_dge.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-03-14>
@@ -614,20 +619,20 @@ L3 programming layer <2024-03-14>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `roads_model_dge.out' has not changed.
-(rerunfilecheck)             Checksum: ECC0635E60CF367FAA949E5FF48B7568;2456.
+(rerunfilecheck)             Checksum: 6135EB063D9AD4195CC7F8BCE06EA300;3321.
  ) 
 Here is how much of TeX's memory you used:
- 15180 strings out of 474424
- 241307 string characters out of 5740796
+ 15210 strings out of 474424
+ 241640 string characters out of 5740796
  1946496 words of memory out of 5000000
- 37179 multiletter control sequences out of 15000+600000
+ 37189 multiletter control sequences out of 15000+600000
  567673 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,13n,79p,1941b,580s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,13n,79p,1941b,592s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on roads_model_dge.pdf (17 pages, 641829 bytes).
+Output written on roads_model_dge.pdf (21 pages, 662907 bytes).
 PDF statistics:
- 367 PDF objects out of 1000 (max. 8388607)
- 114 named destinations out of 1000 (max. 500000)
- 115 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 425 PDF objects out of 1000 (max. 8388607)
+ 134 named destinations out of 1000 (max. 500000)
+ 147 words of extra memory for PDF output out of 10000 (max. 10000000)
 
