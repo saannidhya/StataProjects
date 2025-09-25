@@ -53,6 +53,7 @@ below_roads <- readr::read_csv(paste0(data,"/roads/ohio/below/below_predictions_
 
 roads_close <- bind_rows(above_roads, below_roads) %>% mutate(did = post_election_flag*treat_flag)
 
+
 # group means 
 roads_close %>%
   group_by(treat_flag, post_election_flag) %>%
@@ -77,3 +78,64 @@ summary(road_above_rqs_lm)
 # before and after: control group
 road_below_rqs_lm <- lm(data = below_roads, formula = road_quality_score2 ~ post_election_flag)
 summary(road_below_rqs_lm)
+
+
+
+#==========================================================================================================#
+#                   Regression Discontinuity Analysis
+#==========================================================================================================#
+
+# Need to add running variable to roads_close
+colnames(roads_close)
+nrow(roads_close)
+
+roads_close2 <- roads_close %>% 
+    left_join(roads_and_census %>% dplyr::select(tendigit_fips, year, votes_pct_against) %>% rename(election_year = year), 
+    by = c("tendigit_fips", "election_year")) 
+
+View(roads_close2)
+
+roads_close3 <- roads_close2 %>% filter(post_election_flag == 1)
+
+rdrobust_results <- rdrobust(y = roads_close3$predicted_label,
+       x = roads_close3$votes_pct_against,
+       c = cutoff,
+       all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2
+       )
+summary(rdrobust_results)
+
+rdrobust_results1 <- rdrobust(y = roads_close3$road_quality_score,
+       x = roads_close3$votes_pct_against,
+       c = cutoff,
+      #  covs = roads_close2 %>%
+      #    dplyr::select(x) ,
+       all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2
+      #  h = max(abs(roads_close3$votes_pct_against - cutoff), na.rm = TRUE)
+       )
+summary(rdrobust_results1)
+
+
+rdrobust_results2 <- rdrobust(y = roads_close3$road_quality_score2,
+       x = roads_close3$votes_pct_against,
+       c = cutoff,
+      #  covs = roads_close2 %>%
+      #    dplyr::select(x) ,
+       all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2
+      #  h = max(abs(roads_close3$votes_pct_against - cutoff), na.rm = TRUE)
+       )
+summary(rdrobust_results2)
+
+rdrobust_results3 <- rdrobust(y = roads_close3$road_quality_score3,
+       x = roads_close3$votes_pct_against,
+       c = cutoff,
+      #  covs = roads_close2 %>%
+      #    dplyr::select(x) ,
+       all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2
+      #  h = max(abs(roads_close3$votes_pct_against - cutoff), na.rm = TRUE)
+       )
+summary(rdrobust_results3)
+
+# opp <- roads_and_census %>% dplyr::select(tendigit_fips, year, votes_pct_against)  %>% rename(election_year = year)  %>% 
+#     inner_join(roads_close, 
+#     by = c("tendigit_fips", "election_year")) 
+# View(roads_close2)

@@ -121,7 +121,7 @@ Maximization of \eqref{eq:utility} subject to \eqref{eq:hhbudget_asset}–\eqref
   From our utility function, we have $u_{c,t}=1/c_t$ and $u_{h,t}=\alpha_h A(G_t)/H_t$. The FOC with respect to $H_{t+1}$ gives
   \begin{equation}
   p_{h,t}\,u_{c,t}
-  \;=\; \beta\Big[u_{h,t+1} \;+\; u_{c,t+1}\,(1-\tau_h-\tau_h)\,p_{h,t+1}\Big],
+  \;=\; \beta\Big[u_{h,t+1} \;+\; u_{c,t+1}\,(1-\delta_h-\tau_h)\,p_{h,t+1}\Big],
   \label{eq:euler_H_util}
   \end{equation}
   or, in consumption units,
@@ -129,7 +129,7 @@ Maximization of \eqref{eq:utility} subject to \eqref{eq:hhbudget_asset}–\eqref
     p_{h,t}
     \;=\; \beta\,\frac{c_t}{c_{t+1}}
     \Big[
-    (1-\tau_h-\tau_h)\,p_{h,t+1}
+    (1-\delta_h-\tau_h)\,p_{h,t+1}
     + \alpha_h\,A(G_{t+1})\,\frac{c_{t+1}}{H_{t+1}}
     \Big]
     \label{eq:euler_H_cons}
@@ -139,7 +139,7 @@ Maximization of \eqref{eq:utility} subject to \eqref{eq:hhbudget_asset}–\eqref
     p_{h,t}
     \;=\;
     \beta\Big[
-    (1-\tau_h-\tau_h)\,\frac{c_t}{c_{t+1}}\,p_{h,t+1}
+    (1-\delta_h-\tau_h)\,\frac{c_t}{c_{t+1}}\,p_{h,t+1}
     + \alpha_h\,A(G_{t+1}(\tau_h))\,\frac{c_t}{H_{t+1}}
     \Big].
   \label{eq:euler_H_cons2}
@@ -241,17 +241,17 @@ h_t \;=\; \bar H \quad \text{for all } t.
 Given \eqref{eq:housing_clearing}, the price $p_{h,t}$ is determined by the housing Euler \eqref{eq:euler_H_cons} and the paths of $\{c_t,G_t\}$. In steady state, substituting $c_{t+1}\!=\!c_t\!=\!c$, $h_{t+1}\!=\!h_t\!=\!h\!=\!\bar H$, $G_{t+1}\!=\!G_t\!=\!G$, $p_{h,t+1}\!=\!p_{h,t}\!=\!p_h$ into \eqref{eq:euler_H_cons} yields the user–cost formula:
 
 \begin{equation}
-p_h \;=\; \frac{\beta}{1 - \beta(1 - \tau_h - \tau_h)} \alpha_h\,A(G)\,\dfrac{c}{h} .
+p_h \;=\; \frac{\beta}{1 - \beta(1 - \delta_h - \tau_h)} \alpha_h\,A(G)\,\dfrac{c}{h} .
 \label{eq:user_cost}
 \end{equation}
 
 Better roads i.e. higher $A(G)$ higher raise $p_h$. Larger $h$ reduces marginal service value (log utility), lowering $p_h$ ceteris paribus.
 
-The steady-state housing price formula in equation \eqref{eq:user_cost} reveals how the discount factor $\beta$ interacts with depreciation $\tau_h$ and property taxes $\tau_h$ to determine asset valuation. The term $\frac{\beta}{1 - \beta(1 - \tau_h - \tau_h)}$ represents the present value multiplier that converts the flow of housing services into an asset price.
+The steady-state housing price formula in equation \eqref{eq:user_cost} reveals how the discount factor $\beta$ interacts with depreciation $\delta_h$ and property taxes $\tau_h$ to determine asset valuation. The term $\frac{\beta}{1 - \beta(1 - \delta_h - \tau_h)}$ represents the present value multiplier that converts the flow of housing services into an asset price.
 
-To understand this multiplier, consider that $1 - \tau_h - \tau_h$ represents the net retention rate of housing value after accounting for physical depreciation and tax obligations. The household effectively loses fraction $\tau_h + \tau_h$ of the housing asset's value each period through wear and tax payments. The remaining fraction $1 - \tau_h - \tau_h$ carries forward to the next period, where it generates both service flows and continuation value.
+To understand this multiplier, consider that $1 - \delta_h - \tau_h$ represents the net retention rate of housing value after accounting for physical depreciation and tax obligations. The household effectively loses fraction $\delta_h + \tau_h$ of the housing asset's value each period through wear and tax payments. The remaining fraction $1 - \delta_h - \tau_h$ carries forward to the next period, where it generates both service flows and continuation value.
 
-The economic intuition is clear: higher property taxes $\tau_h$ reduce the net retention rate, making housing a less attractive store of value and lowering equilibrium prices. A patient household (high $\beta$) values future service flows more highly, increasing the multiplier and thus housing prices. Conversely, rapid depreciation $\tau_h$ erodes the asset's continuation value, reducing prices through the same channel.
+The economic intuition is clear: higher property taxes $\tau_h$ reduce the net retention rate, making housing a less attractive store of value and lowering equilibrium prices. A patient household (high $\beta$) values future service flows more highly, increasing the multiplier and thus housing prices. Conversely, rapid depreciation $\delta_h$ erodes the asset's continuation value, reducing prices through the same channel.
 
 This formulation also shows why property tax cuts can have ambiguous effects on housing prices in our model. While lower $\tau_h$ directly increases the multiplier and boosts prices, it also reduces maintenance funding, leading to infrastructure decay that lowers the service flow $\alpha_h A(G)$. The net effect depends on the relative magnitudes of these opposing forces and their timing.
 
@@ -325,13 +325,13 @@ The steady-state equilibrium is determined by the following 9 independent equati
 
     \item \textbf{Housing price determination:} From the housing Euler equation in steady state:
     \begin{equation}
-    q = \frac{\beta}{1-\beta(1-\tau_h-\tau_h)} \cdot \alpha_h A(G) \frac{c}{\bar{H}}
+    q = \frac{\beta}{1-\beta(1-\delta_h-\tau_h)} \cdot \alpha_h A(G) \frac{c}{\bar{H}}
     \end{equation}
     This determines the housing price from the present value of housing services, incorporating the discount factor and net retention rate.
 
     \item \textbf{Government budget constraint:} Balanced budget condition:
     \begin{equation}
-    M = \tau_L w n + \tau_h \frac{q}{1+\tau_h} \bar{H}
+    M = \tau_L w n + \tau_h p_h \bar{H}
     \end{equation}
     This defines maintenance spending from tax revenues.
 
@@ -370,7 +370,7 @@ The steady-state equilibrium is determined by the following 9 independent equati
 %         \item Use equation (9) to get $c = Y - \delta_K K - M$
 %         \item But $M$ depends on $c$ through the housing price, so we need to solve equations (5), (6), and (7) simultaneously
 %         \item From equation (5): $c = \frac{(1-\tau_L)w}{\kappa [1+\phi(G)]^{1+\theta} n^\theta}$
-%         \item From equation (6): $q = \frac{\beta}{1-\beta(1-\tau_h-\tau_h)} \cdot \alpha_h A(G) \frac{c}{\bar{H}}$
+%         \item From equation (6): $q = \frac{\beta}{1-\beta(1-\delta_h-\tau_h)} \cdot \alpha_h A(G) \frac{c}{\bar{H}}$
 %         \item From equation (7): $M = \tau_L w n + \frac{\tau_h q \bar{H}}{1+\tau_h}$
 %     \end{itemize}
 
@@ -667,16 +667,16 @@ u_{h,t}=\frac{\partial u}{\partial h_t}=\alpha_h \frac{A(G_t)}{h_t}.
 \]
 
 \paragraph{2. Budget constraint in stock form.}
-Using $H_{t+1}=(1-\tau_h)H_t + x_t$ and substituting $x_t=H_{t+1}-(1-\tau_h)H_t$, the period-$t$ budget is
+Using $H_{t+1}=(1-\delta_h)H_t + x_t$ and substituting $x_t=H_{t+1}-(1-\delta_h)H_t$, the period-$t$ budget is
 \[
-c_t + i_t + p_{h,t}\bigl(H_{t+1}-(1-\tau_h)H_t\bigr)
+c_t + i_t + p_{h,t}\bigl(H_{t+1}-(1-\delta_h)H_t\bigr)
 = (1-\tau_L)w_t n_t + r_t K_t - \tau_h p_{h,t} H_t.
 \]
 
 Rearrange the housing terms:
 \[
-- p_{h,t}H_{t+1} + p_{h,t}(1-\tau_h)H_t - \tau_h p_{h,t} H_t
-= - p_{h,t}H_{t+1} + p_{h,t}(1-\tau_h-\tau_h)H_t.
+- p_{h,t}H_{t+1} + p_{h,t}(1-\delta_h)H_t - \tau_h p_{h,t} H_t
+= - p_{h,t}H_{t+1} + p_{h,t}(1-\delta_h-\tau_h)H_t.
 \]
 
 \paragraph{3. Lagrangian.}
@@ -687,7 +687,7 @@ Let $\lambda_t$ be the multiplier on the budget constraint:
 u(c_t,h_t,n_t,G_t) \nonumber \\
 &+ \lambda_t \big[ (1-\tau_L)w_t n_t + r_t K_t
 - c_t - i_t
-- p_{h,t}(H_{t+1}-(1-\tau_h)H_t) \nonumber \\
+- p_{h,t}(H_{t+1}-(1-\delta_h)H_t) \nonumber \\
 &\quad - \tau_h p_{h,t}H_t
 - (K_{t+1}-(1-\delta_K)K_t) \big] \Big\}
 \end{align}
@@ -706,7 +706,7 @@ For $H_{t+1}$ (differentiating with respect to the housing stock chosen for next
 \frac{\partial \mathcal{L}}{\partial H_{t+1}}=0:
 \quad
 \beta^{t+1} u_{h,t+1}
-+\beta^{t+1} \lambda_{t+1} p_{h,t+1}(1-\tau_h-\tau_h)
++\beta^{t+1} \lambda_{t+1} p_{h,t+1}(1-\delta_h-\tau_h)
 -\beta^{t}\lambda_{t} p_{h,t}=0.
 \]
 
@@ -714,7 +714,7 @@ Divide by $\beta^{t}$ and rearrange:
 \[
 p_{h,t}\lambda_{t}
 =
-\beta\big[u_{h,t+1} + \lambda_{t+1} p_{h,t+1}(1-\tau_h-\tau_h)\big].
+\beta\big[u_{h,t+1} + \lambda_{t+1} p_{h,t+1}(1-\delta_h-\tau_h)\big].
 \]
 
 % \paragraph{5. Index shift.}
@@ -722,7 +722,7 @@ p_{h,t}\lambda_{t}
 % \[
 % p_{h,t}\lambda_t
 % =
-% \beta\big[u_{h,t+1} + \lambda_{t+1} p_{h,t+1}(1-\tau_h-\tau_h)\big].
+% \beta\big[u_{h,t+1} + \lambda_{t+1} p_{h,t+1}(1-\delta_h-\tau_h)\big].
 % \]
 
 \paragraph{5. Replace multipliers with marginal utility of consumption.}
@@ -730,7 +730,7 @@ Since $\lambda_t=u_{c,t}$:
 \[
 p_{h,t}u_{c,t}
 =
-\beta\Big[u_{h,t+1} + u_{c,t+1}(1-\tau_h-\tau_h)p_{h,t+1}\Big],
+\beta\Big[u_{h,t+1} + u_{c,t+1}(1-\delta_h-\tau_h)p_{h,t+1}\Big],
 \]
 which is equation \eqref{eq:euler_H_util}.
 
@@ -740,7 +740,7 @@ Divide both sides by $u_{c,t+1}$:
 p_{h,t}\frac{u_{c,t}}{u_{c,t+1}}
 =
 \beta\Big[
-(1-\tau_h-\tau_h)p_{h,t+1} + \frac{u_{h,t+1}}{u_{c,t+1}}
+(1-\delta_h-\tau_h)p_{h,t+1} + \frac{u_{h,t+1}}{u_{c,t+1}}
 \Big]
 \]
 
@@ -750,7 +750,7 @@ p_{h,t}
 =
 \beta\,\frac{c_t}{c_{t+1}}
 \Big[
-(1-\tau_h-\tau_h)p_{h,t+1} + \frac{u_{h,t+1}}{u_{c,t+1}}
+(1-\delta_h-\tau_h)p_{h,t+1} + \frac{u_{h,t+1}}{u_{c,t+1}}
 \Big].
 \]
 
@@ -761,7 +761,7 @@ p_{h,t}
 =
 \beta\,\frac{c_t}{c_{t+1}}
 \Big[
-(1-\tau_h-\tau_h)p_{h,t+1}
+(1-\delta_h-\tau_h)p_{h,t+1}
 + \alpha_h A(G_{t+1})\frac{c_{t+1}}{H_{t+1}}
 \Big]
 \]
@@ -773,7 +773,7 @@ which is equation \eqref{eq:euler_H_cons}.
 % p_{h,t}
 % =
 % \beta\Big[
-% (1-\tau_h-\tau_h)\frac{c_t}{c_{t+1}}p_{h,t+1}
+% (1-\delta_h-\tau_h)\frac{c_t}{c_{t+1}}p_{h,t+1}
 % + \alpha_h A(G_{t+1}(\tau_h))\frac{c_t}{H_{t+1}}
 % \Big],
 % \]
