@@ -318,48 +318,6 @@ print("Training complete.")
 """
 
 #=======================================================================================#
-# Julia REPL crashed, likely due to memory issues? But the model seems to have trained and saved.
-# Error message:
-# The terminal process "C:\Users\rawatsa\AppData\Local\Programs\Julia-1.11.7\bin\julia.exe '-i', '--banner=no', '--project=c:\Users\rawatsa\OneDrive - University of Cincinnati\StataProjects\ohio_taxation\data\roads\Road Quality', 'c:\Users\rawatsa\.vscode\extensions\julialang.language-julia-1.149.2\scripts\terminalserver\terminalserver.jl', '\\.\pipe\vsc-jl-repl-51a8d868-e5ba-4f3a-af64-d5a9ac689e1b', '\\.\pipe\vsc-jl-repldbg-95b7016a-c1d3-4c10-9a96-1ba4d66f6b8d', '\\.\pipe\vsc-jl-cr-0d269a71-8812-4981-b6c2-9306a4772a1f', 'USE_REVISE=true', 'USE_PLOTPANE=true', 'USE_PROGRESS=true', 'ENABLE_SHELL_INTEGRATION=true', 'DEBUG_MODE=false'" terminated with exit code: 1.
-#=======================================================================================#
-
-# Checking if model runs:
-
-# importing train, test, validation data again to be safe
-train_data = CSV.read(joinpath(input_dir, "roadRunner_train_data.csv"), DataFrame)
-test_data  = CSV.read(joinpath(input_dir, "roadRunner_test_data.csv"), DataFrame)
-val_data = CSV.read(joinpath(input_dir, "roadRunner_val_data.csv"), DataFrame)
-
-# Build some sample paths
-sample_paths = collect(String.(val_data.image_path[1:min(8, nrow(val_data))]))
-
-py"""
-from transformers import AutoImageProcessor, AutoModelForImageClassification
-from PIL import Image
-import torch, os
-
-outdir = $outdir
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
-processor = AutoImageProcessor.from_pretrained(outdir)
-model = AutoModelForImageClassification.from_pretrained(outdir).to(device)
-
-imgs = [Image.open(p).convert("RGB") for p in $sample_paths]
-enc  = processor(images=imgs, return_tensors="pt")
-with torch.no_grad():
-    logits = model(pixel_values=enc["pixel_values"].to(device)).logits
-preds = logits.argmax(-1).cpu().tolist()
-
-print("Loaded checkpoint from:", outdir)
-print("id2label:", model.config.id2label)
-print("sample preds:", preds)
-"""
-
-# println("First 8 rows of validation data:")
-# println(first(val_data, 8))
-
-
-#=======================================================================================#
 # Fine-tuned model: In-sample and out-of-sample predictions
 #=======================================================================================#
 

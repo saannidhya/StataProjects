@@ -139,3 +139,95 @@ summary(rdrobust_results3)
 #     inner_join(roads_close, 
 #     by = c("tendigit_fips", "election_year")) 
 # View(roads_close2)
+
+
+#==========================================================================================================#
+#                   Predictions from convnext v2 model
+#==========================================================================================================#
+
+# above_roads_hf$image_path
+# Import the new prediction files
+above_roads_hf <- readr::read_csv(paste0(data,"/roads/hf_finetuned_convnextv2/ohio_preds/ohio_above_preds.csv"))  
+       mutate(treat_flag = 1, # Above means these areas are above the cutoff for % votes against i.e. cut their renewal taxes 
+                             road_quality_score = round(((predicted_label + confidence) / 3) * 99 + 1, 1),
+                             road_quality_score2 = case_when(
+                                    predicted_label == 0 ~ 1 + (1 - 0.5*confidence) * 99 / 3 ,
+                                    TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.5*confidence * 99 / 3 
+                             ) |> round(1) ,
+                             road_quality_score3 = case_when(
+                                    predicted_label == 0 ~ (1 - 0.8*confidence) * 99 / 3 ,
+                                    TRUE                 ~ predicted_label * 99 / 3  + 0.8*confidence * 99 / 3         ) |> round(1) 
+       )  %>%
+       mutate(year = stringr::str_extract(image, "(\\d{4}|\\d{2})(?=\\.jpg)"),
+                             year = ifelse(nchar(year) == 2, paste0("20", year), year),
+                             year = as.integer(year))
+
+below_roads_hf <- readr::read_csv(paste0(data,"/roads/hf_finetuned_convnextv2/ohio_preds/ohio_below_preds.csv")) 
+       mutate(treat_flag = 0,
+                             road_quality_score = round(((predicted_label + confidence) / 3) * 99 + 1, 1),
+                             road_quality_score2 = case_when(
+                                    predicted_label == 0 ~ 1 + (1 - 0.5*confidence) * 99 / 3 ,
+                                    TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.5*confidence * 99 / 3 
+                             ) |> round(1),
+                             road_quality_score3 = case_when(
+                                    predicted_label == 0 ~ (1 - 0.8*confidence) * 99 / 3 ,
+                                    TRUE                 ~ predicted_label * 99 / 3  + 0.8*confidence * 99 / 3         ) |> round(1) 
+       ) %>%
+       mutate(year = stringr::str_extract(image, "(\\d{4}|\\d{2})(?=\\.jpg)"),
+                             year = ifelse(nchar(year) == 2, paste0("20", year), year),
+                             year = as.integer(year))
+
+roads_close_hf <- bind_rows(above_roads_hf, below_roads_hf) %>% mutate(did = post_election_flag*treat_flag)
+
+# Group means 
+roads_close_hf %>%
+       group_by(treat_flag, post_election_flag) %>%
+       summarize(mean = mean(predicted_label), sd = sd(predicted_label) ,
+                                          mean_score = mean(road_quality_score), sd_score = sd(road_quality_score) ,
+                                          mean_score2 = mean(road_quality_score2), sd_score2 = sd(road_quality_score2) ,
+                                          mean_score3 = mean(road_quality_score3), sd_score3 = sd(road_quality_score3) ,
+                                          # ,n = n()
+       ) 
+
+# Before and after: treatment group
+road_above_hf_lm <- lm(data = above_roads_hf, formula = predicted_label ~ post_election_flag)
+summary(road_above_hf_lm)
+
+# Before and after: control group
+road_below_hf_lm <- lm(data = below_roads_hf, formula = predicted_label ~ post_election_flag)
+summary(road_below_hf_lm)
+
+# Before and after: treatment group (road quality score2)
+road_above_rqs_hf_lm <- lm(data = above_roads_hf, formula = road_quality_score2 ~ post_election_flag)
+summary(road_above_rqs_hf_lm)
+
+# Before and after: control group (road quality score2)
+road_below_rqs_hf_lm <- lm(data = below_roads_hf, formula = road_quality_score2 ~ post_election_flag)
+summary(road_below_rqs_hf_lm)
+
+
+# print(above_roads, width = Inf)
+
+above_roads_hf <- above_roads_hf %>%
+       # mutate(image = tools::file_path_sans_ext(basename(image_path))) %>%
+       mutate(image = basename(image_path)) %>%
+       left_join(above_roads %>% dplyr::select(image, tendigit_fips, year, election_year, post_election_flag), by = "image") %>%
+       filter(!is.na(tendigit_fips))
+
+# View(above_roads_hf)
+# colnames(above_roads)
+# above_roads$image
+
+below_roads_hf <- below_roads_hf %>%
+       # mutate(image = tools::file_path_sans_ext(basename(image_path))) %>%
+       mutate(image = basename(image_path)) %>%
+       left_join(below_roads %>% dplyr::select(image, tendigit_fips, year, election_year, post_election_flag), by = "image") %>%
+       filter(!is.na(tendigit_fips))
+
+# before and after: treatment group
+road_above_lm_hf <- lm(data = above_roads_hf, formula = pred_label ~ post_election_flag)
+summary(road_above_lm_hf)
+# before and after: control group
+road_below_lm_hf <- lm(data = below_roads_hf, formula = pred_label ~ post_election_flag)
+summary(road_below_lm_hf)
+

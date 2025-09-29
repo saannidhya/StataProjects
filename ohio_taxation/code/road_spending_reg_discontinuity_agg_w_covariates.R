@@ -175,9 +175,10 @@ tes_gs_reg %>% filter((ord >= 0)) %>%
 mean_eff_bw <- map_dbl(gs_reg[4:14], ~ .x$bws[1,1]) %>% mean
 # 9.425709
 
-roads_and_census %>% 
-  filter(between(votes_pct_against, cutoff-mean_eff_bw, cutoff+mean_eff_bw)) %>%
-  pull(tendigit_fips) %>% unique
+# roads_and_census %>% 
+#   filter(between(votes_pct_against, cutoff-mean_eff_bw, cutoff+mean_eff_bw)) %>%
+#   distinct(tendigit_fips, year) %>%
+#   filter(year >= 2010) 
 
 ## log version ##
 

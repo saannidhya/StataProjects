@@ -191,30 +191,46 @@ cty_sub_names <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xl
                                subdivision)) 
 
 
-# Find the county subdivisions with the closest votes that failed
-closest_votes <- roads_and_census %>%
-                      filter(between(votes_pct_against, cutoff - tes_gs_bw, cutoff + tes_gs_bw)) %>%
+# Find the county subdivisions with the closest votes that failed - agg 
+closest_votes_agg <- roads_and_census %>%
+                      # filter(between(votes_pct_against, cutoff - tes_gs_bw, cutoff + tes_gs_bw)) %>%
+                      filter(between(votes_pct_against, cutoff - mean_eff_bw, cutoff + mean_eff_bw)) %>%
                       arrange(votes_pct_against) %>% 
                       group_by(tendigit_fips) %>%
                       summarize(num_votes = n(), min_year = min(year), max_year = max(year), mean_vote_result = mean(votes_pct_against), num_failed = sum(treated), num_passed = num_votes - num_failed, max_pop = max(pop)) %>% 
                       arrange(desc(num_votes)) %>%
+                      filter(max_year >= 2010) %>% # because we need before-after data
                       left_join(cty_sub_names, by = "tendigit_fips")
 
-closest_votes %>% arrange(desc(num_failed)) %>%
-  readr::write_csv(paste0(data,"/outputs/tables/rd_fips_close_elections_gs_bw.csv"))
+closest_votes_agg %>% arrange(desc(num_failed)) %>%
+  readr::write_csv(paste0(data,"/outputs/tables/hp_rd_fips_within_mean_eff_bw.csv"))
+  # readr::write_csv(paste0(data,"/outputs/tables/rd_fips_close_elections_gs_bw.csv"))
 
-cty_sub_names <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xlsx")) %>% janitor::clean_names() %>% 
-  select(all_of(c("tendigit_fips", "name_note_if_split_between_two_counties", "county_name", "split_flag"))) %>% 
-  rename(subdivision = name_note_if_split_between_two_counties, county = county_name) %>%
-  mutate(subdivision = if_else(split_flag == 1,
-                               trimws(str_replace(subdivision, "(village|city).*", "\\1")),
-                               subdivision)) 
+# Find the county subdivisions with the closest votes that failed 
+closest_votes <- roads_and_census %>%
+                    # filter(between(votes_pct_against, cutoff - tes_gs_bw, cutoff + tes_gs_bw)) %>%
+                    filter(between(votes_pct_against, cutoff - mean_eff_bw, cutoff + mean_eff_bw)) %>%
+                    arrange(treated, desc(votes_pct_against)) %>% 
+                    select(tendigit_fips, year, votes_pct_against, treated, pop) %>%
+                    left_join(cty_sub_names, by = "tendigit_fips") %>%
+                    relocate(c(subdivision, county) , .after = tendigit_fips) %>%
+                    filter(year >= 2010) # because we need before-after data
 
-roads_and_census %>% 
-  left_join(cty_sub_names, by = "tendigit_fips") %>% relocate(c(subdivision, county) , .after = tendigit_fips) %>% filter(pop > 10000) %>%
-  group_by(tendigit_fips, subdivision, county) %>% 
-  summarize(num_elections = n(), min_year = min(year), max_year = max(year), pop = mean(pop)) %>% 
-  arrange(desc(pop)) %>% View()
+closest_votes %>% 
+  readr::write_csv(paste0(data,"/outputs/tables/hp_rd_fips_within_mean_eff_bw_main.csv"))
+
+# cty_sub_names <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xlsx")) %>% janitor::clean_names() %>% 
+#   select(all_of(c("tendigit_fips", "name_note_if_split_between_two_counties", "county_name", "split_flag"))) %>% 
+#   rename(subdivision = name_note_if_split_between_two_counties, county = county_name) %>%
+#   mutate(subdivision = if_else(split_flag == 1,
+#                                trimws(str_replace(subdivision, "(village|city).*", "\\1")),
+#                                subdivision)) 
+
+# roads_and_census %>% 
+#   left_join(cty_sub_names, by = "tendigit_fips") %>% relocate(c(subdivision, county) , .after = tendigit_fips) %>% filter(pop > 10000) %>%
+#   group_by(tendigit_fips, subdivision, county) %>% 
+#   summarize(num_elections = n(), min_year = min(year), max_year = max(year), pop = mean(pop)) %>% 
+#   arrange(desc(pop)) 
 
 
   # filter(tolower(county) == "ashtabula" & year == 2012) %>% View()
@@ -231,8 +247,8 @@ housing_dfs$housing_roads_census_t_plus_0_matches %>%
 # -16441/170000
 
 # Exporting areas with "close elections" starting 2010. output it as .Rdata.
-closest_votes %>% filter(max_year >= 2010) %>% pull(tendigit_fips) %>% unique %>% as.character() %>%
-  writeLines(., paste0(data,"/roads/tendigit_fips_close_elections_gs_bw.txt"))
+# closest_votes %>% filter(max_year >= 2010) %>% pull(tendigit_fips) %>% unique %>% as.character() %>%
+#   writeLines(., paste0(data,"/roads/tendigit_fips_close_elections_gs_bw.txt"))
 
 
 #==========================================================================================================#
