@@ -15,6 +15,7 @@
 \usepackage{amsfonts, amssymb, float, placeins, tabularx, array, longtable, booktabs, listings} 
 \usepackage{natbib}
 \usepackage{threeparttable}
+\usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{subcaption}
 % Add these packages if not already in preamble
@@ -43,14 +44,14 @@
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
 
 \geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in}
+\frenchspacing
 
 \begin{document}
 
 \begin{titlepage}
-\title{Effect of School Capital Investments Across the U.S. : A Reassessment
-\thanks{Acknowledgements: I am grateful to Barbara Biasi for sharing her data and code with me.}
+\title{The Effect of School Capital Investments: A State-Level Perspective\thanks{Acknowledgements: I am grateful to Barbara Biasi for sharing her data and code with me. All errors are my own.}\\
 }
-\author{Saani Rawat \thanks{PhD Candidate, University of Cincinnati. Corresponding author: rawatsa@mail.uc.edu}}
+\author{Saannidhya Rawat \thanks{PhD Candidate, University of Cincinnati. Corresponding author: rawatsa@mail.uc.edu}}
 \date{\today} 
 \maketitle
 
@@ -61,13 +62,12 @@
 % \end{center}
 
 \begin{abstract}
-\noindent We revisit the analysis of \cite{biasi_what_2025}, \textit{Quarterly Journal of Economics}, Vol. 140, Issue 3, August 2025, (henceforth BLS) who study the effect of school capital investments on student outcomes using a rich dataset of school capital projects across the U.S. from 1995-2010. We replicate their main results and extend their analysis by exploring state-level heterogeneity in the treatment effect estimates. We find that the effect of school capital investments on student outcomes varies significantly across states, suggesting that local factors may play a crucial role in mediating the impact of such investments.
+\noindent We revisit the analysis of \cite{biasi_what_2025}, published in the \textit{Quarterly Journal of Economics}, Vol. 140, Issue 3, August 2025, which studies the effect of school capital investments on student outcomes and house prices using a rich dataset of school capital projects across the U.S. from 1995--2017. We replicate their main results and extend their analysis by exploring state-level heterogeneity in the treatment effect estimates. We find that the effect of school capital investments varies significantly across states, suggesting that pre-existing differences in school infrastructure, policy implementation, and local economic conditions may play a crucial role in mediating the impact of such investments.
 \\
 \vspace{0in}\\
-\noindent\textbf{Keywords:} School Capital Investments, Student Outcomes, State-Level Heterogeneity \\
+\noindent\textbf{Keywords:} School Capital Investments, Student Outcomes, House Prices, State-Level Heterogeneity, STATA, R \\
 \vspace{0in}\\
-% \noindent\textbf{JEL Codes:} R42, H71, R10, C21 \\
-% \noindent\textbf{JEL Codes:} R42, H71, R10 \\
+\noindent\textbf{JEL Codes:} H75, I22, R53\\
 
 \bigskip
 \end{abstract}
@@ -81,23 +81,58 @@
 
 \section{Introduction} \label{sec:introduction}
 
-Capital investments in schools, such as building new facilities or renovating existing ones, are often justified on the grounds that they can improve student outcomes. However, the empirical evidence on the effectiveness of such investments is mixed. Seminal work by \cite{cellini2010value} does not find any statistically significant evidence that school construction projects lead to improvements in student achievement in California, whereas other studies, such \cite{neilson2014effect} finds positive effects on test scores and home prices. More recently, \cite{biasi_what_2025} conduct a comprehensive analysis using a rich dataset of school capital projects across the U.S. from 1995-2010 and find that school capital investments have a positive effect on student outcomes, particularly for low-income students. In this paper, we revisit the analysis of \cite{biasi_what_2025} and extend their work by exploring state-level heterogeneity in the treatment effect estimates. We first replicate their main results, comprising of tables and figures in their main text, and then we estimate state-specific treatment effects to understand how the impact of school capital investments varies across different states. Although our results largely corroborate the findings of \cite{biasi_what_2025}, we highlight gaps in their analysis and suggest avenues for future research. 
+Capital investments in schools, such as building new facilities or renovating existing ones, are often justified on the grounds that they can improve student outcomes and increase neighborhood quality. However, the empirical evidence on the effectiveness of such investments is mixed. Seminal work by \cite{cellini2010value} and follow-up work by \cite{martorell2016investing} does not find strong evidence that school construction projects lead to improvements in student achievement in California, whereas other studies, such as \cite{neilson2014effect}, \cite{abott2020school} and \cite{baron2022school}, find large positive effects on test scores and home prices. More recently, \cite{biasi_what_2025} have conducted a comprehensive analysis using a rich dataset of school capital projects across the U.S. from 1995-2017. They find that certain school capital investments have a positive effect on student outcomes, particularly for low-income students. Using an empirical strategy that improves upon prior work by \cite{cellini2010value}, they develop a stacked dynamic regression discontinuity (DRD) estimator that leverages discontinuities in bond authorization passage and addresses endogeneity concerns related to the timing of elections and ``forbidden controls''. Their findings suggest that school capital investments directly related to classroom infrastructure (HVAC, roofing, classroom renovation etc.) can lead to significant improvements in student test scores and housing prices, with larger effects observed in districts with higher proportions of low-income students. In this paper, we revisit the analysis of \cite{biasi_what_2025} and extend their work by exploring state-level heterogeneity in the treatment effect estimates. We first independently replicate their main results in a narrow sense, as our replication exercise reproduces tables and figures in their main text using two different software. We are able to closely replicate their findings using both Stata and R, confirming the robustness of their results. However, we document that their main results consider the full sample of elections rather than imposing a ``close election'' restriction, which may lead to endogeneity concerns in an RD framework that relies on narrow elections. Next, we expand upon their analysis to ask whether and how much the effects of school capital investments vary across states. We use their stacked DRD framework to estimate state-specific treatment effects on capital expenditures per pupil, student test scores, and housing price index. Although our results largely corroborate the findings of \cite{biasi_what_2025}, we highlight some new findings. Our findings reveal significant heterogeneity in the effects of school capital investments across states. Although most states exhibit positive effects of passing a school levy bond on the capital expenditures per pupil, the effect on student test scores and housing prices varies widely. Some states show substantial positive effects, while others exhibit negligible or even negative effects. These variations may be attributed to differences in state-level policies, implementation strategies, and local economic conditions, as well as pre-existing disparities in school infrastructure, which we argue need to be considered when evaluating the effectiveness of school capital investments. 
 
+Rest of the paper is organized as follows. In Section \ref{sec:data_rep}, we describe the data and methodology used in our replication exercise. In Section \ref{sec:replication}, we present the results of our replication of the main findings of \cite{biasi_what_2025}. In Section \ref{sec:extension}, we extend their analysis by exploring state-level heterogeneity in treatment effects. Finally, in Section \ref{sec:result}, we conclude with a discussion of our findings and their implications.
 
-\section{Data} \label{sec:data}
+\section{Data and Methodology} \label{sec:data_rep}
 
+\input{data_and_method.tex}
 
-\section{Empirical Strategy} \label{sec:empirical}
+\section{Replication of Main Results} \label{sec:replication}
 
-\input{emp_strategy.tex}
+\subsection{First Stage}
 
-\section{Results} \label{sec:result}
+Table \ref{tab:rep_firststage} presents our replication of the first-stage effects of bond authorization on school expenditures reported in Table II of \citet{biasi_what_2025}. Our Stata replication reproduces the original estimates exactly, matching both point estimates and standard errors across all three expenditure categories. Our independent R implementation yields nearly identical results, with trivial differences in some cases. The first-stage results confirm that bond passage leads to substantial increases in capital expenditures in years 1--5 of around \$325 per pupil, followed by a decline in years 6--8 as projects near completion, consistent with the dynamics of school construction.
+
+\input{tables/rep_firststage.tex}
+
+\subsection{Mean Effects}
+
+Table \ref{tab:rep_meaneffects} replicates the reduced-form effects on test scores and house prices from Table III of \citet{biasi_what_2025}. Across all four panels, overall test scores, math, ELA\footnote{ELA stands for english language arts.}, and the house price index, our Stata and R estimates are virtually indistinguishable from the published results. The independent replication confirms that bond authorization generates economically and statistically significant improvements in student achievement that persist and grow over time, alongside meaningful increases in local house prices. 
+
+\input{tables/rep_meaneffects.tex}
+
+\subsection{Distribution of Elections}
+
+Figure \ref{fig:margin_dist} displays the distribution of vote margins in the sample used to produce Tables II and III in \citet{biasi_what_2025}, where the margin is defined as the difference between the share of "yes" votes and the state-mandated approval threshold. The distribution spans from approximately $-40\%$ to $+50\%$, suggesting that the analysis includes elections decided by substantial margins rather than being limited to ``close elections''. This raises an important identification concern: the validity of the regression discontinuity design fundamentally relies on the assumption that elections near the threshold are quasi-random, with winners and losers being otherwise comparable\footnote{Although \cite{biasi_what_2025} considers concerns regarding manipulation of the running variable by troublesome removing states, observing lack of covariate discontinuities, and balancing on observables, the concern with respoect to unobservables still remains for elections away from the margin.}. When elections far from the cutoff are included, this local randomization assumption becomes tenuous, as districts with landslide victories or defeats likely differ systematically in ways that may confound the causal interpretation of the results. The lack of a bandwidth restriction in the main analysis thus warrants careful consideration when interpreting the estimated treatment effects.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.99\textwidth]{images/hist_margin.png}
+    \caption{School Bond Election: Distribution of Vote Margins}
+    \label{fig:margin_dist}
+\end{figure}
+
+\section{State-level Extension} \label{sec:extension}
 
 \input{results.tex}
 
+\section{Conclusion} \label{sec:result}
+
+This paper replicates and extends the analysis of \citet{biasi_what_2025}, who study the effects of school capital investments on student outcomes and house prices using a comprehensive dataset of bond elections across U.S. states. Our replication exercise confirms the robustness of their main findings: using both the original Stata code and an independent R implementation, we reproduce their first-stage and reduced-form estimates with high fidelity. However, our examination of the vote margin distribution reveals an important caveat. The sample used in the main analysis includes elections with margins ranging from approximately $-40\%$ to $+50\%$, indicating that many observations are far from the discontinuity threshold. Future work may investigate whether the main results are robust to imposing stricter bandwidth restrictions that limit the sample to truly ``close elections''. In this paper, although we replicate the main tables II and III from \cite{biasi_what_2025}\footnote{We also successfully reproduce figures I, II and III in \cite{biasi_what_2025}.}, we do not replicate sections that differentiate students by income levels and elections by project types. These extensions can be explored in future work to see if the results hold in those dimensions as well. 
+
+Our paper documents state-level heterogeneity in treatment effects that is masked by the national average estimates. While \citet{biasi_what_2025} find positive aggregate effects on test scores and house prices, our state-by-state decomposition reveals considerable variation—including states with large positive effects, null effects, and even significant negative effects. This heterogeneity has important implications for policy and future research. First, it suggests that the effectiveness of school capital investments may depend on local context, including pre-existing infrastructure quality, implementation capacity, and community characteristics. Policies designed based on national average effects may be misguided in states where the returns to capital investment differ substantially from the national mean. Second, the presence of negative effects in some states warrants further investigation. Potential explanations include construction disruptions, crowd-out of other productive spending, tax capitalization effects, or differences in how bonds are used across states. Understanding the sources of this variation is essential for designing more effective school finance policies.
+
+Future research should explore the determinants of the observed heterogeneity. Key questions include: Do states with worse baseline infrastructure benefit more from capital investments? Do differences in labor market conditions, construction costs, or procurement practices explain variation in spending efficiency? How do state-level policies regarding school finance equalization or capital project oversight affect outcomes? Answering these questions will require linking our state-specific estimates to detailed data on district characteristics, project attributes, and institutional features. Such analysis could help identify the conditions under which school capital investments are most likely to improve student outcomes and neighborhood quality, thereby informing more efficient allocation of scarce public resources.
+
 \section*{Data and Code Availability}
 
-\section*{Supporting Information}
+All data used in this paper is from \citet{biasi_what_2025}. Replication code will be deposited to the Journal of Applied Econometrics (JAE) Data Archive, in accordance with the journal’s data and code policy.
+
+% \section*{Acknowledgements}
+
+% I am grateful to Barbara Biasi for sharing her data and code with me. All errors are my own.
 
 
 \singlespacing

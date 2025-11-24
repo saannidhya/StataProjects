@@ -1,0 +1,74 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks   = true,   % colored text rather than colored boxes
+  urlcolor     = blue,   % color for external links (e.g. websites, \href{}{})
+  linkcolor    = black,  % internal links (sections, etc)
+  citecolor    = black
+}
+\usepackage{parskip}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\setstretch{1.15}
+\frenchspacing
+
+\begin{document}
+
+\pagestyle{empty}
+
+\hfill
+\begin{minipage}[t]{0.4\textwidth}
+    \raggedleft
+    % Optionally include logo if desired
+    \IfFileExists{lcb_logo.png}{\includegraphics[width=\linewidth]{lcb_logo.png}}{}
+\end{minipage}
+
+\vspace{1em}
+
+% Recipient information
+To: \\
+Prof. Alberto Bisin and Prof. Elliott Ash \\
+Special Issue Editors: AI Measurement in Applied Economics \\
+\emph{The Economic Journal} \\[0.5em]
+
+
+Dear Editors, 
+
+We are pleased to submit our manuscript, ``{\bf The Effect of Local Road Maintenance Tax Cuts on House Values}'', coauthored with Dr.\ David Brasington, for consideration as a Full-Length Article in the {\bf \emph{Special Issue}} on {\bf AI Measurement in Applied Economics} by {\bf \emph{The Economic Journal}}.
+
+Our paper combines a close-election regression discontinuity design with a novel AI-based measure of road quality constructed from satellite imagery. We assemble a unique dataset linking outcomes of local referendums on road-maintenance levies, financial audits of local governments, high-resolution satellite images of roads, and microdata on housing transactions. By focusing on renewal levies that routinely come up about every five years, instead of referendums that propose additional funding, and exploiting cases where renewals narrowly pass or fail, we address endogeneity concerns and isolate the causal impact of road tax cuts on infrastructure quality and property values.
+
+We first quantify the expected loss in road-maintenance funds when a jurisdiction fails to renew its dedicated road tax levy. We then use the AI-generated road-quality index to track how road conditions evolve before and after failed renewal elections, and we link these changes to the housing market. We find that areas cutting their renewal levies experience a substantial decline in road quality and, beginning about four years after the vote, a sizeable and persistent decline in house prices relative to otherwise similar areas that renew their road-maintenance taxes. These results speak directly to the fiscal and welfare consequences of under-investing in local infrastructure and, more broadly, illustrate how AI-based measurement can sharpen causal inference in applied urban and public economics.
+
+Our contribution to the Special Issue's AI measurement theme is to show how a fine-tuned vision model applied to Google Earth satellite images can produce a policy-relevant, continuous measure of road quality. We perform model validation using ground-truth data from Brewer et al.\ (2021) and create our \emph{Road Quality Score (RQS)}. Our model attains an overall accuracy of 91\% for in-sample data and 83\% for out-of-sample data, demonstrating strong predictive performance that we leverage to measure changes in road quality before-and-after local road tax referendums. This approach overcomes limitations of traditional road-quality metrics that are often subjective, infrequent, and geographically limited, thereby enabling a more comprehensive analysis of infrastructure maintenance's impact on local economic outcomes.
+
+
+\textbf{Data and Code Availability.} Upon acceptance, we will deposit all analysis code and documentation in \emph{The Economic Journal} repository in accordance with the journal's data and code policies. The property-transaction microdata from Cotality (formerly CoreLogic\textsuperscript{\textregistered}) are licensed and cannot be shared publicly. However, we will provide detailed code to reconstruct the analysis files from the licensed sources, as well as sufficiently aggregated data to satisfy the journal's reproducibility requirements.
+
+\textbf{Conflict of Interest.} The authors declare that they have no conflicts of interest to disclose.
+
+\textbf{External Funding.} No external funding was received for this project.
+
+All research described in the manuscript was conducted in accordance with the ethical guidelines of \emph{The Economic Journal}. For the peer-review process, we respectfully request that at least one referee have experience applying regression discontinuity methods in applied microeconomics.
+
+Thank you for considering our submission. We believe our combination of AI-based measurement and quasi-experimental design will be of strong interest to readers of \emph{The Economic Journal} and to the Special Issue's audience in particular.
+
+\vspace{1.5em}
+
+Sincerely, \\[0.75em]
+
+Saani Rawat \\
+Department of Economics\\ 
+Carl H.\ Lindner College of Business \\
+University of Cincinnati \\
+Email: \href{mailto:rawatsa@mail.uc.edu}{rawatsa@mail.uc.edu} \\[1em]
+
+David Brasington \\
+Department of Economics\\ 
+Carl H.\ Lindner College of Business \\
+University of Cincinnati \\
+Email: \href{mailto:brasindd@ucmail.uc.edu}{brasindd@ucmail.uc.edu}
+
+\end{document}

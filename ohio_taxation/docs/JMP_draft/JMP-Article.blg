@@ -7,24 +7,24 @@ Reallocating 'name_of_file' (item size: 1) to 15 items.
 Database file #1: aej_references.bib
 You've used 47 entries,
             2695 wiz_defined-function locations,
-            873 strings with 11976 characters,
-and the built_in function-call counts, 306609 in all, are:
-= -- 51638
-> -- 3119
+            874 strings with 12004 characters,
+and the built_in function-call counts, 299309 in all, are:
+= -- 50351
+> -- 3035
 < -- 0
-+ -- 25125
-- -- 977
-* -- 27561
-:= -- 59574
++ -- 24445
+- -- 949
+* -- 26870
+:= -- 58213
 add.period$ -- 331
 call.type$ -- 47
 change.case$ -- 611
 chr.to.int$ -- 47
 cite$ -- 47
-duplicate$ -- 679
-empty$ -- 1800
-format.name$ -- 1001
-if$ -- 55081
+duplicate$ -- 690
+empty$ -- 1825
+format.name$ -- 973
+if$ -- 53776
 int.to.chr$ -- 5
 int.to.str$ -- 0
 missing$ -- 0
@@ -34,15 +34,15 @@ pop$ -- 47
 preamble$ -- 1
 purify$ -- 705
 quote$ -- 0
-skip$ -- 546
+skip$ -- 565
 stack$ -- 0
-substring$ -- 74490
-swap$ -- 271
+substring$ -- 72585
+swap$ -- 282
 text.length$ -- 658
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 182
 warning$ -- 0
-while$ -- 1163
+while$ -- 1166
 width$ -- 0
 write$ -- 238

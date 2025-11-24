@@ -4,14 +4,6 @@
 
 \begin{thebibliography}{xx}
 
-\harvarditem[Achiam et~al.]{Josh Achiam, Steven Adler, Sandhini Agarwal, Lama
-  Ahmad, Ilge Akkaya, Florencia~Leoni Aleman, Diogo Almeida, Janko
-  Altenschmidt, Sam Altman, Shyamal Anadkat et~al.}{2023}{achiam2023gpt}
-{\bf Achiam, Josh, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya,
-  Florencia~Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman,
-  Shyamal Anadkat, et~al.} 2023. ``Gpt-4 technical report.'' {\em arXiv
-  preprint arXiv:2303.08774}.
-
 \harvarditem[Alesina \harvardand\ Tabellini]{Alberto Alesina \harvardand\ Guido
   Tabellini}{1990}{AlesinaTabellini1990}
 {\bf Alesina, Alberto, and Guido Tabellini.} 1990. ``A Positive Theory of
@@ -267,5 +259,12 @@
   ``Local governance and the quality of local infrastructure: Evidence from
   village road projects in rural China.'' {\em Journal of Public Economics},
   152:~119--132.
+
+\harvarditem[Woo et~al.]{Sanghyun Woo, Shoubhik Debnath, Ronghang Hu, Xinlei
+  Chen, Zhuang Liu, In~So Kweon \harvardand\ Saining
+  Xie}{2023}{woo2023convnext}
+{\bf Woo, Sanghyun, Shoubhik Debnath, Ronghang Hu, Xinlei Chen, Zhuang Liu,
+  In~So Kweon, and Saining Xie.} 2023. ``Convnext v2: Co-designing and scaling
+  convnets with masked autoencoders.'' 16133--16142.
 
 \end{thebibliography}

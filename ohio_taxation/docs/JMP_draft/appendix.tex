@@ -1,3 +1,24 @@
+\section{Road Tax Renewal Elections in Ohio} \label{sec:appxel}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{images/ohio_subdivisions_elections_map.png}
+        \caption{All Road Tax Renewal Elections in Ohio (1991-2021)}
+        \label{fig:election_map}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{images/ohio_subdivisions_close_elections_map.png}
+        \caption{Close Road Tax Renewal Elections in Ohio (1991-2021)}
+        \label{fig:election_map_close}
+    \end{minipage}
+\end{figure}
+
+Figure \ref{fig:election_map} displays the distribution of county subdivisions in Ohio that held at least one road tax renewal election between 1991 and 2021. The map reveals that although elections are relatively dispersed, they are more common in metropolitan areas such as Cleveland, Columbus, Cincinnati, Toledo etc. For jurisdictions that held multiple elections during this period, Figure \ref{fig:election_map_close} focuses on the subset of elections that were decided by narrow margins, specifically those closest to the 50\% approval threshold that forms the basis of our regression discontinuity analysis. These close elections provide the quasi-experimental variation we exploit to identify the causal effects of road tax levy decisions on housing prices, and we do not observe any spatial clustering of the appearance of these close elections on the ballot, as well as the results of these close elections. The geographic distribution of close elections largely mirrors that of all elections, suggesting that narrow electoral outcomes are not systematically concentrated in particular types of communities, which supports the validity of our identification strategy.
+
 \section{Additional Tables} \label{sec:appxa}
 
 % \subsection{Full set of Treatment Effects for Median Housing Price}
@@ -420,3 +441,6 @@ Figure \ref{fig:bandwidth_sensitivity} plots the differences in mean estimate of
 
 \section{A Dynamic General Equilibrium Model of Roads} \label{sec:appxdmodel}
 \input{model.tex}
+
+% fine-tuning vision model
+\input{road_quality_fine_tuning.tex}

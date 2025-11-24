@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  4 SEP 2025 19:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2024.5.2)  24 NOV 2025 15:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -475,24 +475,24 @@ File: l3backend-pdftex.def 2024-03-14 L3 backend support: PDF output (pdfTeX)
 ) (Biasi-Rep-Article.aux)
 \openout1 = `Biasi-Rep-Article.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 47.
-LaTeX Font Info:    ... okay on input line 47.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -558,48 +558,72 @@ Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 Package caption Info: subfigure package is loaded.
 Package caption Info: threeparttable package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 47.
+Package hyperref Info: Link coloring OFF on input line 49.
  (Biasi-Rep-Article.out) (Biasi-Rep-Article.out)
 \@outlinefile=\write4
 \openout4 = `Biasi-Rep-Article.out'.
 
 \c@lstlisting=\count328
-LaTeX Font Info:    Trying to load font information for U+msa on input line 56.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 57.
  (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 56.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 57.
  (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 64--71
+Underfull \hbox (badness 10000) in paragraph at lines 65--71
 
  []
 
 [0
 
-{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (emp_strategy.tex) (results.tex) (Biasi-Rep-Article.bbl [1]) [2] (appendix.tex) [3
+{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [1] (data_and_method.tex [2] [3]) [4] (tables/rep_firststage.tex) [5] (tables/rep_meaneffects.tex) [6]
+<images/hist_margin.png, id=184, 1204.5pt x 803.0pt>
+File: images/hist_margin.png Graphic file (type png)
+<use images/hist_margin.png>
+Package pdftex.def Info: images/hist_margin.png  used on input line 112.
+(pdftex.def)             Requested size: 465.06004pt x 310.04428pt.
+ (results.tex [7] [8 <./images/hist_margin.png (PNG copy)>]
+<images/forest_capital.png, id=199, 578.16pt x 361.35pt>
+File: images/forest_capital.png Graphic file (type png)
+<use images/forest_capital.png>
+Package pdftex.def Info: images/forest_capital.png  used on input line 9.
+(pdftex.def)             Requested size: 465.06004pt x 290.66284pt.
+ [9 <./images/forest_capital.png>]
+<images/forest_tests.png, id=212, 578.16pt x 361.35pt>
+File: images/forest_tests.png Graphic file (type png)
+<use images/forest_tests.png>
+Package pdftex.def Info: images/forest_tests.png  used on input line 24.
+(pdftex.def)             Requested size: 465.06004pt x 290.66284pt.
+ [10] [11 <./images/forest_tests.png>]
+<images/forest_hpi.png, id=229, 578.16pt x 361.35pt>
+File: images/forest_hpi.png Graphic file (type png)
+<use images/forest_hpi.png>
+Package pdftex.def Info: images/forest_hpi.png  used on input line 39.
+(pdftex.def)             Requested size: 465.06004pt x 290.66284pt.
+ [12 <./images/forest_hpi.png>]) [13] (Biasi-Rep-Article.bbl [14]) [15] (appendix.tex (tables/state_firststage.tex) (tables/state_meaneffects_test_scores.tex) (tables/state_meaneffects_hpi.tex)) [16
 
-] (Biasi-Rep-Article.aux)
+] [17] [18] [19] (Biasi-Rep-Article.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-03-14>
  ***********
 Package rerunfilecheck Info: File `Biasi-Rep-Article.out' has not changed.
-(rerunfilecheck)             Checksum: FAF45F140764DED9D9AC23820A18D0C6;380.
+(rerunfilecheck)             Checksum: FA6E2D12DFA8EA10062BD50714231650;2033.
  ) 
 Here is how much of TeX's memory you used:
- 15037 strings out of 474424
- 239308 string characters out of 5740796
- 1933496 words of memory out of 5000000
- 37133 multiletter control sequences out of 15000+600000
- 567739 words of font info for 73 fonts, out of 8000000 for 9000
+ 15235 strings out of 474424
+ 243953 string characters out of 5740796
+ 1968496 words of memory out of 5000000
+ 37254 multiletter control sequences out of 15000+600000
+ 573377 words of font info for 93 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,12n,79p,1521b,549s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on Biasi-Rep-Article.pdf (4 pages, 125331 bytes).
+ 75i,12n,79p,3515b,549s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb>
+Output written on Biasi-Rep-Article.pdf (20 pages, 811274 bytes).
 PDF statistics:
- 115 PDF objects out of 1000 (max. 8388607)
- 16 named destinations out of 1000 (max. 500000)
- 33 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 388 PDF objects out of 1000 (max. 8388607)
+ 64 named destinations out of 1000 (max. 500000)
+ 125 words of extra memory for PDF output out of 10000 (max. 10000000)
 

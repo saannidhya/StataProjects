@@ -6,6 +6,7 @@ using Conda
 using BSON
 using PyCall, Flux, CUDA, Images, MLUtils
 using ImageTransformations, FileIO
+using LinearAlgebra
 
 # necessary checks
 println("python:", PyCall.pyimport("platform").python_version())
@@ -15,6 +16,8 @@ println("HF     :", PyCall.pyimport("transformers").__version__)
 
 # input location
 input_dir = "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads"
+# Output directory for saved model
+outdir = joinpath(input_dir, "hf_finetuned_convnextv2")  # change if you switch model
 
 # Import CSV file
 roadRunner_labels = CSV.read(joinpath(input_dir, "roadRunner_labels.csv"), DataFrame)
@@ -200,9 +203,6 @@ train_labels = collect(Int.(train_data.int_label))
 val_paths   = collect(String.(val_data.image_path))
 val_labels  = collect(Int.(val_data.int_label))
 
-
-# Output directory for saved model
-outdir = joinpath(input_dir, "hf_finetuned_convnextv2")  # change if you switch model
 
 # Hand off to Python to run the training loop (no accelerate/datasets needed)
 py"""
@@ -508,22 +508,131 @@ println("  Train predictions: $(nrow(train_preds)) rows")
 println("  Validation predictions: $(nrow(val_preds)) rows")
 println("  Test predictions: $(nrow(test_preds)) rows")
 
-# Summary of model performance
-model_summary = Dict(
-    "model_path" => outdir,
-    "num_classes" => num_classes,
-    "train_acc" => train_metrics["acc"],
-    "val_acc" => val_metrics["acc"],
-    "test_acc" => test_metrics["acc"],
-    "train_size" => train_metrics["n"],
-    "val_size" => val_metrics["n"],
-    "test_size" => test_metrics["n"]
-)
 
-println("\n=== MODEL SUMMARY ===")
-for (key, value) in model_summary
-    println("  $(key): $(value)")
+# Compute accuracy table for fine-tuned model
+function compute_accuracy_table(preds_df, model_name)
+    # Overall accuracy
+    overall_acc = mean(preds_df[!, "true"] .== preds_df.pred)
+    # Per-class accuracy
+    low_quality_mask = preds_df[!, "true"] .== 0
+    medium_quality_mask = preds_df[!, "true"] .== 1
+    high_quality_mask = preds_df[!, "true"] .== 2
+    
+    low_quality_acc = if sum(low_quality_mask) > 0
+        mean(preds_df[!, "true"][low_quality_mask] .== preds_df.pred[low_quality_mask])
+    else
+        NaN
+    end
+    medium_quality_acc = if sum(medium_quality_mask) > 0
+        mean(preds_df[!, "true"][medium_quality_mask] .== preds_df.pred[medium_quality_mask])
+    else
+        NaN
+    end
+    high_quality_acc = if sum(high_quality_mask) > 0
+        mean(preds_df[!, "true"][high_quality_mask] .== preds_df.pred[high_quality_mask])
+    else
+        NaN
+    end
+    return DataFrame(
+        Model = [model_name],
+        Overall_Accuracy = [round(overall_acc, digits=4)],
+        Low_Quality_0_Accuracy = [round(low_quality_acc, digits=4)],
+        Medium_Quality_1_Accuracy = [round(medium_quality_acc, digits=4)],
+        High_Quality_2_Accuracy = [round(high_quality_acc, digits=4)]
+    )
 end
+
+# Compute accuracy tables for all splits and models
+println("\n=== ACCURACY TABLES ===")
+
+# Fine-tuned model results
+println("\nFINE-TUNED MODEL:")
+println("Training Set:")
+train_acc_table = compute_accuracy_table(train_preds, "Fine-tuned ConvNeXt V2")
+println(train_acc_table)
+
+
+# train_preds[!,"true"]
+# train_preds[!, "true"] .== train_preds.pred
+
+println("\nValidation Set:")
+val_acc_table = compute_accuracy_table(val_preds, "Fine-tuned ConvNeXt V2")
+println(val_acc_table)
+
+println("\nTest Set:")
+test_acc_table = compute_accuracy_table(test_preds, "Fine-tuned ConvNeXt V2")
+println(test_acc_table)
+
+# Create confusion matrix for fine-tuned model on test set
+function create_confusion_matrix(preds_df, title="Confusion Matrix")
+    # Get true and predicted labels
+    y_true = preds_df[!, "true"]
+    y_pred = preds_df.pred
+    
+    # Create confusion matrix
+    classes = sort(unique(vcat(y_true, y_pred)))
+    n_classes = length(classes)
+    cm = zeros(Int, n_classes, n_classes)
+    
+    for (true_label, pred_label) in zip(y_true, y_pred)
+        true_idx = findfirst(==(true_label), classes)
+        pred_idx = findfirst(==(pred_label), classes)
+        cm[true_idx, pred_idx] += 1
+    end
+    
+    # Create DataFrame for better display
+    cm_df = DataFrame(cm, [string("Pred_", c) for c in classes])
+    insertcols!(cm_df, 1, :True_Label => [string("True_", c) for c in classes])
+    
+    return cm_df, cm
+end
+
+# Compute confusion matrices for fine-tuned model
+println("\n=== CONFUSION MATRICES - FINE-TUNED MODEL ===")
+
+println("\nTest Set Confusion Matrix:")
+test_cm_df, test_cm = create_confusion_matrix(test_preds, "Fine-tuned Model - Test Set")
+println(test_cm_df)
+
+# Calculate additional metrics from confusion matrix
+total_samples = sum(test_cm)
+diagonal_sum = sum(diag(test_cm))
+overall_accuracy = diagonal_sum / total_samples
+
+# Per-class metrics from confusion matrix
+per_class_metrics = DataFrame()
+for i in 1:size(test_cm, 1)
+    true_positives = test_cm[i, i]
+    false_positives = sum(test_cm[:, i]) - true_positives
+    false_negatives = sum(test_cm[i, :]) - true_positives
+    true_negatives = total_samples - true_positives - false_positives - false_negatives
+    
+    precision = true_positives / (true_positives + false_positives)
+    recall = true_positives / (true_positives + false_negatives)
+    f1_score = 2 * (precision * recall) / (precision + recall)
+    
+    push!(per_class_metrics, (
+        Class = i-1,
+        True_Positives = true_positives,
+        False_Positives = false_positives,
+        False_Negatives = false_negatives,
+        Precision = round(precision, digits=4),
+        Recall = round(recall, digits=4),
+        F1_Score = round(f1_score, digits=4),
+        Support = sum(test_cm[i, :])
+    ))
+end
+
+println("\nPer-Class Metrics from Confusion Matrix:")
+println(per_class_metrics)
+
+println("\nOverall Test Accuracy: $(round(overall_accuracy, digits=4))")
+
+# Also compute for validation set for comparison
+println("\nValidation Set Confusion Matrix:")
+val_cm_df, val_cm = create_confusion_matrix(val_preds, "Fine-tuned Model - Validation Set")
+println(val_cm_df)
+
 
 #=======================================================================================#
 # Base model predictions: not fine-tuned
@@ -675,14 +784,14 @@ print("Saved metrics JSON to:", os.path.join(outdir, "metrics_summary.json"))
 
 
 # Load prediction results as DataFrames
-train_preds = CSV.read(joinpath(baseline_outdir, "train_preds.csv"), DataFrame)
-val_preds = CSV.read(joinpath(baseline_outdir, "val_preds.csv"), DataFrame)
-test_preds = CSV.read(joinpath(baseline_outdir, "test_preds.csv"), DataFrame)
+train_preds_base = CSV.read(joinpath(baseline_outdir, "train_preds.csv"), DataFrame)
+val_preds_base = CSV.read(joinpath(baseline_outdir, "val_preds.csv"), DataFrame)
+test_preds_base = CSV.read(joinpath(baseline_outdir, "test_preds.csv"), DataFrame)
 
 println("\nPREDICTION FILES LOADED:")
-println("  Train predictions: $(nrow(train_preds)) rows")
-println("  Validation predictions: $(nrow(val_preds)) rows")
-println("  Test predictions: $(nrow(test_preds)) rows")
+println("  Train predictions: $(nrow(train_preds_base)) rows")
+println("  Validation predictions: $(nrow(val_preds_base)) rows")
+println("  Test predictions: $(nrow(test_preds_base)) rows")
 
 # Summary of model performance
 # model_summary = Dict(
@@ -700,3 +809,22 @@ println("  Test predictions: $(nrow(test_preds)) rows")
 # for (key, value) in model_summary
 #     println("  $(key): $(value)")
 # end
+
+# Baseline model results
+println("\nBASELINE MODEL (Frozen Features + Linear Probe):")
+println("Training Set:")
+train_acc_table_base = compute_accuracy_table(train_preds_base, "Baseline ConvNeXt V2")
+println(train_acc_table_base)
+
+println("\nValidation Set:")
+val_acc_table_base = compute_accuracy_table(val_preds_base, "Baseline ConvNeXt V2")
+println(val_acc_table_base)
+
+println("\nTest Set:")
+test_acc_table_base = compute_accuracy_table(test_preds_base, "Baseline ConvNeXt V2")
+println(test_acc_table_base)
+
+# Combined comparison table for test sets
+combined_test_table = vcat(test_acc_table, test_acc_table_base)
+println("\nTEST SET COMPARISON:")
+println(combined_test_table)

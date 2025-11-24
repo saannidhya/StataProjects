@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Roads-Article.aux
+Reallocating 'name_of_file' (item size: 1) to 4 items.
+The style file: aea.bst
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+Database file #1: aej_references.bib
+You've used 53 entries,
+            2695 wiz_defined-function locations,
+            909 strings with 13307 characters,
+and the built_in function-call counts, 360629 in all, are:
+= -- 60861
+> -- 3605
+< -- 0
++ -- 29648
+- -- 1131
+* -- 32468
+:= -- 69852
+add.period$ -- 373
+call.type$ -- 53
+change.case$ -- 689
+chr.to.int$ -- 53
+cite$ -- 53
+duplicate$ -- 777
+empty$ -- 2064
+format.name$ -- 1167
+if$ -- 64857
+int.to.chr$ -- 5
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 166
+num.names$ -- 583
+pop$ -- 53
+preamble$ -- 1
+purify$ -- 795
+quote$ -- 0
+skip$ -- 640
+stack$ -- 0
+substring$ -- 87898
+swap$ -- 317
+text.length$ -- 742
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 204
+warning$ -- 0
+while$ -- 1306
+width$ -- 0
+write$ -- 268

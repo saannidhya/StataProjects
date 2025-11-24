@@ -4,76 +4,78 @@
 
 \subsection{Road Quality Decline} \label{sec:road_quality_decline}
 
- Next, we present the results of our analysis on the impact of cutting road maintenance taxes on road quality. As discussed in Section \ref{sec:road_quality}, we use a fine-tuned Vision Transformer (ViT) model to assess road quality based on satellite imagery data. The model gives us a road quality rating of 0 (poor), 1 (medium), or 2 (high), which we also convert to a continuous variable called Road Quality Score (RQS) ranging from 1 to 100. 
-%  In our analysis, we compare the road quality ratings before and after the referendum in areas that cut their road tax levies versus those that maintained them, while focusing on the set of cities where the treatment assignment was effectively random i.e. the cities that were close to the cutoff of 50\% vote share and as determined by the effective RD bandwidth from Table \ref{tab:median_sale_amount}. 
-%  Table \ref{tab:roadquality_estimates} summarizes the results of this analysis.
+ First, we present the results of our analysis on the impact of cutting road maintenance taxes on road quality. As discussed in Section \ref{sec:road_quality}, we use a fine-tuned AI vision model to assess road quality based on satellite imagery data. The model gives us a road quality rating of 0 (poor), 1 (medium), or 2 (high), which we also convert to a continuous variable called Road Quality Score (RQS) ranging from 1 to 100. 
 
 % \begin{table}[ht]
 %     \centering
 %     \caption{Change in Road Quality after Election}
 %     \label{tab:roadquality_estimates}
 %     \begin{threeparttable}
-%     \begin{tabular}{lcc}
-%     \hline\hline
-%     & \textbf{Cut Levies} & \textbf{Renewed Levies} \\
-%     \hline
-%     \multicolumn{3}{l}{\textbf{Panel A:}} \\
-%     Change in Road Quality Rating (0, 1, 2) 
-%      & -0.444\textsuperscript{**} & 0.067 \\[0.2cm]
-%      & (0.210) & (0.340) \\  
-%     \addlinespace[0.3em]
-%     \multicolumn{3}{l}{\textbf{Panel B:}} \\
-%     Change in Road Quality Score (1--100) 
-%      & -14.231\textsuperscript{**} & 1.585 \\[0.2cm]
-%      & (6.651) & (10.926) \\
-%     \hline
+%     \begin{tabular}{l c}
+%         \toprule
+%         & RD estimate \\
+%         \midrule
+%         \multicolumn{2}{l}{\textbf{Panel A: Road Quality Rating (0–2)}} \\
+%         & -0.477\textsuperscript{**} \\
+%         & (0.222) \\
+%         \addlinespace[0.5em]
+%         \multicolumn{2}{l}{\textbf{Panel B: Road Quality Score (1–100)}} \\
+%         & -15.634\textsuperscript{**} \\
+%         & (7.366) \\
+%         \midrule
+%         Robust SE & $\checkmark$ \\
+%         Clustered SE (10-digit FIPS) & $\checkmark$ \\
+%         Covariates & Population \\
+%         Kernel & Uniform \\
+%         Local polynomial (p, q) & (1, 2) \\
+%         Bandwidth (h, each side) & 9.414 \\
+%         Effective sample size (total) & 178 \\
+%         Effective sample size (left/right) & 132 / 46 \\
+%         \bottomrule
 %     \end{tabular}
 %     \begin{tablenotes}[flushleft]
-%     \small
-%     \item \textit{Notes:} Results from regressions of two different road quality measures on a post-election indicator. Each column shows the estimated change in road quality following renewal road tax levy elections, separately for jurisdictions that cut their road tax levies and those that renewed them. Panel A reports results using the categorical road quality rating (0 = poor, 1 = medium, 2 = high). Panel B reports results using the continuous Road Quality Score (RQS, 1--100 scale). Samples are the set of referendums within the mean effective RD bandwidth from Table \ref{tab:median_sale_amount}. “Cut Levies” refers to jurisdictions that failed to renew their road tax levies, while “Renewed Levies” refers to jurisdictions that renewed. Standard errors are shown in parentheses. 
-%     Significance levels: 
-%     \textsuperscript{*}p $<$ 0.10,  
-%     \textsuperscript{**}p $<$ 0.05, 
-%     \textsuperscript{***}p $<$ 0.01.
+%       \small
+%       \item \textit{Notes:} Covariate-adjusted sharp RD at the 50\% vote-share cutoff using local polynomial regression. Point estimates shown with standard errors in parentheses. Inference based on bias-corrected estimates with robust confidence intervals from \texttt{rdrobust} (CIs not reported). Significance levels: \textsuperscript{*}p $<$ 0.10, \textsuperscript{**}p $<$ 0.05, \textsuperscript{***}p $<$ 0.01.
 %     \end{tablenotes}
 %     \end{threeparttable}
 % \end{table}
 
+% Add these packages to your preamble if you haven't already:
+% \usepackage{booktabs}
+% \usepackage{threeparttable}
+% \usepackage{dcolumn}
+% \usepackage{amssymb} % For the checkmark symbol
+
 \begin{table}[ht]
     \centering
-    \caption{Change in Road Quality after Election}
+    \caption{Change in Road Quality after an Election}
     \label{tab:roadquality_estimates}
     \begin{threeparttable}
-    \begin{tabular}{lcc}
-    \hline\hline
-    & \textbf{Cut Levies} & \textbf{Renewed Levies} \\
-    \hline
-    \multicolumn{3}{l}{\textbf{Panel A:}} \\
-    Change in Road Quality Rating (0, 1, 2) 
-     & -0.489\textsuperscript{**} & -0.083 \\[0.2cm]
-     & (0.227) & (0.343) \\  
-    \addlinespace[0.3em]
-    \multicolumn{3}{l}{\textbf{Panel B:}} \\
-    Change in Road Quality Score (1--100) 
-     & -15.175\textsuperscript{**} & -2.840 \\[0.2cm]
-     & (6.923) & (9.967) \\
-    \hline
-    \end{tabular}
-    \begin{tablenotes}[flushleft]
-    \small
-    \item \textit{Notes:} Results from regressions of two different road quality measures on a post-election indicator. Each column shows the estimated change in road quality following renewal road tax levy elections, separately for jurisdictions that cut their road tax levies and those that renew them. Panel A uses the categorical road quality rating (0 = poor, 1 = medium, 2 = high). Panel B uses the continuous Road Quality Score (RQS, 1–100 scale). Samples are the set of referendums within the mean effective RD bandwidth from Table \ref{tab:median_sale_amount}. “Cut Levies” refers to jurisdictions that failed to renew their road tax levies, while “Renewed Levies” refers to jurisdictions that renew. Standard errors are shown in parentheses. 
-    Significance levels: 
-    \textsuperscript{*}p $<$ 0.10,  
-    \textsuperscript{**}p $<$ 0.05, 
-    \textsuperscript{***}p $<$ 0.01.
-    \end{tablenotes}
+        \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l c c}
+            \toprule
+            & (1) & (2) \\
+            % & Road Quality & Road Quality \\
+            % & Rating (0--2) & Score (1--100) \\
+            \midrule
+            RD Estimate             & -0.477\textsuperscript{**} & -15.634\textsuperscript{**} \\
+                                    & (0.222)     & (7.366)      \\
+            \addlinespace[0.5em]
+            % \midrule
+            Covariates              & $\checkmark$ & $\checkmark$ \\
+            Clustered SEs           & $\checkmark$ & $\checkmark$ \\
+            Effective Sample        & 178          & 178         \\
+            \bottomrule
+        \end{tabular*}
+        \begin{tablenotes}[flushleft]
+        \small
+        \item \textit{Notes:} Column (1) shows the RD estimate of the effect of cutting road maintenance taxes on the Road Quality Rating (RQR, 0–2), and Column (2) shows this effect on the continuous Road Quality Score (RQS, 1–100).
+        Standard errors are in parentheses. The table reports covariate-adjusted sharp RD estimates from a polynomial regression ($p=1$, $q=2$) at the 50\% vote-share cutoff. The bandwidth is mean effective RD bandwidth from Table \ref{tab:median_sale_amount}. Inference is based on bias-corrected point estimates with robust standard errors. Standard errors are clustered by ten-digit FIPS code. Significance levels: \textsuperscript{*}p $<$ 0.10, \textsuperscript{**}p $<$ 0.05, \textsuperscript{***}p $<$ 0.01.
+        \end{tablenotes}
     \end{threeparttable}
 \end{table}
 
-
-Table \ref{tab:roadquality_estimates} reports the before-and-after estimates of change in average road quality for jurisdictions that cut their road-tax levies and those that renew their levies. The table is divided into two panels: Panel A reports changes in the categorical Road Quality Rating (RQR, on a 0–2 discrete scale), while Panel B reports changes in the continuous Road Quality Score (RQS, on a 1–100 continuous scale), both derived from a fine-tuned Vision Transformer model applied to satellite imagery as explained in Section \ref{sec:road_quality}, for cities that cut and renew their levies respectively. 
-
-For cities that fail to renew their road tax levies, there is a statistically significant decline in road quality after the cut: a reduction of $0.489$ points on the categorical scale and $15.175$ points on the RQS. If we consider the pre-election average road quality rating of $1.47$ and the average RQS of $65$, this translates to a $33.3$\% deterioration in road quality for the categorical rating\footnote{$\frac{-0.489}{1.47} = -0.3326$} and a $23$\% decline for the continuous RQS\footnote{$\frac{-15.175}{65}=-0.233$}. In contrast, cities that renew their levies show no significant change in either measure. These results indicate that cutting road maintenance taxes is associated with a meaningful deterioration in road quality, while maintaining taxes helps preserve it. This finding underscores the tangible infrastructure consequences of fiscal policy decisions and reinforces the broader argument of the paper regarding the importance of stable funding for public goods.
+Table \ref{tab:roadquality_estimates} reports RD estimates of the discontinuity in post-election road quality at the 50\% threshold. Column (1) uses the categorical Road Quality Rating (RQR, 0–2), and Column (2) uses the continuous Road Quality Score (RQS, 1–100), both derived from the fine-tuned vision model described in Section \ref{sec:road_quality}. As shown in Table \ref{tab:roadquality_estimates}, we find that cutting road maintenance taxes does lead to a decline in road quality of $-0.477$ for the RQR metric. This suggests that relative to similar cities that renew their road maintenance taxes, cities that cut their road maintenance taxes experience a decline of almost half a category in road quality after the election. The estimate for the RQS metric is $-15.634$, indicating a decline of about 15.6 points on a 100-point scale. 
+Using the pre-election means among treated cities of $1.625$ (RQR) and $74$ (RQS), these estimates of difference in road quality correspond to approximately $29.4\%$ and $21.2\%$ reduction in road quality. The limited sample size is an artifact of our focus on close elections, limited availability of high-resolution satellite imagery for some cities and years, and the cleaning process to ensure that the road segments analyzed are representative of public roads. Although these results may be sensitive to data availability, sample size and the performance of the vision model, they provide suggestive evidence that cutting road maintenance taxes leads to a significant decline in road quality. The next section presents our main results on the impact of cutting road maintenance taxes on house prices.
 
 \subsection{House Prices Decline}
 
@@ -466,7 +468,11 @@ A more comprehensive approach to address this concern is to check for balance in
 
 \section{Mechanisms} \label{sec:mech}
 
-A key question surrounding our findings is \textit{why} cutting road taxes would lead to a sustained decline in local house prices. In this section, we argue that these results are consistent with classical insights from the literature on local public finance, especially the work of \cite{Oates1972} and \cite{edel1974taxes}. Specifically, cutting road-maintenance tax levies reduces local government funds for maintaining infrastructure, which in turn constrains the government’s ability to provide road-upkeep services. These lower levels of maintenance funding result in a deterioration of road quality, which then directly and indirectly lowers housing values. We trace this relationship through three sequential links.
+A key question surrounding our findings is \textit{why} cutting road taxes would lead to a sustained decline in local house prices. In this section, we argue that these results are consistent with classical insights from the literature on local public finance, especially the work of \cite{Oates1972} and \cite{edel1974taxes}. We develop a theoretical framework using Dynamic General Equilibrium (DGE) model to explain the mechanisms behind our empirical findings.
+The model captures the dynamic interplay between local government budget constraints, road quality, and housing prices. Specifically, cutting road-maintenance tax levies reduces local government funds for maintaining infrastructure, which in turn constrains the government’s ability to provide road-upkeep services. These lower levels of maintenance funding result in a deterioration of road quality, which then directly and indirectly lowers housing values. 
+For brevity, we summarize the key insights here and relegate the full model description to Appendix \ref{sec:appxdmodel}. Below, we outline the three-step channel through which road tax cuts lead to lower house prices.
+% The model considers households that derive utility from housing services and local public goods, such as road quality, which are funded through local taxes, firms that produce goods and services, and a local government that provides public goods and services. The government finances its expenditures through local taxes, including property taxes and dedicated road-maintenance levies.
+
 
 \noindent
 {\bf 1. Road Tax Cuts and Reduced Road Maintenance Funds.} Local governments in Ohio, like those in many other U.S. states, rely on property taxes and dedicated road levies to fund local public goods. The \cite{Oates1972} decentralization theorem highlights that local authorities can generally provide public services in a manner better aligned with resident preferences than would a higher-level government, provided they have adequate revenue sources. When a renewal levy fails at the ballot box, one of these critical revenue sources vanishes. Consistent with the premise that local road quality is a local public good, losing a dedicated revenue stream substantially weakens a city’s ability to maintain or upgrade roads. Empirically, we infer the size of the drop in maintenance funds when a maintenance levy fails to renew in Table \ref{tab:levy_stats}.
@@ -487,7 +493,7 @@ A key question surrounding our findings is \textit{why} cutting road taxes would
 
 % \noindent In this sense, the local “bundling” of taxes and roads is priced into real estate transactions, echoing the original proposition of \cite{Tiebout1956} that local public goods are \emph{capitalized} in property values. Our event-study evidence confirms that the negative price effects are most pronounced several years after the renewal levy fails, consistent with the time needed for visible road quality decline to become salient to homeowners and prospective buyers.
 
-{\bf Short-Run versus Long-Run Trade-Off.} Importantly, a trade-off emerges over time. In the short run, residents in cities that voted against a road tax levy experience immediate relief in terms of lower property tax bills\footnote{Table \ref{tab:levy_stats} reflects the relief in property tax payments for households when a road tax levy is not renewed.}. Their out-of-pocket expenses decline, which can be a tangible financial benefit—particularly in communities where property tax burdens were already viewed as high. However, as road quality starts to visibly deteriorate from around the fourth year onward (see Table \ref{tab:median_sale_amount}), the same residents find themselves negatively affected by a decline in house prices. This lag reflects the time it takes for infrastructure disrepair to become apparent, be it through more frequent potholes or visibly eroding surfaces. By the time these problems are evident, the city’s real-estate market has had sufficient time to register the disamenity, capitalizing it as a discount in property values. This dynamic captures a fundamental insight of local public finance: the preferences of current taxpayers can diverge from the longer-term public interest \citep{BuchananTullock1962, AlesinaTabellini1990}. 
+{\bf Short-Run versus Long-Run Trade-Off.} Importantly, a trade-off emerges over time. In the short run, residents in cities that voted against a road tax levy experience immediate relief in terms of lower property tax bills\footnote{Table \ref{tab:levy_stats} reflects the relief in property tax payments for households when a road tax levy is not renewed.}. Their out-of-pocket expenses decline, which can be a tangible financial benefit, particularly in communities where property tax burdens were already viewed as high. However, as road quality starts to visibly deteriorate from around the fourth year onward (see Table \ref{tab:median_sale_amount}), the same residents find themselves negatively affected by a decline in house prices. This lag reflects the time it takes for infrastructure disrepair to become apparent, be it through more frequent potholes or visibly eroding surfaces. By the time these problems are evident, the city’s real-estate market has had sufficient time to register the disamenity, capitalizing it as a discount in property values. This dynamic captures a fundamental insight of local public finance: the preferences of current taxpayers can diverge from the longer-term public interest \citep{BuchananTullock1962, AlesinaTabellini1990}. 
 % While voters may respond to short-term cost savings from a failing levy, the forgone maintenance ultimately reduces the community’s appeal and leads to diminished investment returns—particularly for homeowners whose largest asset is their property. Hence, the immediate reduction in tax liabilities ultimately collides with the reality of lower market valuations once inadequate road upkeep becomes plainly visible.
 
 % \bigskip
@@ -546,16 +552,16 @@ We avoid this identification issue by studying maintenance spending on existing 
 This focus is particularly important in developed economies, where the construction of new infrastructure is infrequent compared to the large stock of existing assets and as a consequence, maintaining and preserving existing infrastructure becomes a central focus for policymakers.
 
 
-By constructing a novel panel of over 3,000 renewal referendums, matching election results to local financial records and CoreLogic house‐sale data, and fine‐tuning a Vision Transformer model on satellite imagery, we trace the full chain from a failed levy to deterioration in road quality and, ultimately, decline in property values. Our reduced‐form estimates reveal that failing to renew a road‐maintenance levy leads to an average funding loss of 11\% for local road budgets, a 23\% decline in a continuous road‐quality score derived from remote sensing, and a 9\% decrease in median house sale prices. The effect on home values emerges only after year four and persists through at least year nine, underscoring the gradual yet lasting consequences of underfunded maintenance.
+By constructing a novel panel of over 3,000 renewal referendums, matching election results to local financial records and CoreLogic house‐sale data, and fine‐tuning a vision model on satellite imagery, we trace the full chain from a failed levy to deterioration in road quality and, ultimately, decline in property values. Our reduced‐form estimates reveal that failing to renew a road‐maintenance levy leads to an average funding loss of 11\% for local road budgets, a 21\% decline in a continuous road‐quality score derived from remote sensing, and a 9\% decrease in median house sale prices. The effect on home values emerges only after year four and persists through at least year nine, underscoring the gradual yet lasting consequences of underfunded maintenance.
 Heterogeneity analyses show that urban jurisdictions experience larger price declines than rural ones, and high‐value houses are more sensitive to road‐quality shocks than lower‐value houses. We also find evidence of a dose‐response relationship, where larger levies lead to greater declines in house prices. 
 
 
 Our findings speak directly to the literature on infrastructure‐economics and hedonic‐pricing by demonstrating how tax cuts that reduce local governments’ ability to maintain roads can lead to a decline in road quality, which is then capitalized into local housing markets. From a policy perspective, our results highlight the importance of stable maintenance budget streams for local governments and considering proactive preservation strategies, especially in urban areas where property stakes are high.
 
 
-Future work could extend our dynamic RD framework to other states or countries, investigate the effects of funding via other types of tax levies, and explore complementarities between road maintenance and other forms of public investments. Advances in AI, such as Vision Transformers, open new avenues for researchers and could potentially allow real‐time evaluation of road quality, and possibly enable assessment of infrastructure policies and their welfare consequences.
+Future work could extend our dynamic RD framework to other states or countries, investigate the effects of funding via other types of tax levies, and explore complementarities between road maintenance and other forms of public investments. Advances in AI vision architectures such as ConvNext, ViTs etc., open new avenues for researchers and could potentially allow real‐time evaluation of road quality, and possibly enable assessment of infrastructure policies and their welfare consequences.
 
-% A great deal of existing research has focused on the effect of new roads on house prices, especially in developing nations, providing valuable policy insights and spurring development initiatives like China’s Belt and Road Initiative \citep{huang2016understanding} and India’s Pradhan Mantri Gram Sadak Yojana \citep{asher2020}. However, the endogeneity of road placement makes it difficult to identify causal effects. In this paper, we study taxes that fund maintenance of existing roads and avoid endogeneity issues by utilizing a quasi-experiment setting that naturally arises from the voted levies enacted by local governments in Ohio. We study more than 3,000 referendums raised by cities, villages, and townships to renew local road taxes funding existing roads and use an ITT RD estimator inspired by \cite{cellini2010value} to estimate the effect of failure to renew a levy on housing prices. We also compute the loss in funding experienced by local governments when they face a tax cut due to failure of a renewal tax levy and fine-tune a Vision Transformer model to predict and identify the subsequent changes in road quality. We find a 11\% loss in road maintenance funds for areas that cut their renewal road tax levies, an average decline of 23\% in road quality and a reduction in house sale price of 9\% over the 10-year period. Unlike \cite{beenstock2016hedonic} and \cite{diao2017spatial}, we do not find any anticipation effects but we do find statistically significant effects starting in the fourth year after the vote and continuing at least through the ninth year. We find these effects to be more consistent for urban rather than rural areas. We find a lack of dose-response based on the size of the levy, but we find larger house price reductions for more expensive houses than for cheaper houses.  
+% A great deal of existing research has focused on the effect of new roads on house prices, especially in developing nations, providing valuable policy insights and spurring development initiatives like China’s Belt and Road Initiative \citep{huang2016understanding} and India’s Pradhan Mantri Gram Sadak Yojana \citep{asher2020}. However, the endogeneity of road placement makes it difficult to identify causal effects. In this paper, we study taxes that fund maintenance of existing roads and avoid endogeneity issues by utilizing a quasi-experiment setting that naturally arises from the voted levies enacted by local governments in Ohio. We study more than 3,000 referendums raised by cities, villages, and townships to renew local road taxes funding existing roads and use an ITT RD estimator inspired by \cite{cellini2010value} to estimate the effect of failure to renew a levy on housing prices. We also compute the loss in funding experienced by local governments when they face a tax cut due to failure of a renewal tax levy and fine-tune a Vision Transformer model to predict and identify the subsequent changes in road quality. We find a 11\% loss in road maintenance funds for areas that cut their renewal road tax levies, an average decline of 21\% in road quality and a reduction in house sale price of 9\% over the 10-year period. Unlike \cite{beenstock2016hedonic} and \cite{diao2017spatial}, we do not find any anticipation effects but we do find statistically significant effects starting in the fourth year after the vote and continuing at least through the ninth year. We find these effects to be more consistent for urban rather than rural areas. We find a lack of dose-response based on the size of the levy, but we find larger house price reductions for more expensive houses than for cheaper houses.  
 
 % Future research could extend the dynamic RD identification strategy we employ to other geographies, using vote share as a running variable for places that vote on road spending, or using time as a running variable for cities that directly change road spending without a referendum. Moreover, it could also shift away from studying votes to maintain spending toward studying votes to increase road spending, although the endogeneity of choosing when to propose such a referendum makes identification for such settings more challenging.
 

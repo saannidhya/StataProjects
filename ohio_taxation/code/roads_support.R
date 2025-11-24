@@ -772,3 +772,66 @@ roads_and_census %>%
   filter(between(votes_pct_against_ctr, -14,14) ) %>%
   distinct(tendigit_fips)
 
+#==========================================================================================================#
+#  Q. A map of areas with road tax elections, and those with close elections
+#>
+#==========================================================================================================#
+
+library(tigris)
+options(tigris_use_cache = TRUE)
+library(leaflet)
+library(sf)
+
+# Always get sf objects and cache locally (faster next time)
+options(tigris_class = "sf", tigris_use_cache = TRUE)
+
+# Get all Ohio county subdivisions
+oh_cousub_all <- county_subdivisions(state = "OH", cb = TRUE, year = 2021)
+
+# oh_cousub_rd <- roads_and_census %>% mutate(GEOID = str_pad(tendigit_fips, width = 10, side = "left", pad = "0")) %>%
+oh_cousub_rd <- closest_votes %>% mutate(GEOID = str_pad(tendigit_fips, width = 10, side = "left", pad = "0")) %>%
+  # distinct(GEOID, treated) %>%
+  left_join(oh_cousub_all, by = "GEOID")
+
+# Create a simple plot of Ohio county subdivisions with road elections
+oh_cousub_rd_sf <- oh_cousub_rd %>%
+  filter(!is.na(geometry)) %>%
+  st_as_sf()
+
+close_p <- ggplot() +
+  # First layer: all county subdivisions (background)
+  geom_sf(data = oh_cousub_all, fill = "lightgray", color = "white", size = 0.1, alpha = 0.3) +
+  # Second layer: areas with elections
+  geom_sf(data = oh_cousub_rd_sf, aes(fill = factor(treated)), color = "black", size = 0.2) +
+  scale_fill_manual(values = c("0" = "lightblue", "1" = "darkred"),
+                    labels = c("0" = "Renewed", "1" = "Cut"),
+                    name = "Treatment") +
+  theme_void() +
+  labs(title = "Ohio Subdivisions with close road tax renewal elections: 1991 to 2021",
+        subtitle = "Areas with tax cuts vs renewals") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12))
+# close_p
+ggsave(filename = paste0(plots, "/ohio_subdivisions_close_elections_map.png"), plot = close_p, width = 10, height = 8, dpi = 300)
+
+
+
+oh_cousub_rd_all <- roads_and_census %>% mutate(GEOID = str_pad(tendigit_fips, width = 10, side = "left", pad = "0")) %>%
+  left_join(oh_cousub_all, by = "GEOID")
+
+oh_cousub_rd_all_sf <- oh_cousub_rd_all %>%
+filter(!is.na(geometry)) %>%
+st_as_sf()
+
+elections_p <- ggplot() +
+  # First layer: all county subdivisions (background)
+  geom_sf(data = oh_cousub_all, fill = "lightgray", color = "white", size = 0.1, alpha = 0.3) +
+  # Second layer: areas with elections
+  geom_sf(data = oh_cousub_rd_all_sf, color = "black", size = 0.2, fill = "lightgreen") +
+  theme_void() +
+  labs(title = "Ohio Subdivisions with road tax renewal elections: 1991 to 2021") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12))
+
+# elections_p
+ggsave(filename = paste0(plots, "/ohio_subdivisions_elections_map.png"), plot = elections_p, width = 10, height = 8, dpi = 300)
