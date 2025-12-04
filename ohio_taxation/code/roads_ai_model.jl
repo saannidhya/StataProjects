@@ -17,7 +17,8 @@ println("HF     :", PyCall.pyimport("transformers").__version__)
 # input location
 input_dir = "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/data/roads"
 # Output directory for saved model
-outdir = joinpath(input_dir, "hf_finetuned_convnextv2")  # change if you switch model
+# outdir = joinpath(input_dir, "hf_finetuned_convnextv2")  # change if you switch model
+outdir = joinpath(input_dir, "hf_finetuned_vit-base-patch16-224")  # change if you switch model
 
 # Import CSV file
 roadRunner_labels = CSV.read(joinpath(input_dir, "roadRunner_labels.csv"), DataFrame)
@@ -193,7 +194,8 @@ grouped_counts = combine(groupby(roadRunner_labels, :int_label), nrow => :count)
 # ========= HF Fine-tuning (pure PyTorch via PyCall) =========
 using PyCall
 
-const MODEL_NAME = "facebook/convnextv2-base-1k-224"   # good starter
+const MODEL_NAME = "google/vit-base-patch16-224"   # good starter
+# const MODEL_NAME = "facebook/convnextv2-base-1k-224"   # good starter
 # Alternative (backbone is heavier): "facebook/dinov2-base" works too
 # const MODEL_NAME = "facebook/dinov2-base"
 
