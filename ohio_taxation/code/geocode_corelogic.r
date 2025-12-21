@@ -441,11 +441,13 @@ write_state_files_chunk_ot <- function(df, pos) {
   message("Processing chunk @ pos ", pos, " with ", nrow(df), " rows")
   
   # Get unique states in this chunk
-  chunk_states <- unique(df$`DEED SITUS STATE - STATIC`)
+  chunk_states <- unique(toupper(df$`DEED SITUS STATE - STATIC`))
+
   chunk_states <- chunk_states[!is.na(chunk_states) & chunk_states != ""]
   
   for (st in chunk_states) {
-    state_df <- df %>% filter(`DEED SITUS STATE - STATIC` == st)
+
+    state_df <- df %>% filter(toupper(`DEED SITUS STATE - STATIC`) == st)
     
     if (nrow(state_df) == 0L) next
     
@@ -487,3 +489,32 @@ message("NOTE: Finished writing state files. Run time: ",
         round(difftime(write_end, write_start, units = "mins"), 2), " minutes")
 message("Files written to: ", state_ot_out_dir)
 message("States processed: ", paste(sort(states_written), collapse = ", "))
+
+# States processed: A, AE, AK, AL, AP, AR, AZ, CA, CO, CT, DA, DC, DE, DR, F, fl, FL, GA, GU, HI, I, IA, id, ID, IL, IN, KS, KY, LA, LL, LN, M0, MA, MD, ME, MI, mn, MN, MO, MS, MT, N, nc, NC, ND, NE, NH, NJ, NM, NV, NY, OD, oh, OH, Ok, OK, OR, PA, PR, RI, SC, SD, ST, T, TC, TN, TR, tx, TX, UT, V, VA, VI, VT, WA, WI, WV, WY, YX
+# NOTE: Finished writing state files. Run time: 555.09 minutes i.e. 9.25 hours
+
+
+#=====================================================================#
+# Get names of all datasets in Owner Transfer by_state directory
+#=====================================================================#
+
+# List all files in the by_state directory
+ot_state_files <- list.files(
+  path = state_ot_out_dir,
+  pattern = "\\.csv$",
+  full.names = FALSE
+)
+
+message("Found ", length(ot_state_files), " state-level Owner Transfer files:")
+print(ot_state_files)
+
+# Extract state codes from filenames
+state_codes <- str_extract(ot_state_files, "(?<=corelogic_ot_)[^.]+")
+message("\nState codes: ", paste(sort(state_codes), collapse = ", "))
+
+
+
+#==========================================================================#
+# Merge Geocoded Property Characteristics with Owner Transfer Files
+#==========================================================================#
+
