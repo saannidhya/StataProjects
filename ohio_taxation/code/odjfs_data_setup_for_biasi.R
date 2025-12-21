@@ -274,99 +274,83 @@ roads_panel <- roads_panel %>%
   mutate(event_time = year - cohort) 
 
 #------------------------------------------------------------------------------------------------------------------#
-# Creating levy proposal (EL's) and levy authorization (DL's) flags MANUALLY
+# Creating BLS-style stacked event-time dummies
+#
+# IMPORTANT: DL_* / DL* must be based on the cohort election outcome (pass at year == cohort),
+# not on lag/lead of the year-specific election outcome (which would pick up other elections).
+# We keep EL/ML as controls based on the calendar election series in the stacked panel.
 #------------------------------------------------------------------------------------------------------------------#
 
 roads_panel <- roads_panel %>% arrange(tendigit_fips, cohort, year)
 roads_panel_flags <- roads_panel %>%
   dplyr::group_by(tendigit_fips, cohort) %>%
   mutate(
-    ### History variables ###
-    EL_0 = if_else(hold_election == 1, 1, 0) |> replace_na(0),
-    DL_0 = if_else(if_pass == 1, 1, 0) |> replace_na(0),
-    ML_0 = if_else(hold_election == 1, margin, 0) |> replace_na(0),
+    zero = 0,
+    event_time = year - cohort,
+    treat_cohort = as.integer(any(year == cohort & if_pass == 1, na.rm = TRUE)),
 
-    EL_1 = if_else(lag(hold_election) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_1 = if_else(lag(if_pass) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_1 = if_else(lag(hold_election) == 1 & !is.na(subdivisionname), lag(margin), 0) |> replace_na(0),
+    # Main treatment event-time indicators (k = -5..-1 and 1..10)
+    DL_5  = if_else(event_time == -5,  treat_cohort, 0L),
+    DL_4  = if_else(event_time == -4,  treat_cohort, 0L),
+    DL_3  = if_else(event_time == -3,  treat_cohort, 0L),
+    DL_2  = if_else(event_time == -2,  treat_cohort, 0L),
+    DL_1  = if_else(event_time == -1,  treat_cohort, 0L),
+    DL1   = if_else(event_time == 1,   treat_cohort, 0L),
+    DL2   = if_else(event_time == 2,   treat_cohort, 0L),
+    DL3   = if_else(event_time == 3,   treat_cohort, 0L),
+    DL4   = if_else(event_time == 4,   treat_cohort, 0L),
+    DL5   = if_else(event_time == 5,   treat_cohort, 0L),
+    DL6   = if_else(event_time == 6,   treat_cohort, 0L),
+    DL7   = if_else(event_time == 7,   treat_cohort, 0L),
+    DL8   = if_else(event_time == 8,   treat_cohort, 0L),
+    DL9   = if_else(event_time == 9,   treat_cohort, 0L),
+    DL10  = if_else(event_time == 10,  treat_cohort, 0L),
 
-    EL_2 = if_else(lag(hold_election, 2) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_2 = if_else(lag(if_pass, 2) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_2 = if_else(lag(hold_election, 2) == 1 & !is.na(subdivisionname), lag(margin, 2), 0) |> replace_na(0),
+    # Election schedule controls (calendar-time, within the stacked panel)
+    EL_0  = if_else(hold_election == 1, 1L, 0L) |> replace_na(0L),
+    ML_0  = if_else(hold_election == 1, margin, 0) |> replace_na(0),
 
-    EL_3 = if_else(lag(hold_election, 3) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_3 = if_else(lag(if_pass, 3) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_3 = if_else(lag(hold_election, 3) == 1 & !is.na(subdivisionname), lag(margin, 3), 0) |> replace_na(0),
-
-    EL_4 = if_else(lag(hold_election, 4) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_4 = if_else(lag(if_pass, 4) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_4 = if_else(lag(hold_election, 4) == 1 & !is.na(subdivisionname), lag(margin, 4), 0) |> replace_na(0),
-
-    EL_5 = if_else(lag(hold_election, 5) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_5 = if_else(lag(if_pass, 5) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_5 = if_else(lag(hold_election, 5) == 1 & !is.na(subdivisionname), lag(margin, 5), 0) |> replace_na(0),
-
-    EL_6 = if_else(lag(hold_election, 6) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_6 = if_else(lag(if_pass, 6) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_6 = if_else(lag(hold_election, 6) == 1 & !is.na(subdivisionname), lag(margin, 6), 0) |> replace_na(0),
-
-    EL_7 = if_else(lag(hold_election, 7) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_7 = if_else(lag(if_pass, 7) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_7 = if_else(lag(hold_election, 7) == 1 & !is.na(subdivisionname), lag(margin, 7), 0) |> replace_na(0),
-
-    EL_8 = if_else(lag(hold_election, 8) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_8 = if_else(lag(if_pass, 8) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_8 = if_else(lag(hold_election, 8) == 1 & !is.na(subdivisionname), lag(margin, 8), 0) |> replace_na(0),
-
-    EL_9 = if_else(lag(hold_election, 9) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_9 = if_else(lag(if_pass, 9) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML_9 = if_else(lag(hold_election, 9) == 1 & !is.na(subdivisionname), lag(margin, 9), 0) |> replace_na(0),
-
-    EL_10 = if_else(lag(hold_election, 10) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL_10 = if_else(lag(if_pass, 10) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
+    EL_1  = if_else(lag(hold_election, 1) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_1  = if_else(lag(hold_election, 1) == 1 & !is.na(subdivisionname), lag(margin, 1), 0) |> replace_na(0),
+    EL_2  = if_else(lag(hold_election, 2) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_2  = if_else(lag(hold_election, 2) == 1 & !is.na(subdivisionname), lag(margin, 2), 0) |> replace_na(0),
+    EL_3  = if_else(lag(hold_election, 3) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_3  = if_else(lag(hold_election, 3) == 1 & !is.na(subdivisionname), lag(margin, 3), 0) |> replace_na(0),
+    EL_4  = if_else(lag(hold_election, 4) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_4  = if_else(lag(hold_election, 4) == 1 & !is.na(subdivisionname), lag(margin, 4), 0) |> replace_na(0),
+    EL_5  = if_else(lag(hold_election, 5) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_5  = if_else(lag(hold_election, 5) == 1 & !is.na(subdivisionname), lag(margin, 5), 0) |> replace_na(0),
+    EL_6  = if_else(lag(hold_election, 6) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_6  = if_else(lag(hold_election, 6) == 1 & !is.na(subdivisionname), lag(margin, 6), 0) |> replace_na(0),
+    EL_7  = if_else(lag(hold_election, 7) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_7  = if_else(lag(hold_election, 7) == 1 & !is.na(subdivisionname), lag(margin, 7), 0) |> replace_na(0),
+    EL_8  = if_else(lag(hold_election, 8) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_8  = if_else(lag(hold_election, 8) == 1 & !is.na(subdivisionname), lag(margin, 8), 0) |> replace_na(0),
+    EL_9  = if_else(lag(hold_election, 9) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML_9  = if_else(lag(hold_election, 9) == 1 & !is.na(subdivisionname), lag(margin, 9), 0) |> replace_na(0),
+    EL_10 = if_else(lag(hold_election, 10) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
     ML_10 = if_else(lag(hold_election, 10) == 1 & !is.na(subdivisionname), lag(margin, 10), 0) |> replace_na(0),
-    
-    ### Future variables ###
-    EL1 = if_else(lead(hold_election) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL1 = if_else(lead(if_pass) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML1 = if_else(lead(hold_election) == 1 & !is.na(subdivisionname), lead(margin), 0) |> replace_na(0),
-    
-    EL2 = if_else(lead(hold_election, 2) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL2 = if_else(lead(if_pass, 2) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML2 = if_else(lead(hold_election, 2) == 1 & !is.na(subdivisionname), lead(margin, 2), 0) |> replace_na(0),
-    
-    EL3 = if_else(lead(hold_election, 3) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL3 = if_else(lead(if_pass, 3) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML3 = if_else(lead(hold_election, 3) == 1 & !is.na(subdivisionname), lead(margin, 3), 0) |> replace_na(0),
-    
-    EL4 = if_else(lead(hold_election, 4) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL4 = if_else(lead(if_pass, 4) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML4 = if_else(lead(hold_election, 4) == 1 & !is.na(subdivisionname), lead(margin, 4), 0) |> replace_na(0),
-    
-    EL5 = if_else(lead(hold_election, 5) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL5 = if_else(lead(if_pass, 5) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML5 = if_else(lead(hold_election, 5) == 1 & !is.na(subdivisionname), lead(margin, 5), 0) |> replace_na(0),
-    
-    EL6 = if_else(lead(hold_election, 6) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL6 = if_else(lead(if_pass, 6) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML6 = if_else(lead(hold_election, 6) == 1 & !is.na(subdivisionname), lead(margin, 6), 0) |> replace_na(0),
-    
-    EL7 = if_else(lead(hold_election, 7) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL7 = if_else(lead(if_pass, 7) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML7 = if_else(lead(hold_election, 7) == 1 & !is.na(subdivisionname), lead(margin, 7), 0) |> replace_na(0),
-    
-    EL8 = if_else(lead(hold_election, 8) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL8 = if_else(lead(if_pass, 8) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML8 = if_else(lead(hold_election, 8) == 1 & !is.na(subdivisionname), lead(margin, 8), 0) |> replace_na(0),
-    
-    EL9 = if_else(lead(hold_election, 9) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL9 = if_else(lead(if_pass, 9) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML9 = if_else(lead(hold_election, 9) == 1 & !is.na(subdivisionname), lead(margin, 9), 0) |> replace_na(0),
-    
-    EL10 = if_else(lead(hold_election, 10) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    DL10 = if_else(lead(if_pass, 10) == 1 & !is.na(subdivisionname), 1, 0 ) |> replace_na(0),
-    ML10 = if_else(lead(hold_election, 10) == 1 & !is.na(subdivisionname), lead(margin, 10), 0) |> replace_na(0)
-    
+
+    EL1   = if_else(lead(hold_election, 1) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML1   = if_else(lead(hold_election, 1) == 1 & !is.na(subdivisionname), lead(margin, 1), 0) |> replace_na(0),
+    EL2   = if_else(lead(hold_election, 2) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML2   = if_else(lead(hold_election, 2) == 1 & !is.na(subdivisionname), lead(margin, 2), 0) |> replace_na(0),
+    EL3   = if_else(lead(hold_election, 3) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML3   = if_else(lead(hold_election, 3) == 1 & !is.na(subdivisionname), lead(margin, 3), 0) |> replace_na(0),
+    EL4   = if_else(lead(hold_election, 4) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML4   = if_else(lead(hold_election, 4) == 1 & !is.na(subdivisionname), lead(margin, 4), 0) |> replace_na(0),
+    EL5   = if_else(lead(hold_election, 5) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML5   = if_else(lead(hold_election, 5) == 1 & !is.na(subdivisionname), lead(margin, 5), 0) |> replace_na(0),
+    EL6   = if_else(lead(hold_election, 6) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML6   = if_else(lead(hold_election, 6) == 1 & !is.na(subdivisionname), lead(margin, 6), 0) |> replace_na(0),
+    EL7   = if_else(lead(hold_election, 7) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML7   = if_else(lead(hold_election, 7) == 1 & !is.na(subdivisionname), lead(margin, 7), 0) |> replace_na(0),
+    EL8   = if_else(lead(hold_election, 8) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML8   = if_else(lead(hold_election, 8) == 1 & !is.na(subdivisionname), lead(margin, 8), 0) |> replace_na(0),
+    EL9   = if_else(lead(hold_election, 9) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML9   = if_else(lead(hold_election, 9) == 1 & !is.na(subdivisionname), lead(margin, 9), 0) |> replace_na(0),
+    EL10  = if_else(lead(hold_election, 10) == 1 & !is.na(subdivisionname), 1L, 0L) |> replace_na(0L),
+    ML10  = if_else(lead(hold_election, 10) == 1 & !is.na(subdivisionname), lead(margin, 10), 0) |> replace_na(0)
   )
 
 # View(roads_panel_flags)
