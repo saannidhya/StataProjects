@@ -5,44 +5,44 @@ Reallocating 'name_of_file' (item size: 1) to 4 items.
 The style file: aea.bst
 Reallocating 'name_of_file' (item size: 1) to 15 items.
 Database file #1: aej_references.bib
-You've used 5 entries,
+You've used 6 entries,
             2695 wiz_defined-function locations,
-            621 strings with 4849 characters,
-and the built_in function-call counts, 27486 in all, are:
-= -- 4576
-> -- 284
+            629 strings with 5032 characters,
+and the built_in function-call counts, 35548 in all, are:
+= -- 5936
+> -- 378
 < -- 0
-+ -- 2204
-- -- 88
-* -- 2452
-:= -- 5411
-add.period$ -- 37
-call.type$ -- 5
-change.case$ -- 65
-chr.to.int$ -- 5
-cite$ -- 5
-duplicate$ -- 71
-empty$ -- 202
-format.name$ -- 91
-if$ -- 4921
++ -- 2872
+- -- 118
+* -- 3186
+:= -- 6960
+add.period$ -- 44
+call.type$ -- 6
+change.case$ -- 78
+chr.to.int$ -- 6
+cite$ -- 6
+duplicate$ -- 86
+empty$ -- 244
+format.name$ -- 121
+if$ -- 6375
 int.to.chr$ -- 5
 int.to.str$ -- 0
 missing$ -- 0
-newline$ -- 22
-num.names$ -- 55
-pop$ -- 5
+newline$ -- 25
+num.names$ -- 66
+pop$ -- 6
 preamble$ -- 1
-purify$ -- 75
+purify$ -- 90
 quote$ -- 0
-skip$ -- 63
+skip$ -- 75
 stack$ -- 0
-substring$ -- 6576
-swap$ -- 28
-text.length$ -- 70
+substring$ -- 8542
+swap$ -- 34
+text.length$ -- 84
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 18
+type$ -- 22
 warning$ -- 0
-while$ -- 123
+while$ -- 149
 width$ -- 0
-write$ -- 28
+write$ -- 33

@@ -11,11 +11,16 @@ y_{it} = \alpha + \theta F_{it} + \epsilon_{it}
 
 \noindent where $\alpha$ is the intercept, $\theta$ is the parameter of interest representing the causal effect of cutting a renewal road tax levy and $\epsilon_{it}$ is the error term representing all other determinants of the outcome. Around a narrow enough window around the threshold $v^*$, we can estimate the causal effect of cutting a renewal road tax levy on the outcome variable $y_{it}$ by comparing the outcome variable for cities that narrowly pass the referendum to those that narrowly fail it.
 
-\subsection{Intent-to-Treat (ITT) Estimator}
+% \subsection{Intent-to-Treat (ITT) Estimator}
+\subsection{Dynamic Regression Discontinuity Design}
 
-We follow a dynamic model of RD design and estimate the {\bf Intent-to-Treat} or ITT estimator. We prefer using the ITT estimator instead of the alternative {\bf Treatment on the Treated} (TOT) estimator because the ITT estimator is more suited to our setting given the independence of the renewal elections\footnote{As described in \cite{cellini2010value}, when the elections are independent, the ITT estimator equals the TOT estimator.}.
+Dynamic Regression Discontinuity (RD) design has been an active area of research in recent years \citep{hsu2024dynamic, biasi_what_2025, ruggieri_drd_2025}. These studies have focused on the idea of ``repeated'' treatments i.e. treatments that can occur multiple times over a period of time. In our setting, there is no ``repeated'' treatment as a renewal road tax levy can be cut only once and as the treatment happens, the money is lost.  
+% \footnote{There may be ``new'' road tax levy elections conducted to collect additional funding for roads. However, this flows through a different channel that we control for in Section \ref{sec:robustness} }. 
+Rather, we face a treatment happening at different points in time for different cities. Thus, we follow a dynamic model of RD design that controls for year-specfic shocks and operationalize our estimator using Equation \ref{eq:itt_estimator}:
 
-We operationalize our ITT estimator using Equation \ref{eq:itt_estimator}:
+% estimator\footnote{We prefer using the ITT estimator instead of the alternative {\bf Treatment on the Treated} (TOT) estimator because the ITT estimator is more suited to our setting given the independence of the renewal elections. As described in \cite{cellini2010value}, when the elections are independent, the ITT estimator equals the TOT estimator.}.
+
+% We operationalize our estimator using Equation \ref{eq:itt_estimator}:  
   
 \begin{equation}
 Y_{i,t+\tau} = \alpha_\tau + \kappa_t + F_{it} \theta_{\tau}^{ITT} + P_g (v_{it}, \gamma_\tau) + Z_{it} \beta_\tau + \epsilon_{i,t + \tau}

@@ -23,7 +23,7 @@ h_t^{\,\alpha_h A(G_t)}
 \bigl(n_t\,[1+\phi(G_t)]\bigr)^{1+\theta}
 \Bigr]
 \end{equation}
-
+ 
 where $c_t$ denotes non–housing consumption, $h_t$ the flow of housing services, and $A(G_t)$ the amenity derived from the public capital stock $G_t$, which represents the quality of local public goods.
 \vskip 0.3cm
 After taking logs, we can write the utility function as a convenient separable specification
@@ -37,7 +37,7 @@ After taking logs, we can write the utility function as a convenient separable s
 \end{equation}
 
 
-with $n_t$ hours of market work, $\phi(G_t)\ge0$ a commuting factor that rises as road quality falls, $\kappa>0$, and $\theta>0$ is the inverse Frisch elasticity of labor supply i.e. $\frac{1}{\theta}$ is the Frisch elasticity of labor supply with respect to real wages. The parameter $\alpha_h$ captures the household’s preference for housing services, and $A(G_t)$ is a function that captures how public infrastructure quality (e.g., roads) affects the utility derived from housing. The term $\phi(G_t)$ captures the disutility of commuting, which increases as road quality deteriorates.
+with $n_t$ hours of work\footnote{We model labor disutility using standard isoelastic form, as used in \cite{king1988} and \cite{chetty2011micro}.}, $\phi(G_t)\ge0$ a commuting factor that rises as road quality falls, $\kappa>0$, and $\theta>0$ is the inverse Frisch elasticity of labor supply i.e. $\frac{1}{\theta}$ is the Frisch elasticity of labor supply with respect to real wages. The parameter $\alpha_h$ captures the household’s preference for housing services, and $A(G_t)$ is a function that captures how public infrastructure quality (e.g., roads) affects the utility derived from housing. The term $\phi(G_t)$ captures the disutility of commuting, which increases as road quality deteriorates.
 
 \vskip 0.3cm
 
@@ -336,8 +336,8 @@ The steady-state equilibrium is determined by the following 9 independent equati
     This defines maintenance spending from tax revenues.
 
     \item \textbf{Road quality steady-state:} From the law of motion $G_{t+1} = G_t(1-\delta_{G,t})$:
-    \begin{equation}
-    G = G(1-\delta_G) \quad \text{where} \quad \delta_G = \max\left\{0, \varphi\left(1 - \frac{M}{\delta_G^{\text{norm}} G^{\psi}}\right)\right\}
+    \begin{equation} 
+    G = G(1-\delta_G) \quad \text{where} \quad \delta_G = \varphi \cdot \max\left\{0, 1 - \frac{M}{\delta_G^{\text{norm}} G^{\psi}}\right\}
     \end{equation}
     In the minimal-upkeep steady state, this simplifies to $M = \delta_G^{\text{norm}} G^{\psi}$.
 

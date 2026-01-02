@@ -16,10 +16,10 @@ tables <- paste0(data,"/outputs/tables")
 plots <- paste0(data,"/outputs/plots")
 spend_reports_loc <- paste0(data,"/spending reports/")
 
-source(paste0(code,"/utility_functions.R"))
+source(paste0(code,"/0_utility_functions.R"))
 
 # running data setup code
-source(paste0(code,"/housing_data_setup.R"))
+source(paste0(code,"/2.0_housing_data_setup.R"))
 
 
 #============================================================================================================#

@@ -490,9 +490,8 @@ message("NOTE: Finished writing state files. Run time: ",
 message("Files written to: ", state_ot_out_dir)
 message("States processed: ", paste(sort(states_written), collapse = ", "))
 
-# States processed: A, AE, AK, AL, AP, AR, AZ, CA, CO, CT, DA, DC, DE, DR, F, fl, FL, GA, GU, HI, I, IA, id, ID, IL, IN, KS, KY, LA, LL, LN, M0, MA, MD, ME, MI, mn, MN, MO, MS, MT, N, nc, NC, ND, NE, NH, NJ, NM, NV, NY, OD, oh, OH, Ok, OK, OR, PA, PR, RI, SC, SD, ST, T, TC, TN, TR, tx, TX, UT, V, VA, VI, VT, WA, WI, WV, WY, YX
-# NOTE: Finished writing state files. Run time: 555.09 minutes i.e. 9.25 hours
-
+# States processed: A, AE, AK, AL, AP, AR, AZ, CA, CO, CT, DA, DC, DE, DR, F, FL, GA, GU, HI, I, IA, ID, IL, IN, KS, KY, LA, LL, LN, M0, MA, MD, ME, MI, MN, MO, MS, MT, N, NC, ND, NE, NH, NJ, NM, NV, NY, OD, OH, OK, OR, PA, PR, RI, SC, SD, ST, T, TC, TN, TR, TX, UT, V, VA, VI, VT, WA, WI, WV, WY, YX
+# NOTE: Finished writing state files. Run time: 856.89 minutes i.e. 14.28 hours
 
 #=====================================================================#
 # Get names of all datasets in Owner Transfer by_state directory
@@ -518,3 +517,118 @@ message("\nState codes: ", paste(sort(state_codes), collapse = ", "))
 # Merge Geocoded Property Characteristics with Owner Transfer Files
 #==========================================================================#
 
+
+# Import Ohio Property Characteristics with geocoding + FIPS
+df_pc_oh_final <- read_csv(file.path(pc_out_loc, "corelogic_property_geocoded_with_cousub_place_oh.csv"), col_types = cols(.default = "c"))
+
+# Import Ohio Owner Transfer file
+df_ot_oh <- read_csv(file.path(state_ot_out_dir, "corelogic_ot_OH.csv"), col_types = cols(.default = "c"))
+
+# We need to find the unique key columns to merge on. Will be doing left joining property characteristics to owner transfer.
+colnames(df_pc_oh_final)
+colnames(df_ot_oh)
+
+# Question: Are CLIPS IDs present in both datasets and can be used as a unique key?
+
+# Check 1: Are CLIPS IDs present in both datasets?
+message("\n=== CLIPS Merge Compatibility Checks ===\n")
+
+# Check for CLIPS column existence
+message("Check 1: CLIPS column presence")
+pc_has_clips <- "CLIP" %in% colnames(df_pc_oh_final)
+ot_has_clips <- "CLIP" %in% colnames(df_ot_oh)
+message("  Property Characteristics has CLIP: ", pc_has_clips)
+message("  Owner Transfer has CLIP: ", ot_has_clips)
+# > message("  Property Characteristics has CLIP: ", pc_has_clips)
+#   Property Characteristics has CLIP: TRUE
+# > message("  Owner Transfer has CLIP: ", ot_has_clips)
+#   Owner Transfer has CLIP: TRUE
+
+# Check 2: Missing CLIPS values in each dataset
+message("\nCheck 2: Missing CLIPS values")
+pc_missing_clips <- sum(is.na(df_pc_oh_final$CLIP))
+ot_missing_clips <- sum(is.na(df_ot_oh$CLIP))
+message("  PC missing CLIPS: ", pc_missing_clips, " (", round(pc_missing_clips/nrow(df_pc_oh_final)*100, 2), "%)")
+message("  OT missing CLIPS: ", ot_missing_clips, " (", round(ot_missing_clips/nrow(df_ot_oh)*100, 2), "%)")
+# > message("  PC missing CLIPS: ", pc_missing_clips, " (", round(pc_missing_cli$
+#   PC missing CLIPS: 304196 (10.44%)
+# > message("  OT missing CLIPS: ", ot_missing_clips, " (", round(ot_missing_cli$
+#   OT missing CLIPS: 283 (0%)
+
+# Check 3: CLIPS uniqueness in each dataset
+message("\nCheck 3: CLIPS uniqueness")
+pc_clips_dups <- df_pc_oh_final %>% 
+  filter(!is.na(CLIP)) %>% 
+  group_by(CLIP) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  filter(count > 1)
+ot_clips_dups <- df_ot_oh %>% 
+  filter(!is.na(CLIP)) %>% 
+  group_by(CLIP) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  filter(count > 1)
+message("  PC duplicated CLIPS: ", nrow(pc_clips_dups), " IDs, ", sum(pc_clips_dups$count), " total obs")
+message("  OT duplicated CLIPS: ", nrow(ot_clips_dups), " IDs, ", sum(ot_clips_dups$count), " total obs")
+# > message("  PC duplicated CLIPS: ", nrow(pc_clips_dups), " IDs, ", sum(pc_cli$
+#   PC duplicated CLIPS: 0 IDs, 0 total obs
+# > message("  OT duplicated CLIPS: ", nrow(ot_clips_dups), " IDs, ", sum(ot_cli$
+#   OT duplicated CLIPS: 1592200 IDs, 4677793 total obs
+# Note: This makes sense as Owner Transfer can have multiple transactions per property.
+
+# Check 4: CLIPS overlap between datasets
+message("\nCheck 4: CLIPS overlap")
+pc_clips <- df_pc_oh_final %>% filter(!is.na(CLIP)) %>% pull(CLIP) %>% unique()
+ot_clips <- df_ot_oh %>% filter(!is.na(CLIP)) %>% pull(CLIP) %>% unique()
+clips_in_both <- intersect(pc_clips, ot_clips)
+clips_only_pc <- setdiff(pc_clips, ot_clips)
+clips_only_ot <- setdiff(ot_clips, pc_clips)
+message("  Unique CLIPS in PC: ", length(pc_clips))
+message("  Unique CLIPS in OT: ", length(ot_clips))
+message("  CLIPS in both datasets: ", length(clips_in_both), " (", round(length(clips_in_both)/length(pc_clips)*100, 2), "% of PC)")
+message("  CLIPS only in PC: ", length(clips_only_pc))
+message("  CLIPS only in OT: ", length(clips_only_ot))
+# > message("  Unique CLIPS in PC: ", length(pc_clips))
+#   Unique CLIPS in PC: 2608755
+# > message("  Unique CLIPS in OT: ", length(ot_clips))
+#   Unique CLIPS in OT: 2814233
+# > message("  CLIPS in both datasets: ", length(clips_in_both), " (", round(len$
+#   CLIPS in both datasets: 1728407 (66.25% of PC)
+# > message("  CLIPS only in PC: ", length(clips_only_pc))
+#   CLIPS only in PC: 880348
+# > message("  CLIPS only in OT: ", length(clips_only_ot))
+#   CLIPS only in OT: 1085826
+
+
+# Check 5: Expected merge outcomes
+message("\nCheck 5: Expected merge outcomes (left join OT to PC)")
+ot_with_match <- df_ot_oh %>% filter(!is.na(CLIP) & CLIP %in% clips_in_both) %>% nrow()
+ot_without_match <- df_ot_oh %>% filter(is.na(CLIP) | !CLIP %in% clips_in_both) %>% nrow()
+message("  OT rows that will match to PC: ", ot_with_match, " (", round(ot_with_match/nrow(df_ot_oh)*100, 2), "%)")
+message("  OT rows without PC match: ", ot_without_match, " (", round(ot_without_match/nrow(df_ot_oh)*100, 2), "%)")
+# > message("  OT rows that will match to PC: ", ot_with_match, " (", round(ot_w$
+#   OT rows that will match to PC: 3692992 (62.59%)
+# > message("  OT rows without PC match: ", ot_without_match, " (", round(ot_wit$
+#   OT rows without PC match: 2207117 (37.41%)
+
+# Check 6: One-to-many relationships (if OT has multiple records per property)
+message("\nCheck 6: Cardinality (important for understanding merge)")
+if (nrow(ot_clips_dups) > 0) {
+  message("  WARNING: OT has duplicate CLIPS - merge will create multiple rows per transaction")
+  message("  Example: CLIP '", ot_clips_dups$CLIP[1], "' appears ", ot_clips_dups$count[1], " times in OT")
+} else {
+  message("  OT has unique CLIPS - one-to-one merge possible")
+}
+if (nrow(pc_clips_dups) > 0) {
+  message("  WARNING: PC has duplicate CLIPS - each may match to multiple OT records")
+}
+
+
+message("\n=== Summary ===")
+if (pc_has_clips && ot_has_clips && length(clips_in_both) > 0) {
+  message("✓ CLIPS can be used as merge key")
+  message("✓ ", round(length(clips_in_both)/length(ot_clips)*100, 2), "% of OT CLIPS will find a match in PC")
+} else {
+  message("✗ CLIPS merge may have issues - review checks above")
+}
+# ✓ CLIPS can be used as merge key
+# ✓ 61.42% of OT CLIPS will find a match in PC

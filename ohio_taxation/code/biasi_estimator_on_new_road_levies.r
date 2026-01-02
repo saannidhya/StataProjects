@@ -34,7 +34,7 @@ plot_dir <- file.path(root, "data/outputs/plots/BLS")
 table_dir <- file.path(root, "data/outputs/tables/BLS")
 
 # importing biasi utility functions
-source(file.path(root, "code", "biasi_utils.R"))
+source(file.path(root, "code", "0_biasi_utils.R"))
 
 # importing Biasi-style stacked datasets (prepared using odjfs_data_setup_for_biasi.R)
 roads_emp_stacked <- read_csv(file.path(root, "data/employment", "roads_emp_stacked.csv")) %>% mutate(county_fips = substr(tendigit_fips, 1, 5))

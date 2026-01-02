@@ -22,10 +22,10 @@ tables <- paste0(data,"/outputs/tables")
 plots <- paste0(data,"/outputs/plots")
 
 # running data setup code
-source(paste0(code,"/housing_data_setup.R"))
-source(paste0(code,"/employment_data_setup.R"))
+source(paste0(code,"/2.0_housing_data_setup.R"))
+source(paste0(code,"/2.1_employment_data_setup.R"))
 # running reg discontinuity with covs for bandwidth and selected covariates info
-source(paste0(code,"/road_spending_reg_discontinuity_agg_w_covariates.R"))
+source(paste0(code,"/3.1_road_spending_reg_discontinuity_agg_w_covariates.R"))
 
 # list of covariates
 covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,

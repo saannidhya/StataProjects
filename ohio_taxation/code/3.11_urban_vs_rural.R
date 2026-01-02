@@ -15,8 +15,8 @@ data <- paste0(root,"/data")
 code <- paste0(root,"/code")
 
 # running data setup code
-source(paste0(code,"/housing_data_setup.R"))
-source(paste0(code,"/utility_functions.R"))
+source(paste0(code,"/0_utility_functions.R"))
+source(paste0(code,"/2.0_housing_data_setup.R"))
 
 covs_list <- c("pop" ,"childpov" ,"poverty" ,"pctwithkids" ,"pctsinparhhld" ,"pctnokids" ,
                "pctlesshs" ,"pcthsgrad" ,"pctsomecoll" ,"pctbachelors" ,"pctgraddeg" ,"unemprate" ,"medfamy" ,"pctrent" ,"pctown" ,"pctlt5" ,
@@ -244,8 +244,8 @@ regs_covs_urb_ua_tfe <- purrr::map2(dfs_agg_covs_urb_ua_w_tfe, covs_final_urb_ua
 )
 
 tes_regs_covs_urb_ua_tfe <- te_tables(regs_covs_urb_ua_tfe)
-plot_te(tes_regs_covs_urb_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
-plot_te_recenter(tes_regs_covs_urb_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+# plot_te(tes_regs_covs_urb_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+# plot_te_recenter(tes_regs_covs_urb_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
 # rural
 dfs_agg_covs_rur_ua_w_tfe <- map(dfs_agg_covs_rur_ua, ~ dummy_cols(.x, select_columns = c("year"), remove_first_dummy = TRUE) %>% relocate(starts_with("year_"), .after = "year"))
@@ -265,11 +265,37 @@ regs_covs_rur_ua_tfe <- purrr::map2(dfs_agg_covs_rur_ua_w_tfe, covs_final_rur_ua
 )
 
 tes_regs_covs_rur_ua_tfe <- te_tables(regs_covs_rur_ua_tfe)
-plot_te(tes_regs_covs_rur_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
-plot_te_recenter(tes_regs_covs_rur_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+# plot_te(tes_regs_covs_rur_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
+# plot_te_recenter(tes_regs_covs_rur_ua_tfe, title = "Treatment Effect Estimates: Median House Price", subtitle = "With covariates")
 
+### No re-centering
+tes_regs_covs_ua <- rbind(tes_regs_covs_urb_ua_tfe %>% mutate(cat = "urban"), tes_regs_covs_rur_ua_tfe %>% mutate(cat = "rural"))  %>% 
+  mutate(ord = if_else(cat == "rural", ord - 0.15, ord + 0.15))
 
-
+ggplot(tes_regs_covs_ua, aes(ord, robust_coef, color = cat)) +       
+ geom_point(size = 3, shape = 19) +
+ geom_errorbar(aes(ymin = conf_int_low, ymax = conf_int_high, color = cat), 
+               width = 0.2, color = "grey50", size = 0.7) +
+ geom_hline(yintercept = 0, linetype = "dashed", color = "#66b2b2", size = 1) +
+ labs(
+   x = "Year",
+   y = "Treatment Effect",
+   color = "Position",
+   title = "Treatment Effects: Urban vs Rural"
+ ) +
+ theme_minimal() +
+ theme(
+   plot.title = element_text(hjust = 0.5),
+   legend.position = "bottom",
+   panel.grid.major.x = element_blank(), 
+   panel.grid.minor.x = element_blank(), 
+   panel.grid.minor.y = element_blank(),
+   legend.title = element_blank()
+ ) + 
+ scale_x_continuous(breaks = c(-3:10)) +
+ ylim(c(NA, 50000))          
+         
+         
 ### Re-centered Main urban vs rural plot in paper WITH Time F.E ###
 tes_regs_covs_ua <- rbind(tes_regs_covs_urb_ua_tfe %>% mutate(cat = "urban"), tes_regs_covs_rur_ua_tfe %>% mutate(cat = "rural")) %>% 
   mutate(ord = if_else(cat == "rural", ord - 0.15, ord + 0.15),

@@ -14,10 +14,6 @@ import geopandas as gpd
 from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point, MultiPoint, GeometryCollection
 import logging
 import time
-import random
-
-# Set random seed for reproducibility
-random.seed(42)
 
 # Enter your Google Street View API key here.
 sv.api_key = "" 
@@ -202,19 +198,6 @@ def get_road_coords(gdf):
 
 # Call the function to get road coordinates
 lat_lon_tuples = get_road_coords(gdf_roads)
-
-# Subset coordinates: keep at most 5 random coordinates per road
-lat_lon_tuples_subset = []
-for coords, cosbidfp, name00, namelsad, classfp, fullname, ur00 in lat_lon_tuples:
-    if len(coords) <= 5:
-        sampled_coords = coords
-    else:
-        sampled_coords = random.sample(coords, 5)
-    
-    lat_lon_tuples_subset.append((sampled_coords, cosbidfp, name00, namelsad, classfp, fullname, ur00))
-
-# Replace the original with the subset version
-# lat_lon_tuples = lat_lon_tuples_subset
 
 # Next step: Extract images for each road. Each lat, lon tuple is a list of coordinates for that road
 

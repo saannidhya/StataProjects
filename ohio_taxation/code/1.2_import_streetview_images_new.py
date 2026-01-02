@@ -368,3 +368,7 @@ for coords_list, cosbid, _ , namelsad, classfp, stname, _ in lat_lon_tuples_subs
         min_year=2010
     )
 
+# Total number of JPG files saved in directory: 12,860
+
+#==========================================================================#
+# END OF FILE

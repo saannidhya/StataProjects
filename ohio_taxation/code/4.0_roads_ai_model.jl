@@ -226,7 +226,7 @@ val_labels  = $val_labels
 model_name  = $MODEL_NAME
 outdir      = $outdir
 num_classes = int($num_classes)
-
+EPOCHS = 3
 os.makedirs(outdir, exist_ok=True)
 
 processor = AutoImageProcessor.from_pretrained(model_name)
@@ -285,7 +285,7 @@ def evaluate():
             tot += int(batch["labels"].size(0))
     return tot_loss / max(1, tot), correct / max(1, tot)
 
-EPOCHS = 3
+
 best_val_loss = float("inf")
 for epoch in range(1, EPOCHS+1):
     model.train()

@@ -18,8 +18,8 @@ code <- paste0(root,"/code")
 
 # running data setup code
 # source(paste0(code,"/ohio_road_housing_census_merge.R"))
-source(paste0(code,"/housing_data_setup.R"))
-source(paste0(code,"/utility_functions.R"))
+source(paste0(code,"/2.0_housing_data_setup.R"))
+source(paste0(code,"/0_utility_functions.R"))
 
 #============================================================================================================#
 #                         Aggregated Results (using median sale_amount for each county, vote and year) ----

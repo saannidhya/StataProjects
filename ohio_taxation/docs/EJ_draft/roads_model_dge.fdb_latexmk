@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex roads_model_dge"] 1762961217.57684 "roads_model_dge.aux" "roads_model_dge.bbl" "roads_model_dge" 1762961320.57262 0
+["bibtex roads_model_dge"] 1766429540.94131 "roads_model_dge.aux" "roads_model_dge.bbl" "roads_model_dge" 1766429545.58915 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
-  "./aej_references.bib" 1762961165 26965 e9df2c4bb37b1c4f255b4a4fa5dc2685 ""
-  "roads_model_dge.aux" 1762961319 6058 572385b86c48ec3747687c3ff7b3a645 "pdflatex"
+  "./aej_references.bib" 1766428862 28740 12d134806186c2d82eb7162511fe45cd ""
+  "roads_model_dge.aux" 1766429544 6058 572385b86c48ec3747687c3ff7b3a645 "pdflatex"
   (generated)
   "roads_model_dge.bbl"
   "roads_model_dge.blg"
   (rewritten before read)
-["pdflatex"] 1762961316.95228 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/EJ_draft/roads_model_dge.tex" "roads_model_dge.pdf" "roads_model_dge" 1762961320.57357 0
-  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1756581492 83986 f8eb18fc09af2505e4d73e14b16d5d60 ""
+["pdflatex"] 1766429541.57867 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/EJ_draft/roads_model_dge.tex" "roads_model_dge.pdf" "roads_model_dge" 1766429545.59033 0
+  "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1766104015 84145 9fc26e7f8cb803b75a82d41f3fb3cd9d ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1200.pk" 1718906654 14064 c87259808bd803f772ae77c6ebf4ae70 ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1714697604 24236949 73babde6043cf70b9c97c581277a0b92 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/tcrm1200.tfm" 993062508 1444 95ffe0f19b974d50849790c8225c7ef7 ""
@@ -139,10 +139,10 @@
   "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/EJ_draft/roads_model_dge.tex" 1758053278 2454 18b0089ed58f1f8431d0f6d08309825b ""
   "images/model_dynamics_house.png" 1757987143 106980 cf9fc78393f9e139dd5a566df8eb50eb ""
   "images/model_vs_empirical_estimates_house.png" 1757985080 323334 677671b0939e2ceb12ae83f33a1b0889 ""
-  "model.tex" 1762961314 49614 672f85444b554767ffcc6a2ea3b843e2 ""
-  "roads_model_dge.aux" 1762961319 6058 572385b86c48ec3747687c3ff7b3a645 "pdflatex"
-  "roads_model_dge.bbl" 1762961217 1563 4bbadf2ab90db0c4bf36e7022cb50339 "bibtex roads_model_dge"
-  "roads_model_dge.out" 1762961319 3407 68e0d39f0df0a99c6f866d54d6c6def0 "pdflatex"
+  "model.tex" 1763672790 49614 ec33cb5adbcadb158fa12afe02467c57 ""
+  "roads_model_dge.aux" 1766429544 6058 572385b86c48ec3747687c3ff7b3a645 "pdflatex"
+  "roads_model_dge.bbl" 1766429541 1563 4bbadf2ab90db0c4bf36e7022cb50339 "bibtex roads_model_dge"
+  "roads_model_dge.out" 1766429544 3407 68e0d39f0df0a99c6f866d54d6c6def0 "pdflatex"
   "roads_model_dge.tex" 1758053278 2454 18b0089ed58f1f8431d0f6d08309825b ""
   (generated)
   "roads_model_dge.aux"
