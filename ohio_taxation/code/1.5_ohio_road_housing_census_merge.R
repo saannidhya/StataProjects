@@ -117,6 +117,9 @@ mgd <- purrr::map2(hss, yrs, function(x, y){
 names(mgd) <- paste0(gsub("^yr", "housing_roads_census", names(mgd)), "_matches")
 
 # purrr::map_dbl(mgd, nrow) 
+View(mgd$housing_roads_census_t_plus_4_matches[1:2000, ])
+
+
 
 # purrr::imap(mgd, ~ write.csv(.x, paste0(data,"/housing/", .y, ".csv"), row.names = FALSE))
 # beepr::beep("mario")
@@ -128,23 +131,23 @@ names(mgd) <- paste0(gsub("^yr", "housing_roads_census", names(mgd)), "_matches"
 #||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||#
 
 
-mean(hs %>% filter(!is.na(SALE_AMOUNT)) %>% select(SALE_AMOUNT) %>% pull())
-median(hs %>% filter(!is.na(SALE_AMOUNT)) %>% select(SALE_AMOUNT) %>% pull())
+# mean(hs %>% filter(!is.na(SALE_AMOUNT)) %>% select(SALE_AMOUNT) %>% pull())
+# median(hs %>% filter(!is.na(SALE_AMOUNT)) %>% select(SALE_AMOUNT) %>% pull())
 
-hs2 <- hs %>% filter(!is.na(SALE_AMOUNT)) 
-# gg %>% filter(!is.na(SALE_AMOUNT)) 
-# nrow(hs) - hs %>% filter(is.na(SALE_AMOUNT)) %>% nrow()
+# hs2 <- hs %>% filter(!is.na(SALE_AMOUNT)) 
+# # gg %>% filter(!is.na(SALE_AMOUNT)) 
+# # nrow(hs) - hs %>% filter(is.na(SALE_AMOUNT)) %>% nrow()
 
-hs_winsorized <- winsorize_data(list(hs2) , "SALE_AMOUNT")
+# hs_winsorized <- winsorize_data(list(hs2) , "SALE_AMOUNT")
 
-mean(hs2$SALE_AMOUNT)
-round(min(hs_winsorized[[1]]$SALE_AMOUNT))
-round(max(hs_winsorized[[1]]$SALE_AMOUNT))
+# mean(hs2$SALE_AMOUNT)
+# round(min(hs_winsorized[[1]]$SALE_AMOUNT))
+# round(max(hs_winsorized[[1]]$SALE_AMOUNT))
 
-round(mean(hs_winsorized[[1]]$SALE_AMOUNT)) # 138,565
-round(sd(hs_winsorized[[1]]$SALE_AMOUNT)) # 108,687
+# round(mean(hs_winsorized[[1]]$SALE_AMOUNT)) # 138,565
+# round(sd(hs_winsorized[[1]]$SALE_AMOUNT)) # 108,687
 
-round(mean(hs$SALE_AMOUNT, na.rm = TRUE)) # 138,565
+# round(mean(hs$SALE_AMOUNT, na.rm = TRUE)) # 138,565
 
 #======================================================================#
 # Generating House Price Aggregate dataset ----
@@ -208,6 +211,6 @@ map(mgd_grwth_ws , ~ summary(.x$yoy_growth_median_sale))
 #              geom_density() +
 #              ggtitle("Density plot of YoY growth in median sale price") + theme_minimal() )
 
-purrr::map(dfs_agg_covs, ~ ggplot(.x, aes(x = median_sale_amount)) + 
-             geom_density() +
-             ggtitle("Density plot of YoY growth in median sale price") + theme_minimal() )
+# purrr::map(dfs_agg_covs, ~ ggplot(.x, aes(x = median_sale_amount)) + 
+#              geom_density() +
+#              ggtitle("Density plot of YoY growth in median sale price") + theme_minimal() )

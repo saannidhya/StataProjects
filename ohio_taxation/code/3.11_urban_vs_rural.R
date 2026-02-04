@@ -37,6 +37,17 @@ dfs_agg_twp <- purrr::map(dfs_agg, ~ .x %>%
                                      mutate(urban_flg_cd = if_else(is.na(clusterdummy), 0, clusterdummy),
                                             urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy))) # if NA, then assuming the region is rural
 
+dfs_twp <- purrr::map(dfs, ~ .x %>%
+                                     left_join(twp_places_urban, by = "tendigit_fips") %>%
+                                     mutate(urban_flg_cd = if_else(is.na(clusterdummy), 0, clusterdummy),
+                                            urban_flg_ua = if_else(is.na(uadummy ), 0, uadummy))) # if NA, then assuming the region is rural
+
+dfs_twp$housing_roads_census_t_plus_0_matches %>% group_by(urban_flg_ua) %>% summarise(n = n(), mean_sale_amount = mean(sale_amount))
+# rural mean: 128895.
+# urban mean: 182414.
+
+colnames(dfs_twp$housing_roads_census_t_plus_0_matches)
+
 # splitting the datasets into urban and rural, by both: clusterdummy and uadummy
 dfs_agg_urb_cd <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_cd == 1) %>% select(-(urban_flg_ua)) )
 dfs_agg_urb_ua <- purrr::map(dfs_agg_twp, ~ .x %>% filter(urban_flg_ua == 1) %>% select(-(urban_flg_cd)) )
@@ -295,6 +306,8 @@ ggplot(tes_regs_covs_ua, aes(ord, robust_coef, color = cat)) +
  scale_x_continuous(breaks = c(-3:10)) +
  ylim(c(NA, 50000))          
          
+
+# tes_regs_covs_ua %>% filter(cat == "urban" & ord >= 0) %>% pull(robust_coef) %>% mean/182000
          
 ### Re-centered Main urban vs rural plot in paper WITH Time F.E ###
 tes_regs_covs_ua <- rbind(tes_regs_covs_urb_ua_tfe %>% mutate(cat = "urban"), tes_regs_covs_rur_ua_tfe %>% mutate(cat = "rural")) %>% 

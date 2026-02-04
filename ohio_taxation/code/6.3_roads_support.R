@@ -7,18 +7,21 @@
 #           3. 2/26/2025: Added regression analysis for Road quality
 #           4. 7/12/2025: checking which tendigit_fips and elections quality at different bandwidths
 #           5. 9/12/2025: Added code to check sample sizes for road quality analysis
+#           6. 1/14/2026: Added code to look at hedonics
 #================================================================================================================#
 
 library(fixest)
 library(MASS) 
 library(tidyverse)
-
+library(fixest)
 # specify the set up location
 root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
 data <- paste0(root,"/data")
 code <- paste0(root,"/code")
 tables <- paste0(data,"/outputs/tables")
 plots <- paste0(data,"/outputs/plots")
+# specify the shared location
+shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
 
 source(paste0(code,"/0_utility_functions.R"))
 
@@ -835,3 +838,266 @@ elections_p <- ggplot() +
 
 # elections_p
 ggsave(filename = paste0(plots, "/ohio_subdivisions_elections_map.png"), plot = elections_p, width = 10, height = 8, dpi = 300)
+
+
+
+#==========================================================================================================#
+# investigating raw housing sales data and hedonics - 1/14/2026
+#==========================================================================================================#
+
+# housing dataset
+hs <- haven::read_dta(paste0(shared,"/housesales_9521_slim.dta"))
+
+View(hs[1:1000,])
+
+summary(hs)
+
+hs2 <- hs %>% filter(!is.na(SALE_AMOUNT) & SALE_AMOUNT > 0)
+
+
+sum(is.na(hs$SALE_AMOUNT))/nrow(hs)
+# SALE AMOUNT: :2136786 NA values out of 7145839 i.e. 29.9% missing
+
+hs %>% filter(!is.na(SALE_AMOUNT)) %>% 
+group_by(year) %>%
+summarize(n = n(), prop = n()/nrow(.)) %>%
+  arrange(year) %>% print(n = Inf)
+
+# Hedonics: Size, Total Rooms, Bath rooms, AC, Basement
+# unique(hs$acres)
+
+sort(as.integer(unique(hs$total_rooms)))
+#  [1] "6"   "5"   "8"   "."   "10"  "7"   "4"   "12"  "3"   "9"   "11"  "1"  
+# [13] "16"  "2"   "14"  "13"  "15"  "23"  "47"  "52"  "35"  "54"  "29"  "26" 
+# [25] "17"  "31"  "18"  "91"  "20"  "34"  "43"  "63"  "36"  "92"  "93"  "22" 
+# [37] "25"  "42"  "74"  "45"  "19"  "32"  "21"  "33"  "30"  "24"  "28"  "99" 
+# [49] "44"  "40"  "96"  "39"  "64"  "53"  "98"  "51"  "83"  "70"  "55"  "60" 
+# [61] "81"  "80"  "37"  "76"  "48"  "68"  "94"  "46"  "85"  "72"  "56"  "50" 
+# [73] "66"  "95"  "27"  "82"  "73"  "38"  "84"  "67"  "291" "65"  "999" "78" 
+# [85] "69"  "77"  "160" "226" "153"
+sort(unique(hs$total_baths_calculated))
+unique(hs$ac) # [1] "." "1" "0"
+unique(hs$basement)  # [1] "." "1" "0"
+
+# Convert character variables to numeric where needed
+hs3 <- hs2 %>%
+  mutate(
+    total_rooms = as.numeric(total_rooms),
+    total_baths_calculated = as.numeric(total_baths_calculated),
+    ac = as.numeric(ac),
+    basement = as.numeric(basement)
+  )
+
+# Create list of hedonic variables
+hedonic_vars <- c("total_rooms", "total_baths_calculated", "agehouse", "ac", "cond_exc", "cond_vgood", "cond_good",  "cond_fair", "cond_poor", "onestory")
+
+# Use purrr::map to create group summaries for each variable
+hedonic_group_summary <- purrr::map(hedonic_vars, ~ {
+  hs3 %>%
+    filter(!is.na(.data[[.x]])) %>%
+    group_by(across(all_of(.x))) %>%
+    summarise(
+      n = n(),
+      prop = n()/nrow(.),
+      mean_sale = mean(SALE_AMOUNT, na.rm = TRUE),
+      median_sale = median(SALE_AMOUNT, na.rm = TRUE),
+      sd_sale = sd(SALE_AMOUNT, na.rm = TRUE),
+      .groups = "drop"
+    )
+})
+names(hedonic_group_summary) <- hedonic_vars
+
+print(hedonic_group_summary$total_rooms, n = Inf)
+print(hedonic_group_summary$total_baths_calculated, n = Inf)
+print()
+
+
+# Trim extreme sale amounts (remove top and bottom 1%)
+hs2_trimmed <- hs2 %>%
+  filter(SALE_AMOUNT >= quantile(SALE_AMOUNT, 0.01, na.rm = TRUE) &
+         SALE_AMOUNT <= quantile(SALE_AMOUNT, 0.99, na.rm = TRUE))
+
+
+View(hs2[1:1000,])
+
+# Distribution of SALE_AMOUNT
+# Calculate statistics
+sale_stats <- hs2_trimmed %>%
+  summarise(
+    mean_sale = mean(SALE_AMOUNT, na.rm = TRUE),
+    median_sale = median(SALE_AMOUNT, na.rm = TRUE),
+    mode_sale = as.numeric(names(sort(table(round(SALE_AMOUNT, -3)), decreasing = TRUE)[1]))
+  )
+
+ggplot(data = hs2_trimmed, aes(x = SALE_AMOUNT)) +
+  geom_histogram(bins = 50, fill = "#2E86C1", color = "white", alpha = 0.7) +
+  geom_vline(aes(xintercept = sale_stats$mean_sale, color = "Mean"), 
+             linetype = "dashed", size = 1) +
+  geom_vline(aes(xintercept = sale_stats$median_sale, color = "Median"), 
+             linetype = "dashed", size = 1) +
+  geom_vline(aes(xintercept = sale_stats$mode_sale, color = "Mode"), 
+             linetype = "dashed", size = 1) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  scale_color_manual(name = "Statistics", 
+                     values = c("Mean" = "#E74C3C", "Median" = "#F39C12", "Mode" = "#27AE60")) +
+  theme_minimal(base_size = 15) +
+  labs(
+    title = "Distribution of Sale Amount (1% tails trimmed)",
+    # subtitle = sprintf("Mean: %s | Median: %s | Mode: %s", 
+    #                   scales::dollar(sale_stats$mean_sale),
+    #                   scales::dollar(sale_stats$median_sale),
+    #                   scales::dollar(sale_stats$mode_sale)),
+    x = "Sale Amount",
+    y = "Frequency"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 18, color = "#34495E"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#34495E"),
+    axis.title = element_text(face = "italic", size = 14, color = "#34495E"),
+    axis.text = element_text(size = 12, color = "#2C3E50"),
+    legend.position = "right"
+  )
+
+# mean(hs2$SALE_AMOUNT)
+
+#==========================================#
+### Hedonic Balance Check ###
+#==========================================#
+
+# Import all .csv files from data/housing directory using purrr::map
+housing_files <- list.files(path = paste0(data, "/housing"),  pattern = "\\.csv$", full.names = TRUE)
+
+housing_data_list <- purrr::map(housing_files, readr::read_csv)
+names(housing_data_list) <- basename(housing_files) %>%  stringr::str_remove("\\.csv$")
+
+hs0 <- housing_data_list$housing_roads_census_t_plus_0_matches %>% 
+    mutate(votes_pct_against = votes_against / (votes_for + votes_against) * 100,
+          treated = if_else(votes_pct_against > 50, 1, 0))
+View(hs0[1:1000,])
+
+# Balance check on hedonics
+
+# Define treatment and control based on votes_pct_against
+hs0_clean <- hs0 %>%
+  filter(!is.na(sale_amount) & sale_amount > 0) %>% 
+  filter(description == "R") %>%
+  mutate(
+    total_rooms = as.numeric(total_rooms),
+    total_baths_calculated = as.numeric(total_baths_calculated),
+    ac = as.numeric(ac),
+    basement = as.numeric(basement),
+    agehouse = as.numeric(agehouse),
+    condo = as.numeric(condo),
+    onestory = as.numeric(onestory),
+    cond_exc = as.numeric(cond_exc),
+    cond_vgood = as.numeric(cond_vgood),
+    cond_good = as.numeric(cond_good),
+    cond_fair = as.numeric(cond_fair),
+    cond_poor = as.numeric(cond_poor)
+  )
+
+# View(hs0_clean[1:1000,])
+
+# Function to check balance for hedonic variables
+check_hedonic_balance <- function(data, vars) {
+  balance_results <- purrr::map_df(vars, function(var) {
+    # Filter out missing values for the variable
+    data_clean <- data %>% filter(!is.na(.data[[var]]))
+    
+    # Calculate means by treatment status
+    treated_mean <- mean(data_clean %>% filter(treated == 1) %>% pull(!!sym(var)), na.rm = TRUE)
+    control_mean <- mean(data_clean %>% filter(treated == 0) %>% pull(!!sym(var)), na.rm = TRUE)
+    
+    # Calculate standard deviations
+    treated_sd <- sd(data_clean %>% filter(treated == 1) %>% pull(!!sym(var)), na.rm = TRUE)
+    control_sd <- sd(data_clean %>% filter(treated == 0) %>% pull(!!sym(var)), na.rm = TRUE)
+        
+    tibble(
+      Variable = var,
+      Treated_Mean = treated_mean,
+      Treated_SD = treated_sd,
+      Control_Mean = control_mean,
+      Control_SD = control_sd
+    )
+  })
+  
+  return(balance_results)
+}
+
+# 1. Full sample balance check
+cat("\n=== Balance Check: Full Sample ===\n")
+balance_full <- check_hedonic_balance(hs0_clean, c("universal_building_square_feet", "acres", hedonic_vars) )
+print(balance_full, n = Inf, width = Inf)
+
+# 2. Close to cutoff (within 5 percentage points)
+hs0_close <- hs0_clean %>%
+  filter(between(votes_pct_against, 40, 60))
+
+cat("\n=== Balance Check: Close to Cutoff (40-60% votes against) ===\n")
+balance_close <- check_hedonic_balance(hs0_close, c("universal_building_square_feet", "acres", hedonic_vars) )
+print(balance_close, n = Inf, width = Inf)
+
+# Export balance tables
+readr::write_csv(balance_full, paste0(tables, "/hedonic_balance_full_sample.csv"))
+readr::write_csv(balance_close, paste0(tables, "/hedonic_balance_close_cutoff.csv"))
+
+# Summary statistics by treatment status
+cat("\n=== Sample Sizes ===\n")
+cat(sprintf("Full sample - Treated: %d, Control: %d\n", 
+            sum(hs0_clean$treated == 1, na.rm = TRUE),
+            sum(hs0_clean$treated == 0, na.rm = TRUE)))
+cat(sprintf("Close to cutoff - Treated: %d, Control: %d\n",
+            sum(hs0_close$treated == 1, na.rm = TRUE),
+            sum(hs0_close$treated == 0, na.rm = TRUE)))
+
+# Create a visualization of balance (standardized differences)
+library(ggplot2)
+
+balance_plot_data <- bind_rows(
+  balance_full %>% mutate(Sample = "Full Sample"),
+  balance_close %>% mutate(Sample = "Close to Cutoff")
+)
+
+ggplot(balance_plot_data, aes(x = Variable, y = Std_Diff, fill = Sample)) +
+  geom_col(position = "dodge") +
+  geom_hline(yintercept = c(-0.1, 0.1), linetype = "dashed", color = "red") +
+  coord_flip() +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Balance Check: Standardized Differences in Hedonic Variables",
+    subtitle = "Red dashed lines indicate ±0.1 threshold",
+    x = "Variable",
+    y = "Standardized Difference (Treated - Control)",
+    fill = "Sample"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  )
+
+ggsave(paste0(plots, "/hedonic_balance_comparison.png"), width = 10, height = 8, dpi = 300)
+
+
+## IS THERE A JUMP IN HEDONICS AT THE CUTOFF?
+
+x <- hs0_clean$votes_pct_against
+c <- 50  # your cutoff (adjust if different)
+
+covs <- c("universal_building_square_feet","acres","total_rooms",
+          "total_baths_calculated","agehouse","ac","basement",
+          "cond_exc","cond_vgood","cond_good","cond_fair","cond_poor",
+          "onestory")
+
+bal_rd <- purrr::map_dfr(covs, function(z) {
+  fit <- rdrobust(y = hs0_clean[[z]], x = x, c = c, p = 1, bwselect = "mserd", all = TRUE, kernel = "triangular")
+  data.frame(
+    variable = z,
+    tau = fit$coef[3],
+    se  = fit$se[3],
+    p   = fit$pv[3]
+  )  
+}) %>%  mutate(p = format(p, scientific = FALSE))
+
+# sq feet, acres, total rooms, total baths, ac, cond_exc, cond_poor show no jump at cutoff

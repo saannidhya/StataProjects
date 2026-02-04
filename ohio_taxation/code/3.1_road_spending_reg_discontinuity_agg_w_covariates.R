@@ -562,3 +562,65 @@ gs_gr <- purrr::map2(covs_final_gr, hs_agg_mgd, .f = function(x,y){
                select(x) ,
              all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2)
 })
+
+
+#============================================================================#
+#  Summary statistics by treated vs control ----
+#  Transaction-level data
+#============================================================================#
+
+dfs_summary_by_treated <- map(dfs, function(df) {
+  df %>%
+  # filter(sale_amount > quantile(sale_amount, 0.01, na.rm = TRUE) & sale_amount < quantile(sale_amount, 0.99, na.rm = TRUE)) %>%
+    group_by(treated) %>%
+    summarise(
+      mean_sale_amount = mean(as.numeric(sale_amount), na.rm = TRUE),
+      mean_acres = mean(as.numeric(acres), na.rm = TRUE),
+      mean_universal_building_square_feet = mean(as.numeric(universal_building_square_feet), na.rm = TRUE),
+      mean_year_built = mean(as.numeric(year_built), na.rm = TRUE),
+      mean_total_rooms = mean(as.numeric(total_rooms), na.rm = TRUE),
+      mean_total_baths_calculated = mean(as.numeric(total_baths_calculated), na.rm = TRUE),
+      mean_agehouse = mean(as.numeric(agehouse), na.rm = TRUE),
+      mean_ac = mean(as.numeric(ac), na.rm = TRUE),
+      mean_basement = mean(as.numeric(basement), na.rm = TRUE),
+      mean_cond_exc = mean(as.numeric(cond_exc), na.rm = TRUE),
+      mean_cond_fair = mean(as.numeric(cond_fair), na.rm = TRUE),
+      mean_cond_good = mean(as.numeric(cond_good), na.rm = TRUE),
+      mean_sale_amount_per_sq_feet = mean(as.numeric(sale_amount_per_sq_feet), na.rm = TRUE)
+    )
+})
+
+purrr::walk2(dfs_summary_by_treated, names(dfs_summary_by_treated), function(df, name) {
+  cat("\n\n========", name, "========\n")
+  print(df, width = Inf)
+})
+
+
+dfs_summary_by_treated_close <- map(dfs, function(df) {
+  df %>%
+    filter(between(votes_pct_against, cutoff - 2, cutoff + 2)) %>%
+    group_by(treated) %>%
+    summarise(
+      mean_sale_amount = mean(as.numeric(sale_amount), na.rm = TRUE),
+      mean_acres = mean(as.numeric(acres), na.rm = TRUE),
+      mean_universal_building_square_feet = mean(as.numeric(universal_building_square_feet), na.rm = TRUE),
+      mean_year_built = mean(as.numeric(year_built), na.rm = TRUE),
+      mean_total_rooms = mean(as.numeric(total_rooms), na.rm = TRUE),
+      mean_total_baths_calculated = mean(as.numeric(total_baths_calculated), na.rm = TRUE),
+      mean_agehouse = mean(as.numeric(agehouse), na.rm = TRUE),
+      mean_ac = mean(as.numeric(ac), na.rm = TRUE),
+      mean_basement = mean(as.numeric(basement), na.rm = TRUE),
+      mean_cond_exc = mean(as.numeric(cond_exc), na.rm = TRUE),
+      mean_cond_fair = mean(as.numeric(cond_fair), na.rm = TRUE),
+      mean_cond_good = mean(as.numeric(cond_good), na.rm = TRUE),
+      mean_sale_amount_per_sq_feet = mean(as.numeric(sale_amount_per_sq_feet), na.rm = TRUE)
+    )
+})
+
+purrr::walk2(dfs_summary_by_treated_close, names(dfs_summary_by_treated_close), function(df, name) {
+  cat("\n\n========", name, "========\n")
+  cat("Summary statistics within 2 percentage points of the cutoff\n")
+  print(df, width = Inf)
+})
+
+

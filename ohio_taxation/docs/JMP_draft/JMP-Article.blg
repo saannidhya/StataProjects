@@ -1,48 +1,50 @@
-This is BibTeX, Version 0.99d
+This is BibTeX, Version 0.99e
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: JMP-Article.aux
 Reallocating 'name_of_file' (item size: 1) to 4 items.
 The style file: aea.bst
 Reallocating 'name_of_file' (item size: 1) to 15 items.
 Database file #1: aej_references.bib
-You've used 48 entries,
+Warning--there's a number but no volume in hilber2011economic
+You've used 51 entries,
             2695 wiz_defined-function locations,
-            882 strings with 12187 characters,
-and the built_in function-call counts, 307371 in all, are:
-= -- 51711
-> -- 3129
+            901 strings with 12768 characters,
+and the built_in function-call counts, 323721 in all, are:
+= -- 54443
+> -- 3291
 < -- 0
-+ -- 25113
-- -- 979
-* -- 27604
-:= -- 59762
-add.period$ -- 338
-call.type$ -- 48
-change.case$ -- 624
-chr.to.int$ -- 48
-cite$ -- 48
-duplicate$ -- 705
-empty$ -- 1867
-format.name$ -- 1003
-if$ -- 55230
++ -- 26427
+- -- 1029
+* -- 29062
+:= -- 62970
+add.period$ -- 359
+call.type$ -- 51
+change.case$ -- 663
+chr.to.int$ -- 51
+cite$ -- 52
+duplicate$ -- 749
+empty$ -- 1987
+format.name$ -- 1053
+if$ -- 58160
 int.to.chr$ -- 5
 int.to.str$ -- 0
 missing$ -- 0
-newline$ -- 151
-num.names$ -- 528
-pop$ -- 48
+newline$ -- 160
+num.names$ -- 561
+pop$ -- 51
 preamble$ -- 1
-purify$ -- 720
+purify$ -- 765
 quote$ -- 0
-skip$ -- 577
+skip$ -- 614
 stack$ -- 0
-substring$ -- 74551
-swap$ -- 288
-text.length$ -- 672
+substring$ -- 78472
+swap$ -- 306
+text.length$ -- 714
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 186
-warning$ -- 0
-while$ -- 1192
+type$ -- 198
+warning$ -- 1
+while$ -- 1268
 width$ -- 0
-write$ -- 243
+write$ -- 258
+(There was 1 warning)

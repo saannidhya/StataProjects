@@ -380,11 +380,57 @@ A key RD assumption is that observations just above and below the threshold are 
     \label{fig:rd_cov_smoothness_3}
 \end{figure}
 
+\clearpage
+
+\subsection{Hedonic Balance Check}
+
+\begin{table}[H]
+    \centering
+    \caption{Hedonic Balance: Full Sample vs.\ Close to Cutoff}
+    \label{tab:balance_full_vs_close}
+    \begin{tabular}{lcccc}
+    \toprule
+    & \multicolumn{2}{c}{Full Sample} & \multicolumn{2}{c}{Close to Cutoff} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    & Treated & Control & Treated & Control \\
+    \midrule
+
+    Universal building square feet & 1800 & 1940 & 1762 & 1907 \\
+    & (794) & (874) & (740) & (878) \\
+    Acres & 1.5 & 1.6 & 1.6 & 1.6 \\
+    & (5.5) & (5.8) & (6.2) & (5.0) \\
+    Total rooms & 6.4 & 6.6 & 6.4 & 6.5 \\
+    & (2.5) & (1.7) & (3.3) & (1.7) \\
+    Total baths & 2.1 & 2.3 & 2.1 & 2.2 \\
+    & (1.0) & (1.0) & (1.1) & (1.0) \\
+    Age of house & 39 & 38 & 40 & 37 \\
+    & (33) & (32) & (33) & (32) \\
+    Air Conditioning & 0.91 & 0.92 & 0.90 & 0.91 \\
+    & (0.28) & (0.27) & (0.30) & (0.28) \\
+    Condition: Excellent & 0.02 & 0.02 & 0.03 & 0.02 \\
+    & (0.15) & (0.13) & (0.16) & (0.13) \\
+    Condition: Good & 0.37 & 0.34 & 0.37 & 0.31 \\
+    & (0.48) & (0.47) & (0.48) & (0.46) \\
+    Condition: Fair & 0.06 & 0.06 & 0.05 & 0.06 \\
+    & (0.23) & (0.24) & (0.22) & (0.24) \\
+    Condition: Poor & 0.01 & 0.01 & 0.01 & 0.01 \\
+    & (0.11) & (0.10) & (0.10) & (0.11) \\
+    One-story & 0.56 & 0.52 & 0.52 & 0.53 \\
+    & (0.50) & (0.50) & (0.50) & (0.50) \\
+\bottomrule
+\end{tabular}
+\vspace{0.25em}
+
+\footnotesize \textit{Notes:} This table compares hedonic characteristics of houses in treated and control areas for the full sample and for the subsample close to the cutoff (within 40-60\% votes against). Standard deviations are in parentheses. Hedonic characteristics include house size (in square feet), lot size (in acres), number of rooms, number of bathrooms, age of house (in years), presence of air conditioning, condition of house (excellent, very good, good, fair, poor), and an indicator variable for whether the house is one-story.
+\end{table}
+
+We examine whether housing characteristics are balanced across the treatment threshold. Table \ref{tab:balance_full_vs_close} compares hedonic features—building square footage, lot size, rooms, bathrooms, age, air conditioning, condition ratings, and architectural style—between treated (failed renewals) and control (successful renewals) jurisdictions. The results demonstrate balance both in the full sample and the subsample of close elections. The similarity in characteristics near the threshold supports the continuity assumption underlying our identification and validates using narrow election outcomes as quasi-random treatment assignment.
+
 
 \clearpage
 
 \subsection{Bandwidth Sensitivity Analysis}
-
+ 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth,keepaspectratio]{images/bw_sensitivity_of_means.png}
@@ -444,3 +490,16 @@ Figure \ref{fig:bandwidth_sensitivity} plots the differences in mean estimate of
 
 % fine-tuning vision model
 \input{road_quality_fine_tuning.tex}
+
+\section{MVPF Calculation}
+
+As stated in Section \ref{sec:mvpf}, we use the following formula to calculate the Marginal Value of Public Funds (MVPF):
+
+\begin{equation}
+    \text{MVPF} = \frac{\text{WTP}}{\text{Net Cost to Government}} = \frac{\text{Tax Savings - House Value Decline}}{\text{Direct Long Run Cost + Fiscal Externality}}
+\end{equation}
+
+We combine our estimated treatment effects on house prices with expected loss in tax revenue to calculate the MVPF of road maintenance tax levies. The expected loss in tax revenue, as calculated in Table \ref{tab:levy_stats}, is \$76 per household per year. Using a capitalization rate of 5\% \citep{hilber2011economic, cellini2010value}, the lifetime present value of this annual tax saving is \$1,520 per household, which can also be interpreted as the tax savings from cutting the renewal road tax levy. Using the standard property tax rate of 1.5\% in Ohio, and the estimated decline in house prices from the tax cut in Table \ref{tab:median_sale_amount}, we compute the 10-year tax base decline of \$1,911, which represents the fiscal externality from cutting the road tax levy. The net cost to the government is then calculated as the direct long-run cost of \$1,520 plus the fiscal externality of \$1,911, totaling \$3,431. The willingness to pay (WTP) is calculated as the tax savings of \$1,520 minus the yearly capitalization of house price estimates over 10 years, which amounts to \$6,370 per household\footnote{This calculation is based on the idea that the house price estimate in year t reflects future disutility from decline in public amenity.}, giving a WTP of \(-\$4,850\). Finally, we compute the MVPF as \(-\$4,850 / \$3,431 = -\$1.41\). 
+
+
+

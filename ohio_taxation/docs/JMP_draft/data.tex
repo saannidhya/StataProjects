@@ -211,12 +211,13 @@ Figure \ref{fig:hp_year5_after} shows house prices from five years after the vot
 
 \subsection{Covariates} 
 
-Covariates can be useful in RD studies, although they are not necessary for the identification of treatment effects.  One use of covariates is to increase the precision of treatment effect estimates.  The other is to see if cities that barely pass and fail tax levies are similar to each other like the theory of RD says they should be. Table \ref{tab:variable_means_sd} shows covariate means for both the global sample of all votes in the data set as well as the local sample within a representative effective bandwidth of the 0.50 cutoff. The effective bandwidth displayed in Table \ref{tab:variable_means_sd} is the mean bandwidth for all the housing outcome regressions. The first columns for the global sample show similar values of characteristics between cities that renew and cut road taxes and spending, but it is the two rightmost columns that are critical for the credibility of the RD design.   
+% Covariates can be useful in RD studies, although they are not necessary for the identification of treatment effects.  One use of covariates is to increase the precision of treatment effect estimates.  The other is to see if cities that barely pass and fail tax levies are similar to each other like the theory of RD says they should be. 
+Table \ref{tab:variable_means_sd} shows covariate means for both the global sample of all votes in the data set as well as the local sample within a representative effective bandwidth of the decision cutoff. The effective bandwidth displayed in Table \ref{tab:variable_means_sd} is the mean bandwidth for all the housing outcome regressions. The first columns for the global sample show similar values of characteristics between cities that renew and cut road taxes and spending. The second set of columns for the effective bandwidth show even closer similarity between cities that renew and cut road taxes and spending.
 
 The data, captured at the time of the vote and as observed in Table \ref{tab:variable_means_sd}, shows minimal differences within the effective bandwidth: mean population differs by only 301, and median family income varies by \$436, measured in 2010 U.S. dollars. Other variables, including poverty rates, married household percentages, educational attainment, age distribution, and racial composition, show differences of two percentage points or less, bolstering the comparability of the treatment and control groups. This similarity suggests that any observed differences in outcomes can more confidently be attributed to the treatment effect rather than to pre-existing differences\footnote{We also find similar covariate means for cities that have no road tax levies, which we explain in Section \ref{sec:robustness}}.
 
-\begin{longtable}{p{4cm}cccccc}
-    \caption{Variable Means \& Standard Deviation by Road Tax Levy Renewal Status} \label{tab:variable_means_sd} \\
+\captionof{table}{Variable Means by Road Tax Levy Renewal Status}\label{tab:variable_means_sd}
+\begin{longtable}{p{4cm}ccccc}
     \hline
     Variable & \multicolumn{3}{c}{Global} & \multicolumn{2}{c}{Effective} \\
     \cmidrule(lr){2-4} \cmidrule(lr){5-6}
@@ -248,11 +249,11 @@ The data, captured at the time of the vote and as observed in Table \ref{tab:var
                     & (0.08) & (0.07) & (0.08) & (0.07) & (0.08) \\
     \% with Kids & 0.39 & 0.40 & 0.39 & 0.39 & 0.39 \\
                     & (0.08) & (0.08) & (0.08) & (0.07) & (0.08) \\
-    \% Households with Children under 18 & 0.09 & 0.09 & 0.09 & 0.09 & 0.08 \\[-2.3em]
+    \% Households with Children under 18 & 0.09 & 0.09 & 0.09 & 0.09 & 0.08 \\
                                             & (0.06) & (0.05) & (0.06) & (0.06) & (0.05) \\
-    \% Less than High School Education & 0.16 & 0.18 & 0.15 & 0.18 & 0.16 \\[-2.3em]
+    \% Less than High School Education & 0.16 & 0.18 & 0.15 & 0.18 & 0.16 \\
                                         & (0.11) & (0.12) & (0.11) & (0.12) & (0.10) \\
-    \% Some College Education & 0.25 & 0.24 & 0.25 & 0.24 & 0.25 \\[-2.3em]
+    \% Some College Education & 0.25 & 0.24 & 0.25 & 0.24 & 0.25 \\
                                 & (0.06) & (0.06) & (0.06) & (0.07) & (0.06) \\
     \% Renters & 0.20 & 0.20 & 0.20 & 0.19 & 0.20 \\
                 & (0.11) & (0.10) & (0.11) & (0.09) & (0.11) \\
@@ -266,9 +267,9 @@ The data, captured at the time of the vote and as observed in Table \ref{tab:var
                 & (0.09) & (0.08) & (0.09) & (0.08) & (0.09) \\
     \% Separated & 0.01 & 0.01 & 0.01 & 0.01 & 0.01 \\
                     & (0.01) & (0.01) & (0.01) & (0.01) & (0.01) \\
-    Income Heterogeneity Index & 0.10 & 0.09 & 0.10 & 0.09 & 0.09 \\[-2.3em]
+    Income Heterogeneity Index & 0.10 & 0.09 & 0.10 & 0.09 & 0.09 \\
                                 & (0.08) & (0.07) & (0.08) & (0.07) & (0.06) \\
-    Median Family Income & 61,018 & 58,761 & 61,467 & 59,934 & 60,370 \\[-2.3em]
+    Median Family Income & 61,018 & 58,761 & 61,467 & 59,934 & 60,370 \\
                             & (17,649) & (13,915) & (18,270) & (13,655) & (15,713) \\
     \% Under 5 Years Old & 0.06 & 0.06 & 0.06 & 0.06 & 0.06 \\
                             & (0.02) & (0.02) & (0.02) & (0.02) & (0.02) \\

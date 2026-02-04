@@ -297,4 +297,4 @@ plot_te_recenter(tes_ms_reg, title = "Treatment Effect Estimates: Median House P
 tes_ms_reg %>% filter((ord >= 0)) %>%
   dplyr::select(robust_coef) %>% pull %>% mean 
 
-# Takeaway: Bigger tax cuts lead to greater housing price decreases
+# Takeaway: Bigger tax cuts lead to greater housing price decreases. 75th percentile and above: 18% decrease in house prices.

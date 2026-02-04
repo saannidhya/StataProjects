@@ -7,6 +7,7 @@
 #        2. 12/10/2025: Added county subdivision FIPS code addition.
 #        3. 12/11/2025: Added place FIPS code addition. 
 #        4. 12/20/2025: Added code to split Owner Transfer data into state-level files.
+#        5. 01/08/2026: Added code to merge geocoded Property Characteristics data to Owner Transfer data using COMPOSITE PROPERTY LINKAGE KEY and CLIP.
 #=========================================================================================================================#
 
 
@@ -512,9 +513,65 @@ state_codes <- str_extract(ot_state_files, "(?<=corelogic_ot_)[^.]+")
 message("\nState codes: ", paste(sort(state_codes), collapse = ", "))
 
 
+#==========================================================================#
+# Adding FIPS_IDs to Geocoded Property Characteristics Data
+# For townships, FIPS_ID = State FIPS + County FIPS + Township FIPS (10)
+# For places - villages and cities, FIPS_ID = State FIPS + Place FIPS (7)
+#==========================================================================#
+
+# Import Ohio Property Characteristics with geocoding + FIPS
+df_pc_oh_final <- read_csv(file.path(pc_out_loc, "corelogic_property_geocoded_with_cousub_place_oh.csv"), col_types = cols(.default = "c"))
+
+
+df_pc_oh_final_fp <- df_pc_oh_final %>%
+  mutate(
+    fips_id = case_when(
+      !is.na(place_geoid) & place_lsad %in% c("25", "47") ~ place_geoid,  # Use place FIPS if city (25) or village (47)
+      !is.na(cousub_geoid) & cousub_lsad == "44" ~ cousub_geoid,  # Use county subdivision FIPS if township (44)
+      TRUE ~ NA_character_  # If neither condition is met, set as NA
+    )
+  ) %>% relocate(fips_id, .after = CLIP)
+
+fips_count <- df_pc_oh_final_fp %>% group_by(fips_id) %>%
+  summarise(count = n(), prop = count / nrow(.), .groups = "drop") %>%
+  filter(!is.na(fips_id)) %>%
+  arrange(desc(count)) 
+
+sum(is.na(df_pc_oh_final_fp$fips_id)) # 252 with no FIPS_ID
+sum(is.na(df_pc_oh_final_fp$fips_id))/nrow(df_pc_oh_final_fp)  # very very small
+
+# Next, we need to create a unique row identifier. Right now, CLIPS is not unique because of missing values.
+# We also have a column called "COMPOSITE PROPERTY LINKAGE KEY"... Bingo. It is unique.
+# Note: "COMPOSITE PROPERTY LINKAGE KEY" is also in df_ot_oh (Owner Transfer data).
+
+# Check if COMPOSITE PROPERTY LINKAGE KEY is a unique identifier
+composite_check <- df_pc_oh_final_fp %>%
+  group_by(`COMPOSITE PROPERTY LINKAGE KEY`) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  filter(count > 1)
+
+if (nrow(composite_check) == 0) {
+  message("COMPOSITE PROPERTY LINKAGE KEY is a unique identifier - no duplicates found.")
+} else {
+  message("WARNING: COMPOSITE PROPERTY LINKAGE KEY is NOT unique - found ", nrow(composite_check), " duplicated values")
+  message("Total duplicate observations: ", sum(composite_check$count))
+}
+
+# Check for missing COMPOSITE PROPERTY LINKAGE KEY values
+missing_composite <- sum(is.na(df_pc_oh_final_fp$`COMPOSITE PROPERTY LINKAGE KEY`))
+message("Missing COMPOSITE PROPERTY LINKAGE KEY values: ", missing_composite, " (", round(missing_composite/nrow(df_pc_oh_final_fp)*100, 2), "%)")
+
+colnames(df_pc_oh_final_fp)
+colnames(df_ot_oh)
+View(df_ot_oh[1:100, ])
+
+sum(is.na(df_ot_oh$`SALE DERIVED DATE`))
+sum(is.na(df_ot_oh$`SALE DERIVED RECORDING DATE`))
+
+
 
 #==========================================================================#
-# Merge Geocoded Property Characteristics with Owner Transfer Files
+# Merge check: Geocoded Property Characteristics with Owner Transfer Files
 #==========================================================================#
 
 
@@ -528,107 +585,169 @@ df_ot_oh <- read_csv(file.path(state_ot_out_dir, "corelogic_ot_OH.csv"), col_typ
 colnames(df_pc_oh_final)
 colnames(df_ot_oh)
 
-# Question: Are CLIPS IDs present in both datasets and can be used as a unique key?
+# Question: Are COMPOSITE PROPERTY LINKAGE KEY IDs present in both datasets and can be used as a unique key?
 
-# Check 1: Are CLIPS IDs present in both datasets?
-message("\n=== CLIPS Merge Compatibility Checks ===\n")
+# Check 1: Are COMPOSITE PROPERTY LINKAGE KEY IDs present in both datasets?
+message("\n=== COMPOSITE PROPERTY LINKAGE KEY Merge Compatibility Checks ===\n")
 
-# Check for CLIPS column existence
-message("Check 1: CLIPS column presence")
-pc_has_clips <- "CLIP" %in% colnames(df_pc_oh_final)
-ot_has_clips <- "CLIP" %in% colnames(df_ot_oh)
-message("  Property Characteristics has CLIP: ", pc_has_clips)
-message("  Owner Transfer has CLIP: ", ot_has_clips)
-# > message("  Property Characteristics has CLIP: ", pc_has_clips)
-#   Property Characteristics has CLIP: TRUE
-# > message("  Owner Transfer has CLIP: ", ot_has_clips)
-#   Owner Transfer has CLIP: TRUE
+# Check for COMPOSITE PROPERTY LINKAGE KEY column existence
+message("Check 1: COMPOSITE PROPERTY LINKAGE KEY column presence")
+pc_has_composite <- "COMPOSITE PROPERTY LINKAGE KEY" %in% colnames(df_pc_oh_final)
+ot_has_composite <- "COMPOSITE PROPERTY LINKAGE KEY" %in% colnames(df_ot_oh)
+message("  Property Characteristics has COMPOSITE PROPERTY LINKAGE KEY: ", pc_has_composite)
+message("  Owner Transfer has COMPOSITE PROPERTY LINKAGE KEY: ", ot_has_composite)
 
-# Check 2: Missing CLIPS values in each dataset
-message("\nCheck 2: Missing CLIPS values")
-pc_missing_clips <- sum(is.na(df_pc_oh_final$CLIP))
-ot_missing_clips <- sum(is.na(df_ot_oh$CLIP))
-message("  PC missing CLIPS: ", pc_missing_clips, " (", round(pc_missing_clips/nrow(df_pc_oh_final)*100, 2), "%)")
-message("  OT missing CLIPS: ", ot_missing_clips, " (", round(ot_missing_clips/nrow(df_ot_oh)*100, 2), "%)")
-# > message("  PC missing CLIPS: ", pc_missing_clips, " (", round(pc_missing_cli$
-#   PC missing CLIPS: 304196 (10.44%)
-# > message("  OT missing CLIPS: ", ot_missing_clips, " (", round(ot_missing_cli$
-#   OT missing CLIPS: 283 (0%)
+# Check 2: Missing COMPOSITE PROPERTY LINKAGE KEY values in each dataset
+message("\nCheck 2: Missing COMPOSITE PROPERTY LINKAGE KEY values")
+pc_missing_composite <- sum(is.na(df_pc_oh_final$`COMPOSITE PROPERTY LINKAGE KEY`))
+ot_missing_composite <- sum(is.na(df_ot_oh$`COMPOSITE PROPERTY LINKAGE KEY`))
+message("  PC missing COMPOSITE PROPERTY LINKAGE KEY: ", pc_missing_composite, " (", round(pc_missing_composite/nrow(df_pc_oh_final)*100, 2), "%)")
+message("  OT missing COMPOSITE PROPERTY LINKAGE KEY: ", ot_missing_composite, " (", round(ot_missing_composite/nrow(df_ot_oh)*100, 2), "%)")
+# PC missing COMPOSITE PROPERTY LINKAGE KEY: 0 (0%)
+# OT missing COMPOSITE PROPERTY LINKAGE KEY: 1142 (0.02%)
 
-# Check 3: CLIPS uniqueness in each dataset
-message("\nCheck 3: CLIPS uniqueness")
-pc_clips_dups <- df_pc_oh_final %>% 
-  filter(!is.na(CLIP)) %>% 
-  group_by(CLIP) %>% 
+# Check 3: COMPOSITE PROPERTY LINKAGE KEY uniqueness in each dataset
+message("\nCheck 3: COMPOSITE PROPERTY LINKAGE KEY uniqueness")
+pc_composite_dups <- df_pc_oh_final %>% 
+  filter(!is.na(`COMPOSITE PROPERTY LINKAGE KEY`)) %>% 
+  group_by(`COMPOSITE PROPERTY LINKAGE KEY`) %>% 
   summarise(count = n(), .groups = "drop") %>% 
   filter(count > 1)
-ot_clips_dups <- df_ot_oh %>% 
-  filter(!is.na(CLIP)) %>% 
-  group_by(CLIP) %>% 
+ot_composite_dups <- df_ot_oh %>% 
+  filter(!is.na(`COMPOSITE PROPERTY LINKAGE KEY`)) %>% 
+  group_by(`COMPOSITE PROPERTY LINKAGE KEY`) %>% 
   summarise(count = n(), .groups = "drop") %>% 
   filter(count > 1)
-message("  PC duplicated CLIPS: ", nrow(pc_clips_dups), " IDs, ", sum(pc_clips_dups$count), " total obs")
-message("  OT duplicated CLIPS: ", nrow(ot_clips_dups), " IDs, ", sum(ot_clips_dups$count), " total obs")
-# > message("  PC duplicated CLIPS: ", nrow(pc_clips_dups), " IDs, ", sum(pc_cli$
-#   PC duplicated CLIPS: 0 IDs, 0 total obs
-# > message("  OT duplicated CLIPS: ", nrow(ot_clips_dups), " IDs, ", sum(ot_cli$
-#   OT duplicated CLIPS: 1592200 IDs, 4677793 total obs
-# Note: This makes sense as Owner Transfer can have multiple transactions per property.
-
-# Check 4: CLIPS overlap between datasets
-message("\nCheck 4: CLIPS overlap")
-pc_clips <- df_pc_oh_final %>% filter(!is.na(CLIP)) %>% pull(CLIP) %>% unique()
-ot_clips <- df_ot_oh %>% filter(!is.na(CLIP)) %>% pull(CLIP) %>% unique()
-clips_in_both <- intersect(pc_clips, ot_clips)
-clips_only_pc <- setdiff(pc_clips, ot_clips)
-clips_only_ot <- setdiff(ot_clips, pc_clips)
-message("  Unique CLIPS in PC: ", length(pc_clips))
-message("  Unique CLIPS in OT: ", length(ot_clips))
-message("  CLIPS in both datasets: ", length(clips_in_both), " (", round(length(clips_in_both)/length(pc_clips)*100, 2), "% of PC)")
-message("  CLIPS only in PC: ", length(clips_only_pc))
-message("  CLIPS only in OT: ", length(clips_only_ot))
-# > message("  Unique CLIPS in PC: ", length(pc_clips))
-#   Unique CLIPS in PC: 2608755
-# > message("  Unique CLIPS in OT: ", length(ot_clips))
-#   Unique CLIPS in OT: 2814233
-# > message("  CLIPS in both datasets: ", length(clips_in_both), " (", round(len$
-#   CLIPS in both datasets: 1728407 (66.25% of PC)
-# > message("  CLIPS only in PC: ", length(clips_only_pc))
-#   CLIPS only in PC: 880348
-# > message("  CLIPS only in OT: ", length(clips_only_ot))
-#   CLIPS only in OT: 1085826
+message("  PC duplicated COMPOSITE PROPERTY LINKAGE KEY: ", nrow(pc_composite_dups), " IDs, ", sum(pc_composite_dups$count), " total obs")
+message("  OT duplicated COMPOSITE PROPERTY LINKAGE KEY: ", nrow(ot_composite_dups), " IDs, ", sum(ot_composite_dups$count), " total obs")
 
 
-# Check 5: Expected merge outcomes
-message("\nCheck 5: Expected merge outcomes (left join OT to PC)")
-ot_with_match <- df_ot_oh %>% filter(!is.na(CLIP) & CLIP %in% clips_in_both) %>% nrow()
-ot_without_match <- df_ot_oh %>% filter(is.na(CLIP) | !CLIP %in% clips_in_both) %>% nrow()
-message("  OT rows that will match to PC: ", ot_with_match, " (", round(ot_with_match/nrow(df_ot_oh)*100, 2), "%)")
-message("  OT rows without PC match: ", ot_without_match, " (", round(ot_without_match/nrow(df_ot_oh)*100, 2), "%)")
-# > message("  OT rows that will match to PC: ", ot_with_match, " (", round(ot_w$
-#   OT rows that will match to PC: 3692992 (62.59%)
-# > message("  OT rows without PC match: ", ot_without_match, " (", round(ot_wit$
-#   OT rows without PC match: 2207117 (37.41%)
-
-# Check 6: One-to-many relationships (if OT has multiple records per property)
-message("\nCheck 6: Cardinality (important for understanding merge)")
-if (nrow(ot_clips_dups) > 0) {
-  message("  WARNING: OT has duplicate CLIPS - merge will create multiple rows per transaction")
-  message("  Example: CLIP '", ot_clips_dups$CLIP[1], "' appears ", ot_clips_dups$count[1], " times in OT")
-} else {
-  message("  OT has unique CLIPS - one-to-one merge possible")
-}
-if (nrow(pc_clips_dups) > 0) {
-  message("  WARNING: PC has duplicate CLIPS - each may match to multiple OT records")
-}
+# Check 4: COMPOSITE PROPERTY LINKAGE KEY overlap between datasets
+message("\nCheck 4: COMPOSITE PROPERTY LINKAGE KEY overlap")
+pc_composite <- df_pc_oh_final %>% filter(!is.na(`COMPOSITE PROPERTY LINKAGE KEY`)) %>% pull(`COMPOSITE PROPERTY LINKAGE KEY`) %>% unique()
+ot_composite <- df_ot_oh %>% filter(!is.na(`COMPOSITE PROPERTY LINKAGE KEY`)) %>% pull(`COMPOSITE PROPERTY LINKAGE KEY`) %>% unique()
+composite_in_both <- intersect(pc_composite, ot_composite)
+composite_only_pc <- setdiff(pc_composite, ot_composite)
+composite_only_ot <- setdiff(ot_composite, pc_composite)
+message("  Unique COMPOSITE PROPERTY LINKAGE KEY in PC: ", length(pc_composite))
+message("  Unique COMPOSITE PROPERTY LINKAGE KEY in OT: ", length(ot_composite))
+message("  COMPOSITE PROPERTY LINKAGE KEY in both datasets: ", length(composite_in_both), " (", round(length(composite_in_both)/length(pc_composite)*100, 2), "% of PC)")
+message("  COMPOSITE PROPERTY LINKAGE KEY only in PC: ", length(composite_only_pc))
+message("  COMPOSITE PROPERTY LINKAGE KEY only in OT: ", length(composite_only_ot))
 
 
-message("\n=== Summary ===")
-if (pc_has_clips && ot_has_clips && length(clips_in_both) > 0) {
-  message("✓ CLIPS can be used as merge key")
-  message("✓ ", round(length(clips_in_both)/length(ot_clips)*100, 2), "% of OT CLIPS will find a match in PC")
-} else {
-  message("✗ CLIPS merge may have issues - review checks above")
-}
-# ✓ CLIPS can be used as merge key
-# ✓ 61.42% of OT CLIPS will find a match in PC
+#==========================================================================#
+# Merge Geocoded Property Characteristics with Owner Transfer Files
+#==========================================================================#
+
+# First, we will keep only necessary columns in both datasets.
+
+# Columns to keep from PC
+pc_cols_to_keep <- c("COMPOSITE PROPERTY LINKAGE KEY", "CLIP", "fips_id", "PROPERTY INDICATOR CODE", "OWNER 1 FULL NAME", "SITUS STREET ADDRESS", "OWNER OCCUPANCY CODE", "MAILING UNIT NUMBER", "MAILING STREET ADDRESS", "MAILING CITY", "MAILING STATE", "MAILING ZIP CODE", "TAX YEAR", "ASSESSED YEAR", "TAX AREA CODE", "HOMESTEAD EXEMPT INDICATOR", "TOTAL NUMBER OF ACRES", "TOTAL LAND SQUARE FOOTAGE", "YEAR BUILT", "TOTAL NUMBER OF BEDROOMS - ALL BUILDINGS", "TOTAL NUMBER OF BATHROOMS - ALL BUILDINGS", "TOTAL NUMBER OF BATHROOMS", "GARAGE TYPE CODE", "TOTAL NUMBER OF PARKING SPACES", "PARKING TYPE CODE", "TOTAL NUMBER OF UNITS - ALL BUILDINGS", "lat", "long", "cousub_namelsad", "cousub_geoid", "place_geoid", "place_namelsad", "place_lsad")
+
+df_pc_oh_final_fp2 <- df_pc_oh_final_fp %>% select(all_of(pc_cols_to_keep)) %>% rename(CLIP_PC = `CLIP`)
+
+# Columns to keep from OT
+ot_cols_to_keep <- c("COMPOSITE PROPERTY LINKAGE KEY", "CLIP", "LAND USE CODE - STATIC", "STATE USE DESCRIPTION - STATIC", "ZONING CODE - STATIC", "PROPERTY INDICATOR CODE - STATIC", "ACTUAL YEAR BUILT - STATIC", "DEED SITUS STREET ADDRESS - STATIC", "DEED SITUS CITY - STATIC", "DEED SITUS STATE - STATIC", "PRIMARY CATEGORY CODE", "DEED CATEGORY TYPE CODE", "SALE AMOUNT", "SALE DERIVED DATE", "SALE DOCUMENT TYPE CODE", "SALE RECORDED DOCUMENT NUMBER", "RESIDENTIAL INDICATOR", "CASH PURCHASE INDICATOR", "MORTGAGE PURCHASE INDICATOR", "INTERFAMILY RELATED INDICATOR", "INVESTOR PURCHASE INDICATOR", "RESALE INDICATOR", "NEW CONSTRUCTION INDICATOR", "RESIDENTIAL INDICATOR", "FORECLOSURE REO INDICATOR", "FORECLOSURE REO SALE INDICATOR", "BUYER 1 FULL NAME", "BUYER OCCUPANCY CODE", "BUYER MAILING STREET ADDRESS", "BUYER MAILING CITY", "BUYER MAILING STATE", "BUYER MAILING ZIP CODE", "SELLER 1 FULL NAME")
+
+df_ot_oh2 <- df_ot_oh %>% select(all_of(ot_cols_to_keep)) %>% rename(CLIP_OT = `CLIP`)
+
+# Find common column names between the two datasets
+common_cols <- intersect(colnames(df_ot_oh2), colnames(df_pc_oh_final_fp2))
+
+message("\n=== Common Column Names ===")
+message("Number of common columns: ", length(common_cols))
+message("Common columns: ", paste(common_cols, collapse = ", "))
+
+#--------------------------------------------#
+# First join - COMPOSITE PROPERTY LINKAGE KEY
+#--------------------------------------------#
+
+
+# Perform left join of Owner Transfer with Property Characteristics on COMPOSITE PROPERTY LINKAGE KEY
+df_ot_oh_merged <- df_ot_oh2 %>%
+  left_join(df_pc_oh_final_fp2, by = "COMPOSITE PROPERTY LINKAGE KEY")
+
+# View(df_ot_oh_merged[1:10000, ])
+# nrow(df_ot_oh_merged)
+
+sum(!is.na(df_ot_oh_merged$lat))  
+
+sum(is.na(df_ot_oh_merged$lat))  
+
+
+#--------------------------------------------#
+# Second join - CLIP
+#--------------------------------------------#
+
+
+# First identify rows where lat is NA (meaning no match on COMPOSITE PROPERTY LINKAGE KEY)
+unmatched_indices <- is.na(df_ot_oh_merged$lat)
+
+# For these unmatched rows, try to fill in data from PC using CLIP_OT = CLIP_PC
+
+# Create a lookup from PC data using CLIP_PC as key
+pc_lookup <- df_pc_oh_final_fp %>% 
+  select(all_of(pc_cols_to_keep)) %>%
+  rename(CLIP_PC = CLIP) %>%
+  # If there are duplicates on CLIP_PC, keep the first occurrence
+  distinct(CLIP_PC, .keep_all = TRUE)
+
+# For unmatched rows, try to join based on CLIP
+df_ot_oh_merged <- df_ot_oh_merged %>%
+  mutate(
+    # Create temporary columns for the CLIP-based lookup
+    across(
+      .cols = all_of(setdiff(names(pc_lookup), c("CLIP_PC", "COMPOSITE PROPERTY LINKAGE KEY"))),
+      .fns = ~{
+        # Only fill NA values with CLIP-based match
+        if_else(
+          unmatched_indices & !is.na(CLIP_OT),
+          pc_lookup[[cur_column()]][match(CLIP_OT, pc_lookup$CLIP_PC)],
+          .x
+        )
+      },
+      .names = "{.col}"
+    )
+  )
+
+
+sum(!is.na(df_ot_oh_merged$lat))  # 3035450 geocoded addresses in Owner Transfer after merge.
+
+sum(is.na(df_ot_oh_merged$lat))  # 2864659 not geocoded addresses in Owner Transfer after merge.
+
+sum(is.na(df_ot_oh_merged$lat))/nrow(df_ot_oh_merged)  # 37% have no property characteristics after merge.
+
+## some cleaning ## 
+colnames(df_ot_oh_merged)
+
+df_ot_oh_merged_sub <- df_ot_oh_merged %>%
+  mutate(year = str_sub(`SALE DERIVED DATE`, 1, 4)) %>% 
+  filter(!is.na(fips_id)) %>%
+  relocate(year, .after = CLIP_OT) %>% relocate(fips_id, .after = CLIP_OT)
+
+sort(unique(df_ot_oh_merged_sub$year))
+View(df_ot_oh_merged_sub[1:100, ])
+
+# Group by year and count observations
+year_counts <- df_ot_oh_merged_sub %>%
+  group_by(year) %>%
+  summarise(count = n(), prop = count / nrow(.), .groups = "drop") %>%
+  arrange(year)
+
+message("\n=== Transaction Counts by Year ===")
+print(year_counts, n = nrow(year_counts))
+
+# output as CSV and Stata
+readr::write_csv(df_ot_oh_merged, file.path(ot_out_loc, "corelogic_oh_full_24.csv"))
+write_dta(df_ot_oh_merged, file.path(ot_out_loc, "corelogic_oh_full_24.dta"))
+
+
+sdd_counts_by_year <- df_ot_oh %>%
+  mutate(year = str_sub(`SALE DERIVED DATE`, 1, 4)) %>%
+  group_by(year) %>%
+  summarise(count = n(), prop = count / nrow(.), .groups = "drop") 
+
+View(sdd_counts_by_year)
+
+colnames(df_ot_oh)
