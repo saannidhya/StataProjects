@@ -6,45 +6,45 @@ The style file: aea.bst
 Reallocating 'name_of_file' (item size: 1) to 15 items.
 Database file #1: aej_references.bib
 Warning--there's a number but no volume in hilber2011economic
-You've used 51 entries,
+You've used 61 entries,
             2695 wiz_defined-function locations,
-            901 strings with 12768 characters,
-and the built_in function-call counts, 323721 in all, are:
-= -- 54443
-> -- 3291
+            954 strings with 14467 characters,
+and the built_in function-call counts, 405996 in all, are:
+= -- 68438
+> -- 4087
 < -- 0
-+ -- 26427
-- -- 1029
-* -- 29062
-:= -- 62970
-add.period$ -- 359
-call.type$ -- 51
-change.case$ -- 663
-chr.to.int$ -- 51
-cite$ -- 52
-duplicate$ -- 749
-empty$ -- 1987
-format.name$ -- 1053
-if$ -- 58160
++ -- 33299
+- -- 1281
+* -- 36527
+:= -- 78736
+add.period$ -- 429
+call.type$ -- 61
+change.case$ -- 793
+chr.to.int$ -- 61
+cite$ -- 62
+duplicate$ -- 896
+empty$ -- 2389
+format.name$ -- 1317
+if$ -- 73001
 int.to.chr$ -- 5
 int.to.str$ -- 0
 missing$ -- 0
-newline$ -- 160
-num.names$ -- 561
-pop$ -- 51
+newline$ -- 190
+num.names$ -- 671
+pop$ -- 61
 preamble$ -- 1
-purify$ -- 765
+purify$ -- 915
 quote$ -- 0
-skip$ -- 614
+skip$ -- 737
 stack$ -- 0
-substring$ -- 78472
-swap$ -- 306
-text.length$ -- 714
+substring$ -- 98765
+swap$ -- 365
+text.length$ -- 854
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 198
+type$ -- 236
 warning$ -- 1
-while$ -- 1268
+while$ -- 1510
 width$ -- 0
-write$ -- 258
+write$ -- 308
 (There was 1 warning)

@@ -19,6 +19,7 @@ library(tigris)
 library(sf)
 library(haven)
 library(data.table)
+library(dotenv)
 
 # import loc
 CoreLogic_loc <- "C:/CoreLogic"
@@ -36,8 +37,8 @@ data_cl <- paste0(root, "/data/housing/CoreLogic")
 # --------------------------------------------------
 # NOTE: Adjust start_year and end_year as needed
 #--------------------------------------------------- 
-start_year <- 2007
-end_year <- 2024
+start_year <- 2016
+end_year <- 2020
 years_to_process <- as.character(start_year:end_year)
 # Create year suffix for output filename (last 2 digits of start and end year)
 year_suffix <- paste0(str_sub(as.character(start_year), -2), str_sub(as.character(end_year), -2))
@@ -458,3 +459,99 @@ df_ot_oh_merged %>% group_by(has_pc_data) %>%
 
 # Output as csv
 readr::write_csv(df_ot_oh_merged, file.path(data_cl, paste0("corelogic_ownertransfer_propertycharacteristics_merged_oh_", year_suffix, ".csv")))
+
+
+#=========================================================================================================================#
+# Geocoding Sample using Google Maps API (for testing purposes only - not used in final code)
+# NOTE: Google Maps API has a free tier but requires billing setup and has usage limits. Use with caution.
+#=========================================================================================================================#
+
+# already geocded using census geocoder. We will compare a sample of those results with Google Maps geocoding to validate accuracy.
+df_ot_final <- read_csv(file.path(data_cl, paste0("corelogic_ownertransfer_with_fips_", year_suffix, ".csv")), col_types = cols(.default = "c"))
+
+# Load env vars from .env (your existing approach)
+load_dot_env(file = file.path(root, "code/.env"))
+
+# Your .env currently has GOOGLE_API_KEY, but tidygeocoder expects GOOGLEGEOCODE_API_KEY
+google_key <- Sys.getenv("GOOGLE_API_KEY")
+
+# Make it available under the name tidygeocoder expects
+Sys.setenv(GOOGLEGEOCODE_API_KEY = google_key)
+
+
+df_sample <- df_ot_final %>%
+  mutate(row_id = row_number()) %>%
+  filter(
+    !is.na(street), street != "",
+    !is.na(city),   city   != "",
+    !is.na(state),  state  != ""
+  ) %>%
+  mutate(zip5 = na_if(zip5, "")) %>%  # treat "" as missing
+  unite("addr_google", street, city, state, zip5, sep = ", ", remove = FALSE, na.rm = TRUE) %>%
+  mutate(addr_google = str_squish(addr_google))
+
+set.seed(123)
+sample_n <- min(10000L, nrow(df_sample))
+
+df_sample_geo <- df_sample %>%
+  slice_sample(n = sample_n) %>%
+  tidygeocoder::geocode(
+    address = addr_google,
+    method  = "google",
+    lat     = lat_google,
+    long    = long_google,
+    full_results = TRUE
+  )
+  
+# Spatially assign Google-based place/county-subdivision FIPS
+oh_places_g <- oh_places %>%
+  dplyr::select(place_geoid_g = place_geoid, place_lsad_g = place_lsad)
+
+oh_cousub_g <- oh_cousub %>%
+  dplyr::select(cousub_geoid_g = cousub_geoid, cousub_lsad_g = cousub_lsad)
+
+df_google_fips <- df_sample_geo %>%
+  dplyr::filter(!is.na(lat_google), !is.na(long_google)) %>%
+  sf::st_as_sf(coords = c("long_google", "lat_google"), crs = 4326, remove = FALSE) %>%
+  sf::st_join(oh_places_g, join = sf::st_intersects) %>%
+  sf::st_join(oh_cousub_g, join = sf::st_intersects) %>%
+  sf::st_drop_geometry() %>%
+  dplyr::mutate(
+    fips_id_google = dplyr::case_when(
+      !is.na(place_geoid_g) & place_lsad_g %in% c("25", "47") ~ place_geoid_g,
+      !is.na(cousub_geoid_g) & cousub_lsad_g == "44" ~ cousub_geoid_g,
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  dplyr::select(row_id, fips_id_google)
+
+
+# Write Google FIPS comparison data to file
+# readr::write_csv(df_google_fips, file.path(data_cl, paste0("corelogic_ot_google_sample_fips_", year_suffix, ".csv")))
+
+# Compare original vs Google-based FIPS
+df_fips_compare <- df_sample_geo %>%
+  dplyr::left_join(df_google_fips, by = "row_id") %>%
+  dplyr::mutate(
+    fips_match_status = dplyr::case_when(
+      is.na(fips_id) & is.na(fips_id_google) ~ "both_missing",
+      !is.na(fips_id) & !is.na(fips_id_google) & fips_id == fips_id_google ~ "same",
+      !is.na(fips_id) & !is.na(fips_id_google) & fips_id != fips_id_google ~ "different",
+      is.na(fips_id) & !is.na(fips_id_google) ~ "missing_original_only",
+      !is.na(fips_id) & is.na(fips_id_google) ~ "missing_google_only",
+      TRUE ~ "other"
+    )
+  ) %>% relocate(fips_id, .before = fips_id_google)
+
+View(df_fips_compare)
+
+df_fips_compare %>%
+  dplyr::count(fips_match_status) %>%
+  dplyr::mutate(prop = n / sum(n)) %>%
+  dplyr::arrange(desc(n)) %>%
+  print(n = Inf)
+
+readr::write_csv(
+  df_fips_compare,
+  file.path(data_cl, paste0("corelogic_ot_google_fips_compare_sample10k_", year_suffix, ".csv"))
+)

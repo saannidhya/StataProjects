@@ -238,11 +238,6 @@ INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.
 INPUT .\intro.tex
 INPUT .\intro.tex
 INPUT intro.tex
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\tcrm1200.tfm
-INPUT .\lit_review.tex
-INPUT .\lit_review.tex
-INPUT lit_review.tex
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr8.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr6.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi8.tfm
@@ -255,6 +250,12 @@ INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\s
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam7.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\tcrm1200.tfm
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
+INPUT .\lit_review.tex
+INPUT .\lit_review.tex
+INPUT lit_review.tex
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti12.tfm
 INPUT .\data.tex
 INPUT .\data.tex
 INPUT data.tex
@@ -282,7 +283,6 @@ INPUT .\images\hartford_twp_licking_sep21.jpg
 INPUT .\images\hartford_twp_licking_sep21.jpg
 INPUT .\images\hartford_twp_licking_sep21.jpg
 INPUT .\images\hartford_twp_licking_sep21.jpg
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti12.tfm
 INPUT .\images\road_quality_lineplot.png
 INPUT .\images\road_quality_lineplot.png
 INPUT .\images\road_quality_lineplot.png

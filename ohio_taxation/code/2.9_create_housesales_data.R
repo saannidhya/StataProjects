@@ -6,6 +6,7 @@
 # Log     : 
 #        1. 01/08/2026: started the code. 
 #        2. 02/01/2026: Added year_suffix support to make it flexible for different year ranges
+#        3. 02/16/2026: Added code to create 7-digit FIPS_ID for housesales_9515_slim.dta  
 # Dependencies: 
 #        1.  1.6_geocode_corelogic_ot.R (for geocoding and merging the OT + PC data)
 #
@@ -33,6 +34,7 @@ library(data.table)
 
 # import loc
 CoreLogic_loc <- "C:/CoreLogic"
+shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads/"
 # CoreLogic_loc <- "D:/2024_housing_data"
 
 # out loc
@@ -388,3 +390,56 @@ haven::write_dta(df_ot_oh_merged4, file.path(data_cl, paste0("housesales_", year
 #   summarise(count = n() , prop = n() / nrow(.), .groups = "drop") %>%
 #   arrange(year_built) %>%
 #   print(n = Inf)
+
+#==================================================================================#
+# Creating new FIPS_ID for housesales_9515_slim.dta 
+#==================================================================================#
+
+# Import the historical housesales_9515_slim.dta dataset from network location
+housesales_9515 <- haven::read_dta(file.path(shared, "housesales_9515_slim.dta"))
+
+View(housesales_9515[1:10009, ])
+nrow(housesales_9515)
+
+# NAMELSAD_1 = contains township name. Either empty (for cities/villages) or contains "township" (for townships). So we can use this to create a 7-digit FIPS_ID for all entries in housesales_9515_slim.dta, which will allow us to merge with the new dataset on FIPS_ID + NAMELSAD_1.
+# NAMELSAD10 = contains village/city name. Either empty (for townships) or contains the city/village name (for cities/villages). We can use this to verify that all non-empty NAMELSAD_1 values contain "township", and all non-empty NAMELSAD10 values contain "city" or "village".
+housesales_9515 <- housesales_9515 %>%
+                    mutate(FIPS_ID = if_else(!str_detect(NAMELSAD_1, regex("township", ignore_case = TRUE)),
+                                    paste0(str_sub(as.character(TENDIGIT_FIPS), 1, 2), str_sub(as.character(TENDIGIT_FIPS), 6, 10)), 
+                                    as.character(TENDIGIT_FIPS))) %>%
+                    relocate(FIPS_ID, .after = TENDIGIT_FIPS)
+
+#================================================================================================#
+# Appending the cleaned housesales_2016_2020_slim.dta and housesales_2021_2024_slim.dta to the historical housesales_9515_slim.dta 
+#================================================================================================#
+
+housesales_1620_slim <- haven::read_dta(file.path(shared, paste0("housesales_1620_slim.dta"))) %>% rename(universal_building_square_feet = universal_built)
+housesales_2124_slim <- haven::read_dta(file.path(shared, paste0("housesales_2124_slim.dta"))) %>% rename(universal_building_square_feet = universal_built)
+
+
+
+# keeping the relevant cols from 9515 and dropping the rest to match the new datasets
+housesales_9515_slim <- housesales_9515 %>%
+                          select(NAMELSAD10, NAMELSAD_1, FIPS_ID, SALE_AMOUNT, acres, universal_building_square_feet, year_built, total_rooms, total_baths_calculated, year, agehouse, ac, basement, cond_exc, cond_fair, cond_good, cond_poor, cond_vgood, onestory, condo) %>% 
+                          mutate(lat = NA_character_, lon = NA_character_) %>%
+                          mutate(total_rooms = as.numeric(total_rooms),
+                                 total_baths_calculated = as.numeric(total_baths_calculated),
+                                 year = as.numeric(year),
+                                 agehouse = as.numeric(agehouse),
+                                 ac = as.numeric(ac),
+                                 basement = as.numeric(basement),
+                                 cond_exc = as.numeric(cond_exc),
+                                 cond_fair = as.numeric(cond_fair),
+                                 cond_good = as.numeric(cond_good),
+                                 cond_poor = as.numeric(cond_poor),
+                                 cond_vgood = as.numeric(cond_vgood),
+                                 onestory = as.numeric(onestory),
+                                 condo = as.numeric(condo)
+                                 )
+
+# Append the new datasets to the historical dataset
+housesales_all <- bind_rows(housesales_9515_slim, housesales_1620_slim, housesales_2124_slim)
+
+# Write the combined dataset to disk as Stata .dta file
+# haven::write_dta(housesales_all, file.path(shared, "housesales_9524_slim.dta"))
+

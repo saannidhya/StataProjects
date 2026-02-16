@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex JMP-Article"] 1768674869.94546 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1768676015.97045 0
+["bibtex JMP-Article"] 1770578943.52372 "JMP-Article.aux" "JMP-Article.bbl" "JMP-Article" 1770669685.13945 0
   "./aea.bst" 1712347676 23105 ced7c75addb710fdb85503a64b9bafa7 ""
-  "./aej_references.bib" 1768674842 26998 512f0b7e596bf79cd197aa6d2f6d2084 ""
-  "JMP-Article.aux" 1768676014 31952 f918ef82c3c555874d7721aa2bbcd312 "pdflatex"
+  "./aej_references.bib" 1770577865 29029 921ff1c2150e0e57ef8f313b0ab35e40 ""
+  "JMP-Article.aux" 1770669683 33731 5db2943e6886562c83a979d37957a002 "pdflatex"
   (generated)
   "JMP-Article.bbl"
   "JMP-Article.blg"
   (rewritten before read)
-["pdflatex"] 1768676003.5439 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1768676015.97189 0
+["pdflatex"] 1770669676.1584 "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" "JMP-Article.pdf" "JMP-Article" 1770669685.14144 0
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1768518998 84145 9fc26e7f8cb803b75a82d41f3fb3cd9d ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm0700.pk" 1737579311 8268 191349543146a4c053d7a8b3d482dfab ""
   "C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1737579313 11548 9725287d5650551bd806f254213fceb9 ""
@@ -153,12 +153,12 @@
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/ulem/ulem.sty" 1578651445 15682 94f55b803e160cf7fb6e4d77d07cfe1d ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "JMP-Article.aux" 1768676014 31952 f918ef82c3c555874d7721aa2bbcd312 "pdflatex"
-  "JMP-Article.bbl" 1768674870 15143 03c405e768a814bb5717465ce4e6d9a9 "bibtex JMP-Article"
-  "JMP-Article.out" 1768676014 8664 6303950107cd3ec4e8e91a868a14c382 "pdflatex"
-  "JMP-Article.tex" 1768341424 8598 a57a71f8ec09b7e8e4d52f508c098ac1 ""
+  "JMP-Article.aux" 1770669683 33731 5db2943e6886562c83a979d37957a002 "pdflatex"
+  "JMP-Article.bbl" 1770578944 18459 550f03389db37ba58b9506d8857715e8 "bibtex JMP-Article"
+  "JMP-Article.out" 1770669683 8664 6303950107cd3ec4e8e91a868a14c382 "pdflatex"
+  "JMP-Article.tex" 1770669675 8622 1e0ec179934384026433b4c247c2b13e ""
   "appendix.tex" 1768675192 26904 7993308f8d9c3d41fdb3281b08e38f6b ""
-  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1768341424 8598 a57a71f8ec09b7e8e4d52f508c098ac1 ""
+  "c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex" 1770669675 8622 1e0ec179934384026433b4c247c2b13e ""
   "data.tex" 1768520486 36325 bf0f36ce6622e02d4046ad237c7bb59c ""
   "emp_strategy.tex" 1759184838 4684 0c09838178eaf1ef46f34fe95ca3d5fc ""
   "images/bw_sensitivity_of_means.png" 1755206608 13944 86b67d36354a5ec6d7b50ebd8e718797 ""
@@ -196,11 +196,11 @@
   "images/tes_size_75.png" 1747688213 7361 0e5e0052920c025c939a8e9afc573bc1 ""
   "images/tes_urb_vs_rur_main.png" 1767148243 6141 38d59731e1b26cfbe754104df441171f ""
   "images/votes_pct_against_histogram.png" 1708134432 34910 2ab2ad4a06488c5311893b5e98604a06 ""
-  "intro.tex" 1759261678 5546 70f4e0ca93012cfa7c2d9bfa95dc9f82 ""
-  "lit_review.tex" 1759185105 16923 0ce8cd456ef5d2f3942593fc6782712e ""
+  "intro.tex" 1770579414 10637 64f99e88b6e9a072e49a685e558ef819 ""
+  "lit_review.tex" 1770578173 17565 fed0db0fbd4915b2b3973fec6155e302 ""
   "model.tex" 1767152351 49737 6255cb8333e85af39685a4f45ba670a9 ""
   "mvpf.tex" 1768676000 1917 2cc7044bf8500dca01c04feba349367e ""
-  "results.tex" 1768665185 60935 8b7f5ba86b1f758004c297a587bf0260 ""
+  "results.tex" 1770578835 60642 d5b68523b9c5ddd6cb246373b0bbff2d ""
   "road_quality_fine_tuning.tex" 1759184838 10350 e0b446ba0ea2dffef06400c07d0aad87 ""
   (generated)
   "JMP-Article.aux"

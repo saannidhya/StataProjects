@@ -15,6 +15,18 @@
 {\bf Asher, Sam, and Paul Novosad.} 2020. ``Rural roads and local economic
   development.'' {\em American Economic Review}, 110(3):~797--823.
 
+\harvarditem[Asher, Garg \harvardand\ Novosad]{Sam Asher, Teevrat Garg
+  \harvardand\ Paul Novosad}{2020}{asher2020eco}
+{\bf Asher, Sam, Teevrat Garg, and Paul Novosad.} 2020. ``The ecological impact
+  of transportation infrastructure.'' {\em The Economic Journal},
+  130(629):~1173--1199.
+
+\harvarditem[Attoh-Okine \harvardand\ Adarkwa]{Nii Attoh-Okine \harvardand\
+  Offei Adarkwa}{2013}{attoh2013pavement}
+{\bf Attoh-Okine, Nii, and Offei Adarkwa.} 2013. ``Pavement condition
+  surveys--overview of current practices.'' {\em Delaware Center for
+  Transportation, University of Delaware: Newark, DE, USA}.
+
 \harvarditem[Beenstock, Feldman \harvardand\ Felsenstein]{Michael Beenstock,
   Daniel Feldman \harvardand\ Daniel Felsenstein}{2016}{beenstock2016hedonic}
 {\bf Beenstock, Michael, Daniel Feldman, and Daniel Felsenstein.} 2016.
@@ -140,6 +152,12 @@
 {\bf Dosovitskiy, Alexey.} 2020. ``An image is worth 16x16 words: Transformers
   for image recognition at scale.'' {\em arXiv preprint arXiv:2010.11929}.
 
+\harvarditem[Duranton \harvardand\ Turner]{Gilles Duranton \harvardand\
+  Matthew~A Turner}{2011}{duranton2011fundamental}
+{\bf Duranton, Gilles, and Matthew~A Turner.} 2011. ``The fundamental law of
+  road congestion: Evidence from US cities.'' {\em American Economic Review},
+  101(6):~2616--2652.
+
 \harvarditem[Edel \harvardand\ Sclar]{Matthew Edel \harvardand\ Elliott
   Sclar}{1974}{edel1974taxes}
 {\bf Edel, Matthew, and Elliott Sclar.} 1974. ``Taxes, spending, and property
@@ -157,10 +175,43 @@
   treatment effects in the regression discontinuity design.'' {\em Journal of
   Econometrics}, 168(2):~382--395.
 
+\harvarditem[Fretz, Parchet \harvardand\ Robert-Nicoud]{Stephan Fretz,
+  Rapha{\"e}l Parchet \harvardand\ Fr{\'e}d{\'e}ric
+  Robert-Nicoud}{2022}{fretz2022highways}
+{\bf Fretz, Stephan, Rapha{\"e}l Parchet, and Fr{\'e}d{\'e}ric Robert-Nicoud.}
+  2022. ``Highways, market access and spatial sorting.'' {\em The Economic
+  Journal}, 132(643):~1011--1036.
+
+\harvarditem[Gertler et~al.]{Paul~J Gertler, Marco Gonzalez-Navarro, Tadeja
+  Gra{\v{c}}ner \harvardand\ Alexander~D Rothenberg}{2024}{gertler2024road}
+{\bf Gertler, Paul~J, Marco Gonzalez-Navarro, Tadeja Gra{\v{c}}ner, and
+  Alexander~D Rothenberg.} 2024. ``Road maintenance and local economic
+  development: Evidence from Indonesia’s highways.'' {\em Journal of Urban
+  Economics}, 143:~103687.
+
+\harvarditem[Ghani, Goswami \harvardand\ Kerr]{Ejaz Ghani, Arti~Grover Goswami
+  \harvardand\ William~R Kerr}{2016}{ghani2016highway}
+{\bf Ghani, Ejaz, Arti~Grover Goswami, and William~R Kerr.} 2016. ``Highway to
+  success: The impact of the Golden Quadrilateral project for the location and
+  performance of Indian manufacturing.'' {\em The Economic Journal},
+  126(591):~317--357.
+
 \harvarditem[Gibbons \harvardand\ Machin]{Stephen Gibbons \harvardand\ Stephen
   Machin}{2005}{gibbons2005valuing}
 {\bf Gibbons, Stephen, and Stephen Machin.} 2005. ``Valuing rail access using
   transport innovations.'' {\em Journal of Urban Economics}, 57(1):~148--169.
+
+\harvarditem[Gibbons et~al.]{Stephen Gibbons, Teemu Lyytik{\"a}inen, Henry~G
+  Overman \harvardand\ Rosa Sanchis-Guarner}{2019}{gibbons2019new}
+{\bf Gibbons, Stephen, Teemu Lyytik{\"a}inen, Henry~G Overman, and Rosa
+  Sanchis-Guarner.} 2019. ``New road infrastructure: The effects on firms.''
+  {\em Journal of Urban Economics}, 110:~35--50.
+
+\harvarditem[Gonz{\'a}lez et~al.]{Felipe Gonz{\'a}lez, Josepa Miquel-Florensa,
+  Mounu Prem \harvardand\ St{\'e}phane Straub}{2025}{gonzalez2025}
+{\bf Gonz{\'a}lez, Felipe, Josepa Miquel-Florensa, Mounu Prem, and St{\'e}phane
+  Straub.} 2025. ``The dark side of infrastructure: Roads, repression and land
+  in authoritarian Paraguay.'' {\em The Economic Journal}, 135(666):~653--669.
 
 \harvarditem[Gonzalez-Navarro \harvardand\ Quintana-Domeque]{Marco
   Gonzalez-Navarro \harvardand\ Climent
@@ -168,6 +219,12 @@
 {\bf Gonzalez-Navarro, Marco, and Climent Quintana-Domeque.} 2016. ``Paving
   streets for the poor: Experimental analysis of infrastructure effects.'' {\em
   Review of Economics and Statistics}, 98(2):~254--267.
+
+\harvarditem[Gonzalez-Navarro et~al.]{Marcos Gonzalez-Navarro, R~David Zarate,
+  Remi Jedwab \harvardand\ Nick Tsivanidis}{2023}{gonzalez2023land}
+{\bf Gonzalez-Navarro, Marcos, R~David Zarate, Remi Jedwab, and Nick
+  Tsivanidis.} 2023. ``Land transport infrastructure.'' {\em VoxDevLit},
+  9(1):~3.
 
 \harvarditem[Hendren \harvardand\ Sprung-Keyser]{Nathaniel Hendren \harvardand\
   Ben Sprung-Keyser}{2020}{hendren2020unified}
@@ -219,6 +276,10 @@
 {\bf Li, Shanjun, Jun Yang, Ping Qin, and Shouyang Chonabayashi.} 2016.
   ``Wheels of fortune: Subway expansion and property values in Beijing.'' {\em
   Journal of Regional Science}, 56(5):~792--813.
+
+\harvarditem[List]{John~A List}{2022}{list2022voltage}
+{\bf List, John~A.} 2022. {\em The voltage effect: How to make good ideas great
+  and great ideas scale.} Crown Currency.
 
 \harvarditem[Oates]{Wallace~E. Oates}{1969}{Oates1969}
 {\bf Oates, Wallace~E.} 1969. ``The Effects of Property Taxes and Local Public
