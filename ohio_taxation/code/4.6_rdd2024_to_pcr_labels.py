@@ -72,11 +72,15 @@ CONFIG = {
     # count <= O -> "O";  O < count <= F -> "F";  count > F -> "E"
     "EXTENT_COUNT_THRESHOLDS": {"O": 1, "F": 3},
 
-    # PCR -> 3-class mapping
-    # PCR < low -> 0 (low quality)
-    # low <= PCR < medium -> 1 (medium quality)
-    # PCR >= medium -> 2 (high quality)
-    "PCR_THRESHOLDS": {"low": 50, "medium": 75},
+    # ODOT-calibrated class proportions (from PCR.csv, 27,920 Ohio road segments)
+    # Poor+Very Poor: 13.87%, Fair: 16.63%, Good+Very Good: 69.50%
+    # Thresholds are computed dynamically as percentiles of per-image PCR scores
+    # so that the resulting class distribution matches ODOT's actual distribution.
+    "ODOT_CLASS_PROPORTIONS": {
+        "low": 0.1387,    # bottom 13.87% -> class 0 (low quality)
+        "medium": 0.3050,  # bottom 30.50% (13.87 + 16.63) -> class 0 + 1
+        # remainder (69.50%) -> class 2 (high quality)
+    },
 
     # Stratified split proportions and seed
     "TEST_SIZE": 0.30,       # first split: 70/30
@@ -163,9 +167,21 @@ def extent_from_count(count: int) -> str:
         return "E"
 
 
-def pcr_class(pcr_score: float) -> int:
-    """Map a PCR score to a 3-class integer label."""
-    thresholds = CONFIG["PCR_THRESHOLDS"]
+def compute_odot_thresholds(pcr_scores: np.ndarray) -> dict:
+    """Compute PCR thresholds that match ODOT class proportions.
+
+    Since per-image PCR scores are compressed (all images have damage),
+    we use percentiles to match the actual ODOT distribution:
+    13.87% poor/very poor, 16.63% fair, 69.50% good/very good.
+    """
+    proportions = CONFIG["ODOT_CLASS_PROPORTIONS"]
+    low_threshold = np.percentile(pcr_scores, proportions["low"] * 100)
+    medium_threshold = np.percentile(pcr_scores, proportions["medium"] * 100)
+    return {"low": low_threshold, "medium": medium_threshold}
+
+
+def pcr_class(pcr_score: float, thresholds: dict) -> int:
+    """Map a PCR score to a 3-class integer label using dynamic thresholds."""
     if pcr_score < thresholds["low"]:
         return 0   # low quality
     elif pcr_score < thresholds["medium"]:
@@ -222,11 +238,12 @@ def compute_pcr_for_images(
 
         if n_annotations == 0:
             # No damage detected -> perfect road
+            # int_label assigned later after ODOT thresholds are computed
             results.append({
                 "image_id": img_id,
                 "filename": filename,
                 "pcr_score": 100.0,
-                "int_label": pcr_class(100.0),
+                "int_label": -1,
                 "n_annotations": 0,
                 "total_deduct": 0.0,
                 "image_path": str(image_path),
@@ -274,11 +291,12 @@ def compute_pcr_for_images(
 
         pcr_score = max(0.0, 100.0 - total_deduct)
 
+        # int_label assigned later after ODOT thresholds are computed
         results.append({
             "image_id": img_id,
             "filename": filename,
             "pcr_score": round(pcr_score, 4),
-            "int_label": pcr_class(pcr_score),
+            "int_label": -1,
             "n_annotations": n_annotations,
             "total_deduct": round(total_deduct, 4),
             "image_path": str(image_path),
@@ -368,7 +386,7 @@ def main():
     # ------------------------------------------------------------------
     # 1. Load COCO annotations
     # ------------------------------------------------------------------
-    print("\n[1/5] Loading COCO annotations ...")
+    print("\n[1/6] Loading COCO annotations ...")
 
     train_coco = load_coco_json(TRAIN_JSON)
     valid_coco = load_coco_json(VALID_JSON)
@@ -384,7 +402,7 @@ def main():
     # ------------------------------------------------------------------
     # 2. Compute PCR scores for each image
     # ------------------------------------------------------------------
-    print("\n[2/5] Computing PCR scores ...")
+    print("\n[2/6] Computing PCR scores ...")
 
     train_dir = TRAIN_JSON.parent
     valid_dir = VALID_JSON.parent
@@ -400,9 +418,28 @@ def main():
     print(f"    from valid split: {len(valid_results)}")
 
     # ------------------------------------------------------------------
-    # 3. Save full labelled dataset
+    # 3. Compute ODOT-calibrated thresholds and assign class labels
     # ------------------------------------------------------------------
-    print("\n[3/5] Saving full labelled dataset ...")
+    print("\n[3/6] Computing ODOT-calibrated PCR thresholds ...")
+
+    pcr_scores = df["pcr_score"].values
+    thresholds = compute_odot_thresholds(pcr_scores)
+
+    print(f"  ODOT target proportions: "
+          f"low={CONFIG['ODOT_CLASS_PROPORTIONS']['low']:.2%}, "
+          f"medium={CONFIG['ODOT_CLASS_PROPORTIONS']['medium']:.2%}")
+    print(f"  Computed PCR thresholds:")
+    print(f"    Low/Medium boundary:  PCR = {thresholds['low']:.4f}")
+    print(f"    Medium/High boundary: PCR = {thresholds['medium']:.4f}")
+    print(f"  PCR score range: [{pcr_scores.min():.2f}, {pcr_scores.max():.2f}]")
+
+    # Assign class labels using dynamic thresholds
+    df["int_label"] = df["pcr_score"].apply(lambda x: pcr_class(x, thresholds))
+
+    # ------------------------------------------------------------------
+    # 4. Save full labelled dataset
+    # ------------------------------------------------------------------
+    print("\n[4/6] Saving full labelled dataset ...")
 
     column_order = [
         "image_id", "filename", "pcr_score", "int_label",
@@ -414,9 +451,9 @@ def main():
     print(f"  Rows:  {len(df)}")
 
     # ------------------------------------------------------------------
-    # 4. Stratified train/val/test split
+    # 5. Stratified train/val/test split
     # ------------------------------------------------------------------
-    print("\n[4/5] Creating stratified train/val/test splits (70/15/15) ...")
+    print("\n[5/6] Creating stratified train/val/test splits (70/15/15) ...")
 
     df_train, df_val, df_test = stratified_split(df)
 
@@ -432,9 +469,9 @@ def main():
     print(f"  Test:  {len(df_test)} rows -> {OUTPUT_TEST}")
 
     # ------------------------------------------------------------------
-    # 5. Diagnostics
+    # 6. Diagnostics
     # ------------------------------------------------------------------
-    print("\n[5/5] Diagnostics")
+    print("\n[6/6] Diagnostics")
     print("=" * 70)
 
     print_diagnostics(df, "ALL DATA")
