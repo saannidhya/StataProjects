@@ -1,4 +1,7 @@
 {
     "python.REPL.enableREPLSmartSend": false,
-    "workbench.colorTheme": "Monokai"
+    "workbench.colorTheme": "Default Dark+",
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    "python-envs.pythonProjects": []
 }

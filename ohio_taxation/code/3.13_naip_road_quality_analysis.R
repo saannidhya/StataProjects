@@ -22,6 +22,7 @@ cutoff <- 50  # RDD cutoff: 50% votes against
 panel_cx <- read_csv(paste0(sat_dir, "/naip_road_quality_panel_convnext.csv"))
 panel_yl <- read_csv(paste0(sat_dir, "/naip_road_quality_panel_yolo.csv"))
 collapsed <- read_csv(paste0(sat_dir, "/naip_road_quality_collapsed.csv"))
+collapsed_delayed <- read_csv(paste0(sat_dir, "/naip_road_quality_collapsed_delayed.csv"))
 
 cat("ConvNeXt panel:", nrow(panel_cx), "obs,", n_distinct(panel_cx$cosbidfp), "subdivisions\n")
 cat("YOLO panel:", nrow(panel_yl), "obs,", n_distinct(panel_yl$cosbidfp), "subdivisions\n")
@@ -78,6 +79,31 @@ etable(did_cx_pred, did_cx_ev, did_yl_pred, did_yl_ev,
        headers = c("CX: pred_id", "CX: EV score", "YOLO: pred_id", "YOLO: EV score"))
 
 #==========================================================================================================#
+# 2b. Delayed-Post DID (3+ and 5+ years after election)
+#     Road deterioration from reduced maintenance is delayed — roads are durable assets.
+#     The standard pre/post DID dilutes the effect by including immediate post-election years
+#     when roads haven't had time to deteriorate.
+#==========================================================================================================#
+
+# Panel-level delayed DID with subdivision FE
+did_cx_d3 <- feols(mean_rq_score_ev ~ post_delayed_3 * treated | cosbidfp,
+                   data = panel_cx, cluster = ~cosbidfp)
+did_cx_d5 <- feols(mean_rq_score_ev ~ post_delayed_5 * treated | cosbidfp,
+                   data = panel_cx, cluster = ~cosbidfp)
+did_yl_d3 <- feols(mean_rq_score_ev ~ post_delayed_3 * treated | cosbidfp,
+                   data = panel_yl, cluster = ~cosbidfp)
+did_yl_d5 <- feols(mean_rq_score_ev ~ post_delayed_5 * treated | cosbidfp,
+                   data = panel_yl, cluster = ~cosbidfp)
+
+etable(did_cx_d3, did_cx_d5, did_yl_d3, did_yl_d5,
+       headers = c("CX: 3yr", "CX: 5yr", "YOLO: 3yr", "YOLO: 5yr"),
+       tex = TRUE,
+       file = paste0(tables, "/naip_road_quality_did_delayed.tex"))
+
+etable(did_cx_d3, did_cx_d5, did_yl_d3, did_yl_d5,
+       headers = c("CX: 3yr", "CX: 5yr", "YOLO: 3yr", "YOLO: 5yr"))
+
+#==========================================================================================================#
 # 3. Event Study (panel: subdivision x NAIP year)
 #==========================================================================================================#
 
@@ -109,20 +135,19 @@ summary(es_cx)
 summary(es_yl)
 
 #==========================================================================================================#
-# 4. Regression Discontinuity (post-election observations only)
+# 4. Regression Discontinuity (all post-election observations)
 #==========================================================================================================#
 
 panel_cx_post <- panel_cx %>% filter(post_election_flag == 1)
 panel_yl_post <- panel_yl %>% filter(post_election_flag == 1)
 
-# ConvNeXt v2 RDD
+# ConvNeXt v2 RDD (MSE-optimal bandwidth, triangular kernel — matches 3.11)
 rd_cx <- rdrobust(
   y = panel_cx_post$mean_rq_score_ev,
   x = panel_cx_post$votes_pct_against,
   c = cutoff,
   covs = panel_cx_post$pop,
-  all = TRUE, kernel = "uniform", bwselect = "mserd", p = 1, q = 2,
-  h = max(abs(panel_cx_post$votes_pct_against - cutoff), na.rm = TRUE),
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
   cluster = panel_cx_post$cosbidfp
 )
 summary(rd_cx)
@@ -133,19 +158,17 @@ rd_yl <- rdrobust(
   x = panel_yl_post$votes_pct_against,
   c = cutoff,
   covs = panel_yl_post$pop,
-  all = TRUE, kernel = "uniform", bwselect = "mserd", p = 1, q = 2,
-  h = max(abs(panel_yl_post$votes_pct_against - cutoff), na.rm = TRUE),
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
   cluster = panel_yl_post$cosbidfp
 )
 summary(rd_yl)
 
-# RD Plot (ConvNeXt v2)
+# RD Plots (all post-election)
 rd_plot_cx <- rdplot(
   y = panel_cx_post$mean_rq_score_ev,
   x = panel_cx_post$votes_pct_against,
   c = cutoff,
-  p = 1, kernel = "uniform",
-  h = max(abs(panel_cx_post$votes_pct_against - cutoff), na.rm = TRUE),
+  p = 1, kernel = "tri",
   nbins = 4, binselect = "esmv",
   title = "Road Quality vs Vote Share Against Tax Renewal (NAIP + ConvNeXt v2)",
   x.label = "Vote Share Against Tax Renewal (%)",
@@ -154,13 +177,11 @@ rd_plot_cx <- rdplot(
 ggsave(paste0(plots, "/naip_rd_plot_road_quality.png"),
        plot = rd_plot_cx$rdplot, width = 10, height = 6, dpi = 300)
 
-# RD Plot (YOLOv11)
 rd_plot_yl <- rdplot(
   y = panel_yl_post$mean_rq_score_ev,
   x = panel_yl_post$votes_pct_against,
   c = cutoff,
-  p = 1, kernel = "uniform",
-  h = max(abs(panel_yl_post$votes_pct_against - cutoff), na.rm = TRUE),
+  p = 1, kernel = "tri",
   nbins = 4, binselect = "esmv",
   title = "Road Quality vs Vote Share Against Tax Renewal (NAIP + YOLOv11)",
   x.label = "Vote Share Against Tax Renewal (%)",
@@ -168,6 +189,209 @@ rd_plot_yl <- rdplot(
 )
 ggsave(paste0(plots, "/naip_rd_plot_road_quality_yolo.png"),
        plot = rd_plot_yl$rdplot, width = 10, height = 6, dpi = 300)
+
+# --- RDD with mean_pred_id (raw 0/1/2 labels) as outcome ---
+
+rd_cx_pred <- rdrobust(
+  y = panel_cx_post$mean_pred_id,
+  x = panel_cx_post$votes_pct_against,
+  c = cutoff,
+  covs = panel_cx_post$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_cx_post$cosbidfp
+)
+summary(rd_cx_pred)
+
+rd_yl_pred <- rdrobust(
+  y = panel_yl_post$mean_pred_id,
+  x = panel_yl_post$votes_pct_against,
+  c = cutoff,
+  covs = panel_yl_post$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_yl_post$cosbidfp
+)
+summary(rd_yl_pred)
+
+rd_plot_cx_pred <- rdplot(
+  y = panel_cx_post$mean_pred_id,
+  x = panel_cx_post$votes_pct_against,
+  c = cutoff,
+  p = 1, kernel = "tri",
+  nbins = 4, binselect = "esmv",
+  title = "Road Quality vs Vote Share (NAIP + ConvNeXt v2, pred_id)",
+  x.label = "Vote Share Against Tax Renewal (%)",
+  y.label = "Mean Predicted Label (0-2)"
+)
+ggsave(paste0(plots, "/naip_rd_plot_road_quality_pred.png"),
+       plot = rd_plot_cx_pred$rdplot, width = 10, height = 6, dpi = 300)
+
+rd_plot_yl_pred <- rdplot(
+  y = panel_yl_post$mean_pred_id,
+  x = panel_yl_post$votes_pct_against,
+  c = cutoff,
+  p = 1, kernel = "tri",
+  nbins = 4, binselect = "esmv",
+  title = "Road Quality vs Vote Share (NAIP + YOLOv11, pred_id)",
+  x.label = "Vote Share Against Tax Renewal (%)",
+  y.label = "Mean Predicted Label (0-2)"
+)
+ggsave(paste0(plots, "/naip_rd_plot_road_quality_yolo_pred.png"),
+       plot = rd_plot_yl_pred$rdplot, width = 10, height = 6, dpi = 300)
+
+#==========================================================================================================#
+# 4b. Regression Discontinuity — Delayed Post (3+ and 5+ years after election)
+#     Using only NAIP images captured 3+ or 5+ years after the election, so road
+#     deterioration from reduced maintenance has had time to manifest.
+#==========================================================================================================#
+
+# Delayed-post RDD: 3+ years
+panel_cx_d3 <- panel_cx %>% filter(post_delayed_3 == 1)
+panel_yl_d3 <- panel_yl %>% filter(post_delayed_3 == 1)
+
+cat("\n--- RDD: Delayed Post (3+ years) ---\n")
+cat("ConvNeXt obs:", nrow(panel_cx_d3), "| YOLO obs:", nrow(panel_yl_d3), "\n")
+
+rd_cx_d3 <- rdrobust(
+  y = panel_cx_d3$mean_rq_score_ev,
+  x = panel_cx_d3$votes_pct_against,
+  c = cutoff,
+  covs = panel_cx_d3$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_cx_d3$cosbidfp
+)
+summary(rd_cx_d3)
+
+rd_yl_d3 <- rdrobust(
+  y = panel_yl_d3$mean_rq_score_ev,
+  x = panel_yl_d3$votes_pct_against,
+  c = cutoff,
+  covs = panel_yl_d3$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_yl_d3$cosbidfp
+)
+summary(rd_yl_d3)
+
+# RD Plots (delayed 3+)
+rd_plot_cx_d3 <- rdplot(
+  y = panel_cx_d3$mean_rq_score_ev,
+  x = panel_cx_d3$votes_pct_against,
+  c = cutoff,
+  p = 1, kernel = "tri",
+  nbins = 4, binselect = "esmv",
+  title = "Road Quality vs Vote Share (NAIP + ConvNeXt v2, 3+ yrs post-election)",
+  x.label = "Vote Share Against Tax Renewal (%)",
+  y.label = "Road Quality Score (Expected Value)"
+)
+ggsave(paste0(plots, "/naip_rd_plot_road_quality_delayed3.png"),
+       plot = rd_plot_cx_d3$rdplot, width = 10, height = 6, dpi = 300)
+
+rd_plot_yl_d3 <- rdplot(
+  y = panel_yl_d3$mean_rq_score_ev,
+  x = panel_yl_d3$votes_pct_against,
+  c = cutoff,
+  p = 1, kernel = "tri",
+  nbins = 4, binselect = "esmv",
+  title = "Road Quality vs Vote Share (NAIP + YOLOv11, 3+ yrs post-election)",
+  x.label = "Vote Share Against Tax Renewal (%)",
+  y.label = "Road Quality Score (Expected Value)"
+)
+ggsave(paste0(plots, "/naip_rd_plot_road_quality_yolo_delayed3.png"),
+       plot = rd_plot_yl_d3$rdplot, width = 10, height = 6, dpi = 300)
+
+# --- Delayed 3+: mean_pred_id as outcome ---
+rd_cx_d3_pred <- rdrobust(
+  y = panel_cx_d3$mean_pred_id,
+  x = panel_cx_d3$votes_pct_against,
+  c = cutoff,
+  covs = panel_cx_d3$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_cx_d3$cosbidfp
+)
+summary(rd_cx_d3_pred)
+
+rd_yl_d3_pred <- rdrobust(
+  y = panel_yl_d3$mean_pred_id,
+  x = panel_yl_d3$votes_pct_against,
+  c = cutoff,
+  covs = panel_yl_d3$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_yl_d3$cosbidfp
+)
+summary(rd_yl_d3_pred)
+
+rd_plot_cx_d3_pred <- rdplot(
+  y = panel_cx_d3$mean_pred_id,
+  x = panel_cx_d3$votes_pct_against,
+  c = cutoff,
+  p = 1, kernel = "tri",
+  nbins = 4, binselect = "esmv",
+  title = "Road Quality vs Vote Share (ConvNeXt v2, pred_id, 3+ yrs)",
+  x.label = "Vote Share Against Tax Renewal (%)",
+  y.label = "Mean Predicted Label (0-2)"
+)
+ggsave(paste0(plots, "/naip_rd_plot_road_quality_pred_delayed3.png"),
+       plot = rd_plot_cx_d3_pred$rdplot, width = 10, height = 6, dpi = 300)
+
+rd_plot_yl_d3_pred <- rdplot(
+  y = panel_yl_d3$mean_pred_id,
+  x = panel_yl_d3$votes_pct_against,
+  c = cutoff,
+  p = 1, kernel = "tri",
+  nbins = 4, binselect = "esmv",
+  title = "Road Quality vs Vote Share (YOLOv11, pred_id, 3+ yrs)",
+  x.label = "Vote Share Against Tax Renewal (%)",
+  y.label = "Mean Predicted Label (0-2)"
+)
+ggsave(paste0(plots, "/naip_rd_plot_road_quality_yolo_pred_delayed3.png"),
+       plot = rd_plot_yl_d3_pred$rdplot, width = 10, height = 6, dpi = 300)
+
+# Delayed-post RDD: 5+ years
+panel_cx_d5 <- panel_cx %>% filter(post_delayed_5 == 1)
+panel_yl_d5 <- panel_yl %>% filter(post_delayed_5 == 1)
+
+cat("\n--- RDD: Delayed Post (5+ years) ---\n")
+cat("ConvNeXt obs:", nrow(panel_cx_d5), "| YOLO obs:", nrow(panel_yl_d5), "\n")
+
+rd_cx_d5 <- rdrobust(
+  y = panel_cx_d5$mean_rq_score_ev,
+  x = panel_cx_d5$votes_pct_against,
+  c = cutoff,
+  covs = panel_cx_d5$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_cx_d5$cosbidfp
+)
+summary(rd_cx_d5)
+
+rd_yl_d5 <- rdrobust(
+  y = panel_yl_d5$mean_rq_score_ev,
+  x = panel_yl_d5$votes_pct_against,
+  c = cutoff,
+  covs = panel_yl_d5$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_yl_d5$cosbidfp
+)
+summary(rd_yl_d5)
+
+# --- Delayed 5+: mean_pred_id as outcome ---
+rd_cx_d5_pred <- rdrobust(
+  y = panel_cx_d5$mean_pred_id,
+  x = panel_cx_d5$votes_pct_against,
+  c = cutoff,
+  covs = panel_cx_d5$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_cx_d5$cosbidfp
+)
+summary(rd_cx_d5_pred)
+
+rd_yl_d5_pred <- rdrobust(
+  y = panel_yl_d5$mean_pred_id,
+  x = panel_yl_d5$votes_pct_against,
+  c = cutoff,
+  covs = panel_yl_d5$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_yl_d5$cosbidfp
+)
+summary(rd_yl_d5_pred)
 
 #==========================================================================================================#
 # 5. Visualization: Line plot and bar plot (matching 3.11 style)

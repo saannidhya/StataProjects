@@ -1,0 +1,122 @@
+
+
+% Bibstyle aea.bst version 2009.05.20
+
+\begin{thebibliography}{xx}
+
+\harvarditem[Adukia, Asher \harvardand\ Novosad]{Anjali Adukia, Sam Asher
+  \harvardand\ Paul Novosad}{2020}{adukia2020}
+{\bf Adukia, Anjali, Sam Asher, and Paul Novosad.} 2020. ``Educational
+  investment responses to economic opportunity: Evidence from Indian road
+  construction.'' {\em American Economic Journal: Applied Economics},
+  12(1):~348--376.
+
+\harvarditem[Asher \harvardand\ Novosad]{Sam Asher \harvardand\ Paul
+  Novosad}{2020}{asher2020}
+{\bf Asher, Sam, and Paul Novosad.} 2020. ``Rural roads and local economic
+  development.'' {\em American Economic Review}, 110(3):~797--823.
+
+\harvarditem[Banerjee, Duflo \harvardand\ Qian]{Abhijit Banerjee, Esther Duflo
+  \harvardand\ Nancy Qian}{2020}{banerjee2020}
+{\bf Banerjee, Abhijit, Esther Duflo, and Nancy Qian.} 2020. ``On the road:
+  Access to transportation infrastructure and economic growth in China.'' {\em
+  Journal of Development Economics}, 145:~102442.
+
+\harvarditem[Beenstock, Feldman \harvardand\ Felsenstein]{Michael Beenstock,
+  Daniel Feldman \harvardand\ Daniel Felsenstein}{2016}{beenstock2016hedonic}
+{\bf Beenstock, Michael, Daniel Feldman, and Daniel Felsenstein.} 2016.
+  ``Hedonic pricing when housing is endogenous: The value of access to the
+  trans-Israel highway.'' {\em Journal of Regional Science}, 56(1):~134--155.
+
+\harvarditem[Brasington]{David~M Brasington}{2017}{brasington2017school}
+{\bf Brasington, David~M.} 2017. ``School spending and new construction.'' {\em
+  Regional Science and Urban Economics}, 63:~76--84.
+
+\harvarditem[Calonico et~al.]{Sebastian Calonico, Matias~D Cattaneo, Max~H
+  Farrell \harvardand\ Roc{\'\i}o Titiunik}{2017}{calonico2017rdrobust}
+{\bf Calonico, Sebastian, Matias~D Cattaneo, Max~H Farrell, and Roc{\'\i}o
+  Titiunik.} 2017. ``rdrobust: Software for regression-discontinuity designs.''
+  {\em The Stata Journal}, 17(2):~372--404.
+
+\harvarditem[Calonico et~al.]{Sebastian Calonico, Matias~D Cattaneo, Max~H
+  Farrell \harvardand\ Roc{\'\i}o Titiunik}{2019}{calonico2019regression}
+{\bf Calonico, Sebastian, Matias~D Cattaneo, Max~H Farrell, and Roc{\'\i}o
+  Titiunik.} 2019. ``Regression discontinuity designs using covariates.'' {\em
+  Review of Economics and Statistics}, 101(3):~442--451.
+
+\harvarditem[Cattaneo, Jansson \harvardand\ Ma]{Matias~D Cattaneo, Michael
+  Jansson \harvardand\ Xinwei Ma}{2020}{cattaneo2020simple}
+{\bf Cattaneo, Matias~D, Michael Jansson, and Xinwei Ma.} 2020. ``Simple local
+  polynomial density estimators.'' {\em Journal of the American Statistical
+  Association}, 115(531):~1449--1455.
+
+\harvarditem[Cellini, Ferreira \harvardand\ Rothstein]{Stephanie~R Cellini,
+  Fernando Ferreira \harvardand\ Jesse Rothstein}{2010}{cellini2010value}
+{\bf Cellini, Stephanie~R, Fernando Ferreira, and Jesse Rothstein.} 2010. ``The
+  value of school facility investments: Evidence from a dynamic regression
+  discontinuity design.'' {\em The Quarterly Journal of Economics},
+  125(1):~215--261.
+
+\harvarditem[Currier, Glaeser \harvardand\ Kreindler]{Lauren Currier, Edward~L
+  Glaeser \harvardand\ Gabriel~E Kreindler}{2023}{currier2023}
+{\bf Currier, Lauren, Edward~L Glaeser, and Gabriel~E Kreindler.} 2023.
+  ``Infrastructure Inequality: Who Pays the Cost of Road Roughness?'' National
+  Bureau of Economic Research Working Paper w31981.
+
+\harvarditem[Dalenberg \harvardand\ Partridge]{Douglas~R Dalenberg \harvardand\
+  Mark~D Partridge}{1995}{dalenberg1995effects}
+{\bf Dalenberg, Douglas~R, and Mark~D Partridge.} 1995. ``The effects of taxes,
+  expenditures, and public infrastructure on metropolitan area employment.''
+  {\em Journal of Regional Science}, 35(4):~617--640.
+
+\harvarditem[Diao, Leonard \harvardand\ Sing]{Mi Diao, Devon Leonard
+  \harvardand\ Tien~Foo Sing}{2017}{diao2017spatial}
+{\bf Diao, Mi, Devon Leonard, and Tien~Foo Sing.} 2017.
+  ``Spatial-difference-in-differences models for impact of new mass rapid
+  transit line on private housing values.'' {\em Regional Science and Urban
+  Economics}, 67:~64--77.
+
+\harvarditem[Duranton \harvardand\ Turner]{Gilles Duranton \harvardand\
+  Matthew~A. Turner}{2012}{duranton2012}
+{\bf Duranton, Gilles, and Matthew~A. Turner.} 2012. ``Urban growth and
+  transportation.'' {\em Review of Economic Studies}, 79(4):~1407--1440.
+
+\harvarditem[Gibbons \harvardand\ Machin]{Stephen Gibbons \harvardand\ Stephen
+  Machin}{2005}{gibbons2005valuing}
+{\bf Gibbons, Stephen, and Stephen Machin.} 2005. ``Valuing rail access using
+  transport innovations.'' {\em Journal of Urban Economics}, 57(1):~148--169.
+
+\harvarditem[Gibbons et~al.]{Stephen Gibbons, Teemu Lyytik{\"a}inen, Henry~G
+  Overman \harvardand\ Rosa Sanchis-Guarner}{2019}{gibbons2019new}
+{\bf Gibbons, Stephen, Teemu Lyytik{\"a}inen, Henry~G Overman, and Rosa
+  Sanchis-Guarner.} 2019. ``New road infrastructure: The effects on firms.''
+  {\em Journal of Urban Economics}, 110:~35--50.
+
+\harvarditem[Hettige]{Hemamala Hettige}{2006}{hettige2006}
+{\bf Hettige, Hemamala.} 2006. {\em When do rural roads benefit the poor and
+  how? An in-depth analysis based on case studies.} Asian Development Bank.
+
+\harvarditem[Hoogendoorn et~al.]{Sander Hoogendoorn, Jochem van Gemeren, Paul
+  Verstraten \harvardand\ Kees Folmer}{2019}{hoogendoorn2019house}
+{\bf Hoogendoorn, Sander, Jochem van Gemeren, Paul Verstraten, and Kees
+  Folmer.} 2019. ``House prices and accessibility: Evidence from a
+  quasi-experiment in transport infrastructure.'' {\em Journal of Economic
+  Geography}, 19(1):~57--87.
+
+\harvarditem[Kohlhase]{Janet~E Kohlhase}{1991}{kohlhase1991impact}
+{\bf Kohlhase, Janet~E.} 1991. ``The impact of toxic waste sites on housing
+  values.'' {\em Journal of Urban Economics}, 30(1):~1--26.
+
+\harvarditem[Levkovich, Rouwendal \harvardand\ Van~Marwijk]{Oleg Levkovich, Jan
+  Rouwendal \harvardand\ Rolf Van~Marwijk}{2016}{levkovich2016effects}
+{\bf Levkovich, Oleg, Jan Rouwendal, and Rolf Van~Marwijk.} 2016. ``The effects
+  of highway development on housing prices.'' {\em Transportation},
+  43(2):~379--405.
+
+\harvarditem[Li et~al.]{Shanjun Li, Jun Yang, Ping Qin \harvardand\ Shouyang
+  Chonabayashi}{2016}{li2016wheels}
+{\bf Li, Shanjun, Jun Yang, Ping Qin, and Shouyang Chonabayashi.} 2016.
+  ``Wheels of fortune: Subway expansion and property values in Beijing.'' {\em
+  Journal of Regional Science}, 56(5):~792--813.
+
+\end{thebibliography}

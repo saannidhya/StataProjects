@@ -19,10 +19,18 @@ sat_dir <- paste0(data, "/roads/satellite_images")
 # 1. Load data
 #==========================================================================================================#
 
+cutoff <- 50  # RDD cutoff: 50% votes against
+
 # Load the RDD dataset (read-only)
-roads_and_census <- read_dta(paste0(data, "/roads_and_census.dta")) %>%
-  dplyr::select(tendigit_fips, year, votes_pct_against, treated, pop) %>%
+roads_and_census <- haven::read_dta(paste0(data,"/roads_and_census.dta")) %>% 
+  dplyr::select(-matches("yr_t_")) %>%
+  filter(description == "R" & duration != "1000") %>%
+  janitor::clean_names() %>%
+  mutate(votes_pct_against = 100 - votes_pct_for) %>%
+  mutate(treated = if_else(votes_pct_against > cutoff, 1, 0))      %>% 
+    dplyr::select(tendigit_fips, year, votes_pct_against, treated, pop) %>%
   rename(election_year = year)
+
 
 # Load prediction CSVs
 preds_convnext <- read_csv(paste0(sat_dir, "/naip_preds_convnext.csv"))
@@ -39,8 +47,11 @@ cat("RDD dataset:", nrow(roads_and_census), "rows\n")
 compute_scores <- function(df) {
   df %>%
     mutate(
-      # Method A: existing 3.11 formula
-      rq_score_a = round(((pred_id + max_prob) / 3) * 99 + 1, 2),
+      # Method A: road_quality_score2 definition
+      rq_score_a = case_when(
+        pred_id == 0 ~ 1 + (1 - 0.5 * max_prob) * 99 / 3,
+        TRUE ~ 1 + pred_id * 99 / 3 + 0.5 * max_prob * 99 / 3
+      ) %>% round(2),
       # Method B: expected value using full probability distribution
       rq_score_ev = round(p0 * 0 + p1 * 1 + p2 * 2, 4),
       # Ensure cosbidfp is numeric for merge
@@ -95,6 +106,8 @@ merge_with_rdd <- function(panel_df) {
     inner_join(roads_and_census, by = c("cosbidfp" = "tendigit_fips")) %>%
     mutate(
       post_election_flag = as.integer(naip_year > election_year),
+      post_delayed_3 = as.integer(naip_year >= election_year + 3),
+      post_delayed_5 = as.integer(naip_year >= election_year + 5),
       event_time = naip_year - election_year,
       did = post_election_flag * treated
     ) %>%
@@ -133,9 +146,38 @@ collapse_pre_post <- function(panel_df, model_name) {
     )
 }
 
+# Collapsed dataset for delayed-post specifications (3+ and 5+ years after election)
+collapse_delayed <- function(panel_df, model_name, delay_years) {
+  delay_col <- paste0("post_delayed_", delay_years)
+  panel_df %>%
+    group_by(cosbidfp, election_year, treated, votes_pct_against, pop,
+             post_delayed = .data[[delay_col]]) %>%
+    summarize(
+      n_images = sum(n_images),
+      n_years = n(),
+      mean_pred_id = mean(mean_pred_id, na.rm = TRUE),
+      mean_rq_score_a = mean(mean_rq_score_a, na.rm = TRUE),
+      mean_rq_score_ev = mean(mean_rq_score_ev, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      did = post_delayed * treated,
+      model = model_name,
+      delay = delay_years
+    )
+}
+
 collapsed_convnext <- collapse_pre_post(panel_convnext_rdd, "convnext_v2")
 collapsed_yolo <- collapse_pre_post(panel_yolo_rdd, "yolo11")
 collapsed_all <- bind_rows(collapsed_convnext, collapsed_yolo)
+
+# Delayed-post collapsed datasets
+collapsed_delayed_all <- bind_rows(
+  collapse_delayed(panel_convnext_rdd, "convnext_v2", 3),
+  collapse_delayed(panel_convnext_rdd, "convnext_v2", 5),
+  collapse_delayed(panel_yolo_rdd, "yolo11", 3),
+  collapse_delayed(panel_yolo_rdd, "yolo11", 5)
+)
 
 #==========================================================================================================#
 # 6. Save outputs
@@ -144,8 +186,10 @@ collapsed_all <- bind_rows(collapsed_convnext, collapsed_yolo)
 write_csv(panel_convnext_rdd, paste0(sat_dir, "/naip_road_quality_panel_convnext.csv"))
 write_csv(panel_yolo_rdd, paste0(sat_dir, "/naip_road_quality_panel_yolo.csv"))
 write_csv(collapsed_all, paste0(sat_dir, "/naip_road_quality_collapsed.csv"))
+write_csv(collapsed_delayed_all, paste0(sat_dir, "/naip_road_quality_collapsed_delayed.csv"))
 
 cat("\nOutputs saved to", sat_dir, ":\n")
 cat("  naip_road_quality_panel_convnext.csv\n")
 cat("  naip_road_quality_panel_yolo.csv\n")
 cat("  naip_road_quality_collapsed.csv\n")
+cat("  naip_road_quality_collapsed_delayed.csv\n")

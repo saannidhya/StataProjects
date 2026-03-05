@@ -239,9 +239,6 @@ def run_yolo_inference(manifest_rows: list[dict], out_csv: Path):
     counts = Counter()
     n_done = 0
 
-    # Build path list and row lookup
-    img_paths = [r["img_path"] for r in todo_rows]
-
     with open(out_csv, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         if write_header:
@@ -249,37 +246,42 @@ def run_yolo_inference(manifest_rows: list[dict], out_csv: Path):
                              "roadname", "pred_id", "pred_label", "max_prob",
                              "p0", "p1", "p2"])
 
-        # YOLO predict with streaming
-        preds = model.predict(
-            source=img_paths,
-            imgsz=IMGSZ,
-            batch=BATCH_SIZE,
-            device=DEVICE,
-            stream=True,
-            verbose=False,
-        )
+        # Process in batches to avoid "too many open files" OS error.
+        # ultralytics autocast_list() opens all files at once when given a
+        # large list, so we chunk manually.
+        for batch_start in range(0, len(todo_rows), BATCH_SIZE):
+            batch_rows = todo_rows[batch_start : batch_start + BATCH_SIZE]
+            batch_paths = [r["img_path"] for r in batch_rows]
 
-        for idx, r in enumerate(preds):
-            row = todo_rows[idx]
-            probs = probs_to_numpy(r.probs)
-            pred_id = int(getattr(r.probs, "top1", int(np.argmax(probs))))
-            max_prob = float(getattr(r.probs, "top1conf", float(np.max(probs))))
-            pred_label = CLASS_NAMES.get(pred_id, str(pred_id))
+            results = model.predict(
+                source=batch_paths,
+                imgsz=IMGSZ,
+                batch=BATCH_SIZE,
+                device=DEVICE,
+                verbose=False,
+            )
 
-            p0 = float(probs[0]) if probs.shape[0] == 3 else 0.0
-            p1 = float(probs[1]) if probs.shape[0] == 3 else 0.0
-            p2 = float(probs[2]) if probs.shape[0] == 3 else 0.0
+            for i, r in enumerate(results):
+                row = batch_rows[i]
+                probs = probs_to_numpy(r.probs)
+                pred_id = int(getattr(r.probs, "top1", int(np.argmax(probs))))
+                max_prob = float(getattr(r.probs, "top1conf", float(np.max(probs))))
+                pred_label = CLASS_NAMES.get(pred_id, str(pred_id))
 
-            writer.writerow([
-                row["filename"], row["cosbidfp"], row["year"],
-                row["lat"], row["lon"], row["roadname"],
-                pred_id, pred_label, f"{max_prob:.6f}",
-                f"{p0:.6f}", f"{p1:.6f}", f"{p2:.6f}",
-            ])
-            counts[pred_label] += 1
-            n_done += 1
+                p0 = float(probs[0]) if probs.shape[0] == 3 else 0.0
+                p1 = float(probs[1]) if probs.shape[0] == 3 else 0.0
+                p2 = float(probs[2]) if probs.shape[0] == 3 else 0.0
 
-            if n_done % PRINT_EVERY == 0:
+                writer.writerow([
+                    row["filename"], row["cosbidfp"], row["year"],
+                    row["lat"], row["lon"], row["roadname"],
+                    pred_id, pred_label, f"{max_prob:.6f}",
+                    f"{p0:.6f}", f"{p1:.6f}", f"{p2:.6f}",
+                ])
+                counts[pred_label] += 1
+                n_done += 1
+
+            if n_done % PRINT_EVERY < BATCH_SIZE:
                 logging.info(f"  [{n_done}/{len(todo_rows)}] processed")
 
         f.flush()
