@@ -245,8 +245,11 @@ def main():
                 pred_label = CLASS_NAMES.get(pred_class, str(pred_class))
                 p0, p1, p2 = float(probs[i, 0]), float(probs[i, 1]), float(probs[i, 2])
 
-                # PCR score from probabilities (midpoints of each class range)
-                pcr_score_pred = p0 * 25 + p1 * 62.5 + p2 * 87.5
+                # PCR score from probabilities (midpoints of each class's PCR range)
+                # Class 0 (low): PCR ~47-85, midpoint ~66
+                # Class 1 (med): PCR ~85-93, midpoint ~89
+                # Class 2 (high): PCR ~93-98, midpoint ~95.5
+                pcr_score_pred = p0 * 66.0 + p1 * 89.0 + p2 * 95.5
 
                 writer.writerow([
                     img_path.name,
@@ -279,6 +282,45 @@ def main():
     logging.info(f"\n  Done: {n_done} images predicted in {elapsed:.1f}s")
     logging.info(f"  Class distribution: {dict(counts)}")
     logging.info(f"  Output: {OUT_CSV}")
+
+    # ------------------------------------------------------------------
+    # ODOT calibration: reclassify to match ODOT distribution (14%/17%/69%)
+    # ------------------------------------------------------------------
+    logging.info("\n  ODOT calibration ...")
+    import pandas as pd
+
+    df = pd.read_csv(OUT_CSV)
+    n = len(df)
+
+    # ODOT proportions: 13.87% poor/very poor, 16.63% fair, 69.50% good/very good
+    low_pct = 0.1387
+    med_pct = 0.1663
+    # high_pct = 0.6950
+
+    # Use pcr_score_pred percentiles to find recalibration thresholds
+    low_thresh = df["pcr_score_pred"].quantile(low_pct)
+    med_thresh = df["pcr_score_pred"].quantile(low_pct + med_pct)
+
+    def odot_class(score):
+        if score < low_thresh:
+            return 0
+        elif score < med_thresh:
+            return 1
+        else:
+            return 2
+
+    df["odot_pred_class"] = df["pcr_score_pred"].apply(odot_class)
+    df["odot_pred_label"] = df["odot_pred_class"].map(CLASS_NAMES)
+
+    # Save calibrated output
+    OUT_CALIBRATED = SV_DIR / "ohio_streetview_preds_odot_calibrated.csv"
+    df.to_csv(OUT_CALIBRATED, index=False)
+
+    odot_counts = df["odot_pred_label"].value_counts().to_dict()
+    logging.info(f"  ODOT calibration thresholds: low < {low_thresh:.2f}, "
+                 f"med < {med_thresh:.2f}")
+    logging.info(f"  ODOT-calibrated distribution: {odot_counts}")
+    logging.info(f"  ODOT-calibrated output: {OUT_CALIBRATED}")
 
 
 if __name__ == "__main__":

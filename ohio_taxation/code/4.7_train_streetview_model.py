@@ -2,8 +2,9 @@
 # File: 4.7_train_streetview_model.py
 # Author: Saani Rawat
 # Date: 04 Mar 2026
-# Description: Fine-tune ConvNeXt v2 on RDD2024 streetview images with
-#              PCR-grounded 3-class labels.  Designed for Google Colab Pro
+# Description: Fine-tune ConvNeXt v2 (384px) on RDD2024 streetview images
+#              with PCR-grounded 3-class labels.  Features staged unfreezing,
+#              focal loss, and differential LR.  Designed for Colab Pro
 #              (T4/A100 GPU).  Can also run on CPU for pipeline testing.
 #
 # Dependencies:
@@ -54,7 +55,7 @@ DEFAULT_DATA_ROOT = Path(
     "C:/Users/rawatsa/OneDrive - University of Cincinnati/"
     "StataProjects/ohio_taxation/data/roads"
 )
-DEFAULT_MODEL_NAME = "facebook/convnextv2-base-22k-224"
+DEFAULT_MODEL_NAME = "facebook/convnextv2-base-22k-384"
 DEFAULT_OUTPUT_DIR_NAME = "hf_finetuned_convnextv2_streetview"
 
 CLASS_NAMES = {0: "low_quality", 1: "medium_quality", 2: "high_quality"}
@@ -80,24 +81,24 @@ def parse_args():
         help="Maximum number of training epochs (default: 30)",
     )
     parser.add_argument(
-        "--batch_size", type=int, default=16,
-        help="Batch size per device (default: 16)",
+        "--batch_size", type=int, default=8,
+        help="Batch size per device (default: 8)",
     )
     parser.add_argument(
-        "--grad_accum", type=int, default=2,
+        "--grad_accum", type=int, default=4,
         help="Gradient accumulation steps (effective batch = batch_size * grad_accum)",
     )
     parser.add_argument(
-        "--lr", type=float, default=2e-5,
-        help="Peak learning rate (default: 2e-5)",
+        "--lr", type=float, default=2e-4,
+        help="Peak learning rate (default: 2e-4)",
     )
     parser.add_argument(
         "--weight_decay", type=float, default=0.01,
         help="Weight decay (default: 0.01)",
     )
     parser.add_argument(
-        "--patience", type=int, default=5,
-        help="Early stopping patience in epochs (default: 5)",
+        "--patience", type=int, default=7,
+        help="Early stopping patience in epochs (default: 7)",
     )
     parser.add_argument(
         "--warmup_frac", type=float, default=0.05,
@@ -106,6 +107,18 @@ def parse_args():
     parser.add_argument(
         "--num_workers", type=int, default=2,
         help="DataLoader workers (default: 2)",
+    )
+    parser.add_argument(
+        "--input_size", type=int, default=384,
+        help="Input image resolution (default: 384)",
+    )
+    parser.add_argument(
+        "--freeze_epochs", type=int, default=3,
+        help="Epochs to freeze backbone and train only classifier head (default: 3)",
+    )
+    parser.add_argument(
+        "--loss_type", type=str, default="focal", choices=["ce", "focal"],
+        help="Loss function: 'ce' for CrossEntropy, 'focal' for FocalLoss (default: focal)",
     )
     return parser.parse_args()
 
@@ -138,9 +151,9 @@ class RoadQualityDataset(Dataset):
 
 # ---- Transforms -------------------------------------------------------------
 
-def get_train_transforms():
+def get_train_transforms(input_size: int = 384):
     return transforms.Compose([
-        transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+        transforms.RandomResizedCrop(input_size, scale=(0.8, 1.0)),
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.2, hue=0.1),
         transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0)),
@@ -150,13 +163,35 @@ def get_train_transforms():
     ])
 
 
-def get_val_transforms():
+def get_val_transforms(input_size: int = 384):
+    resize_to = int(input_size * 256 / 224)  # scale proportionally
     return transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
+        transforms.Resize(resize_to),
+        transforms.CenterCrop(input_size),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
+
+
+# ---- Focal Loss -------------------------------------------------------------
+
+class FocalLoss(nn.Module):
+    """Focal loss with optional label smoothing and class weights."""
+
+    def __init__(self, weight=None, gamma: float = 2.0, label_smoothing: float = 0.1):
+        super().__init__()
+        self.gamma = gamma
+        self.label_smoothing = label_smoothing
+        self.weight = weight  # class weights tensor
+        self.ce = nn.CrossEntropyLoss(
+            weight=weight, reduction="none", label_smoothing=label_smoothing
+        )
+
+    def forward(self, logits, targets):
+        ce_loss = self.ce(logits, targets)
+        pt = torch.exp(-ce_loss)
+        focal_loss = ((1 - pt) ** self.gamma) * ce_loss
+        return focal_loss.mean()
 
 
 # ---- LR Scheduler -----------------------------------------------------------
@@ -268,6 +303,9 @@ def main():
           f"{args.batch_size * args.grad_accum} effective)")
     print(f"  Learning rate:  {args.lr}")
     print(f"  Patience:       {args.patience}")
+    print(f"  Input size:     {args.input_size}x{args.input_size}")
+    print(f"  Freeze epochs:  {args.freeze_epochs}")
+    print(f"  Loss type:      {args.loss_type}")
 
     # ------------------------------------------------------------------
     # 1. Load data
@@ -282,9 +320,9 @@ def main():
         if not p.exists():
             raise FileNotFoundError(f"Missing: {p}\nRun 4.6_rdd2024_to_pcr_labels.py first.")
 
-    train_ds = RoadQualityDataset(train_csv, transform=get_train_transforms())
-    val_ds = RoadQualityDataset(val_csv, transform=get_val_transforms())
-    test_ds = RoadQualityDataset(test_csv, transform=get_val_transforms())
+    train_ds = RoadQualityDataset(train_csv, transform=get_train_transforms(args.input_size))
+    val_ds = RoadQualityDataset(val_csv, transform=get_val_transforms(args.input_size))
+    test_ds = RoadQualityDataset(test_csv, transform=get_val_transforms(args.input_size))
 
     print(f"  Train: {len(train_ds)} images")
     print(f"  Val:   {len(val_ds)} images")
@@ -320,21 +358,38 @@ def main():
     )
     model = model.to(device)
 
-    # Class-weighted cross-entropy: weight inversely proportional to count
+    # Class-weighted loss: weight inversely proportional to count
     weights = 1.0 / class_counts.astype(np.float64)
     weights = weights / weights.min()  # normalize so smallest weight = 1.0
     class_weights = torch.tensor(weights, dtype=torch.float32).to(device)
-    criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+    if args.loss_type == "focal":
+        criterion = FocalLoss(weight=class_weights, gamma=2.0, label_smoothing=0.1)
+        print(f"  Loss: FocalLoss (gamma=2.0, label_smoothing=0.1)")
+    else:
+        criterion = nn.CrossEntropyLoss(weight=class_weights)
+        print(f"  Loss: CrossEntropyLoss")
 
     print(f"  Model parameters: {sum(p.numel() for p in model.parameters()):,}")
     print(f"  Class weights: {dict(enumerate(weights.round(2)))}")
+    print(f"  Input size: {args.input_size}x{args.input_size}")
+    print(f"  Freeze epochs: {args.freeze_epochs}")
 
     # ------------------------------------------------------------------
-    # 3. Optimizer + scheduler
+    # 3. Staged unfreezing: Phase 1 = freeze backbone, train head only
     # ------------------------------------------------------------------
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=args.lr, weight_decay=args.weight_decay
-    )
+    if args.freeze_epochs > 0:
+        for param in model.convnextv2.parameters():
+            param.requires_grad = False
+        head_lr = 1e-3
+        optimizer = torch.optim.AdamW(
+            model.classifier.parameters(), lr=head_lr, weight_decay=args.weight_decay
+        )
+        print(f"  Phase 1: backbone frozen, head LR = {head_lr}")
+    else:
+        optimizer = torch.optim.AdamW(
+            model.parameters(), lr=args.lr, weight_decay=args.weight_decay
+        )
 
     steps_per_epoch = math.ceil(len(train_loader) / args.grad_accum)
     total_steps = steps_per_epoch * args.epochs
@@ -349,15 +404,35 @@ def main():
     # 4. Training loop with early stopping
     # ------------------------------------------------------------------
     print("\n[3/5] Training ...")
-    print(f"  {'Epoch':>5} {'Train Loss':>11} {'Val Loss':>9} "
+    print(f"  {'Epoch':>5} {'Phase':>6} {'Train Loss':>11} {'Val Loss':>9} "
           f"{'Val Acc':>8} {'Val BAcc':>9} {'LR':>10} {'Time':>6}")
-    print("  " + "-" * 65)
+    print("  " + "-" * 75)
 
     best_bal_acc = 0.0
     patience_counter = 0
+    unfrozen = args.freeze_epochs == 0
 
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
+
+        # Phase 2: unfreeze backbone after freeze_epochs
+        if not unfrozen and epoch > args.freeze_epochs:
+            for param in model.convnextv2.parameters():
+                param.requires_grad = True
+            optimizer = torch.optim.AdamW([
+                {"params": model.classifier.parameters(), "lr": args.lr},
+                {"params": model.convnextv2.parameters(), "lr": args.lr / 10},
+            ], weight_decay=args.weight_decay)
+            # Rebuild scheduler for remaining steps
+            remaining_steps = steps_per_epoch * (args.epochs - epoch + 1)
+            scheduler = get_cosine_schedule_with_warmup(
+                optimizer, warmup_steps=0, total_steps=remaining_steps
+            )
+            unfrozen = True
+            print(f"\n  === Phase 2: backbone unfrozen (head LR={args.lr}, "
+                  f"backbone LR={args.lr/10}) ===\n")
+
+        phase = "head" if not unfrozen else "full"
 
         train_loss = train_one_epoch(
             model, train_loader, criterion, optimizer, scheduler,
@@ -369,7 +444,7 @@ def main():
         elapsed = time.time() - t0
         current_lr = optimizer.param_groups[0]["lr"]
 
-        print(f"  {epoch:5d} {train_loss:11.4f} {val_results['loss']:9.4f} "
+        print(f"  {epoch:5d} {phase:>6} {train_loss:11.4f} {val_results['loss']:9.4f} "
               f"{val_results['accuracy']:8.4f} {val_results['balanced_accuracy']:9.4f} "
               f"{current_lr:10.2e} {elapsed:5.0f}s")
 

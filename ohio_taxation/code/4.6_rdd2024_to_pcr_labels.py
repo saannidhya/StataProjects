@@ -6,13 +6,12 @@
 #              annotations into ODOT PCR-grounded 3-class road quality
 #              labels (0=low, 1=medium, 2=high).
 #
-#              Each image's damage annotations are mapped to ODOT distress
-#              types, then severity and extent are proxied from bbox area
-#              and count.  A PCR-like score is computed as
-#              PCR = max(0, 100 - sum(deducts)), and images are assigned
-#              to one of three quality classes using configurable
-#              thresholds.  The labelled dataset is written to CSV and
-#              split into stratified train/val/test sets (70/15/15).
+#              Each annotation independently contributes a deduction
+#              (distress_weight * severity_weight) matching the per-
+#              annotation approach in pcr_score.jl.  PCR = 100 - sum(deducts).
+#              Images are assigned to 3 quality classes using fixed deduction
+#              thresholds (7/15).  Output is split into stratified
+#              train/val/test sets (70/15/15).
 #
 # Dependencies:
 #   - pandas, numpy, sklearn
@@ -27,11 +26,9 @@
 from __future__ import annotations
 
 import json
-import sys
 from collections import defaultdict
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -66,20 +63,16 @@ CONFIG = {
 
     # bbox area / image area thresholds for severity proxy
     # ratio < L -> "L";  L <= ratio < M -> "M";  ratio >= M -> "H"
-    "SEVERITY_AREA_THRESHOLDS": {"L": 0.02, "M": 0.08},
+    # M threshold = 0.05 (matching pcr_score.jl line 105)
+    "SEVERITY_AREA_THRESHOLDS": {"L": 0.02, "M": 0.05},
 
-    # Number-of-bboxes-per-distress-type thresholds for extent proxy
-    # count <= O -> "O";  O < count <= F -> "F";  count > F -> "E"
-    "EXTENT_COUNT_THRESHOLDS": {"O": 1, "F": 3},
-
-    # ODOT-calibrated class proportions (from PCR.csv, 27,920 Ohio road segments)
-    # Poor+Very Poor: 13.87%, Fair: 16.63%, Good+Very Good: 69.50%
-    # Thresholds are computed dynamically as percentiles of per-image PCR scores
-    # so that the resulting class distribution matches ODOT's actual distribution.
-    "ODOT_CLASS_PROPORTIONS": {
-        "low": 0.1387,    # bottom 13.87% -> class 0 (low quality)
-        "medium": 0.3050,  # bottom 30.50% (13.87 + 16.63) -> class 0 + 1
-        # remainder (69.50%) -> class 2 (high quality)
+    # Fixed deduction thresholds for class assignment
+    # deduct >= low_min  -> class 0 (low quality)
+    # deduct >= high_max -> class 1 (medium quality)
+    # deduct <  high_max -> class 2 (high quality)
+    "DEDUCT_THRESHOLDS": {
+        "low_min": 15,   # deduct >= 15 -> class 0 (low quality)
+        "high_max": 7,   # deduct < 7 -> class 2 (high quality)
     },
 
     # Stratified split proportions and seed
@@ -119,19 +112,6 @@ SEVERITY_WEIGHTS = {
     "longitudinal_cracking":     {"L": 0.4, "M": 0.7, "H": 1.0},
 }
 
-# ---------------------------------------------------------------------------
-# ODOT extent weights
-# Keys: O = Occasional, F = Frequent, E = Extensive
-# ---------------------------------------------------------------------------
-EXTENT_WEIGHTS = {
-    "raveling":                  {"O": 0.5, "F": 0.8, "E": 1.0},
-    "bleeding":                  {"O": 0.6, "F": 0.9, "E": 1.0},
-    "patching":                  {"O": 0.6, "F": 0.8, "E": 1.0},
-    "debonding":                 {"O": 0.5, "F": 0.8, "E": 1.0},
-    "wheel_track_cracking":      {"O": 0.5, "F": 0.7, "E": 1.0},
-    "block_transverse_cracking": {"O": 0.5, "F": 0.7, "E": 1.0},
-    "longitudinal_cracking":     {"O": 0.5, "F": 0.7, "E": 1.0},
-}
 
 
 # ---- Helper functions -----------------------------------------------------
@@ -156,35 +136,11 @@ def severity_from_area(bbox_area: float) -> str:
         return "H"
 
 
-def extent_from_count(count: int) -> str:
-    """Map bbox count per distress type to extent level."""
-    thresholds = CONFIG["EXTENT_COUNT_THRESHOLDS"]
-    if count <= thresholds["O"]:
-        return "O"
-    elif count <= thresholds["F"]:
-        return "F"
-    else:
-        return "E"
-
-
-def compute_odot_thresholds(pcr_scores: np.ndarray) -> dict:
-    """Compute PCR thresholds that match ODOT class proportions.
-
-    Since per-image PCR scores are compressed (all images have damage),
-    we use percentiles to match the actual ODOT distribution:
-    13.87% poor/very poor, 16.63% fair, 69.50% good/very good.
-    """
-    proportions = CONFIG["ODOT_CLASS_PROPORTIONS"]
-    low_threshold = np.percentile(pcr_scores, proportions["low"] * 100)
-    medium_threshold = np.percentile(pcr_scores, proportions["medium"] * 100)
-    return {"low": low_threshold, "medium": medium_threshold}
-
-
-def pcr_class(pcr_score: float, thresholds: dict) -> int:
-    """Map a PCR score to a 3-class integer label using dynamic thresholds."""
-    if pcr_score < thresholds["low"]:
+def pcr_class(total_deduct: float, thresholds: dict) -> int:
+    """Map total deduction to a 3-class integer label using fixed thresholds."""
+    if total_deduct >= thresholds["low_min"]:
         return 0   # low quality
-    elif pcr_score < thresholds["medium"]:
+    elif total_deduct >= thresholds["high_max"]:
         return 1   # medium quality
     else:
         return 2   # high quality
@@ -237,8 +193,7 @@ def compute_pcr_for_images(
         n_annotations = len(annotations)
 
         if n_annotations == 0:
-            # No damage detected -> perfect road
-            # int_label assigned later after ODOT thresholds are computed
+            # No damage detected -> perfect road (int_label assigned in main)
             results.append({
                 "image_id": img_id,
                 "filename": filename,
@@ -251,47 +206,19 @@ def compute_pcr_for_images(
             })
             continue
 
-        # Group annotations by ODOT distress type
-        distress_groups: dict[str, list[dict]] = defaultdict(list)
-        # Also track the max distress_weight per ODOT type (multiple RDD
-        # categories may map to the same ODOT type with different weights)
-        distress_max_weight: dict[str, int] = {}
-
+        # Per-annotation deductions (matching pcr_score.jl lines 88-121)
+        # Each bbox independently contributes distress_weight * severity_weight
+        total_deduct = 0.0
         for ann in annotations:
             cat_id = ann["category_id"]
             odot_type, d_weight = DAMAGE_TO_ODOT[cat_id]
-            distress_groups[odot_type].append(ann)
-            # Keep the maximum distress weight across all RDD categories
-            # that map to this ODOT type
-            if odot_type not in distress_max_weight:
-                distress_max_weight[odot_type] = d_weight
-            else:
-                distress_max_weight[odot_type] = max(
-                    distress_max_weight[odot_type], d_weight
-                )
-
-        # Compute deductions per distress type
-        total_deduct = 0.0
-        for odot_type, group_anns in distress_groups.items():
-            # Severity: take the MAX severity across all bboxes in this group
-            severities = [severity_from_area(ann["area"]) for ann in group_anns]
-            severity_order = {"L": 0, "M": 1, "H": 2}
-            max_severity = max(severities, key=lambda s: severity_order[s])
-
-            # Extent: based on count of bboxes for this distress type
-            extent = extent_from_count(len(group_anns))
-
-            # Look up weights
-            d_weight = distress_max_weight[odot_type]
-            s_weight = SEVERITY_WEIGHTS[odot_type][max_severity]
-            e_weight = EXTENT_WEIGHTS[odot_type][extent]
-
-            deduct = d_weight * s_weight * e_weight
-            total_deduct += deduct
+            sev = severity_from_area(ann["area"])
+            s_weight = SEVERITY_WEIGHTS[odot_type][sev]
+            total_deduct += d_weight * s_weight
 
         pcr_score = max(0.0, 100.0 - total_deduct)
 
-        # int_label assigned later after ODOT thresholds are computed
+        # int_label assigned in main() using deduction thresholds
         results.append({
             "image_id": img_id,
             "filename": filename,
@@ -366,6 +293,16 @@ def print_diagnostics(df: pd.DataFrame, label: str) -> None:
     print(f"    min    = {pcr.min():.2f}")
     print(f"    max    = {pcr.max():.2f}")
 
+    # Per-class annotation count stats (visual separability diagnostic)
+    if "n_annotations" in df.columns:
+        print(f"\n  Per-class annotation counts:")
+        print(f"  {'Class':<10} {'Mean':>8} {'Median':>8}")
+        print(f"  {'-'*28}")
+        for cls_id in sorted(class_counts.index):
+            name = class_names.get(cls_id, str(cls_id))
+            subset = df.loc[df["int_label"] == cls_id, "n_annotations"]
+            print(f"  {cls_id} ({name:<6}) {subset.mean():>8.1f} {subset.median():>8.1f}")
+
     # Warn if any class has fewer than 100 samples
     for cls_id in sorted(class_counts.index):
         if class_counts[cls_id] < 100:
@@ -418,23 +355,23 @@ def main():
     print(f"    from valid split: {len(valid_results)}")
 
     # ------------------------------------------------------------------
-    # 3. Compute ODOT-calibrated thresholds and assign class labels
+    # 3. Assign class labels using fixed deduction thresholds
     # ------------------------------------------------------------------
-    print("\n[3/6] Computing ODOT-calibrated PCR thresholds ...")
+    print("\n[3/6] Assigning class labels via fixed deduction thresholds ...")
+
+    thresholds = CONFIG["DEDUCT_THRESHOLDS"]
+    print(f"  Deduction thresholds:")
+    print(f"    deduct >= {thresholds['low_min']} -> class 0 (low quality)")
+    print(f"    {thresholds['high_max']} <= deduct < {thresholds['low_min']} -> class 1 (medium quality)")
+    print(f"    deduct < {thresholds['high_max']} -> class 2 (high quality)")
 
     pcr_scores = df["pcr_score"].values
-    thresholds = compute_odot_thresholds(pcr_scores)
-
-    print(f"  ODOT target proportions: "
-          f"low={CONFIG['ODOT_CLASS_PROPORTIONS']['low']:.2%}, "
-          f"medium={CONFIG['ODOT_CLASS_PROPORTIONS']['medium']:.2%}")
-    print(f"  Computed PCR thresholds:")
-    print(f"    Low/Medium boundary:  PCR = {thresholds['low']:.4f}")
-    print(f"    Medium/High boundary: PCR = {thresholds['medium']:.4f}")
+    deducts = df["total_deduct"].values
     print(f"  PCR score range: [{pcr_scores.min():.2f}, {pcr_scores.max():.2f}]")
+    print(f"  Deduction range: [{deducts.min():.2f}, {deducts.max():.2f}]")
 
-    # Assign class labels using dynamic thresholds
-    df["int_label"] = df["pcr_score"].apply(lambda x: pcr_class(x, thresholds))
+    # Assign class labels using fixed deduction thresholds
+    df["int_label"] = df["total_deduct"].apply(lambda x: pcr_class(x, thresholds))
 
     # ------------------------------------------------------------------
     # 4. Save full labelled dataset
