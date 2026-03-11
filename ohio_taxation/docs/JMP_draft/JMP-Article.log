@@ -1,10 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.1.15)  20 FEB 2026 15:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.1.15)  10 MAR 2026 18:37
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
-**"c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex"
-(c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/JMP-Article.tex
+**./JMP-Article.tex
+(JMP-Article.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
 (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -23,9 +22,11 @@ File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
 Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 \@emptytoks=\toks17
 \symAMSa=\mathgroup4
@@ -33,21 +34,25 @@ Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
-)) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+))
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
 Package: amsmath 2025/07/09 v2.17z AMS math features
 \@mathmargin=\skip51
 
 For additional information on amsmath, use the `?' option.
 (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
 Package: amstext 2024/11/17 v2.01 AMS text
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks18
 \ex@=\dimen149
-)) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
+))
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 \pmbraise@=\dimen150
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
 \inf@bad=\count283
@@ -97,17 +102,21 @@ LaTeX Info: Redefining \Relbar on input line 970.
 \mathdisplay@stack=\toks22
 LaTeX Info: Redefining \[ on input line 2950.
 LaTeX Info: Redefining \] on input line 2951.
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/eurosym\eurosym.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/eurosym\eurosym.sty
 Package: eurosym 1998/08/06 v1.1 European currency symbol ``Euro''
 \@eurobox=\box55
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks23
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
 Package: iftex 2024/12/12 v1.0g TeX engine tests
 ))
 \Gm@cnth=\count295
@@ -122,7 +131,9 @@ Package: iftex 2024/12/12 v1.0g TeX engine tests
 \Gm@layouthoffset=\dimen164
 \Gm@layoutvoffset=\dimen165
 \Gm@dimlist=\toks24
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg)) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/ulem\ulem.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg
+)) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/ulem\ulem.sty
 \UL@box=\box56
 \UL@hyphenbox=\box57
 \UL@skip=\skip54
@@ -133,24 +144,32 @@ Package: iftex 2024/12/12 v1.0g TeX engine tests
 \ULC@box=\box58
 Package: ulem 2019/11/18
 \ULdepth=\dimen168
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
 Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
 Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
 Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics
+.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 106.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.d
+ef
 File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen169
 \Gin@req@width=\dimen170
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
 \caption@tempdima=\dimen171
 \captionmargin=\dimen172
@@ -166,15 +185,20 @@ Package caption Info: Standard document class detected.
 \c@continuedfloat=\count300
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\color.sty
 Package: color 2025/01/14 v1.3e Standard LaTeX Color (DPC)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cf
+g
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package color Info: Driver file: pdftex.def on input line 149.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.lt
+x))
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.sty
 Package: setspace 2022/12/04 v6.7b set line spacing
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/sectsty\sectsty.sty
-Package: sectsty 2002/02/25 v2.0.2 Commands to change all sectional heading styles
-
+Package: sectsty 2002/02/25 v2.0.2 Commands to change all sectional heading sty
+les
 
 LaTeX Warning: Command \underbar  has changed.
                Check if current package is valid.
@@ -185,7 +209,8 @@ LaTeX Warning: Command \underline  has changed.
 
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/comment\comment.sty
 \CommentStream=\write3
- Excluding comment 'comment') (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/footmisc\footmisc.sty
+Excluding comment 'comment')
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/footmisc\footmisc.sty
 Package: footmisc 2024/12/24 v6.0g a miscellany of footnote facilities
 \FN@temptoken=\toks26
 \footnotemargin=\dimen179
@@ -194,23 +219,33 @@ Package footmisc Info: Declaring symbol style bringhurst on input line 699.
 Package footmisc Info: Declaring symbol style chicago on input line 707.
 Package footmisc Info: Declaring symbol style wiley on input line 716.
 Package footmisc Info: Declaring symbol style lamport-robust on input line 727.
+
 Package footmisc Info: Declaring symbol style lamport* on input line 747.
-Package footmisc Info: Declaring symbol style lamport*-robust on input line 768.
+Package footmisc Info: Declaring symbol style lamport*-robust on input line 768
+.
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip55
 \bibsep=\skip56
 LaTeX Info: Redefining \cite on input line 694.
 \c@NAT@ctr=\count301
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/pdflscape\pdflscape.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/pdflscape\pdflscape.s
+ty
 Package: pdflscape 2022-10-27 v0.13 Display of landscape pages in PDF
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/pdflscape\pdflscape-nometadata.sty
-Package: pdflscape-nometadata 2022-10-28 v0.13 Display of landscape pages in PDF (HO)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\lscape.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/pdflscape\pdflscape-n
+ometadata.sty
+Package: pdflscape-nometadata 2022-10-28 v0.13 Display of landscape pages in PD
+F (HO)
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\lscape.sty
 Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 )
 Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
-)) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/subfigure\subfigure.sty
+))
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/subfigure\subfigure.s
+ty
 Package: subfigure 2002/07/30 v2.1.4 subfigure package
 \subfigtopskip=\skip57
 \subfigcapskip=\skip58
@@ -226,7 +261,9 @@ Package: subfigure 2002/07/30 v2.1.4 subfigure package
 ****************************************
 * Local config file subfigure.cfg used *
 ****************************************
-(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/subfigure\subfigure.cfg)
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/subfigure\subfigure.c
+fg)
 \subfig@top=\skip61
 \subfig@bottom=\skip62
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
@@ -238,50 +275,76 @@ Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
 \extratabsurround=\skip63
 \backup@length=\skip64
 \ar@cellbox=\box60
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
 Package: hyperref 2025-07-12 v7.01o Hypertext links for LaTeX
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.s
+ty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefinekeys.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefi
+nekeys.sty
 Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape
+.sty
 Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
 Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds.sty
-Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcm
+ds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr
+.sty
 Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
 )
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
-)) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty
+))
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty
 Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2025-06-21 v2.57 Cross-referencing by name of section
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty
 Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\gettitlestring.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\gett
+itlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.s
+ty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
 \c@section@level=\count306
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
 Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
 \etb@tempcnta=\count307
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.sty
-Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc
+.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
+)
 )
 \@linkdim=\dimen185
 \Hy@linkcounter=\count308
 \Hy@pagecounter=\count309
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2025-07-12 v7.01o Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
 \Hy@SavedSpaceFactor=\count310
@@ -298,16 +361,20 @@ Package hyperref Info: Backreferencing OFF on input line 4215.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4462.
 \c@Hy@tempcnt=\count311
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4801.
 \XeTeXLinkMargin=\dimen186
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc.sty
-Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintca
+lc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
 ))
 \Fld@menulength=\count312
 \Field@Width=\dimen187
@@ -324,31 +391,45 @@ Package hyperref Info: PDF/A mode OFF on input line 6108.
 \c@Hfootnote=\count315
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
 File: hpdftex.def 2025-07-12 v7.01o Hyperref driver for pdfTeX
 \Fld@listcount=\count316
 \c@bookmark@seq@number=\count317
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfilecheck.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunf
+ilecheck.sty
 Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/base\atveryend-ltx.sty
-Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend package
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/base\atveryend-ltx.st
+y
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
 with kernel methods
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniquecounter.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniqu
+ecounter.sty
 Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
-Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 285.
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+85.
 )
 \Hy@SectionHShift=\skip65
 )
 Package hyperref Info: Option `colorlinks' set `true' on input line 10.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
 Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cf
+g
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package xcolor Info: Driver file: pdftex.def on input line 274.
 LaTeX Info: Redefining \color on input line 762.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.lt
+x)
 Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
 Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
 Package xcolor Info: Model `RGB' extended on input line 1365.
@@ -358,7 +439,8 @@ Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
 Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
 Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
 \LTleft=\skip66
 \LTright=\skip67
@@ -376,7 +458,8 @@ Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
 \c@LT@tables=\count321
 \c@LT@chunks=\count322
 \LT@p@ftn=\toks28
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/colortbl\colortbl.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/colortbl\colortbl.sty
 Package: colortbl 2024/05/26 v1.0h Color table columns (DPC)
 \everycr=\toks29
 \minrowclearance=\skip70
@@ -389,14 +472,16 @@ LaTeX Warning: Package "xcolor" has already been loaded: ignoring load-time
 (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/tools\enumerate.sty
 Package: enumerate 2023/07/04 v3.00 enumerate extensions (DPC)
 \@enLab=\toks30
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count324
 \float@exts=\toks31
 \float@box=\box66
 \@float@everytoks=\toks32
 \@floatcapt=\box67
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/placeins\placeins.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/placeins\placeins.sty
 Package: placeins 2005/04/18  v 2.2
 ) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/tools\tabularx.sty
 Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
@@ -407,7 +492,8 @@ Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
 \TX@delta=\dimen194
 \TX@cols=\count325
 \TX@ftn=\toks33
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \heavyrulewidth=\dimen195
 \lightrulewidth=\dimen196
@@ -426,7 +512,8 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \@thisruleclass=\count328
 \@lastruleclass=\count329
 \@thisrulewidth=\dimen263
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.sty
 \lst@mode=\count330
 \lst@gtempboxa=\box68
 \lst@token=\toks34
@@ -439,14 +526,17 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \lst@newlines=\count334
 \lst@lineno=\count335
 \lst@maxwidth=\dimen267
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstpatch.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstpatch.sty
 File: lstpatch.sty 2025/11/14 1.11b (Carsten Heinz)
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty
 File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
 \c@lstnumber=\count336
 \lst@skipnumbers=\count337
 \lst@framebox=\box69
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.cfg
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.cfg
 File: listings.cfg 2025/11/14 1.11b listings configuration
 ))
 Package: listings 2025/11/14 1.11b (Carsten Heinz)
@@ -457,17 +547,24 @@ Package: listings 2025/11/14 1.11b (Carsten Heinz)
     but found:
         2025/11/14 1.11b (Carsten Heinz)
     so I'm assuming it got fixed.
-(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/threeparttable\threeparttable.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/threeparttable\threep
+arttable.sty
 Package: threeparttable 2003/06/13  v 3.0
 \@tempboxb=\box70
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/caption\subcaption.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/caption\subcaption.st
+y
 Package: subcaption 2023/07/28 v1.6b Sub-captions (AR)
 LaTeX Info: Redefining \subref on input line 189.
 Package subcaption Info: The counter `subfigure' was already defined by
-(subcaption)             an unknown document class or package on input line 238.
+(subcaption)             an unknown document class or package on input line 238
+.
 Package subcaption Info: The counter `subtable' was already defined by
-(subcaption)             an unknown document class or package on input line 238.
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty
+(subcaption)             an unknown document class or package on input line 238
+.
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty
 Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
 \multirow@colwidth=\skip71
 \multirow@cntb=\count338
@@ -478,7 +575,9 @@ Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
 \c@proposition=\count340
 \c@hyp=\count341
 \c@subhyp=\count342
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-p
+dftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count343
 ) (JMP-Article.aux)
@@ -537,7 +636,9 @@ LaTeX Font Info:    ... okay on input line 49.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.
+mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count344
 \scratchdimen=\dimen269
@@ -550,10 +651,15 @@ LaTeX Font Info:    ... okay on input line 49.
 \MPnumerator=\count348
 \makeMPintoPDFobject=\count349
 \everyMPtoPDFconversion=\toks36
-) (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
+)
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf
+-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys
+.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package caption Info: Begin \AtBeginDocument code.
@@ -561,7 +667,8 @@ Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: longtable package is loaded.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/caption\ltcaption.sty
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/caption\ltcaption.sty
 Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 )
 Package caption Info: subfigure package is loaded.
@@ -574,177 +681,204 @@ Package hyperref Info: Link coloring ON on input line 49.
 
 \c@lstlisting=\count350
 LaTeX Font Info:    Trying to load font information for U+msa on input line 57.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
+
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 57.
- (C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
+
+
+(C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 Underfull \hbox (badness 10000) in paragraph at lines 65--76
 
  []
 
-[0
+[1
 
-{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (intro.tex [1] [2]) (lit_review.tex [3] [4] [5]
+{C:/Users/rawatsa/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [0]
+(intro.tex
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 
+     [1] [2]) (lit_review.tex [3] [4] [5]
 Overfull \hbox (0.47334pt too wide) in paragraph at lines 25--26
-[]\OT1/cmr/bx/n/12 Road Qual-ity. \OT1/cmr/m/n/12 Mea-sur-ing road qual-ity re-mains em-pir-i-cally chal-leng-ing. [][]Cur-rier, Glaeser
+[]\OT1/cmr/bx/n/12 Road Qual-ity. \OT1/cmr/m/n/12 Mea-sur-ing road qual-ity re-
+mains em-pir-i-cally chal-leng-ing. [][]Cur-rier, Glaeser
  []
 
-[6] [7] [8]) (data.tex [9]
+[6] [7] [8]) (data.tex [9] [10]
 Overfull \hbox (7.75723pt too wide) in paragraph at lines 14--15
-\OT1/cmr/bx/n/12 Background. \OT1/cmr/m/n/12 Ohio con-sists of 88 coun-ties, each cov-er-ing about 464 miles$[]$ (1,200 kilometers$[]$).
+\OT1/cmr/bx/n/12 Background. \OT1/cmr/m/n/12 Ohio con-sists of 88 coun-ties, ea
+ch cov-er-ing about 464 miles$[]$ (1,200 kilometers$[]$).
  []
 
-[10] [11] [12] [13] [14]
-<images/votes_pct_against_histogram.png, id=483, 855.195pt x 622.325pt>
+[11] [12] [13] [14]
+<images/votes_pct_against_histogram.png, id=490, 855.195pt x 622.325pt>
 File: images/votes_pct_against_histogram.png Graphic file (type png)
 <use images/votes_pct_against_histogram.png>
-Package pdftex.def Info: images/votes_pct_against_histogram.png  used on input line 73.
+Package pdftex.def Info: images/votes_pct_against_histogram.png  used on input 
+line 73.
 (pdftex.def)             Requested size: 469.75502pt x 341.8335pt.
- [15] [16 <./images/votes_pct_against_histogram.png (PNG copy)>] [17]
-<images/rush_twp_champaign_aug16.jpg, id=535, 1181.91562pt x 704.6325pt>
-File: images/rush_twp_champaign_aug16.jpg Graphic file (type jpg)
-<use images/rush_twp_champaign_aug16.jpg>
-Package pdftex.def Info: images/rush_twp_champaign_aug16.jpg  used on input line 107.
-(pdftex.def)             Requested size: 277.15373pt x 165.23386pt.
-<images/hartford_twp_licking_sep21.jpg, id=536, 1181.91562pt x 704.6325pt>
-File: images/hartford_twp_licking_sep21.jpg Graphic file (type jpg)
-<use images/hartford_twp_licking_sep21.jpg>
-Package pdftex.def Info: images/hartford_twp_licking_sep21.jpg  used on input line 113.
-(pdftex.def)             Requested size: 277.15373pt x 165.23386pt.
- [18 <./images/rush_twp_champaign_aug16.jpg> <./images/hartford_twp_licking_sep21.jpg>] [19]
-<images/road_quality_lineplot.png, id=562, 578.16pt x 433.62pt>
+ [15] [16 <./images/votes_pct_against_histogram.png (PNG copy)>]
+<images/naip_poor_example.jpg, id=531, 642.4pt x 642.4pt>
+File: images/naip_poor_example.jpg Graphic file (type jpg)
+<use images/naip_poor_example.jpg>
+Package pdftex.def Info: images/naip_poor_example.jpg  used on input line 106.
+(pdftex.def)             Requested size: 216.09045pt x 216.08998pt.
+<images/naip_high_example.jpg, id=532, 642.4pt x 642.4pt>
+File: images/naip_high_example.jpg Graphic file (type jpg)
+<use images/naip_high_example.jpg>
+Package pdftex.def Info: images/naip_high_example.jpg  used on input line 112.
+(pdftex.def)             Requested size: 216.09045pt x 216.08998pt.
+ [17] [18 <./images/naip_poor_example.jpg> <./images/naip_high_example.jpg>] [1
+9]
+<images/road_quality_lineplot.png, id=558, 578.16pt x 433.62pt>
 File: images/road_quality_lineplot.png Graphic file (type png)
 <use images/road_quality_lineplot.png>
-Package pdftex.def Info: images/road_quality_lineplot.png  used on input line 180.
+Package pdftex.def Info: images/road_quality_lineplot.png  used on input line 1
+69.
 (pdftex.def)             Requested size: 277.15373pt x 207.86395pt.
-<images/rd_plot_road_quality_hf4.png, id=564, 722.7pt x 433.62pt>
+<images/rd_plot_road_quality_hf4.png, id=560, 722.7pt x 433.62pt>
 File: images/rd_plot_road_quality_hf4.png Graphic file (type png)
 <use images/rd_plot_road_quality_hf4.png>
-Package pdftex.def Info: images/rd_plot_road_quality_hf4.png  used on input line 187.
+Package pdftex.def Info: images/rd_plot_road_quality_hf4.png  used on input lin
+e 176.
 (pdftex.def)             Requested size: 277.15373pt x 166.29248pt.
- [20] [21 <./images/road_quality_lineplot.png> <./images/rd_plot_road_quality_hf4.png>]
-<images/rd_plot_year_5_after_vote.png, id=581, 848.16875pt x 508.90125pt>
+ [20 <./images/road_quality_lineplot.png> <./images/rd_plot_road_quality_hf4.pn
+g>]
+<images/rd_plot_year_5_after_vote.png, id=570, 848.16875pt x 508.90125pt>
 File: images/rd_plot_year_5_after_vote.png Graphic file (type png)
 <use images/rd_plot_year_5_after_vote.png>
-Package pdftex.def Info: images/rd_plot_year_5_after_vote.png  used on input line 205.
+Package pdftex.def Info: images/rd_plot_year_5_after_vote.png  used on input li
+ne 194.
 (pdftex.def)             Requested size: 375.80544pt x 225.48581pt.
- [22]
+ [21 <./images/rd_plot_year_5_after_vote.png (PNG copy)>]
 
 Package caption Warning: \setcaptiontype
-(caption)                outside box or environment on input line 219.
+(caption)                outside box or environment on input line 208.
 See the caption package documentation for explanation.
 
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 219.
+(caption)                particular \caption on input line 208.
 See the caption package documentation for explanation.
 
-[23 <./images/rd_plot_year_5_after_vote.png (PNG copy)>]
-Overfull \hbox (47.82063pt too wide) in alignment at lines 220--226
+
+Overfull \hbox (47.82063pt too wide) in alignment at lines 209--215
  [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 226--234
+Overfull \hbox (47.82063pt too wide) in alignment at lines 215--223
  [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 234--237
+Overfull \hbox (47.82063pt too wide) in alignment at lines 223--226
  [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 237--240
+Overfull \hbox (47.82063pt too wide) in alignment at lines 226--229
  [] [] [] [] [] [] 
  []
 
 
-Underfull \hbox (badness 6125) in paragraph at lines 252--252
+Underfull \hbox (badness 6125) in paragraph at lines 241--241
 []|\OT1/cmr/m/n/12 % House-holds with
  []
 
 
-Underfull \hbox (badness 5578) in paragraph at lines 254--254
+Underfull \hbox (badness 5578) in paragraph at lines 243--243
 []|\OT1/cmr/m/n/12 % Less than High
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 272--272
+Underfull \hbox (badness 10000) in paragraph at lines 261--261
 []|\OT1/cmr/m/n/12 Median Fam-ily In-
  []
 
 
-Underfull \hbox (badness 1484) in paragraph at lines 282--282
+Underfull \hbox (badness 1484) in paragraph at lines 271--271
 []|\OT1/cmr/m/n/12 Number of Ob-ser-va-
  []
 
 
-Overfull \hbox (47.82063pt too wide) in alignment at lines 240--284
+Overfull \hbox (47.82063pt too wide) in alignment at lines 229--273
  [] [] [] [] [] [] 
  []
 
-data.tex:284: ignored error: Infinite glue shrinkage found in box being split [24]) (emp_strategy.tex [25] [26] [27]) (results.tex [28] [29]
-Overfull \hbox (23.8768pt too wide) in paragraph at lines 92--122
+ignored error: Infinite glue shrinkage found in box being split [22]
+ignored error: Infinite glue shrinkage found in box being split [23])
+(emp_strategy.tex [24] [25]) [26] (results.tex
+(../../data/outputs/tables/road_quality_rd_table5.tex) [27] [28]
+Overfull \hbox (23.8768pt too wide) in paragraph at lines 65--95
  [] 
  []
 
-<images/tes_gs_reg.png, id=660, 535.2497pt x 341.02406pt>
+[29]
+<images/tes_gs_reg.png, id=653, 535.2497pt x 341.02406pt>
 File: images/tes_gs_reg.png Graphic file (type png)
 <use images/tes_gs_reg.png>
-Package pdftex.def Info: images/tes_gs_reg.png  used on input line 178.
+Package pdftex.def Info: images/tes_gs_reg.png  used on input line 151.
 (pdftex.def)             Requested size: 469.75502pt x 299.31114pt.
-[30] [31 <./images/tes_gs_reg.png>]
-<images/tes_urb_vs_rur_main.png, id=678, 483.30562pt x 353.06906pt>
+ [30] [31 <./images/tes_gs_reg.png>]
+<images/tes_urb_vs_rur_main.png, id=669, 483.30562pt x 353.06906pt>
 File: images/tes_urb_vs_rur_main.png Graphic file (type png)
 <use images/tes_urb_vs_rur_main.png>
-Package pdftex.def Info: images/tes_urb_vs_rur_main.png  used on input line 197.
+Package pdftex.def Info: images/tes_urb_vs_rur_main.png  used on input line 170
+.
 (pdftex.def)             Requested size: 469.75502pt x 343.18231pt.
  [32 <./images/tes_urb_vs_rur_main.png>]
-<images/tes_size_75.png, id=691, 528.47438pt x 328.22626pt>
+<images/tes_size_75.png, id=682, 528.47438pt x 328.22626pt>
 File: images/tes_size_75.png Graphic file (type png)
 <use images/tes_size_75.png>
-Package pdftex.def Info: images/tes_size_75.png  used on input line 210.
+Package pdftex.def Info: images/tes_size_75.png  used on input line 183.
 (pdftex.def)             Requested size: 469.75502pt x 291.75484pt.
- [33]
-Overfull \hbox (7.74536pt too wide) in paragraph at lines 244--244
+ [33 <./images/tes_size_75.png>]
+Overfull \hbox (7.74536pt too wide) in paragraph at lines 217--217
 []|\OT1/cmr/m/n/12 Percentile| 
  []
 
-<images/tes_qte_re.png, id=703, 581.92406pt x 401.24907pt>
+<images/tes_qte_re.png, id=695, 581.92406pt x 401.24907pt>
 File: images/tes_qte_re.png Graphic file (type png)
 <use images/tes_qte_re.png>
-Package pdftex.def Info: images/tes_qte_re.png  used on input line 272.
+Package pdftex.def Info: images/tes_qte_re.png  used on input line 245.
 (pdftex.def)             Requested size: 469.75502pt x 323.91402pt.
-[34 <./images/tes_size_75.png>] [35 <./images/tes_qte_re.png>] [36]
-Overfull \hbox (36.93222pt too wide) in paragraph at lines 298--328
+[34] [35 <./images/tes_qte_re.png>]
+Overfull \hbox (36.93222pt too wide) in paragraph at lines 271--301
  [] 
  []
 
-[37] [38]
-<images/tes_g_w_reg.png, id=746, 570.63188pt x 354.57469pt>
+[36] [37] [38]
+<images/tes_g_w_reg.png, id=737, 570.63188pt x 354.57469pt>
 File: images/tes_g_w_reg.png Graphic file (type png)
 <use images/tes_g_w_reg.png>
-Package pdftex.def Info: images/tes_g_w_reg.png  used on input line 402.
+Package pdftex.def Info: images/tes_g_w_reg.png  used on input line 375.
 (pdftex.def)             Requested size: 469.75502pt x 291.89471pt.
  [39 <./images/tes_g_w_reg.png>]
-Overfull \hbox (17.03629pt too wide) in paragraph at lines 416--432
+Overfull \hbox (17.03629pt too wide) in paragraph at lines 389--405
  [][] 
  []
 
-[40] [41] [42] [43] (mvpf.tex [44]) [45]) (JMP-Article.bbl [46] [47] [48] [49]) [50] (appendix.tex
-<images/ohio_subdivisions_elections_map.png, id=855, 722.7pt x 578.16pt>
+[40] [41] [42] (mvpf.tex [43] [44]) [45]) (JMP-Article.bbl [46] [47] [48]
+[49]) [50] (appendix.tex
+<images/ohio_subdivisions_elections_map.png, id=847, 722.7pt x 578.16pt>
 File: images/ohio_subdivisions_elections_map.png Graphic file (type png)
 <use images/ohio_subdivisions_elections_map.png>
-Package pdftex.def Info: images/ohio_subdivisions_elections_map.png  used on input line 7.
+Package pdftex.def Info: images/ohio_subdivisions_elections_map.png  used on in
+put line 7.
 (pdftex.def)             Requested size: 225.4804pt x 180.38342pt.
-<images/ohio_subdivisions_close_elections_map.png, id=856, 722.7pt x 578.16pt>
+<images/ohio_subdivisions_close_elections_map.png, id=848, 722.7pt x 578.16pt>
 File: images/ohio_subdivisions_close_elections_map.png Graphic file (type png)
 <use images/ohio_subdivisions_close_elections_map.png>
-Package pdftex.def Info: images/ohio_subdivisions_close_elections_map.png  used on input line 14.
+Package pdftex.def Info: images/ohio_subdivisions_close_elections_map.png  used
+ on input line 14.
 (pdftex.def)             Requested size: 225.4804pt x 180.38342pt.
 
 Underfull \hbox (badness 7888) in paragraph at lines 38--38
@@ -753,7 +887,8 @@ Underfull \hbox (badness 7888) in paragraph at lines 38--38
 
 [51
 
- <./images/ohio_subdivisions_elections_map.png> <./images/ohio_subdivisions_close_elections_map.png>] [52] [53] [54]
+ <./images/ohio_subdivisions_elections_map.png> <./images/ohio_subdivisions_clo
+se_elections_map.png>] [52] [53] [54]
 Underfull \hbox (badness 1509) in paragraph at lines 211--211
 []|\OT1/cmr/m/n/12 % House-holds with Chil-
  []
@@ -763,140 +898,187 @@ Underfull \hbox (badness 10000) in alignment at lines 211--211
 [][][][][] 
  []
 
-<images/cov_smoothness_pctrent.png, id=895, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctrent.png, id=887, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctrent.png Graphic file (type png)
 <use images/cov_smoothness_pctrent.png>
-Package pdftex.def Info: images/cov_smoothness_pctrent.png  used on input line 227.
+Package pdftex.def Info: images/cov_smoothness_pctrent.png  used on input line 
+227.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_poverty.png, id=896, 877.2775pt x 638.385pt>
+<images/cov_smoothness_poverty.png, id=888, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_poverty.png Graphic file (type png)
 <use images/cov_smoothness_poverty.png>
-Package pdftex.def Info: images/cov_smoothness_poverty.png  used on input line 234.
+Package pdftex.def Info: images/cov_smoothness_poverty.png  used on input line 
+233.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctwithkids.png, id=897, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctwithkids.png, id=889, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctwithkids.png Graphic file (type png)
 <use images/cov_smoothness_pctwithkids.png>
-Package pdftex.def Info: images/cov_smoothness_pctwithkids.png  used on input line 243.
+Package pdftex.def Info: images/cov_smoothness_pctwithkids.png  used on input l
+ine 241.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctwhite.png, id=898, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctwhite.png, id=890, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctwhite.png Graphic file (type png)
 <use images/cov_smoothness_pctwhite.png>
-Package pdftex.def Info: images/cov_smoothness_pctwhite.png  used on input line 250.
+Package pdftex.def Info: images/cov_smoothness_pctwhite.png  used on input line
+ 247.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctlesshs.png, id=899, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctlesshs.png, id=891, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctlesshs.png Graphic file (type png)
 <use images/cov_smoothness_pctlesshs.png>
-Package pdftex.def Info: images/cov_smoothness_pctlesshs.png  used on input line 259.
+Package pdftex.def Info: images/cov_smoothness_pctlesshs.png  used on input lin
+e 255.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctsomecoll.png, id=900, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctsomecoll.png, id=892, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctsomecoll.png Graphic file (type png)
 <use images/cov_smoothness_pctsomecoll.png>
-Package pdftex.def Info: images/cov_smoothness_pctsomecoll.png  used on input line 266.
+Package pdftex.def Info: images/cov_smoothness_pctsomecoll.png  used on input l
+ine 261.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctblack.png, id=901, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctblack.png, id=893, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctblack.png Graphic file (type png)
 <use images/cov_smoothness_pctblack.png>
-Package pdftex.def Info: images/cov_smoothness_pctblack.png  used on input line 275.
+Package pdftex.def Info: images/cov_smoothness_pctblack.png  used on input line
+ 269.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pop.png, id=902, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pop.png, id=894, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pop.png Graphic file (type png)
 <use images/cov_smoothness_pop.png>
-Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 282.
+Package pdftex.def Info: images/cov_smoothness_pop.png  used on input line 275.
+
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
 
-LaTeX Warning: Float too large for page by 36.46622pt on input line 289.
+LaTeX Warning: Float too large for page by 36.46622pt on input line 281.
 
-<images/cov_smoothness_pctmarried.png, id=903, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctmarried.png, id=895, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctmarried.png Graphic file (type png)
 <use images/cov_smoothness_pctmarried.png>
-Package pdftex.def Info: images/cov_smoothness_pctmarried.png  used on input line 295.
+Package pdftex.def Info: images/cov_smoothness_pctmarried.png  used on input li
+ne 287.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctseparated.png, id=904, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctseparated.png, id=896, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctseparated.png Graphic file (type png)
 <use images/cov_smoothness_pctseparated.png>
-Package pdftex.def Info: images/cov_smoothness_pctseparated.png  used on input line 302.
+Package pdftex.def Info: images/cov_smoothness_pctseparated.png  used on input 
+line 293.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_incherfindahl.png, id=905, 877.2775pt x 638.385pt>
+<images/cov_smoothness_incherfindahl.png, id=897, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_incherfindahl.png Graphic file (type png)
 <use images/cov_smoothness_incherfindahl.png>
-Package pdftex.def Info: images/cov_smoothness_incherfindahl.png  used on input line 311.
+Package pdftex.def Info: images/cov_smoothness_incherfindahl.png  used on input
+ line 301.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_medfamy.png, id=906, 877.2775pt x 638.385pt>
+<images/cov_smoothness_medfamy.png, id=898, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_medfamy.png Graphic file (type png)
 <use images/cov_smoothness_medfamy.png>
-Package pdftex.def Info: images/cov_smoothness_medfamy.png  used on input line 318.
+Package pdftex.def Info: images/cov_smoothness_medfamy.png  used on input line 
+307.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctlt5.png, id=907, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctlt5.png, id=899, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctlt5.png Graphic file (type png)
 <use images/cov_smoothness_pctlt5.png>
-Package pdftex.def Info: images/cov_smoothness_pctlt5.png  used on input line 327.
+Package pdftex.def Info: images/cov_smoothness_pctlt5.png  used on input line 3
+15.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pct5to17.png, id=908, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pct5to17.png, id=900, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pct5to17.png Graphic file (type png)
 <use images/cov_smoothness_pct5to17.png>
-Package pdftex.def Info: images/cov_smoothness_pct5to17.png  used on input line 334.
+Package pdftex.def Info: images/cov_smoothness_pct5to17.png  used on input line
+ 321.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pct18to64.png, id=909, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pct18to64.png, id=901, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pct18to64.png Graphic file (type png)
 <use images/cov_smoothness_pct18to64.png>
-Package pdftex.def Info: images/cov_smoothness_pct18to64.png  used on input line 343.
+Package pdftex.def Info: images/cov_smoothness_pct18to64.png  used on input lin
+e 329.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctmin.png, id=910, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctmin.png, id=902, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctmin.png Graphic file (type png)
 <use images/cov_smoothness_pctmin.png>
-Package pdftex.def Info: images/cov_smoothness_pctmin.png  used on input line 350.
+Package pdftex.def Info: images/cov_smoothness_pctmin.png  used on input line 3
+35.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
 
-LaTeX Warning: Float too large for page by 57.21585pt on input line 357.
+LaTeX Warning: Float too large for page by 57.21585pt on input line 341.
 
-<images/cov_smoothness_unemprate.png, id=911, 877.2775pt x 638.385pt>
+<images/cov_smoothness_unemprate.png, id=903, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_unemprate.png Graphic file (type png)
 <use images/cov_smoothness_unemprate.png>
-Package pdftex.def Info: images/cov_smoothness_unemprate.png  used on input line 365.
+Package pdftex.def Info: images/cov_smoothness_unemprate.png  used on input lin
+e 349.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
-<images/cov_smoothness_pctsinparhhld.png, id=912, 877.2775pt x 638.385pt>
+<images/cov_smoothness_pctsinparhhld.png, id=904, 877.2775pt x 638.385pt>
 File: images/cov_smoothness_pctsinparhhld.png Graphic file (type png)
 <use images/cov_smoothness_pctsinparhhld.png>
-Package pdftex.def Info: images/cov_smoothness_pctsinparhhld.png  used on input line 372.
+Package pdftex.def Info: images/cov_smoothness_pctsinparhhld.png  used on input
+ line 355.
 (pdftex.def)             Requested size: 187.89914pt x 136.72408pt.
 [55
 
-] [56 <./images/cov_smoothness_pctrent.png (PNG copy)> <./images/cov_smoothness_poverty.png (PNG copy)> <./images/cov_smoothness_pctwithkids.png (PNG copy)> <./images/cov_smoothness_pctwhite.png (PNG copy)> <./images/cov_smoothness_pctlesshs.png (PNG copy)> <./images/cov_smoothness_pctsomecoll.png (PNG copy)> <./images/cov_smoothness_pctblack.png (PNG copy)> <./images/cov_smoothness_pop.png (PNG copy)>] [57 <./images/cov_smoothness_pctmarried.png (PNG copy)> <./images/cov_smoothness_pctseparated.png (PNG copy)> <./images/cov_smoothness_incherfindahl.png (PNG copy)> <./images/cov_smoothness_medfamy.png (PNG copy)> <./images/cov_smoothness_pctlt5.png (PNG copy)> <./images/cov_smoothness_pct5to17.png (PNG copy)> <./images/cov_smoothness_pct18to64.png (PNG copy)> <./images/cov_smoothness_pctmin.png (PNG copy)>] [58 <./images/cov_smoothness_unemprate.png (PNG copy)> <./images/cov_smoothness_pctsinparhhld.png (PNG copy)>] [59
+] [56 <./images/cov_smoothness_pctrent.png (PNG copy)> <./images/cov_smoothness
+_poverty.png (PNG copy)> <./images/cov_smoothness_pctwithkids.png (PNG copy)> <
+./images/cov_smoothness_pctwhite.png (PNG copy)> <./images/cov_smoothness_pctle
+sshs.png (PNG copy)> <./images/cov_smoothness_pctsomecoll.png (PNG copy)> <./im
+ages/cov_smoothness_pctblack.png (PNG copy)> <./images/cov_smoothness_pop.png (
+PNG copy)>] [57 <./images/cov_smoothness_pctmarried.png (PNG copy)> <./images/c
+ov_smoothness_pctseparated.png (PNG copy)> <./images/cov_smoothness_incherfinda
+hl.png (PNG copy)> <./images/cov_smoothness_medfamy.png (PNG copy)> <./images/c
+ov_smoothness_pctlt5.png (PNG copy)> <./images/cov_smoothness_pct5to17.png (PNG
+ copy)> <./images/cov_smoothness_pct18to64.png (PNG copy)> <./images/cov_smooth
+ness_pctmin.png (PNG copy)>] [58 <./images/cov_smoothness_unemprate.png (PNG co
+py)> <./images/cov_smoothness_pctsinparhhld.png (PNG copy)>] [59
 
 ]
-<images/bw_sensitivity_of_means.png, id=938, 537.50812pt x 353.82187pt>
+<images/bw_sensitivity_of_means.png, id=931, 537.50812pt x 353.82187pt>
 File: images/bw_sensitivity_of_means.png Graphic file (type png)
 <use images/bw_sensitivity_of_means.png>
-Package pdftex.def Info: images/bw_sensitivity_of_means.png  used on input line 436.
+Package pdftex.def Info: images/bw_sensitivity_of_means.png  used on input line
+ 418.
 (pdftex.def)             Requested size: 375.80544pt x 247.37668pt.
- [60
 
- <./images/bw_sensitivity_of_means.png>] (model.tex [61
+(../../data/outputs/tables/road_quality_bw_sensitivity.tex) [60
 
-] [62] [63] [64] [65] [66] [67] [68] [69]
+ <./images/bw_sensitivity_of_means.png>]
+<../../data/outputs/plots/rd_bandwidth_sensitivity_road_quality.png, id=943, 72
+2.7pt x 433.62pt>
+File: ../../data/outputs/plots/rd_bandwidth_sensitivity_road_quality.png Graphi
+c file (type png)
+<use ../../data/outputs/plots/rd_bandwidth_sensitivity_road_quality.png>
+Package pdftex.def Info: ../../data/outputs/plots/rd_bandwidth_sensitivity_road
+_quality.png  used on input line 433.
+(pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
+ [61 <../../data/outputs/plots/rd_bandwidth_sensitivity_road_quality.png>] (mod
+el.tex [62
+
+] [63] [64] [65] [66] [67] [68] [69] [70]
 Underfull \hbox (badness 10000) in alignment at lines 445--445
 [][][][][] 
  []
 
-[70] [71]
-<images/model_dynamics_house.png, id=1125, 1387.584pt x 698.8509pt>
+[71] [72]
+<images/model_dynamics_house.png, id=1129, 1387.584pt x 698.8509pt>
 File: images/model_dynamics_house.png Graphic file (type png)
 <use images/model_dynamics_house.png>
-Package pdftex.def Info: images/model_dynamics_house.png  used on input line 469.
+Package pdftex.def Info: images/model_dynamics_house.png  used on input line 46
+9.
 (pdftex.def)             Requested size: 422.77664pt x 212.9306pt.
- [72 <./images/model_dynamics_house.png>]
-<images/model_vs_empirical_estimates_house.png, id=1137, 711.1368pt x 422.0568pt>
+ [73 <./images/model_dynamics_house.png>]
+<images/model_vs_empirical_estimates_house.png, id=1140, 711.1368pt x 422.0568p
+t>
 File: images/model_vs_empirical_estimates_house.png Graphic file (type png)
 <use images/model_vs_empirical_estimates_house.png>
-Package pdftex.def Info: images/model_vs_empirical_estimates_house.png  used on input line 489.
+Package pdftex.def Info: images/model_vs_empirical_estimates_house.png  used on
+ input line 489.
 (pdftex.def)             Requested size: 375.80544pt x 223.03857pt.
- [73 <./images/model_vs_empirical_estimates_house.png>] [74] [75] [76]) (road_quality_fine_tuning.tex [77]
-<images/fine_tuning_workflow_convnextv2.png, id=1193, 774.384pt x 532.827pt>
+ [74 <./images/model_vs_empirical_estimates_house.png>] [75] [76] [77]) (road_q
+uality_fine_tuning.tex
+[78]
+<images/fine_tuning_workflow_convnextv2.png, id=1198, 774.384pt x 532.827pt>
 File: images/fine_tuning_workflow_convnextv2.png Graphic file (type png)
 <use images/fine_tuning_workflow_convnextv2.png>
-Package pdftex.def Info: images/fine_tuning_workflow_convnextv2.png  used on input line 10.
+Package pdftex.def Info: images/fine_tuning_workflow_convnextv2.png  used on in
+put line 10.
 (pdftex.def)             Requested size: 432.17375pt x 297.36479pt.
- [78 <./images/fine_tuning_workflow_convnextv2.png>]
+ [79 <./images/fine_tuning_workflow_convnextv2.png>]
 Underfull \hbox (badness 2134) in paragraph at lines 49--50
 []|\OT1/cmr/m/n/10.95 Hold-out eval-u-a-tion with com-pa-ra-ble
  []
@@ -904,26 +1086,55 @@ Underfull \hbox (badness 2134) in paragraph at lines 49--50
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[79]) [80]) [81] (JMP-Article.aux)
+[80]) [81]) [82] (JMP-Article.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `JMP-Article.out' has not changed.
-(rerunfilecheck)             Checksum: 6303950107CD3EC4E8E91A868A14C382;8664.
+(rerunfilecheck)             Checksum: 4107F63C96FECAA9C7250FBBE74C49C7;8920.
  ) 
 Here is how much of TeX's memory you used:
- 16213 strings out of 467871
- 264676 string characters out of 5417408
- 700961 words of memory out of 5000000
- 44462 multiletter control sequences out of 15000+600000
+ 16216 strings out of 467871
+ 265445 string characters out of 5417408
+ 699569 words of memory out of 5000000
+ 44460 multiletter control sequences out of 15000+600000
  644096 words of font info for 101 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,18n,83p,2048b,637s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on JMP-Article.pdf (82 pages, 8085708 bytes).
+ 75i,17n,83p,2118b,639s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tc
+rm1095.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/d
+pi600\tcrm1200.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfour/jknap
+pen/ec/dpi600\tcrm0700.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts/pk/ljfo
+ur/jknappen/ec/dpi600\tcrm1000.pk> <C:\Users\rawatsa\AppData\Local\MiKTeX\fonts
+/pk/ljfour/jknappen/ec/dpi600\tcrm1440.pk><C:/Users/rawatsa/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/rawatsa/AppData/
+Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/rawat
+sa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C
+:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
+ex10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmmi10.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1
+/public/amsfonts/cm/cmmi12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/
+fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/rawatsa/AppData/Local/Progra
+ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/rawatsa/AppData/Lo
+cal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/rawatsa/
+AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/User
+s/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pf
+b><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmr17.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/
+amsfonts/cm/cmr6.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type
+1/public/amsfonts/cm/cmr7.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/f
+onts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/rawatsa/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/rawatsa/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/rawatsa/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users
+/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pf
+b><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmti12.pfb><C:/Users/rawatsa/AppData/Local/Programs/MiKTeX/fonts/type1/public
+/amsfonts/symbols/msbm10.pfb>
+Output written on JMP-Article.pdf (84 pages, 7641904 bytes).
 PDF statistics:
  1435 PDF objects out of 1440 (max. 8388607)
- 364 named destinations out of 1000 (max. 500000)
- 552 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 363 named destinations out of 1000 (max. 500000)
+ 565 words of extra memory for PDF output out of 10000 (max. 10000000)
 

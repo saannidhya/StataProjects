@@ -388,3 +388,294 @@ rdrobust_results_hf2 <- rdrobust(y = roads_close_hf2$road_quality_score3,
 summary(rdrobust_results_hf2)
 mean(roads_close_hf[roads_close_hf$treated == 1 & roads_close_hf$post_election_flag == 0,]$road_quality_score3)
 
+
+#==========================================================================================================#
+#  PUBLICATION-READY ROAD QUALITY RD — Table 5 Replacement
+#  Uses NAIP satellite panel (broad coverage, proper bandwidth selection)
+#  Addresses reviewer criticism: (1) own-optimal bandwidth, (2) full diagnostics,
+#  (3) bandwidth sensitivity, (4) pre-election placebo
+#==========================================================================================================#
+
+library(rdrobust)
+library(tidyverse)
+
+root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
+data <- paste0(root, "/data")
+sat_dir <- paste0(data, "/roads/satellite_images")
+tables <- paste0(data, "/outputs/tables")
+plots <- paste0(data, "/outputs/plots")
+
+cutoff <- 50
+
+# Load NAIP panel (subdivision x NAIP-year, with election data merged)
+panel_cx <- read_csv(paste0(sat_dir, "/naip_road_quality_panel_convnext.csv"))
+
+cat("NAIP ConvNeXt panel:", nrow(panel_cx), "obs,",
+    n_distinct(panel_cx$cosbidfp), "subdivisions\n")
+cat("Vote share range:", round(min(panel_cx$votes_pct_against), 1), "to",
+    round(max(panel_cx$votes_pct_against), 1), "\n")
+
+#--- Helper: extract full RD diagnostics from rdrobust object ---
+extract_rd <- function(rd_obj, outcome_label) {
+  s <- summary(rd_obj)
+  tibble(
+    outcome       = outcome_label,
+    estimate      = rd_obj$coef["Conventional", ],
+    se            = rd_obj$se["Robust", ],
+    pval          = rd_obj$pv["Robust", ],
+    ci_lower      = rd_obj$ci["Robust", "CI Lower"],
+    ci_upper      = rd_obj$ci["Robust", "CI Upper"],
+    h             = rd_obj$bws["h", "left"],
+    b             = rd_obj$bws["b", "left"],
+    n_eff_left    = rd_obj$N_h[1],
+    n_eff_right   = rd_obj$N_h[2],
+    n_total       = sum(rd_obj$N),
+    kernel        = rd_obj$kernel,
+    p             = rd_obj$p,
+    q             = rd_obj$q
+  )
+}
+
+#==========================================================================================================#
+# A. Cross-sectional RD: Post-election road quality (MAIN RESULT)
+#    Let rdrobust select bandwidth — do NOT pre-filter or fix h
+#==========================================================================================================#
+
+panel_post <- panel_cx %>% filter(post_election_flag == 1)
+cat("\nPost-election obs:", nrow(panel_post), "\n")
+
+# (1) Road Quality Rating (mean_pred_id, 0-2 scale)
+rd_rqr <- rdrobust(
+  y = panel_post$mean_pred_id,
+  x = panel_post$votes_pct_against,
+  c = cutoff,
+  covs = panel_post$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_post$cosbidfp
+)
+summary(rd_rqr)
+
+# (2) Road Quality Score (RQS via existing formula, using mean_rq_score_a)
+rd_rqs <- rdrobust(
+  y = panel_post$mean_rq_score_a,
+  x = panel_post$votes_pct_against,
+  c = cutoff,
+  covs = panel_post$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_post$cosbidfp
+)
+summary(rd_rqs)
+
+# Collect results
+rd_main <- bind_rows(
+  extract_rd(rd_rqr, "Road Quality Rating (0-2)"),
+  extract_rd(rd_rqs, "Road Quality Score (1-100)")
+)
+print(rd_main)
+
+# Pre-election mean for treated group (for % decline calculation)
+pre_treated <- panel_cx %>%
+  filter(treated == 1, post_election_flag == 0)
+cat("\nPre-election mean RQR (treated):", round(mean(pre_treated$mean_pred_id, na.rm = TRUE), 3), "\n")
+cat("Pre-election mean RQS (treated):", round(mean(pre_treated$mean_rq_score_a, na.rm = TRUE), 1), "\n")
+
+#==========================================================================================================#
+# B. Pre-election placebo RD (should show null effect)
+#==========================================================================================================#
+
+panel_pre <- panel_cx %>% filter(post_election_flag == 0)
+cat("\nPre-election obs:", nrow(panel_pre), "\n")
+
+rd_placebo_rqr <- rdrobust(
+  y = panel_pre$mean_pred_id,
+  x = panel_pre$votes_pct_against,
+  c = cutoff,
+  covs = panel_pre$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_pre$cosbidfp
+)
+summary(rd_placebo_rqr)
+
+rd_placebo_rqs <- rdrobust(
+  y = panel_pre$mean_rq_score_a,
+  x = panel_pre$votes_pct_against,
+  c = cutoff,
+  covs = panel_pre$pop,
+  all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2,
+  cluster = panel_pre$cosbidfp
+)
+summary(rd_placebo_rqs)
+
+rd_placebo <- bind_rows(
+  extract_rd(rd_placebo_rqr, "RQR Placebo (pre-election)"),
+  extract_rd(rd_placebo_rqs, "RQS Placebo (pre-election)")
+)
+print(rd_placebo)
+
+#==========================================================================================================#
+# C. Bandwidth sensitivity: run RD at 0.5h, 0.75h, h, 1.25h, 1.5h, 2h
+#==========================================================================================================#
+
+h_opt <- rd_rqr$bws["h", "left"]
+multipliers <- c(0.5, 0.75, 1.0, 1.25, 1.5, 2.0)
+
+bw_sensitivity <- purrr::map_dfr(multipliers, function(m) {
+  h_val <- h_opt * m
+  rd_tmp <- tryCatch(
+    rdrobust(
+      y = panel_post$mean_pred_id,
+      x = panel_post$votes_pct_against,
+      c = cutoff,
+      covs = panel_post$pop,
+      kernel = "tri", p = 1, q = 2,
+      h = h_val,
+      cluster = panel_post$cosbidfp
+    ),
+    error = function(e) NULL
+  )
+  if (is.null(rd_tmp)) return(tibble())
+  tibble(
+    multiplier   = m,
+    h            = h_val,
+    estimate     = rd_tmp$coef["Conventional", ],
+    se_robust    = rd_tmp$se["Robust", ],
+    pval_robust  = rd_tmp$pv["Robust", ],
+    ci_lower     = rd_tmp$ci["Robust", "CI Lower"],
+    ci_upper     = rd_tmp$ci["Robust", "CI Upper"],
+    n_eff_left   = rd_tmp$N_h[1],
+    n_eff_right  = rd_tmp$N_h[2]
+  )
+})
+
+cat("\n--- Bandwidth Sensitivity (RQR) ---\n")
+print(bw_sensitivity, width = Inf)
+
+# Bandwidth sensitivity plot
+bw_plot <- ggplot(bw_sensitivity, aes(x = h, y = estimate)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", linewidth = 0.8) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2, fill = "steelblue") +
+  geom_line(color = "steelblue", linewidth = 1) +
+  geom_point(color = "steelblue", size = 3) +
+  geom_vline(xintercept = h_opt, linetype = "dotted", color = "gray50") +
+  annotate("text", x = h_opt, y = max(bw_sensitivity$ci_upper, na.rm = TRUE),
+           label = "Optimal h", hjust = -0.1, size = 3.5, color = "gray40") +
+  labs(
+    title = "Bandwidth Sensitivity: Road Quality RD Estimate",
+    subtitle = "Outcome: Road Quality Rating (0-2), Triangular kernel",
+    x = "Bandwidth (h)",
+    y = "RD Estimate"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, color = "gray50"))
+ggsave(paste0(plots, "/rd_bandwidth_sensitivity_road_quality.png"),
+       plot = bw_plot, width = 10, height = 6, dpi = 300)
+
+#==========================================================================================================#
+# D. Generate LaTeX Table 5 (publication-ready)
+#==========================================================================================================#
+
+stars <- function(p) {
+  case_when(p < 0.01 ~ "***", p < 0.05 ~ "**", p < 0.10 ~ "*", TRUE ~ "")
+}
+
+# Build Table 5
+all_results <- bind_rows(rd_main, rd_placebo) %>%
+  mutate(
+    est_str = paste0(sprintf("%.3f", estimate), stars(pval)),
+    se_str  = paste0("(", sprintf("%.3f", se), ")"),
+    n_eff_str = paste0(n_eff_left, " / ", n_eff_right)
+  )
+
+tex_lines <- c(
+  "\\begin{table}[ht]",
+  "    \\centering",
+  "    \\caption{Change in Road Quality after an Election}",
+  "    \\label{tab:roadquality_estimates}",
+  "    \\begin{threeparttable}",
+  "        \\begin{tabular*}{\\textwidth}{@{\\extracolsep{\\fill}}l c c c c}",
+  "            \\toprule",
+  "            & (1) & (2) & (3) & (4) \\\\",
+  "            & \\multicolumn{2}{c}{Post-Election} & \\multicolumn{2}{c}{Pre-Election Placebo} \\\\",
+  "            \\cmidrule(lr){2-3} \\cmidrule(lr){4-5}",
+  "            & RQR (0--2) & RQS (1--100) & RQR (0--2) & RQS (1--100) \\\\",
+  "            \\midrule",
+  paste0("            RD Estimate & ", all_results$est_str[1], " & ", all_results$est_str[2],
+         " & ", all_results$est_str[3], " & ", all_results$est_str[4], " \\\\"),
+  paste0("                        & ", all_results$se_str[1], " & ", all_results$se_str[2],
+         " & ", all_results$se_str[3], " & ", all_results$se_str[4], " \\\\"),
+  "            \\addlinespace[0.5em]",
+  paste0("            Eff.\\ bandwidth ($h$) & ", sprintf("%.2f", all_results$h[1]),
+         " & ", sprintf("%.2f", all_results$h[2]),
+         " & ", sprintf("%.2f", all_results$h[3]),
+         " & ", sprintf("%.2f", all_results$h[4]), " \\\\"),
+  paste0("            Bias bandwidth ($b$) & ", sprintf("%.2f", all_results$b[1]),
+         " & ", sprintf("%.2f", all_results$b[2]),
+         " & ", sprintf("%.2f", all_results$b[3]),
+         " & ", sprintf("%.2f", all_results$b[4]), " \\\\"),
+  paste0("            Eff.\\ observations (L/R) & ", all_results$n_eff_str[1],
+         " & ", all_results$n_eff_str[2],
+         " & ", all_results$n_eff_str[3],
+         " & ", all_results$n_eff_str[4], " \\\\"),
+  paste0("            Total observations & ", all_results$n_total[1],
+         " & ", all_results$n_total[2],
+         " & ", all_results$n_total[3],
+         " & ", all_results$n_total[4], " \\\\"),
+  "            Kernel & Triangular & Triangular & Triangular & Triangular \\\\",
+  "            Local polynomial ($p$, $q$) & (1, 2) & (1, 2) & (1, 2) & (1, 2) \\\\",
+  "            Covariates & Population & Population & Population & Population \\\\",
+  "            Clustered SEs & $\\checkmark$ & $\\checkmark$ & $\\checkmark$ & $\\checkmark$ \\\\",
+  "            \\bottomrule",
+  "        \\end{tabular*}",
+  "        \\begin{tablenotes}[flushleft]",
+  "        \\small",
+  paste0("        \\item \\textit{Notes:} Columns (1)--(2) report covariate-adjusted sharp RD estimates ",
+         "of the effect of cutting road maintenance taxes on post-election road quality. ",
+         "Column (1) uses the Road Quality Rating (RQR, 0--2) and Column (2) uses the Road Quality Score ",
+         "(RQS, 1--100). Columns (3)--(4) run the same specification on pre-election road quality as a placebo test. ",
+         "Road quality is measured using a fine-tuned ConvNeXt v2 vision model applied to NAIP satellite imagery. ",
+         "Standard errors (in parentheses) are bias-corrected and robust, clustered by ten-digit FIPS code. ",
+         "Bandwidth is selected via the MSE-optimal method of Calonico et al.\\ (2019). ",
+         "Significance levels: \\textsuperscript{*}p $<$ 0.10, \\textsuperscript{**}p $<$ 0.05, ",
+         "\\textsuperscript{***}p $<$ 0.01."),
+  "        \\end{tablenotes}",
+  "    \\end{threeparttable}",
+  "\\end{table}"
+)
+
+writeLines(tex_lines, paste0(tables, "/road_quality_rd_table5.tex"))
+cat("\nTable 5 LaTeX saved to:", paste0(tables, "/road_quality_rd_table5.tex"), "\n")
+
+# Also save bandwidth sensitivity as appendix table
+bw_tex <- c(
+  "\\begin{table}[ht]",
+  "    \\centering",
+  "    \\caption{Bandwidth Sensitivity: Road Quality RD Estimates}",
+  "    \\label{tab:roadquality_bw_sensitivity}",
+  "    \\begin{threeparttable}",
+  "    \\begin{tabular}{cccccc}",
+  "        \\toprule",
+  "        Multiplier & Bandwidth ($h$) & RD Estimate & Robust SE & Eff.\\ Obs (L/R) & $p$-value \\\\",
+  "        \\midrule",
+  purrr::pmap_chr(bw_sensitivity, function(multiplier, h, estimate, se_robust, pval_robust, ci_lower, ci_upper, n_eff_left, n_eff_right) {
+    paste0("        ", multiplier, "h & ", sprintf("%.2f", h), " & ",
+           sprintf("%.3f", estimate), stars(pval_robust), " & (",
+           sprintf("%.3f", se_robust), ") & ",
+           n_eff_left, " / ", n_eff_right, " & ",
+           sprintf("%.3f", pval_robust), " \\\\")
+  }),
+  "        \\bottomrule",
+  "    \\end{tabular}",
+  "    \\begin{tablenotes}[flushleft]",
+  "    \\small",
+  "    \\item \\textit{Notes:} RD estimates of the effect of cutting road maintenance taxes on the Road Quality Rating (0--2) at different bandwidths. The optimal bandwidth is selected via MSERD. All specifications use triangular kernel, $p=1$, $q=2$, population covariate, and clustered SEs.",
+  "    \\end{tablenotes}",
+  "    \\end{threeparttable}",
+  "\\end{table}"
+)
+
+writeLines(bw_tex, paste0(tables, "/road_quality_bw_sensitivity.tex"))
+cat("Bandwidth sensitivity table saved to:", paste0(tables, "/road_quality_bw_sensitivity.tex"), "\n")
+
+cat("\n=== Done: Publication-ready road quality RD analysis ===\n")
+

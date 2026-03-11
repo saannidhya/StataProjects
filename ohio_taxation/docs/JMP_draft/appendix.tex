@@ -226,14 +226,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctrent.png}
         \caption*{\% Renters}
-        \label{fig:pctrent_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_poverty.png}
         \caption*{Poverty Rate}
-        \label{fig:poverty_sm}
     \end{minipage}
     
     % \vspace{1em}
@@ -242,14 +240,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctwithkids.png}
         \caption*{\% With Kids}
-        \label{fig:pct_with_kids_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctwhite.png}
         \caption*{\% White}
-        \label{fig:pct_white_sm}
     \end{minipage}
     
     % \vspace{1em}
@@ -258,14 +254,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctlesshs.png}
         \caption*{\% with Less than High School education}
-        \label{fig:pctlesshs_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctsomecoll.png}
         \caption*{\% Attended Some College}
-        \label{fig:pctsomecoll_sm}
     \end{minipage}
     
     % \vspace{1em}
@@ -274,14 +268,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctblack.png}
         \caption*{\% Black}
-        \label{fig:black_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pop.png}
         \caption*{Population}
-        \label{fig:pop_sm}
     \end{minipage}
     
     \caption{Covariate Discontinuity Plots - Part 1}
@@ -294,14 +286,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctmarried.png}
         \caption*{\% Married}
-        \label{fig:pctmarried_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctseparated.png}
         \caption*{\% Separated}
-        \label{fig:pctseparated_sm}
     \end{minipage}
     
     \vspace{1em}
@@ -310,14 +300,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_incherfindahl.png}
         \caption*{Income Heterogeneity Index}
-        \label{fig:incherfindahl_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_medfamy.png}
         \caption*{Median Family Income}
-        \label{fig:medfamy_sm}
     \end{minipage}
     
     \vspace{1em}
@@ -326,14 +314,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctlt5.png}
         \caption*{\% Less than 5 years old}
-        \label{fig:pctlt5_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pct5to17.png}
         \caption*{\% between 5 to 17 years}
-        \label{fig:pct5to17_sm}
     \end{minipage}
     
     \vspace{1em}
@@ -342,14 +328,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pct18to64.png}
         \caption*{\% between 18 to 64 years}
-        \label{fig:pct18to64_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctmin.png}
         \caption*{\% Minority}
-        \label{fig:pctmin_sm}
     \end{minipage}
     
     \caption{Covariate Discontinuity Plots - Part 2}
@@ -364,14 +348,12 @@ A key RD assumption is that observations just above and below the threshold are 
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_unemprate.png}
         \caption*{Unemployment Rate}
-        \label{fig:unemprate_sm}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth,keepaspectratio]{images/cov_smoothness_pctsinparhhld.png}
         \caption*{\% Households with Children 18 years old or less}
-        \label{fig:pct_w_children_below18_sm}
     \end{minipage}
     
     \vspace{1em}
@@ -439,6 +421,21 @@ We examine whether housing characteristics are balanced across the treatment thr
 \end{figure}
 
 Figure \ref{fig:bandwidth_sensitivity} plots the differences in mean estimate of the outcome variable, median house prices, between treated and control groups across a grid of bandwidth choices to observe how sensitive the estimates are to the choice of bandwidth. Estimates are consistently negative starting year t+4 and of comparable magnitude over a broad interval around the MSERD optimal bandwidth used in the main analysis. The relative flatness of the curve near the optimal bandwidth indicates that our main result is not driven by a finely tuned bandwidth choice.
+
+\subsection{Road Quality RD Bandwidth Sensitivity}
+
+\input{../../data/outputs/tables/road_quality_bw_sensitivity.tex}
+
+Table \ref{tab:roadquality_bw_sensitivity} reports bandwidth sensitivity for the main pooled standardized stacked-event change RD. The point estimates remain negative across the reported bandwidth grid, but the estimates are imprecise and the confidence intervals include zero at each bandwidth. This pattern suggests directional stability in the pooled change specification, while the delayed NAIP-based results reported in Table \ref{tab:roadquality_estimates} provide the clearest evidence on post-election road quality declines.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth,keepaspectratio]{../../data/outputs/plots/rd_bandwidth_sensitivity_road_quality.png}
+    \caption{Bandwidth Sensitivity: Road Quality RD Estimate}
+    \label{fig:bw_sensitivity_road_quality}
+\end{figure}
+
+Figure \ref{fig:bw_sensitivity_road_quality} visualizes the bandwidth sensitivity analysis for the main pooled road-quality RD. The point estimate (solid line) and 95\% robust confidence interval (shaded region) are shown for each bandwidth. The dashed red line marks zero, and the dotted vertical line indicates the MSE-optimal bandwidth. The figure shows that the point estimates remain negative, although the confidence intervals overlap zero throughout the reported bandwidth range.
 
 \clearpage
 

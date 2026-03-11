@@ -57,7 +57,24 @@
       "Bash(git add code/4.6_rdd2024_to_pcr_labels.py)",
       "Bash(C:/Users/rawatsa/AppData/Local/miniforge3/envs/sam3cpu/python.exe -c \"import py_compile; py_compile.compile\\(''code/4.7_train_streetview_model.py'', doraise=True\\); print\\(''Syntax OK''\\)\")",
       "Bash(C:/Users/rawatsa/AppData/Local/miniforge3/envs/sam3cpu/python.exe code/4.7_train_streetview_model.py --epochs 1 --batch_size 2 --grad_accum 1 --num_workers 0)",
-      "Bash(git add code/4.7_train_streetview_model.py)"
+      "Bash(git add code/4.7_train_streetview_model.py)",
+      "Bash(\"C:/Users/rawatsa/AppData/Local/miniforge3/envs/sam3cpu/python.exe\" -m py_compile \"c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/code/4.7_train_streetview_model.py\")",
+      "Bash(\"C:/Users/rawatsa/AppData/Local/miniforge3/envs/sam3cpu/python.exe\" -m py_compile \"c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/code/4.8_predict_ohio_streetview.py\")",
+      "Read(//c/Users/rawatsa/.claude/projects/**)",
+      "Bash(cat '/c/Users/rawatsa/.claude/projects/c--Users-rawatsa-OneDrive---University-of-Cincinnati-StataProjects/memory/'*.md)",
+      "Bash(grep -n \"\\\\\\\\begin{table}\" \"c:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/docs/JMP_draft/results.tex\")",
+      "Bash(Rscript --version)",
+      "Bash(\"/c/Program Files/R/R-4.4.2/bin/Rscript.exe\" --version)",
+      "Bash(\"/c/Program Files/R/R-4.3.2/bin/Rscript.exe\" --version)",
+      "Read(//c/Program Files/R//**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Bash(cmd //c \"where Rscript\")",
+      "Read(//c/Program Files/**)",
+      "Bash(\"/c/Program Files/R/R-4.5.0/bin/Rscript.exe\" --version)",
+      "Bash(\"/c/Program Files/R/R-4.4.3/bin/Rscript.exe\" --version)",
+      "Bash(\"/c/Program Files/R/R-4.5.1/bin/Rscript.exe\" --version)",
+      "Bash(\"/c/Program Files/R/R-4.5.1/bin/R.exe\" --version)",
+      "Bash(\"/c/Program Files/R/R-4.5.2/bin/Rscript.exe\" code/_run_rd.R)"
     ],
     "additionalDirectories": [
       "\\tmp"

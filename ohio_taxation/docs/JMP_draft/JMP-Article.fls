@@ -310,6 +310,9 @@ INPUT emp_strategy.tex
 INPUT .\results.tex
 INPUT .\results.tex
 INPUT results.tex
+INPUT ..\..\data\outputs\tables\road_quality_rd_table5.tex
+INPUT ..\..\data\outputs\tables\road_quality_rd_table5.tex
+INPUT ..\..\data\outputs\tables\road_quality_rd_table5.tex
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmex10.tfm
@@ -510,6 +513,16 @@ INPUT .\images\bw_sensitivity_of_means.png
 INPUT .\images\bw_sensitivity_of_means.png
 INPUT .\images\bw_sensitivity_of_means.png
 INPUT .\images\bw_sensitivity_of_means.png
+INPUT ..\..\data\outputs\tables\road_quality_bw_sensitivity.tex
+INPUT ..\..\data\outputs\tables\road_quality_bw_sensitivity.tex
+INPUT ..\..\data\outputs\tables\road_quality_bw_sensitivity.tex
+INPUT ..\..\data\outputs\plots\rd_bandwidth_sensitivity_road_quality.png
+INPUT ..\..\data\outputs\plots\rd_bandwidth_sensitivity_road_quality.png
+INPUT ..\..\data\outputs\plots\rd_bandwidth_sensitivity_road_quality.png
+INPUT ..\..\data\outputs\plots\rd_bandwidth_sensitivity_road_quality.png
+INPUT ..\..\data\outputs\plots\rd_bandwidth_sensitivity_road_quality.png
+INPUT ..\..\data\outputs\plots\rd_bandwidth_sensitivity_road_quality.png
+INPUT ..\..\data\outputs\plots\rd_bandwidth_sensitivity_road_quality.png
 INPUT .\model.tex
 INPUT .\model.tex
 INPUT model.tex
@@ -590,7 +603,5 @@ INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti10.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti12.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti12.pfb
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\symbols\msam10.pfb
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\symbols\msam10.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\symbols\msbm10.pfb
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\symbols\msbm10.pfb

@@ -97,39 +97,28 @@ For a detailed analysis of the road-image dataset, see the Appendix, Section~\re
 In section \ref{sec:road_quality_decline}, we present the results from our fine-tuned model, when applied to roads in areas with close elections within the effective bandwidth. 
 % For full details on the modeling methodology, fine-tuning results and robustness tests, see \cite{2025predicting}.
 
-{\bf Ohio Satellite Images.} While the fine-tuning of our vision image-classification model uses images from \cite{brewer2021}, our testing sample uses hand-collected satellite images from Google Earth Pro for roads in different cities in Ohio. Even though Google Earth Pro covers all of Ohio and provides satellite images of roads for cities we study, these images may differ in resolution and quality depending on the location. The images are also not always available for all time periods, and the time period of the images may not be consistent across different locations\footnote{For example, Jersey Township in Licking County, Ohio had a road tax levy {\bf renewal} in 2019, but the most temporally adjacent satellite images available are from 2017 and 2023. Marion Township in Hocking County had a road tax levy {\bf cut} in 2018, and the proximate satellite images available are from 2014 and 2021.}. For our analysis, it is imperative to ensure we have images before and after the referendum for both the treatment and control groups. However, we also found that some areas did not have images available for both periods, or the images were of poor quality. We restrict our sample to include only those areas where we could obtain high-resolution images for both periods\footnote{On average, pre-referendum images are from 2.3 years before the election, and post-referendum images are from 3.3 years after the election.}. We collect road images for cities with votes within the average effective RD bandwidth provided in Table \ref{tab:median_sale_amount} and ensure that we have pre- and post-referendum images for both- the treatment and control groups\footnote{Other papers such as \cite{gonzalez2016paving} also have one pre- and post-intervention year, collected via surveys, rather than a comprehensive panel.}. 
-Figure \ref{fig:road_quality_examples} presents two examples of road satellite images for Ohio, one from a road classified as high and the other as poor quality.
+{\bf Ohio Satellite Images.} While the fine-tuning of our vision image-classification model uses images from \cite{brewer2021}, our Ohio application uses aerial imagery from the National Agriculture Imagery Program (NAIP) and Ohio Statewide Imagery Program (OSIP3). These sources provide substantially broader coverage than the earlier hand-collected sample, but image resolution and timing still vary across products and years. For that reason, our empirical analysis does not rely on a single before-and-after image pair. Instead, Section \ref{sec:road_quality_decline} aggregates predicted road quality within pre-election and post-election windows around each renewal election, excludes election-year imagery, and censors each window at adjacent renewal elections so the same subdivision-year is not reused across levy cycles. For interpretability, the main Table \ref{tab:roadquality_estimates} reports NAIP-based Road Quality Rating and Road Quality Score outcomes, while pooled NAIP-OSIP3 standardized estimates are used only in supporting diagnostics. Figure \ref{fig:road_quality_examples} presents two illustrative NAIP road images from Ohio, one classified as poor quality and one classified as high quality.
 
 \begin{figure}[ht]
     \centering
-    \begin{minipage}{0.59\textwidth}
+    \begin{minipage}{0.46\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{images/rush_twp_champaign_aug16.jpg}
+        \includegraphics[width=\textwidth]{images/naip_poor_example.jpg}
         \caption*{(A) A {\bf \underline{Poor}} Quality Road}
     \end{minipage} 
-    \hspace{0.5in}
-    \begin{minipage}{0.59\textwidth}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{images/hartford_twp_licking_sep21.jpg}
+        \includegraphics[width=\textwidth]{images/naip_high_example.jpg}
         \caption*{(B) A {\bf \underline{High}} Quality Road}
     \end{minipage}
-    \caption{Road Quality Satellite images for Ohio}
+    \caption{Examples of NAIP Road Images Used in the Ohio Analysis}
     \label{fig:road_quality_examples}
 \end{figure} 
 
 \textit{Road Quality Rating.} Our fine-tuned vision model classifies each satellite image into one of three categories: 0 (poor), 1 (average), or 2 (high). This rating is based on visual cues such as pavement quality, visible cracks, patchwork, and overall surface condition, as learned by the vision model from the labeled training data. For each image, the model outputs both the predicted class and a confidence score, which reflects the model's certainty in its prediction. These ratings provide a standardized, objective measure of road quality across locations and time periods, enabling us to compare changes in road conditions before and after tax levy referendums for both treated and control groups.
 
-\textit{Road Quality Score.} Even though our original model output is a road quality rating\footnote{This is a direct result of our training data from \cite{brewer2021} which uses the discrete 0 (low), 1 (medium), 2 (high) road-quality metric.}, we also convert the discrete model output to a continuous measure of road quality between 1 and 100. This conversion uses two variables: the predicted road quality rating and confidence score\footnote{During the prediction process, we asked the fine-tuned vision model its confidence in the prediction i.e. the probability of the prediction being correct, a number between 0 and 1.}, and allows us to map our road quality rating to a number similar to Pavement Condition Rating (PCR) used by ODOT, and call this Road Quality Score (RQS). The formula for this conversion is as follows:
-
-\begin{equation}
-\text{RQS} = 1 + [
-\left( \hat{r} + \tau \cdot \hat{c} \right) \cdot w \cdot \mathbb{I}\{\hat{r} \ne 0\}
-+ (1 - \tau) \cdot \hat{c} \cdot w  \cdot \mathbb{I}\{\hat{r} = 0\} ]
-\label{eq:rqs_formula}
-\end{equation}
-
-\noindent 
-where $\hat{r}$ is the predicted road quality rating, $\hat{c}$ is the confidence score, $w$ is a relative weight for allotted size of each road quality rating group, 0, 1, and 2. $\tau$ is a parameter for confidence weights\footnote{We set this equal to 0.4.}. The RQS ranges from 1 to 100, where 1 indicates poor quality and 100 indicates high quality. We use this RQS in our analysis to assess the impact of cutting local road taxes on road quality.
+\textit{Road Quality Score.} Even though our original model output is a road quality rating\footnote{This is a direct result of our training data from \cite{brewer2021} which uses the discrete 0 (low), 1 (medium), 2 (high) road-quality metric.}, we also convert the discrete model output to a continuous measure of road quality between 1 and 100. This Road Quality Score (RQS) combines the predicted road quality rating with the model's confidence so that higher values correspond to better predicted pavement condition. We use RQS as a companion outcome to RQR because it preserves the ordinal classification while allowing finer comparisons across images and election windows.
 
 Next, we share a summary of means and standard deviations of the predicted road quality rating and road quality score for the treatment and control groups, before and after the referendum. 
 
@@ -160,17 +149,17 @@ Next, we share a summary of means and standard deviations of the predicted road 
     \vspace{0.5em}
     \begin{tablenotes}[flushleft]
         \footnotesize
-        \item \textit{Notes:} The control group comprises townships within the effective RD bandwidth that successfully renewed their road tax levies; the treated group comprises those that failed to renew. Ratings are derived from our fine-tuned vision model. Scores follow Equation~\ref{eq:rqs_formula}. Standard deviations are in parentheses.
+        \item \textit{Notes:} The control group comprises townships within the effective RD bandwidth that successfully renewed their road tax levies; the treated group comprises those that failed to renew. Ratings are derived from our fine-tuned vision model. Scores combine the predicted class and model confidence into a 1--100 measure. Standard deviations are in parentheses.
     \end{tablenotes}
     \end{minipage}
     \end{threeparttable}
 \end{table}
 
 % \noindent
-Panel A of Table \ref{tab:road_quality_panel} summarizes the Road Quality Rating (RQR), showing that treated areas i.e. jurisdictions that cut their renewal road tax levies, started with a slightly higher average RQR (1.62) than control areas (1.56) before the referendum, but experienced a notable decline from 1.62 to 1.47 after the referendum, while control areas saw no change and remained at 1.56. 
+Panel A of Table \ref{tab:road_quality_panel} summarizes the Road Quality Rating (RQR) in a simple descriptive comparison. Treated areas, i.e. jurisdictions that cut their renewal road tax levies, started with a slightly higher average RQR (1.62) than control areas (1.56) before the referendum, but experienced a decline from 1.62 to 1.47 after the referendum, while control areas remained at 1.56. 
 
 % \noindent
-Panel B of Table \ref{tab:road_quality_panel} presents the continuous Road Quality Score (RQS), where treated areas also began with a higher average RQS (74) compared to control areas (71) before the referendum. After the referendum, RQS dropped notably from 74 to 68 in treated cities, but only slightly from 71 to 70 in control cities. This pattern suggests that failing to renew a road tax levy leads to a decline in both RQR and RQS, while renewing the levy is associated with fairly stable road quality. 
+Panel B of Table \ref{tab:road_quality_panel} presents the continuous Road Quality Score (RQS), where treated areas also began with a higher average RQS (74) compared to control areas (71) before the referendum. After the referendum, RQS fell from 74 to 68 in treated cities, but only slightly from 71 to 70 in control cities. These descriptive differences are suggestive, but the formal evidence in Section \ref{sec:road_quality_decline} comes from the stacked-event regression discontinuity design.
 
 
 \begin{figure}[ht]
@@ -191,7 +180,7 @@ Panel B of Table \ref{tab:road_quality_panel} presents the continuous Road Quali
     \label{fig:combined}
 \end{figure}
 
-Figure \ref{fig:combined} Panel A graphically illustrates the difference in road quality rating before and after the referendum for both treated and control groups. The graph shows a clear decline in road quality rating for the treated group after the referendum, while the control group remains relatively stable. Panel B of Figure \ref{fig:combined} shows road quality rating five years after the referendum graphed alongside the percent of votes against the tax levy. The points represent the local average road quality rating for the representative bins of vote shares within the average effective RD bandwidth around the cutoff of 50\%. The graph suggests a discontinuity in road quality rating at the cutoff, which is the basis of our identification strategy, suggesting that the failure to renew a road tax levy has a negative impact on road quality. Section \ref{sec:road_quality_decline} provides a more detailed analysis of the impact of cutting road taxes on road quality, using the predictions from the model as the outcome variable, and employs regression discontinuity to estimate the effect of cutting road maintenance taxes on road quality.
+Figure \ref{fig:combined} provides descriptive evidence on road quality around the referendum. Panel A illustrates the before-and-after difference in road quality rating for treated and control groups, while Panel B plots post-election road quality against vote share against renewal. Both panels are consistent with lower road quality on the fail-levy side of the cutoff, but Section \ref{sec:road_quality_decline} provides the formal stacked-event RD estimates.
 
 % To address this, we implement a difference-in-differences (DiD) analysis in Section \ref{sec:road_quality_decline}, which controls for time-invariant factors and common shocks, allowing for a cleaner estimate of the effect of tax cuts on road quality.
 
@@ -291,4 +280,3 @@ The data, captured at the time of the vote and as observed in Table \ref{tab:var
 
 
 % Table \ref{tab:variable_means_sd} shows that the treatment and control groups are well-balanced with respect to the covariates considered, suggesting that the groups are comparable and any observed differences in outcomes can more confidently be attributed to the treatment effect rather than to pre-existing differences.
-

@@ -24,7 +24,9 @@
 #   - NAIP imagery is available for Ohio approximately every 2-3 years.
 #     Typical Ohio NAIP years: 2004, 2006, 2008, 2010, 2011, 2013, 2015,
 #     2017, 2019, 2021.
-#   - Resolution: ~1 m/px (native NAIP). Tile size: 256x256 px = ~256m.
+#   - Resolution: ~1 m/px (native NAIP).
+#   - We request a higher-resolution thumbnail than before and crop a smaller
+#     ground window so roads appear larger in-frame.
 #   - Images are saved as JPEG true-color (RGB) for vision model input.
 #   - Set TEST_MODE = True to download sample images first.
 #     Set TEST_MODE = False to run the full batch after inspection.
@@ -51,7 +53,7 @@ random.seed(42)
 np.random.seed(42)
 
 # ** Set to False once you have inspected the test images and are ready **
-TEST_MODE = False
+TEST_MODE = True
 
 # Paths
 ROOT = "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
@@ -67,10 +69,13 @@ GEE_PROJECT = "ohioroads"
 NAIP_COLLECTION = "USDA/NAIP/DOQQ"
 
 # Image settings
-TILE_SIZE_PX = 256          # pixels per side
-TILE_SIZE_M = 128            # ground area per side in meters (~128m)
-                             # At 256px / 128m = ~0.5m/px effective resolution
-                             # Roads (~6-10m wide) will be ~12-20 pixels wide
+TILE_SIZE_PX = 512           # pixels per side
+TILE_SIZE_M = 96             # ground area per side in meters (~25% tighter crop)
+                             # At 512px / 96m, roads occupy more of the tile,
+                             # and the saved JPEGs are substantially larger.
+GEE_THUMB_FORMAT = "png"     # pull lossless thumbs from GEE, then save JPEG locally
+JPEG_SAVE_QUALITY = 97       # higher local save quality for sharper imagery
+JPEG_SUBSAMPLING = 0         # disable chroma subsampling; improves sharp edges
 
 # Sampling settings
 SAMPLES_PER_SUBDIVISION = 50   # road-centered points per county subdivision
@@ -297,7 +302,7 @@ def download_tile(image, lat, lon, tile_size_m):
         url = image.getThumbUrl({
             "region": region.getInfo(),
             "dimensions": f"{TILE_SIZE_PX}x{TILE_SIZE_PX}",
-            "format": "jpg",
+            "format": GEE_THUMB_FORMAT,
             "bands": ["R", "G", "B"],
             "min": 0,
             "max": 255,
@@ -305,7 +310,7 @@ def download_tile(image, lat, lon, tile_size_m):
 
         response = requests.get(url, timeout=30)
         if response.status_code == 200:
-            img = Image.open(BytesIO(response.content))
+            img = Image.open(BytesIO(response.content)).convert("RGB")
             if not is_tile_quality_ok(img):
                 print(f"    Discarded tile at ({lat:.6f}, {lon:.6f}): too many black pixels (NAIP edge gap)")
                 return None
@@ -327,7 +332,12 @@ def save_tile(img, out_dir, cosbidfp, year, lat, lon, roadname=""):
     safe_roadname = str(roadname).replace(" ", "_").replace("/", "_")
     filename = f"{cosbidfp}_{safe_roadname}_{year}_{lat:.6f}_{lon:.6f}.jpg"
     filepath = os.path.join(out_dir, filename)
-    img.save(filepath, "JPEG", quality=95)
+    img.save(
+        filepath,
+        "JPEG",
+        quality=JPEG_SAVE_QUALITY,
+        subsampling=JPEG_SUBSAMPLING,
+    )
     return filename
 
 

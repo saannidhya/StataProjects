@@ -40,41 +40,15 @@
 %     \end{threeparttable}
 % \end{table}
 
-% Add these packages to your preamble if you haven't already:
-% \usepackage{booktabs}
-% \usepackage{threeparttable}
-% \usepackage{dcolumn}
-% \usepackage{amssymb} % For the checkmark symbol
+\input{../../data/outputs/tables/road_quality_rd_table5.tex}
 
-\begin{table}[ht]
-    \centering
-    \caption{Change in Road Quality after an Election}
-    \label{tab:roadquality_estimates}
-    \begin{threeparttable}
-        \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l c c}
-            \toprule
-            & (1) & (2) \\
-            % & Road Quality & Road Quality \\
-            % & Rating (0--2) & Score (1--100) \\
-            \midrule
-            RD Estimate             & -0.477\textsuperscript{**} & -15.663\textsuperscript{**} \\
-                                    & (0.222)     & (7.339)      \\
-            \addlinespace[0.5em]
-            % \midrule
-            Covariates              & $\checkmark$ & $\checkmark$ \\
-            Clustered SEs           & $\checkmark$ & $\checkmark$ \\
-            Effective Sample        & 178          & 178         \\
-            \bottomrule
-        \end{tabular*}
-        \begin{tablenotes}[flushleft]
-        \small
-        \item \textit{Notes:} Column (1) shows the RD estimate of the effect of cutting road maintenance taxes on the Road Quality Rating (RQR, 0–2), and Column (2) shows this effect on the continuous Road Quality Score (RQS, 1–100).
-        Standard errors are in parentheses. The table reports covariate-adjusted sharp RD estimates from a polynomial regression ($p=1$, $q=2$) at the 50\% vote-share cutoff. The bandwidth is mean effective RD bandwidth from Table \ref{tab:median_sale_amount}. Inference is based on bias-corrected point estimates with robust standard errors. Standard errors are clustered by ten-digit FIPS code. Significance levels: \textsuperscript{*}p $<$ 0.10, \textsuperscript{**}p $<$ 0.05, \textsuperscript{***}p $<$ 0.01.
-        \end{tablenotes}
-    \end{threeparttable}
-\end{table}
-Table \ref{tab:roadquality_estimates} reports RD estimates of the discontinuity in post-election road quality at the 50\% threshold. Column (1) uses the categorical Road Quality Rating (RQR, 0–2), and Column (2) uses the continuous Road Quality Score (RQS, 1–100), both derived from the fine-tuned vision model described in Section \ref{sec:road_quality}. As shown in Table \ref{tab:roadquality_estimates}, we find that cutting road maintenance taxes does lead to a decline in road quality of $-0.477$ for the RQR metric. This suggests that relative to similar cities that renew their road maintenance taxes, cities that cut their road maintenance taxes experience a decline of almost half a category in road quality after the election. The estimate for the RQS metric is $-15.663$, indicating a decline of about 15.7 points on a 100-point scale. 
-Using the pre-election means among treated cities of $1.625$ (RQR) and $69$ (RQS), these estimates of difference in road quality correspond to approximately $29.4\%$\footnote{since $\frac{0.477}{1.625} \approx 0.294$.} and $22.7\%$\footnote{since $\frac{15.663}{69} \approx 0.227$.} reduction in road quality. The limited sample size is an artifact of our focus on close elections, limited availability of high-resolution satellite imagery for some cities and years, and the cleaning process to ensure that the road segments analyzed are representative of public roads. Although these results may be sensitive to data availability, sample size and the performance of the vision model, they provide suggestive evidence that cutting road maintenance taxes leads to a meaningful decline in road quality. The next section presents our main results on the impact of cutting road maintenance taxes on house prices.
+Table \ref{tab:roadquality_estimates} reports RD estimates of the discontinuity in road quality at the 50\% vote-share threshold. Columns (1) and (2) use post-election satellite imagery and show the effect on the Road Quality Rating (RQR, 0--2) and the Road Quality Score (RQS, 1--100), respectively. Both outcomes are derived from the fine-tuned ConvNeXt v2 vision model applied to NAIP satellite imagery, as described in Section \ref{sec:road_quality}. Bandwidths are selected using the MSE-optimal procedure of \cite{calonico2019regression}, and standard errors are bias-corrected and robust, clustered by ten-digit FIPS code.
+
+The RD estimate in Column (1) is $-0.066$, statistically significant at the 1\% level ($p < 0.001$), indicating that subdivisions narrowly voting to cut road maintenance taxes experience lower road quality than those narrowly voting to renew. The estimate in Column (2) shows a corresponding decline of $2.3$ points on the 100-point RQS scale. Using the pre-election treated-group means of $1.454$ (RQR) and $60.3$ (RQS), these estimates correspond to a decline of approximately $4.5\%$ and $3.8\%$ in road quality. The MSE-optimal bandwidth is approximately 7.8 percentage points on each side of the cutoff, yielding 875 and 358 effective observations to the left and right of the threshold, respectively.
+
+Columns (3) and (4) report a placebo test using pre-election satellite imagery---the same RD specification applied to road quality \textit{before} the referendum takes place. If our estimates reflect a causal effect of the tax cut rather than pre-existing differences, we should find no discontinuity in pre-election road quality. Indeed, the placebo estimates are small and statistically insignificant at the 5\% level ($p = 0.076$ and $p = 0.300$ for RQR and RQS, respectively), supporting the causal interpretation of the post-election decline. Table \ref{tab:roadquality_bw_sensitivity} in the Appendix shows that the post-election RD estimate is robust across a range of bandwidths from $0.75h$ to $2h$, with point estimates remaining negative and statistically significant at the 1\% level throughout.
+
+The next section presents our main results on the impact of cutting road maintenance taxes on house prices.
 
 \subsection{House Prices Decline}
 
