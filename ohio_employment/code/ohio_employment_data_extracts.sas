@@ -21,6 +21,7 @@
 			  5Sep2025  SR Removed special characters like "->" preventing ArcGIS Geocoding and Spatial Join for masterfile_2006q1_2024q4_full_cleaned.csv and masterfile_2006q1_2024q4_full.csv
 			 24Feb2026  SR Updating to include up to 2Q25
 			  3Mar2026  SR Updating to include up to 3Q25
+			  9 Jun 26  SR Updating to change pl_zip column name to zip for 2021 data. Updating to include up to 4Q25
 \*=================================================================================================*/
 
 *setting up macro variables;
@@ -102,22 +103,22 @@ proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace 
 %import_df(in_loc = &in_loc.\2021,
 			df = current_UCMA2021Q1.csv, file_type = csv, out_df = df_2021q1, 
 			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
-			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
 )
 %import_df(in_loc = &in_loc.\2021,
 			df = current_UCMA2021Q2.csv, file_type = csv, out_df = df_2021q2, 
 			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
-			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
 )
 %import_df(in_loc = &in_loc.\2021,
 			df = current_UCMA213.csv, file_type = csv, out_df = df_2021q3, 
 			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
-			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
 )
 %import_df(in_loc = &in_loc.\2021,
 			df = current_UCMA214.csv, file_type = csv, out_df = df_2021q4, 
 			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
-			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
 )
 *2022;
 proc import 
@@ -258,6 +259,15 @@ proc import
     dbms=xlsx 
     replace;
 run;
+proc import 
+    datafile="&in_loc.\2025\UCMA 4Q25.xlsx"
+    out=df_2025q4 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
 
 /*'Reporting Unit Description'n = RUD*/
 
@@ -285,7 +295,7 @@ run;
 %mend ;
 %loop(qtr_list = 2019q1 2019q2 2019q3 2019q4 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2 2021q3 2021q4 2022q1 2022q2 2022q3 2022q4);
 /*%loop(qtr_list = 2022q1 2022q2 2022q3 2022q4)*/
-%loop(qtr_list = 2023q1 2023q2 2023q3 2023q4 2024q1 2024q2 2024q3 2024q4 2025q1 2025q2 2025q3)
+%loop(qtr_list = 2023q1 2023q2 2023q3 2023q4 2024q1 2024q2 2024q3 2024q4 2025q1 2025q2 2025q3 2025q4)
 
 
 *removing illegible entries using EINs (see ohio_data_checks.sas for more details);
@@ -334,7 +344,7 @@ quit;
 
 *21,159,278 obs;*append all years together (2006 onwards) and exporting as sas dataset;
 proc sql;
-	create table out.masterfile_2006q1_2025q3	(where = (strip(EIN) ^= "043583679" and 
+	create table out.masterfile_2006q1_2025q4	(where = (strip(EIN) ^= "043583679" and 
 														  strip(EIN) ^= "201731623" and 
 														  strip(EIN) ^= "462603341" and meei ^= 2)) 
 				as 
@@ -421,6 +431,9 @@ proc sql;
 		   outer union corr
 	   select *
 	   	  from df_2025q3
+		   outer union corr
+	   select *
+	   	  from df_2025q4
 	;
 quit;
 
@@ -437,7 +450,7 @@ quit;
 proc sql;
 	create table empl as
 		select *, mean(m1,m2,m2) AS avg_persons
-			from out.masterfile_2006q1_2025q3
+			from out.masterfile_2006q1_2025q4
 				group by year, quarter
 ;
 quit;
@@ -451,7 +464,7 @@ quit;
 proc sql;
 	create table wage as
 		select year, quarter, sum(wage) AS wages
-			from out.masterfile_2006q1_2025q3
+			from out.masterfile_2006q1_2025q4
 				group by year, quarter
 ;
 quit;
@@ -481,10 +494,19 @@ RUN;
 *	Converting the exported SAS dataset into a Stata dataset
 *----------------------------------------------------------------------------------------;
 proc export 
-		    data=out.masterfile_2006q1_2025q3
-		    outfile="&out_csv.\masterfile_2006q1_2025q3.dta" 
+		    data=out.masterfile_2006q1_2025q4
+		    outfile="&out_csv.\masterfile_2006q1_2025q4.dta" 
 		    dbms=dta 
 		    replace;
+run;
+
+*----------------------------------------------------------------------------------------
+*	Converting the exported SAS dataset into a CSV
+*----------------------------------------------------------------------------------------;
+proc export data=out.masterfile_2006q1_2025q4
+   outfile="&out_csv.\masterfile_2006q1_2025q4.csv"
+   dbms=csv replace;
+   putnames=yes;
 run;
 
 *----------------------------------------------------------------------------------------
@@ -493,7 +515,7 @@ run;
 proc sql;
 	create table unique_addresses as
 		select distinct address, city, state, county, zip
-			from out.masterfile_2006q1_2024q4;
+			from out.masterfile_2006q1_2025q4;
 quit;
 * 1,211,442 obs. Some are blank.;
 
@@ -503,7 +525,7 @@ quit;
 *----------------------------------------------------------------------------------------;
 *importing and removing text issues;
 proc sql;
-	create table out.unique_addresses as
+	create table out.unique_addresses_2006q1_2025q4 as
 		select strip(lowcase(address)) as Address, strip(lowcase(city)) as City, state, zip
 			from unique_addresses
 				where address is not missing and 
@@ -524,8 +546,8 @@ quit;
 *----------------------------------------------------------------------------------------
 *	exporting cleaned unique_addresses dataset to a csv file for ArcGIS Pro
 *----------------------------------------------------------------------------------------;
-proc export data=out.unique_addresses
-   outfile="&out_csv.\unique_addresses.csv"
+proc export data=out.unique_addresses_2006q1_2025q4
+   outfile="&out_csv.\unique_addresses_2006q1_2025q4.csv"
    dbms=csv replace;
    putnames=yes;
 run;

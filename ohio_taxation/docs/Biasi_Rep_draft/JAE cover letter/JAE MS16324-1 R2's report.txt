@@ -1,0 +1,15 @@
+This paper replicates Biasi, Lafortune, and Schönholzer (2025) and extends the analysis to explore state-level heterogeneity in treatment effects. The replication seems competent, and some of the heterogeneity findings are genuinely interesting, particularly the claim that per-pupil spending/test scores decreases in some states following bond referenda passage. That said, the paper is not ready for publication. The novel findings are underdeveloped both theoretically and empirically, and some basic methodological questions go unanswered. Concerns listed below.
+
+
+1. The bandwidth critique needs documentation.
+The authors claim that Biasi et al. use RD bandwidths of roughly 40–50 percentage points, which, if true, would be a serious problem for the original paper's identification strategy. This is potentially the most valuable contribution of the replication, but the authors don't adequately explain or document it. And what bandwidths do the authors use in their own analysis, and why? A figure showing the running variable density alongside the bandwidth windows for both the original and replication specifications would make this critique legible and credible.
+
+2. The state-level empirical model is never clearly specified.
+It's not clear what model the authors are actually estimating at the state level. Separate RDs by state? An interaction specification in a pooled model? Are bandwidths held constant across states? These aren't minor details; they determine what the estimates mean, and readers need them to evaluate the results.
+
+3. The theoretical mechanisms are invoked but not tested.
+The authors gesture at two explanations for negative spending effects: heterogeneous pre-existing infrastructure and crowding out of instructional spending by capital expenditures. Both are plausible, but neither is examined seriously. The crowding-out story is especially puzzling. If capital spending is funded by novel bond referenda, why would we expect it to reduce per-pupil instructional expenditure? This needs either a clearer theoretical justification or a direct empirical test.
+
+4. The housing price and test scores heterogeneity findings need more development.
+The finding that housing price and test score effects are positive in some states and negative in others is striking but unexplained. Are these the same states showing negative spending effects? Is there a pattern by fiscal capacity, baseline infrastructure, or demographics? Even a descriptive characterization of what distinguishes positive from negative-effect states would substantially strengthen the paper.
+

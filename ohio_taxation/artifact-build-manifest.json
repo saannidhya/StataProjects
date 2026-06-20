@@ -1,0 +1,28 @@
+{
+  "output": "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\StataProjects\\ohio_taxation\\ohio_taxation_folder_overview.pptx",
+  "outputBytes": 15961,
+  "slideCount": 1,
+  "slideSize": {
+    "width": 1280,
+    "height": 720
+  },
+  "previewDir": "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\StataProjects\\ohio_taxation\\outputs\\manual-20260531-powerpoint-test\\presentations\\ohio-taxation-overview\\preview\\final",
+  "previewPaths": [
+    "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\StataProjects\\ohio_taxation\\outputs\\manual-20260531-powerpoint-test\\presentations\\ohio-taxation-overview\\preview\\final\\slide-01.png"
+  ],
+  "layoutDir": "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\StataProjects\\ohio_taxation\\outputs\\manual-20260531-powerpoint-test\\presentations\\ohio-taxation-overview\\layout\\final",
+  "layoutResults": [
+    {
+      "layoutPath": "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\StataProjects\\ohio_taxation\\outputs\\manual-20260531-powerpoint-test\\presentations\\ohio-taxation-overview\\layout\\final\\slide-01.layout.json"
+    }
+  ],
+  "contactSheet": "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\StataProjects\\ohio_taxation\\outputs\\manual-20260531-powerpoint-test\\presentations\\ohio-taxation-overview\\preview\\contact-sheet.png",
+  "slides": [
+    {
+      "index": 1,
+      "requestedSlideNumber": 1,
+      "modulePath": "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\StataProjects\\ohio_taxation\\outputs\\manual-20260531-powerpoint-test\\presentations\\ohio-taxation-overview\\slides\\slide-01.mjs",
+      "exportName": "slide01"
+    }
+  ]
+}

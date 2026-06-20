@@ -4,7 +4,8 @@
       "Bash(python3 -c \":*)",
       "Bash(Rscript \"C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_employment/code/_rerun_steps5to9.R\")",
       "Bash(\"C:/Program Files/R/R-4.5.2/bin/Rscript.exe\" --vanilla -e \".libPaths\\(''C:/Users/rawatsa/OneDrive - University of Cincinnati/R''\\)\" \"C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_employment/code/_rerun_steps5to9.R\")",
-      "Bash(\"C:/Program Files/R/R-4.5.2/bin/Rscript.exe\" \"C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_employment/code/_rerun_steps5to9.R\")"
+      "Bash(\"C:/Program Files/R/R-4.5.2/bin/Rscript.exe\" \"C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_employment/code/_rerun_steps5to9.R\")",
+      "Bash(ls -d \"C:\\\\Users\\\\rawatsa\\\\OneDrive - University of Cincinnati\\\\StataProjects\\\\ohio_taxation\\\\data\\\\fars\"/*/)"
     ]
   }
 }

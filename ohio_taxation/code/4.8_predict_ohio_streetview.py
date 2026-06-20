@@ -1,35 +1,32 @@
-#==========================================================================#
-# File: 4.8_predict_ohio_streetview.py
-# Author: Saani Rawat
-# Date: 04 Mar 2026
-# Description: Run ConvNeXt v2 inference on Ohio Google Street View images
-#              to predict road quality (0=low, 1=medium, 2=high).
-#              Outputs per-image predictions and PCR scores.
-#
-# Dependencies:
-#   - transformers, torch, PIL, pandas
-#   - Fine-tuned model from 4.7: data/roads/hf_finetuned_convnextv2_streetview/
-#   - Ohio streetview images: data/roads/ohio/google streetview photos/
-#
-# Usage:
-#   python 4.8_predict_ohio_streetview.py
-#==========================================================================#
+"""
+File: 4.8_predict_ohio_streetview.py
+Author: Saani Rawat
+Date: 11 Mar 2026
+Purpose:
+    Run the fine-tuned YOLO streetview defect detector on Ohio Google Street
+    View images and save YOLO label files for downstream PCR scoring.
+
+    Important behavior:
+    - One `.txt` file is written for every image, even when the detector finds
+      nothing. Empty files are intentional and preserve clean-road images for
+      downstream parsing.
+    - Output layout matches the parser used in 1.2_pcr_streetview_images.py.
+
+Usage:
+    python 4.8_predict_ohio_streetview.py
+    python 4.8_predict_ohio_streetview.py --device 0 --conf 0.20
+"""
 
 from __future__ import annotations
 
+import argparse
 import csv
-import logging
-import sys
-import time
 from collections import Counter
 from pathlib import Path
 
-import numpy as np
-import torch
 from PIL import Image
-from transformers import AutoImageProcessor, AutoModelForImageClassification
+from ultralytics import YOLO
 
-# ---- Configuration --------------------------------------------------------
 
 ROOT = Path(
     "C:/Users/rawatsa/OneDrive - University of Cincinnati/"
@@ -38,289 +35,309 @@ ROOT = Path(
 DATA_DIR = ROOT / "data" / "roads"
 SV_DIR = DATA_DIR / "ohio" / "google streetview photos"
 
-# Model directory (from 4.7 training)
-MODEL_DIR = DATA_DIR / "hf_finetuned_convnextv2_streetview"
+PROJECT_DIR = DATA_DIR / "runs_ohio" / "yolo11_rdd2024_streetview_detector"
+DEFAULT_RUN_NAME = "streetview_det_yolo11m"
+DEFAULT_PREDICT_NAME = "predict_ohio"
 
-# Output
-OUT_CSV = SV_DIR / "ohio_streetview_preds.csv"
-
-# Class mapping
-CLASS_NAMES = {0: "low_quality", 1: "medium_quality", 2: "high_quality"}
-
-# Inference settings
-BATCH_SIZE = 32
-PRINT_EVERY = 200
-
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
-# Logging
-LOG_PATH = SV_DIR / "streetview_prediction_run.log"
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_PATH),
-        logging.StreamHandler(sys.stdout),
-    ],
-)
+CLASS_NAMES = {
+    0: "D00",
+    1: "D10",
+    2: "D20",
+    3: "D30",
+    4: "D40",
+    5: "D50",
+    6: "D60",
+    7: "D70",
+    8: "D80",
+    9: "D90",
+}
 
 
-# ---- Filename parser -------------------------------------------------------
-
-def parse_streetview_filename(filename: str) -> dict:
-    """Parse metadata from streetview image filename.
-
-    Format (from 1.2_import_streetview_images_new.py):
-        {cosbidfp}_{stname}_{namelsad}_{date}_{lat}_{lon}_h{heading}_p{pitch}_f{fov}.jpg
-
-    where stname and namelsad have spaces replaced with underscores.
-    namelsad typically ends with "township" (e.g., "Orange_township").
-
-    Examples:
-        3900558562_Columbus_St_Orange_township_2019-07_40.919..._-82.281..._h359..._p-15_f60.jpg
-        3913775206_Water_St_Sugar_Creek_township_2014-08_40.864..._-84.140..._h159..._p-15_f60.jpg
-    """
-    stem = Path(filename).stem
-    parts = stem.split("_")
-
-    # Parse from the end (fixed format)
-    fov = parts[-1]        # f60
-    pitch = parts[-2]      # p-15
-    heading = parts[-3]    # h359.530...
-    lon = parts[-4]        # -82.281...
-    lat = parts[-5]        # 40.919...
-    date = parts[-6]       # 2019-07
-
-    # First part is always the 10-digit FIPS
-    tendigit_fips = parts[0]
-
-    # Middle parts: street name + subdivision name (e.g., "Orange_township")
-    middle = parts[1:-6]
-
-    # Find "township" keyword to split road name from subdivision name.
-    # The subdivision name (namelsad) ends with "township".
-    # Everything before the township name is the street name.
-    twp_idx = None
-    for i, p in enumerate(middle):
-        if p.lower() == "township":
-            twp_idx = i
-            break
-
-    if twp_idx is not None and twp_idx > 0:
-        # The township name starts at the word before "township"
-        # BUT it could be multi-word like "Sugar Creek township" or "E Saybrook township"
-        # Heuristic: common township prefixes are 1-3 words. Since the road name
-        # typically ends with a road suffix (St, Rd, Ave, Dr, etc.), find the last
-        # road suffix to determine where road ends and township begins.
-        road_suffixes = {"st", "rd", "ave", "dr", "ln", "ct", "pl", "blvd",
-                         "way", "pike", "hwy", "nw", "ne", "sw", "se",
-                         "n", "s", "e", "w"}
-
-        # Find the last road suffix in the middle parts (before "township")
-        last_suffix_idx = -1
-        for i in range(twp_idx):
-            if middle[i].lower() in road_suffixes:
-                last_suffix_idx = i
-
-        if last_suffix_idx >= 0:
-            road_parts = middle[:last_suffix_idx + 1]
-            township_parts = middle[last_suffix_idx + 1:twp_idx + 1]
-        else:
-            # No recognized suffix — assume everything up to 1 before "township" is road
-            road_parts = middle[:max(1, twp_idx - 1)]
-            township_parts = middle[max(1, twp_idx - 1):twp_idx + 1]
-    else:
-        # No "township" found — treat everything as road name
-        road_parts = middle
-        township_parts = []
-
-    return {
-        "tendigit_fips": tendigit_fips,
-        "road_name": " ".join(road_parts),
-        "township": " ".join(township_parts),
-        "date": date,
-        "lat": lat,
-        "lon": lon,
-    }
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Run YOLO streetview defect detection on Ohio Street View images."
+    )
+    parser.add_argument(
+        "--source_dir",
+        type=str,
+        default=str(SV_DIR),
+        help="Directory containing Ohio Street View images.",
+    )
+    parser.add_argument(
+        "--project",
+        type=str,
+        default=str(PROJECT_DIR),
+        help="Ultralytics project directory used in 4.7.",
+    )
+    parser.add_argument(
+        "--run_name",
+        type=str,
+        default=DEFAULT_RUN_NAME,
+        help="Training run name from 4.7.",
+    )
+    parser.add_argument(
+        "--predict_name",
+        type=str,
+        default=DEFAULT_PREDICT_NAME,
+        help="Prediction subdirectory name under project.",
+    )
+    parser.add_argument(
+        "--weights",
+        type=str,
+        default="",
+        help="Optional explicit weights path. Defaults to best.pt from the training run.",
+    )
+    parser.add_argument(
+        "--imgsz",
+        type=int,
+        default=640,
+        help="Inference image size.",
+    )
+    parser.add_argument(
+        "--conf",
+        type=float,
+        default=0.25,
+        help="Confidence threshold.",
+    )
+    parser.add_argument(
+        "--iou",
+        type=float,
+        default=0.60,
+        help="NMS IoU threshold.",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        default="cpu",
+        help="Ultralytics device string, e.g. 'cpu', '0', '0,1'.",
+    )
+    parser.add_argument(
+        "--batch",
+        type=int,
+        default=16,
+        help="Inference batch size. Use a smaller value if GPU memory is tight.",
+    )
+    parser.add_argument(
+        "--save_images",
+        action="store_true",
+        help="Also save rendered prediction images.",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Delete the prediction folder first instead of resuming.",
+    )
+    return parser.parse_args()
 
 
-# ---- Resume capability -----------------------------------------------------
+def resolve_weights(project_dir: Path, run_name: str, explicit: str) -> Path:
+    if explicit:
+        weights = Path(explicit)
+        if not weights.exists():
+            raise FileNotFoundError(f"Explicit weights path not found: {weights}")
+        return weights
 
-def load_already_predicted(out_csv: Path) -> set[str]:
-    """Load filenames already predicted (for resume capability)."""
-    if not out_csv.exists():
-        return set()
-    done = set()
-    with open(out_csv, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            done.add(row["filename"])
-    logging.info(f"  Resume: {len(done)} images already predicted in {out_csv.name}")
-    return done
+    run_dir = project_dir / run_name / "weights"
+    best = run_dir / "best.pt"
+    last = run_dir / "last.pt"
+    if best.exists():
+        return best
+    if last.exists():
+        return last
+    raise FileNotFoundError(
+        "Could not find detector weights.\n"
+        f"Expected one of:\n- {best}\n- {last}\n"
+        "Run 4.7_train_streetview_model.py first."
+    )
 
 
-# ---- Main -------------------------------------------------------------------
+def list_images(source_dir: Path) -> list[Path]:
+    exts = {".jpg", ".jpeg", ".png", ".webp"}
+    if not source_dir.exists():
+        return []
+    return sorted(
+        p for p in source_dir.iterdir()
+        if p.is_file() and p.suffix.lower() in exts
+    )
 
-def main():
-    logging.info("=" * 70)
-    logging.info("OHIO STREETVIEW ROAD QUALITY PREDICTION")
-    logging.info("=" * 70)
 
-    # Check model exists
-    if not MODEL_DIR.exists():
-        logging.error(f"Model not found at {MODEL_DIR}")
-        logging.error("Run 4.7_train_streetview_model.py first (on Colab GPU).")
-        sys.exit(1)
+def lookup_label(names, class_id: int) -> str:
+    if isinstance(names, dict):
+        return str(names.get(class_id, class_id))
+    if isinstance(names, list):
+        if 0 <= class_id < len(names):
+            return str(names[class_id])
+    return CLASS_NAMES.get(class_id, str(class_id))
 
-    # Collect image files
-    image_files = sorted(SV_DIR.glob("*.jpg"))
-    logging.info(f"  Found {len(image_files)} JPG images in {SV_DIR}")
 
-    if not image_files:
-        logging.error("No images found!")
-        sys.exit(1)
+def batched(items: list[Path], batch_size: int):
+    for start in range(0, len(items), batch_size):
+        yield items[start:start + batch_size]
 
-    # Load model
-    logging.info(f"  Loading model from {MODEL_DIR}")
-    processor = AutoImageProcessor.from_pretrained(str(MODEL_DIR))
-    model = AutoModelForImageClassification.from_pretrained(str(MODEL_DIR)).to(DEVICE)
-    model.eval()
-    logging.info(f"  Device: {DEVICE}")
 
-    # Resume: skip already-predicted images
-    done_filenames = load_already_predicted(OUT_CSV)
-    todo_files = [f for f in image_files if f.name not in done_filenames]
-    logging.info(f"  Images to predict: {len(todo_files)} "
-                 f"(skipping {len(done_filenames)} already done)")
+def write_yolo_label_file(txt_path: Path, boxes) -> tuple[int, float, str, str, list[int]]:
+    max_conf = 0.0
+    top_class = ""
+    top_label = ""
+    clses: list[int] = []
 
-    if not todo_files:
-        logging.info("  Nothing to do.")
+    with open(txt_path, "w", encoding="utf-8") as f:
+        if boxes is None or len(boxes) == 0:
+            return 0, max_conf, top_class, top_label, clses
+
+        xywhn = boxes.xywhn.detach().cpu().tolist()
+        confs = boxes.conf.detach().cpu().tolist()
+        clses = [int(x) for x in boxes.cls.detach().cpu().tolist()]
+
+        best_idx = max(range(len(clses)), key=lambda idx: confs[idx])
+        max_conf = float(confs[best_idx])
+        top_class = str(clses[best_idx])
+        top_label = CLASS_NAMES.get(clses[best_idx], top_class)
+
+        for cls_id, (xc, yc, w, h), conf in zip(clses, xywhn, confs):
+            f.write(
+                f"{cls_id} "
+                f"{float(xc):.6f} {float(yc):.6f} "
+                f"{float(w):.6f} {float(h):.6f} "
+                f"{float(conf):.6f}\n"
+            )
+
+    return len(clses), max_conf, top_class, top_label, clses
+
+
+def annotated_image_path(output_dir: Path, image_path: Path) -> Path:
+    return output_dir / image_path.name
+
+
+def save_annotated_image(output_path: Path, result) -> None:
+    # Ultralytics returns BGR images from result.plot(); convert to RGB for PIL.
+    plotted = result.plot()
+    Image.fromarray(plotted[..., ::-1]).save(output_path)
+
+
+def main() -> None:
+    args = parse_args()
+    source_dir = Path(args.source_dir)
+    project_dir = Path(args.project)
+    output_dir = project_dir / args.predict_name
+    labels_dir = output_dir / "labels"
+
+    weights_path = resolve_weights(project_dir, args.run_name, args.weights)
+    image_paths = list_images(source_dir)
+    if not image_paths:
+        raise FileNotFoundError(f"No images found in: {source_dir}")
+
+    if args.overwrite and output_dir.exists():
+        import shutil
+        shutil.rmtree(output_dir)
+
+    labels_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    todo_images: list[Path] = []
+    for image_path in image_paths:
+        label_exists = (labels_dir / f"{image_path.stem}.txt").exists()
+        image_exists = (not args.save_images) or annotated_image_path(output_dir, image_path).exists()
+        if not (label_exists and image_exists):
+            todo_images.append(image_path)
+    already_done = len(image_paths) - len(todo_images)
+
+    print("=" * 78)
+    print("OHIO STREETVIEW DEFECT DETECTION")
+    print("=" * 78)
+    print(f"  Source dir:      {source_dir}")
+    print(f"  Weights:         {weights_path}")
+    print(f"  Output dir:      {output_dir}")
+    print(f"  Total images:    {len(image_paths)}")
+    print(f"  Already done:    {already_done}")
+    print(f"  Remaining:       {len(todo_images)}")
+    print(f"  Confidence:      {args.conf}")
+    print(f"  IoU:             {args.iou}")
+    print(f"  Device:          {args.device}")
+    print(f"  Batch size:      {args.batch}")
+
+    if not todo_images:
+        print("\nNothing to do.")
         return
 
-    # Open CSV in append mode
-    write_header = not OUT_CSV.exists() or OUT_CSV.stat().st_size == 0
+    model = YOLO(str(weights_path))
     counts = Counter()
-    n_done = 0
-    t0 = time.time()
+    n_images = 0
 
-    with open(OUT_CSV, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        if write_header:
-            writer.writerow([
-                "filename", "tendigit_fips", "road_name", "township",
-                "date", "lat", "lon", "pred_class", "pred_label",
-                "pcr_score_pred", "max_prob", "p0", "p1", "p2",
-            ])
+    summary_csv = output_dir / "ohio_streetview_detection_summary.csv"
+    summary_fields = [
+        "image_path",
+        "label_path",
+        "n_detections",
+        "max_conf",
+        "top_class",
+        "top_label",
+    ]
 
-        # Process in batches
-        for batch_start in range(0, len(todo_files), BATCH_SIZE):
-            batch_files = todo_files[batch_start:batch_start + BATCH_SIZE]
+    with open(summary_csv, "a" if summary_csv.exists() else "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=summary_fields)
+        if f.tell() == 0:
+            writer.writeheader()
 
-            # Load images
-            images = []
-            valid_files = []
-            for img_path in batch_files:
-                try:
-                    img = Image.open(img_path).convert("RGB")
-                    images.append(img)
-                    valid_files.append(img_path)
-                except Exception as e:
-                    logging.warning(f"  Could not open {img_path.name}: {e}")
+        for batch_paths in batched(todo_images, args.batch):
+            preds = model.predict(
+                source=[str(p) for p in batch_paths],
+                imgsz=args.imgsz,
+                conf=args.conf,
+                iou=args.iou,
+                device=args.device,
+                batch=min(args.batch, len(batch_paths)),
+                stream=True,
+                verbose=False,
+                save=False,
+                save_txt=False,
+                save_conf=False,
+                project=str(project_dir),
+                name=args.predict_name,
+                exist_ok=True,
+            )
 
-            if not images:
-                continue
+            for source_path, result in zip(batch_paths, preds):
+                n_images += 1
+                image_path = Path(source_path)
+                txt_path = labels_dir / f"{image_path.stem}.txt"
+                n_det, max_conf, top_class, top_label, clses = write_yolo_label_file(
+                    txt_path,
+                    result.boxes,
+                )
+                if args.save_images:
+                    save_annotated_image(
+                        annotated_image_path(output_dir, image_path),
+                        result,
+                    )
 
-            # Run inference
-            inputs = processor(images=images, return_tensors="pt").to(DEVICE)
-            with torch.no_grad():
-                logits = model(**inputs).logits
-                probs = torch.softmax(logits, dim=-1).cpu().numpy()
+                if n_det > 0:
+                    top_label = lookup_label(model.names, int(top_class))
+                    for cls in clses:
+                        counts[lookup_label(model.names, cls)] += 1
 
-            preds = probs.argmax(axis=1)
-            max_probs = probs.max(axis=1)
+                writer.writerow(
+                    {
+                        "image_path": str(image_path),
+                        "label_path": str(txt_path),
+                        "n_detections": n_det,
+                        "max_conf": max_conf,
+                        "top_class": top_class,
+                        "top_label": top_label,
+                    }
+                )
 
-            for i, img_path in enumerate(valid_files):
-                meta = parse_streetview_filename(img_path.name)
-                pred_class = int(preds[i])
-                pred_label = CLASS_NAMES.get(pred_class, str(pred_class))
-                p0, p1, p2 = float(probs[i, 0]), float(probs[i, 1]), float(probs[i, 2])
+                if n_images % 200 == 0:
+                    print(f"  processed {n_images}/{len(todo_images)} images")
 
-                # PCR score from probabilities (midpoints of each class's PCR range)
-                # Class 0 (low): PCR ~47-85, midpoint ~66
-                # Class 1 (med): PCR ~85-93, midpoint ~89
-                # Class 2 (high): PCR ~93-98, midpoint ~95.5
-                pcr_score_pred = p0 * 66.0 + p1 * 89.0 + p2 * 95.5
+            f.flush()
 
-                writer.writerow([
-                    img_path.name,
-                    meta["tendigit_fips"],
-                    meta["road_name"],
-                    meta["township"],
-                    meta["date"],
-                    meta["lat"],
-                    meta["lon"],
-                    pred_class,
-                    pred_label,
-                    f"{pcr_score_pred:.4f}",
-                    f"{float(max_probs[i]):.6f}",
-                    f"{p0:.6f}",
-                    f"{p1:.6f}",
-                    f"{p2:.6f}",
-                ])
-                counts[pred_label] += 1
-
-            n_done += len(valid_files)
-            if n_done % PRINT_EVERY < BATCH_SIZE:
-                elapsed = time.time() - t0
-                rate = n_done / elapsed if elapsed > 0 else 0
-                logging.info(f"  [{n_done}/{len(todo_files)}] processed "
-                             f"({rate:.1f} img/s)")
-
-        f.flush()
-
-    elapsed = time.time() - t0
-    logging.info(f"\n  Done: {n_done} images predicted in {elapsed:.1f}s")
-    logging.info(f"  Class distribution: {dict(counts)}")
-    logging.info(f"  Output: {OUT_CSV}")
-
-    # ------------------------------------------------------------------
-    # ODOT calibration: reclassify to match ODOT distribution (14%/17%/69%)
-    # ------------------------------------------------------------------
-    logging.info("\n  ODOT calibration ...")
-    import pandas as pd
-
-    df = pd.read_csv(OUT_CSV)
-    n = len(df)
-
-    # ODOT proportions: 13.87% poor/very poor, 16.63% fair, 69.50% good/very good
-    low_pct = 0.1387
-    med_pct = 0.1663
-    # high_pct = 0.6950
-
-    # Use pcr_score_pred percentiles to find recalibration thresholds
-    low_thresh = df["pcr_score_pred"].quantile(low_pct)
-    med_thresh = df["pcr_score_pred"].quantile(low_pct + med_pct)
-
-    def odot_class(score):
-        if score < low_thresh:
-            return 0
-        elif score < med_thresh:
-            return 1
-        else:
-            return 2
-
-    df["odot_pred_class"] = df["pcr_score_pred"].apply(odot_class)
-    df["odot_pred_label"] = df["odot_pred_class"].map(CLASS_NAMES)
-
-    # Save calibrated output
-    OUT_CALIBRATED = SV_DIR / "ohio_streetview_preds_odot_calibrated.csv"
-    df.to_csv(OUT_CALIBRATED, index=False)
-
-    odot_counts = df["odot_pred_label"].value_counts().to_dict()
-    logging.info(f"  ODOT calibration thresholds: low < {low_thresh:.2f}, "
-                 f"med < {med_thresh:.2f}")
-    logging.info(f"  ODOT-calibrated distribution: {odot_counts}")
-    logging.info(f"  ODOT-calibrated output: {OUT_CALIBRATED}")
+    print("\nRun complete")
+    print("-" * 78)
+    print(f"  Newly processed images: {n_images}")
+    print(f"  Labels dir:             {labels_dir}")
+    print(f"  Summary CSV:            {summary_csv}")
+    print(f"  Detection class counts: {dict(counts)}")
 
 
 if __name__ == "__main__":

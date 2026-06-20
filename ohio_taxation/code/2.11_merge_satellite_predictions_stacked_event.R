@@ -251,6 +251,8 @@ subdivision_year_panel <- annualize_predictions(image_predictions) %>%
   arrange(model, cosbidfp, year)
 
 renewal_elections <- load_election_panel()
+max(renewal_elections$election_year)
+
 event_time_panel <- build_event_time_panel(subdivision_year_panel, renewal_elections)
 main_event_availability <- build_event_window_dataset(
   event_time_panel,
@@ -280,7 +282,7 @@ write_csv(
   file.path(out_dir, "road_quality_event_sample_yolo.csv")
 )
 write_csv(
-  dynamic_event_sample %>% filter(model == "convnext_v2"),
+  dynamic_event_sample %>% filter(model == "convnext_v2") %>% View(),
   file.path(out_dir, "road_quality_event_time_convnext.csv")
 )
 write_csv(

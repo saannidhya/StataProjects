@@ -1,0 +1,435 @@
+﻿This section shares the results of our study. We first estimate whether narrowly failing to renew road-maintenance tax cuts changes house values. We then examine road quality as mechanism evidence, describe incidence across places and housing-market segments, and summarize robustness checks that address alternative explanations.
+
+\subsection{House Prices Decline}
+
+Table \ref{tab:median_sale_amount} reports local house price estimates for the effect of narrowly failing to renew road maintenance tax cuts.
+
+\noindent Each treatment effect estimate represents the difference in median sale price between jurisdictions just above and just below the renewal-failure cutoff. We show dynamic effects starting three years before the vote and extending to ten years after the vote. Pre-election estimates are small and statistically indistinguishable from zero. Post-election effects are also modest in the first few years, but become economically and statistically meaningful beginning in year $t+4$. Estimates for years 4 through 9 after the vote are statistically significant, and the estimate for year $t+10$ remains negative but is less precise. Averaging over the post-vote decade, narrowly failing to renew a road-maintenance levy is associated with a \$15,350 decline in median house price, or about 9\% of the average house value in the dataset\footnote{The average treatment effect estimate of approximately \$15,350 was divided by the mean house sale price in the dataset of \$166,000 to get 9\%.}. The delayed timing is consistent with a maintenance channel: the tax relief is immediate, but deterioration and capitalization unfold gradually.
+
+\begin{table}[H]
+  \centering
+  \caption{Delayed House-Price Effects after a Failed Road-Maintenance Renewal}
+  \label{tab:median_sale_amount}
+  \begin{threeparttable}
+
+    \begin{tabular}{p{4.5cm}ccccccc}
+    \toprule
+    \multicolumn{8}{l}{\textbf{Panel A: Years $t-3$ through $t+3$}}\\
+    \midrule
+    Year       & $t\!-\!3$ & $t\!-\!2$ & $t\!-\!1$ & $t$ & $t\!+\!1$ & $t\!+\!2$ & $t\!+\!3$\\
+    \midrule
+    Treatment effect           &  5,307 &     166 &    –273 &  –4,261 &  –3,908 & –11,001 & –14,733 \\
+    Standard error             & (7,341)& (6,943)& (7,391) & (7,955) & (8,719) & (9,405) & (7,989) \\
+    Effective bandwidth ($h$)  & 10.30  & 10.06 &  8.76  &  7.97  &  9.78  &  9.63  & 11.93  \\
+    Bias bandwidth ($b$)       & 20.22  & 17.48 & 14.39  & 13.03  & 17.50  & 18.22  & 22.69  \\
+    Effective observations     &   724  &   725  &   650  &   587  &   774  &   778  & 1,003  \\
+    Total observations         & 2,552  & 2,631  & 2,696  & 2,784  & 2,764  & 2,699  & 2,640  \\
+    \midrule
+    \multicolumn{8}{l}{\textbf{Panel B: Years $t+4$ through $t+10$}}\\
+    \midrule
+    Year       & $t\!+\!4$ & $t\!+\!5$ & $t\!+\!6$ & $t\!+\!7$ & $t\!+\!8$ & $t\!+\!9$ & $t\!+\!10$\\
+    \midrule
+    Treatment effect           & –21,701 & –21,706 & –17,365 & –15,975 & –21,984 & –19,857 & –16,090 \\
+    Standard error             &  (7,747)&  (8,751)&  (8,355)&  (7,248)&  (9,074)&  (7,751)&  (9,027) \\
+    Effective bandwidth ($h$)  &   8.52 &  11.20 &   9.79 &  13.16 &   8.25 &   7.28 &   6.24 \\
+    Bias bandwidth ($b$)       &  16.25 &  20.16 &  17.32 &  23.42 &  15.28 &  14.09 &  16.27 \\
+    Effective observations     &    688 &    922 &    764 &  1,061 &    591 &    505 &    402 \\
+    Total observations         &  2,614 &  2,531 &  2,438 &  2,324 &  2,199 &  2,115 &  2,017 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}[flushleft]
+    \small
+    \item \textit{Notes:} Outcome is median house price in constant 2010 U.S.\ dollars. Unit of observation is the city–year, so a treatment effect of –\$21,701 in year $t+4$ means that four years after the vote, cities that fail to renew road taxes have median sale prices \$21,701 lower than similar cities that renew. Covariates include the demographic and socioeconomic controls listed in Table~\ref{tab:variable_means_sd}.
+  \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{figure}[htbp]
+    \centering
+
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_gs_reg.png}
+    \caption{Delayed House-Price Losses Emerge after Year 4}
+    \label{fig:tes_hp}
+\end{figure}
+
+Figure \ref{fig:tes_hp} summarizes the same estimates visually. Each dot is the event-time treatment effect and each bar is the 95\% confidence interval. The pre-election years and the first three post-election years provide little evidence of a discontinuity in median sale prices. The decline appears only after several years, which is the timing one would expect if a failed renewal first reduces maintenance capacity and then affects housing markets as road conditions become more salient to buyers and sellers.
+
+\subsection{Road Quality as Mechanism Evidence} \label{sec:road_quality_decline}
+
+The house-price estimates are consistent with capitalization of lower road quality, but price effects alone do not necessarily establish that roads deteriorate after funding is cut. We therefore estimate analogous RD specifications using road-quality measures derived from road imagery and the vision model described in Section \ref{sec:road_quality}. The model classifies road quality on a three-point rating and we convert these ratings into a Road Quality Score (RQS) index.
+
+\input{tables/road_quality_rd_table5.tex}
+
+Table \ref{tab:roadquality_estimates} reports stacked-event RD estimates at the 50\% vote-share cutoff. Column (1) is a placebo estimate using average pre-election road quality from $t-3$ through $t-1$. Columns (2)--(6) use rolling three-year post-election windows. The placebo estimate is small and statistically insignificant for both the discrete rating and the RQS index. In the RQS panel, the first post-election window, $t+1$ to $t+3$, is small and statistically insignificant. The next two windows show statistically precise declines of 8.1 and 9.8 RQS points in $t+2$ to $t+4$ and $t+3$ to $t+5$. Relative to a pre-election Road Quality Score of about 63 points, these estimates imply declines of roughly 13\% and 16\%, respectively\footnote{We compute these percentages as $100 \times |\hat{\beta}_w| / \bar{RQS}_{pre}$, where $\hat{\beta}_w$ is the RD estimate for post-election window $w$ and $\bar{RQS}_{pre}$ is the average pre-election Road Quality Score. Using the pre-election means in Table~\ref{tab:road_quality_panel}, $\bar{RQS}_{pre}=(63.4+61.4)/2=62.4$. Thus, the $t+2$ to $t+4$ estimate implies $100 \times 8.102/62.4=13.0\%$, and the $t+3$ to $t+5$ estimate implies $100 \times 9.791/62.4=15.7\%$. The $t+4$ to $t+6$ estimate implies $100 \times 10.647/62.4=17.1\%$, but that estimate is only marginally significant at the 10\% level. Because these outcomes are rolling three-year averages, the percentages describe average road-quality levels within each post-election window rather than cumulative year-by-year deterioration.}. The discrete RQR panel shows the same timing, with declines of about 0.22 to 0.28 rating points across the delayed post-election windows.
+The pattern supports the proposed mechanism: jurisdictions that narrowly fail to renew road-maintenance funding subsequently exhibit lower measured road quality.
+
+We read the road-quality evidence as supporting evidence on the maintenance channel rather than as a stand-alone estimate of the full effect of levy failures on road conditions.
+The imagery sample is smaller than the housing sample and depends on the availability of comparable pre- and post-election road imagery, as well as the underlying fine-tuning of the vision model. For that reason, we use it to assess whether the direction and timing of physical road deterioration align with the house-price estimates, while the main outcome remains the capitalization response in the full housing panel.
+
+\subsection{Incidence and Heterogeneity}
+
+The policy implications depend not only on the average effect but also on where losses are concentrated. We therefore examine whether the capitalization response differs between urban and rural jurisdictions, larger and smaller levy failures, and lower- and higher-value segments of the housing market. These estimates speak to incidence: who is most exposed to the asset-value consequences of deferred maintenance?
+
+\vskip 0.5cm
+
+\textbf{Urban vs Rural neighborhoods}: The capitalization of road quality may differ across places because housing supply, commuting patterns, density, and buyer salience differ between urban and rural markets. We classify urban areas using data from the U.S. Census Bureau\footnote{Urban areas are identified using data from U.S Census Bureau. We strictly consider urban areas with an allocation factor of at least 0.3 in 2010 and do not consider urbanized clusters, making our classification of urban areas more restrictive.}.
+
+\begin{figure}[htbp]
+    \centering
+
+
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_urb_vs_rur_main.png}
+    \caption{Urban Areas Drive the House-Price Decline}
+    \label{fig:tes_covs_ua}
+\end{figure}
+
+As shown by Figure \ref{fig:tes_covs_ua}, we do not find consistent price declines in rural areas after a renewal tax levy narrowly fails. In urban areas, however, house prices decline beginning around six years after the vote. The stronger urban response may reflect denser road use, greater buyer salience, or more inelastic housing supply \citep{brasington2002}. Overall, urban house prices decrease by \$13,302 on average over the decade\footnote{This is equal to $7.6\% = \frac{13,302}{175,217} \times 100$, where the denominator is average sale price of houses in urban areas in our dataset.} after a failed renewal.
+
+\vskip 1cm
+
+\textbf{Tax magnitude}: We next ask whether larger failed levies produce larger losses. Splitting at the median levy size does not show a clear difference. The largest quartile of levies, however, represents a more substantial fiscal shock, with millage rates from 2.1 to 8 mills. Figure \ref{fig:tes_big_cuts} presents results for this subsample.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_size_75.png}
+    \caption{Larger Failed Levies Imply Larger House-Price Losses}
+    \label{fig:tes_big_cuts}
+\end{figure}
+
+Despite the reduction in sample size and wider confidence intervals, the decline for large failed levies is roughly \$30,000, about twice the full-sample average. This pattern is consistent with an intensive-margin interpretation: larger reductions in dedicated maintenance revenue are followed by larger capitalized losses.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\vskip 1cm
+
+\textbf{RD Quantile Estimation}: Finally, we estimate quantile-level treatment effects following \cite{FRANDSEN2012}. This analysis asks whether lower- and higher-value housing-market segments respond differently to the same local fiscal shock.
+
+\begin{table}[H]
+    \centering
+    \caption{Higher-Value Housing Segments Show Larger Capitalized Losses}
+    \label{tab:quantile_tes}
+    \begin{threeparttable}
+    \begin{minipage}{\linewidth}
+    \centering
+    \begin{tabular}{p{1.5cm}ccccccc}
+        \hline
+        Percentile & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
+        \hline
+        10\% & -6,433 & -22,570 & -9,602 & -12,984 & -11,217 & -6,569 & -1,326 \\
+             & (9,364) & (9,065) & (9,205) & (8,420) & (9,136) & (10,809) & (8,793) \\
+        20\% & -5,400 & -15,070 & 4,014 & -14,682 & -15,040 & -3,228 & 624 \\
+             & (9,983) & (9,886) & (7,443) & (8,502) & (8,160) & (10,435) & (8,509) \\
+        70\% & -21,760 & -11,171 & -38,082 & -36,685 & -21,356 & -25,605 & -18,600 \\
+             & (12,333) & (11,806) & (12,835) & (12,163) & (12,218) & (13,984) & (9,872) \\
+        80\% & -28,478 & -16,379 & -38,460 & -37,470 & -28,950 & -27,800 & -18,658 \\
+             & (13,343) & (11,404) & (18,623) & (12,169) & (12,507) & (12,421) & (11,808) \\
+        90\% & -51,470 & -34,604 & -38,510 & -27,039 & -29,010 & -49,093 & -36,662 \\
+             & (18,409) & (15,837) & (22,194) & (16,308) & (16,640) & (14,498) & (19,110) \\
+        \hline
+    \end{tabular}
+    \vspace{0.5em}
+    \begin{tablenotes}[flushleft]
+        \small
+        \item \textit{Notes:} The outcome is median house price in constant 2010 U.S. dollars. The unit of observation is the city-year, so a treatment effect of \(-\$28{,}478\) means that at the 80th percentile of house prices four years after the vote, cities that fail to renew road taxes and the associated spending have houses that sell for \$28,478 less than cities that vote to renew them. Covariates include demographic and socioeconomic characteristics as described in Table~\ref{tab:variable_means_sd}.
+    \end{tablenotes}
+    \end{minipage}
+    \end{threeparttable}
+\end{table}
+
+
+\begin{figure}[htbp]
+    \centering
+
+
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_qte_re.png}
+
+    \caption{Higher-Value Housing Segments Show Larger Capitalized Losses}
+    \label{fig:tes_qte_covs}
+\end{figure}
+
+Table \ref{tab:quantile_tes} shows larger and more consistent declines in the upper part of the house-price distribution, especially beginning around year 6. Lower quantiles do not exhibit the same consistent pattern. We interpret this as evidence that higher-value housing-market segments capitalize road-quality deterioration more strongly; it should not be read as direct evidence about household wealth, since household wealth is not directly observed. Figure \ref{fig:tes_qte_covs} contrasts the 20th and 80th percentiles visually.
+
+\subsection{Threats to Validity and Robustness} \label{sec:robustness}
+
+This subsection addresses the main alternative explanations. The empirical strategy section showed no evidence of manipulation in the running variable, no statistically significant covariate discontinuities, and no pre-election house-price discontinuities. Here we focus on three additional threats to validity of our empirical design: later road levies that could contaminate the treatment path, arbitrary discontinuities at placebo cutoffs, and the possibility that a failed road renewal proxies for broader anti-tax sentiment.
+
+\vskip 0.5cm
+
+\textbf{Removing contaminated observations}: Estimates may be biased if tax levies for additional money pass after renewal tax levy decisions.
+To address this concern, we exclude observations from our analysis if a tax levy for additional funding is introduced and passed within a ten-year period following a renewal tax levy vote, as these votes may contaminate the treatment effect of the renewal tax levy vote.
+For example, consider a scenario where a city votes to cut its renewal tax levy in the year 2000. If that city subsequently introduces and passes a tax levy for additional road spending in 2004, we exclude all votes for that city from 2005 through 2010. This exclusion ensures that the effect on house prices from the 2000 vote are captured for uncontaminated years but not for years after 2004 when the effect of additional road taxes may counteract the drop in tax money from the elections in the year 2000.
+
+\begin{table}[H]
+  \centering
+  \caption{Effect on median house prices of failing to renew a road tax levy -- uncontaminated observations only}
+  \label{tab:uncontaminated}
+  \begin{threeparttable}
+  \begin{tabular}{p{4.5cm}ccccccc}
+    \toprule
+    \multicolumn{8}{l}{\textbf{Panel A: Years $t-3$ through $t+3$}}\\
+    \midrule
+    Year relative to vote      & $t\!-\!3$ & $t\!-\!2$ & $t\!-\!1$ & $t$ & $t\!+\!1$ & $t\!+\!2$ & $t\!+\!3$\\
+    \midrule
+    Treatment effect           &  5,295 &     –369 &   1,207 &   –2,482 &   –3,107 &  –12,236 &  –15,026 \\
+    Standard error             & (7,255)& (7,359) & (7,776) & (8,482) & (9,270) & (10,123) & (8,746) \\
+    Effective bandwidth ($h$)  & 10.25  &  9.70  &  8.84  &  7.48  &  9.19  &  8.20  & 10.09  \\
+    Bias bandwidth ($b$)       & 20.08  & 16.41  & 14.45  & 12.03  & 16.04  & 16.33  & 20.21  \\
+    Effective observations     &   719  &   682  &   630  &   510  &   680  &   604  &   763  \\
+    Total observations         & 2,552  & 2,574  & 2,593  & 2,640  & 2,627  & 2,536  & 2,449  \\
+    \midrule
+    \multicolumn{8}{l}{\textbf{Panel B: Years $t+4$ through $t+10$}}\\
+    \midrule
+    Year relative to vote      & $t\!+\!4$ & $t\!+\!5$ & $t\!+\!6$ & $t\!+\!7$ & $t\!+\!8$ & $t\!+\!9$ & $t\!+\!10$\\
+    \midrule
+    Treatment effect           &  –21,082 &  –16,827 &  –17,565 &  –18,179 &  –20,427 &  –29,970 &  –23,593 \\
+    Standard error             &  (9,145) & (11,228) & (10,128) &  (9,202) &  (9,829) &  (9,059) & (10,838) \\
+    Effective bandwidth ($h$)  &   6.85  &  5.64  &  8.48  &  9.34  &  7.41  &  5.51  &  6.20  \\
+    Bias bandwidth ($b$)       &  13.19  & 14.82  & 14.53  & 18.06  & 14.23  & 11.74  & 16.54  \\
+    Effective observations     &    473  &   367  &   573  &   609  &   442  &   303  &   322  \\
+    Total observations         &  2,389  & 2,274  & 2,145  & 2,016  & 1,890  & 1,787  & 1,666  \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}[flushleft]
+    \small
+    \item \textit{Notes:} Sample excludes any potentially contaminated city–year observations. Outcome is median house price in constant 2010 U.S.\ dollars. Each coefficient is the difference between treated and control cities in the indicated year; standard errors are heteroskedasticity-robust. All regressions control for the demographic and socioeconomic covariates listed in Table \ref{tab:variable_means_sd}.
+  \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+After this filtration, the post-election house-price pattern remains consistent with the baseline estimates. Standard errors increase because the sample is smaller, but the delayed negative effects remain visible.
+
+\textbf{Placebo cutoffs}: In our primary analysis, the pivotal threshold for the vote share running variable is 50\%, indicating whether a renewal levy passes or fails.  Although we find significant treatment effects using this 50\% threshold, it could be random jumps in the data rather than cutting road taxes and funding that are responsible for the significant estimates.  To this end we conduct a series of placebo tests using alternative cutoffs: 30\%, 40\%, 60\%, and 70\%. Table \ref{tab:placebo_cutoffs} below summarizes the results from the placebo cutoffs analysis.
+
+\begin{table}[H]
+    \centering
+    \caption{Robust Treatment Effect Estimate for Placebo Cutoffs}
+    \label{tab:placebo_cutoffs}
+    \begin{threeparttable}
+    \begin{minipage}{\linewidth}
+    \centering
+    \begin{tabular}{p{3cm}cccc}
+        \hline
+        Years after vote & 30\% & 40\% & 60\% & 70\% \\
+        \hline
+        $t + 4$ & 2,578 & 9,149 & 9,419 & -12,987 \\
+                & (8,209) & (7,284) & (11,462) & (14,365) \\
+        $t + 5$ & -6,381 & -29,077 & 6,383 & 41,683 \\
+                & (9,086) & (20,680) & (10,786) & (17,836) \\
+        $t + 6$ & 7,681 & 5,573 & -1,095 & -14,226 \\
+                & (9,616) & (8,120) & (8,612) & (15,733) \\
+        $t + 7$ & 1,162 & 3,982 & -12,050 & 22,261 \\
+                & (10,468) & (8,191) & (9,396) & (19,765) \\
+        $t + 8$ & 4,334 & 12,881 & 3,593 & 31,696 \\
+                & (9,670) & (8,625) & (10,061) & (6,902) \\
+        $t + 9$ & 851 & 7,381 & -6,935 & 42,790 \\
+                & (5,921) & (6,333) & (7,114) & (15,663) \\
+        $t + 10$ & 10,032 & -35,038 & 324 & -8,566 \\
+                 & (10,599) & (35,569) & (8,220) & (17,281) \\
+        \hline
+    \end{tabular}
+    \vspace{0.5em}
+    \begin{tablenotes}[flushleft]
+        \small
+        \item \textit{Notes:} Robust treatment effect estimates at placebo cutoffs using the estimator from \cite{calonico2017rdrobust}. The unit of observation is the city-year. Standard errors are reported in parentheses below each estimate.
+    \end{tablenotes}
+    \end{minipage}
+    \end{threeparttable}
+\end{table}
+
+
+
+Table \ref{tab:placebo_cutoffs} does not show consistently significant treatment effects for any placebo cutoff. This pattern supports the interpretation that the observed discontinuity is tied to the actual 50\% renewal threshold rather than arbitrary jumps in the running variable.
+
+\textbf{Winsorization}: The debate over whether to include or exclude outliers continues, with some research suggesting that trimming outliers does not improve mean squared error \citep{bollinger2005}. We now drop the 1\% tails to help curtail the influence of outliers. The overall sample mean after dropping 1\% tails is \$150,505 in constant 2010 dollars with a standard deviation of \$115,646. After performing this winsorization step, we re-estimate the treatment effect of failing to renew a road tax levy on housing outcome variables. The results from this estimation process are summarized in Figure \ref{fig:tes_g_w} below:
+
+\begin{figure}[htbp]
+    \centering
+
+    \includegraphics[width=\textwidth,keepaspectratio]{images/tes_g_w_reg.png}
+
+    \caption{Effect of Cutting Road Maintenance Taxes on Median Housing Price after 1\% Winsorization}
+    \label{fig:tes_g_w}
+\end{figure}
+
+The treatment effect estimates with winsorization are qualitatively and quantitatively similar to the baseline estimates.
+
+\textbf{Other Tax Levies}: A potential threat to identification is that cuts in road tax levies might be correlated with cuts in other local tax levies, or may simply reveal an underlying, time-varying taste for lower taxes or smaller government. If the same electorate simultaneously rejects (or approves) levies for police, fire, recreation, or schools, our estimated road‐maintenance effect could in fact be picking up broader changes in local public-service bundles that are themselves capitalized into housing prices. To address this concern, we examine whether the election results of a renewal road levy is systematically correlated with the results of other levy referenda held on the same ballot or within the same fiscal year i.e. whenever a road tax levy is cut, are there elections and subsequent tax cuts for other tax levies as well?
+
+\begin{table}[H]
+    \centering
+    \caption{Association of Road Tax Levy Referenda Results with Other Types of Levies}
+    \label{tab:other_levies_corr}
+    \begin{tabular}{>{\centering\arraybackslash}p{3cm}
+                    >{\centering\arraybackslash}p{3cm}
+                    >{\centering\arraybackslash}p{3cm}
+                    >{\centering\arraybackslash}p{3cm}
+                    >{\centering\arraybackslash}p{3cm}}
+    \toprule
+    & Police & Fire & Recreational & School \\
+    \midrule
+    Estimate & 0.248 & 0.053 & 0.015 & -0.024 \\
+    & (0.153) & (0.043) & (0.317) & (0.092) \\
+    \bottomrule
+    \end{tabular}
+    \begin{minipage}{\textwidth}
+    \footnotesize
+    \textit{Notes:} This table presents coefficients from regressions associating road tax levy referendum outcomes with outcomes for other types of levies (police, fire, recreational, school). Standard errors are reported in parentheses. All regression control for year and neighborhood fixed effects, as well as neighborhood characteristics. The school levy analysis is conducted at the county level, while all other analyses are at the county subdivisions level. Statistical significance levels are indicated as follows: *** $p<0.01$, ** $p<0.05$, * $p<0.1$.
+    \end{minipage}
+\end{table}
+
+Table \ref{tab:other_levies_corr} reports coefficients from separate regressions in which each column regresses the pass/fail outcome of another levy type on the pass/fail outcome of road tax levy\footnote{This is represented by a dummy variable indicating a cut in road tax levies, with 1 as denoted as a cut and 0 denoted as a renewal.}, controlling for year fixed effects, jurisdiction fixed effects, and demographic covariates. For school levies we cluster to the county level as an approximation, while all other specifications are at the township/city (“county subdivision”) level. The point estimates are small and statistically indistinguishable from zero: a failed road-maintenance renewal is neither more nor less likely to coincide with the failure of levies earmarked for police, fire, recreation, or schools. For example, the largest coefficient, 0.248 for police levies, has a standard error of 0.153 and is not significant even at the 10 percent level. These results suggest that voters treat the road-maintenance question separately from other local tax questions, and that decisions to cut or renew road funding are not simply proxies for a general anti-tax or austerity sentiment. Consequently, our main RD estimates are unlikely to be confounded by contemporaneous changes in other public services.
+
+
+A more comprehensive approach is to check for balance in other tax levies around the cutoff. We collect all 50,000 local tax levies for all municipal purposes from 1991 to 2021, including current expense levies, parks and recreation levies, and police levies. Within the effective bandwidth, jurisdictions that barely renew road taxes have a non-road tax levy on the same ballot 48.1\% of the time, while jurisdictions that barely fail to renew have one 47.96\% of the time. Among jurisdictions with non-road levies on the ballot, the barely renewed group experiences another tax change 12\% of the time and the barely failed group does so 15\% of the time. These balances suggest that the house-price results are unlikely to be driven by broad changes in the local public-service bundle.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\input{mvpf.tex}
+
+\section{Policy Mechanisms and Interpretation} \label{sec:mech}
+
+For policymakers, the estimates point to an important trade-off between short-term tax relief and long-term capital losses. A failed renewal produces immediate tax relief for current taxpayers, but it also removes dedicated revenue for public infrastructure that deteriorates gradually. As shown in Table \ref{tab:median_sale_amount}, the housing market responds to the failure of these renewals with a decline in property values about four years after the vote. This lag may reflect the time it takes for infrastructure disrepair to become salient to homeowners and potential buyers, be it through potholes, increased travel times, or reduced safety. The delayed timing of the house-price response, together with the road-quality evidence, is consistent with the following sequence: the levy failure reduces maintenance capacity, road conditions worsen in later years, and buyers and sellers capitalize lower public-service quality into house prices. The benefit-cost ledger tilts clearly against failed renewals as households give up far more in housing wealth than they ever save in taxes.
+
+This interpretation matters because lower house prices are not mechanically equivalent to a social welfare loss. Current homeowners who sell after deterioration becomes visible may bear capitalized losses. Future buyers may pay lower prices but receive lower road quality. Current taxpayers receive short-run tax relief, while local governments face a smaller maintenance budget and potentially higher future repair costs if deferred maintenance compounds. The evidence therefore identifies important fiscal and asset-value consequences of failed renewals, while the policy trade-off depends on how residents and local officials weigh immediate tax relief, road quality, and future repair risk.
+
+The urban and high-value-market results also sharpen the public-management implications. In dense markets, roads are more visible, more intensively used, and more likely to be capitalized into property values. Higher-value housing segments show larger price declines, suggesting that some owners are more exposed to the asset-value consequences of deferred maintenance. Local governments considering renewal campaigns may therefore need to communicate not only the annual household tax cost, but also the lifecycle cost of under-maintenance and the possibility that avoided taxes are capitalized into lower property values.
+
+Three policy implications follow. First, it may help to frame renewal levies as decisions about preserving local infrastructure, rather than only as tax increases or cuts. Second, asset-condition reporting can help voters connect current maintenance funding to future road quality.
+Third, local governments could mitigate information frictions through targeted public disclosures, illustrating both the long-term asset-pricing impacts on housing and the fiscal inefficiency of deferring routine maintenance.
+
+
+
+
+
+
+
+
+
+\section{Conclusion} \label{sec:conclusion}
+
+Local infrastructure policy often turns on routine fiscal choices rather than dramatic new investments. This paper studies one such choice: whether voters renew dedicated road-maintenance funding. Using 3,184 Ohio renewal referendums and a dynamic regression discontinuity design around close elections, we estimate the consequences of narrowly voting down an existing maintenance levy.
+
+The results show that failed renewals have delayed but meaningful housing-market consequences. A failed levy removes about 11\% of a local road-maintenance budget on average. House prices do not fall immediately, but beginning about four years after the vote, median sale prices decline by about \$15,350 over the post-election decade, or roughly 9\% of the average house value in the data. NAIP aerial imagery derived road-quality estimates provide suggestive mechanism evidence: post-election road-quality scores fall by up to 16\% in the most precisely estimated windows. Effects are concentrated in urban markets, higher-value housing segments, and larger levy failures.
+
+For policymakers, the central lesson is that renewal votes should be evaluated as infrastructure preservation and household-wealth decisions, not only as tax decisions. A household may save a relatively small annual tax payment when a renewal fails, but the community may later face lower road quality and capitalized asset-value losses. Systematic asset-condition reporting and transparent lifecycle communication can help equip voters to internalize these compounding fiscal costs before deferred maintenance manifests as visible infrastructure decay.
+
+
+The estimates are local to jurisdictions near the 50\% renewal threshold and should not be interpreted as the average effect of every road tax cut. They nevertheless identify a common and policy-relevant margin: close elections that decide whether existing local maintenance funding continues.
+As state and local governments confront aging infrastructure, the evidence suggests that maintaining these existing assets can be as important for local welfare and housing markets as building new infrastructure.
+
+
+

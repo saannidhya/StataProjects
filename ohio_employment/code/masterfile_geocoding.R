@@ -1,14 +1,15 @@
 #=========================================================================================================================#
-# Purpose : Geocode masterfile_2006q1_2025q2.dta using Census batch geocoder via tidygeocoder,
+# Purpose : Geocode masterfile_2006q1_2025q3.dta using Census batch geocoder via tidygeocoder,
 #           then spatial-join with OH county subdivisions to assign TENDIGIT_FIPS.
 # Name    : Saani Rawat
 # Created : 02/24/2026
 # Log     :
 #        1. 02/24/2026: created. Geocodes unique addresses first, then merges back to full dataset.
-#
-# Inputs  : C:/QCEW Data - Ohio/ES202/extracts/masterfile_2006q1_2025q2.dta
-# Outputs : masterfile_2006q1_2025q2_unique_addresses_geocoded.csv  (unique addresses geocoded)
-#           masterfile_2006q1_2025q2_geocoded.csv                   (full dataset with lat/long + TENDIGIT_FIPS)
+#        2. 03/06/2026: running for 2025q3 update.
+#        3. 06/14/2026: updated for 2025q4 update. masterfile_2006q1_2025q3.dta had zip column under pl_zip, which was leading to geocoding failure for year 2021. 
+# Inputs  : masterfile_2006q1_2025q4.dta or .csv (if available)
+# Outputs : masterfile_2006q1_2025q4_unique_addresses_geocoded.csv  (unique addresses geocoded)
+#           masterfile_2006q1_2025q4_geocoded.csv                   (full dataset with lat/long + TENDIGIT_FIPS)
 #
 # Notes   :
 #   - Uses haven::read_dta (faster than read_sas for this file).
@@ -47,7 +48,7 @@ library(tigris)
 extracts_loc <- "C:/QCEW Data - Ohio/ES202/extracts"
 out_loc      <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_employment/data"
 
-masterfile_name <- "masterfile_2006q1_2025q2"
+masterfile_name <- "masterfile_2006q1_2025q4"
 
 # Geocoding settings
 CHUNK_SIZE   <- 2000L    # rows per Census batch request
@@ -60,10 +61,20 @@ SLEEP_BETWEEN_CHUNKS <- 3  # seconds between chunks
 # 1. Import masterfile
 #=========================================================================================================================#
 
-message("NOTE: Importing ", masterfile_name, ".dta ...")
 start_import <- Sys.time()
 
-df_master <- haven::read_dta(file.path(extracts_loc, paste0(masterfile_name, ".dta"))) %>% janitor::clean_names()
+# Try csv first, then dta (whichever is available in the folder)
+csv_path <- file.path(out_loc, paste0(masterfile_name, ".csv"))
+dta_path <- file.path(out_loc, paste0(masterfile_name, ".dta"))
+if (file.exists(csv_path)) {
+  message("NOTE: Importing ", masterfile_name, ".csv ...")
+  df_master <- readr::read_csv(csv_path, show_col_types = FALSE) %>% janitor::clean_names()
+} else if (file.exists(dta_path)) {
+  message("NOTE: Importing ", masterfile_name, ".dta ...")
+  df_master <- haven::read_dta(dta_path) %>% janitor::clean_names()
+} else {
+  stop("No masterfile found: neither ", csv_path, " nor ", dta_path, " exists.")
+}
 
 message("NOTE: Imported ", format(nrow(df_master), big.mark = ","), " rows in ",
         round(difftime(Sys.time(), start_import, units = "mins"), 1), " minutes.")
@@ -157,13 +168,23 @@ outfile <- file.path(out_loc, paste0(masterfile_name, "_unique_addresses_geocode
 
 total_rows  <- nrow(df_unique)
 num_chunks  <- ceiling(total_rows / CHUNK_SIZE)
-chunk_counter <- 0L
+
+# Resume support: if outfile already exists, count rows already geocoded and skip those chunks
+start_chunk <- 1L
+if (file.exists(outfile) && file.size(outfile) > 0) {
+  existing_lines <- length(readLines(outfile, warn = FALSE)) - 1L  # subtract header
+  start_chunk    <- floor(existing_lines / CHUNK_SIZE) + 1L
+  if (start_chunk > 1L) {
+    message("NOTE: Found ", format(existing_lines, big.mark = ","),
+            " existing rows in output. Resuming from chunk ", start_chunk, "/", num_chunks, ".")
+  }
+}
 
 message("NOTE: Starting Census batch geocoding (",
         format(total_rows, big.mark = ","), " addresses in ", num_chunks, " chunks) ...")
 start_geocode <- Sys.time()
 
-for (i in seq_len(num_chunks)) {
+for (i in seq(start_chunk, num_chunks)) {
 
   start_idx <- (i - 1L) * CHUNK_SIZE + 1L
   end_idx   <- min(i * CHUNK_SIZE, total_rows)
@@ -175,8 +196,8 @@ for (i in seq_len(num_chunks)) {
 
   geo_chunk <- geocode_census_safe(chunk_df)
 
-  chunk_counter <- chunk_counter + 1L
-  readr::write_csv(geo_chunk, outfile, append = chunk_counter > 1L)
+  append_mode <- file.exists(outfile) && file.size(outfile) > 0
+  readr::write_csv(geo_chunk, outfile, append = append_mode)
 
   rm(geo_chunk, chunk_df)
   gc()
@@ -241,7 +262,6 @@ valid_idx <- which(
 
 SJ_CHUNK   <- 500000L
 idx_chunks <- split(valid_idx, ceiling(seq_along(valid_idx) / SJ_CHUNK))
-length(idx_chunks[[1]])
 
 message("NOTE: Running spatial join (", length(idx_chunks), " chunk(s)) ...")
 start_sj <- Sys.time()
@@ -257,7 +277,7 @@ for (j in seq_along(idx_chunks)) {
     crs    = 4326,
     remove = FALSE
   )
-  joined <- st_join(pts, oh_cousub, join = st_within, left = TRUE) %>%
+  joined <- st_join(pts, oh_cousub, join = st_intersects, left = TRUE) %>%
     st_drop_geometry() %>%
     group_by(.row_id) %>%
     slice(1) %>%          # keep first match only (deduplicates one-to-many)
@@ -318,7 +338,7 @@ for (j in seq_along(idx_chunks_places)) {
     crs    = 4326,
     remove = FALSE
   )
-  joined <- st_join(pts, oh_places, join = st_within, left = TRUE) %>%
+  joined <- st_join(pts, oh_places, join = st_intersects, left = TRUE) %>%
     st_drop_geometry() %>%
     group_by(.row_id) %>%
     slice(1) %>%
@@ -366,7 +386,6 @@ df_lookup <- df_geocoded %>%
     cousub_fips, cousub_namelsad, cousub_lsad,
     place_fips, place_lsad, place_namelsad
   ) %>%
-  mutate(FIPS_ID = cousub_fips) %>%
   distinct(.address_key, .city_key, .state_key, .zip_key, .keep_all = TRUE)
 
 message("NOTE: Merging geocoded lookup onto ", format(nrow(df_master), big.mark = ","),
@@ -380,13 +399,11 @@ df_final <- df_master_keyed %>%
 
 elapsed_merge <- round(difftime(Sys.time(), start_merge, units = "secs"), 1)
 
-geo_coverage  <- round(sum(!is.na(df_final$lat))     / nrow(df_final) * 100, 1)
-fips_coverage <- round(sum(!is.na(df_final$FIPS_ID)) / nrow(df_final) * 100, 1)
+geo_coverage  <- round(sum(!is.na(df_final$lat)) / nrow(df_final) * 100, 1)
 
 message("NOTE: Merge complete in ", elapsed_merge, " seconds.")
 message("NOTE: Rows in final dataset : ", format(nrow(df_final), big.mark = ","))
 message("NOTE: Geocoding coverage    : ", geo_coverage,  "% of all rows")
-message("NOTE: FIPS_ID coverage      : ", fips_coverage, "% of all rows")
 
 # Build final FIPS_ID using the same logic as 1.6_geocode_corelogic_ot.R:
 #   - city (LSAD "25") or village (LSAD "47")  → use place_fips
@@ -397,7 +414,7 @@ df_final2 <- df_final %>%
     !is.na(place_fips)  & place_lsad  %in% c("25", "47") ~ place_fips,
     !is.na(cousub_fips) & cousub_lsad == "44"             ~ cousub_fips,
     TRUE                                                   ~ NA_character_
-  ))
+  )) %>% relocate(FIPS_ID) %>% rename(lon = long)
 
 fips2_coverage <- round(sum(!is.na(df_final2$FIPS_ID)) / nrow(df_final2) * 100, 1)
 message("NOTE: FIPS_ID coverage (case_when) : ", fips2_coverage, "% of all rows")
@@ -408,7 +425,20 @@ message("NOTE: FIPS_ID coverage (case_when) : ", fips2_coverage, "% of all rows"
 
 final_outfile <- file.path(out_loc, paste0(masterfile_name, "_geocoded.csv"))
 message("NOTE: Exporting final dataset to: ", final_outfile)
-
 readr::write_csv(df_final2, final_outfile)
-
 message("NOTE: Done. Output: ", final_outfile)
+
+# convert to Stata .dta if needed (haven::write_dta can handle large files with v15 format)
+final_dta_outfile <- file.path(out_loc, paste0(masterfile_name, "_geocoded.dta"))
+message("NOTE: Exporting final dataset to Stata .dta: ", final_dta_outfile)
+haven::write_dta(df_final2, final_dta_outfile)  
+message("NOTE: Done. Output: ", final_dta_outfile)
+
+
+message("NOTE: Creating matched dataset with non-missing FIPS_ID and ordering key vars")
+matched_outfile <- file.path(out_loc, paste0(masterfile_name, "_geocoded_match.dta"))
+df_match <- df_final2 %>% filter(!is.na(FIPS_ID)) 
+message("NOTE: Exporting matched dataset to: ", matched_outfile)
+haven::write_dta(df_match, matched_outfile)
+message("NOTE: Done. Output: ", matched_outfile)
+

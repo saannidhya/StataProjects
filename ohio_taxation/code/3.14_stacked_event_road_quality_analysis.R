@@ -69,9 +69,9 @@ window_label_tex_stack <- function(window_vec) {
 stars <- function(p) {
   dplyr::case_when(
     is.na(p) ~ "",
-    p < 0.01 ~ "***",
-    p < 0.05 ~ "**",
-    p < 0.10 ~ "*",
+    p < 0.01 ~ "$^{***}$",
+    p < 0.05 ~ "$^{**}$",
+    p < 0.10 ~ "$^{*}$",
     TRUE ~ ""
   )
 }
@@ -102,6 +102,14 @@ fmt_se <- function(se, digits = 3) {
 
 fmt_num <- function(x, digits = 2) {
   ifelse(is.na(x), "", formatC(x, format = "f", digits = digits))
+}
+
+fmt_p <- function(pval, digits = 3) {
+  ifelse(
+    is.na(pval),
+    "",
+    ifelse(pval < 0.001, "$<0.001$", formatC(pval, format = "f", digits = digits))
+  )
 }
 
 fmt_int <- function(x) {
@@ -223,7 +231,7 @@ run_rd_result <- function(df, outcome, covariates = character(), label, pre_wind
     outcome = outcome,
     pre_window = pre_window_label,
     post_window = post_window_label,
-    estimate = as.numeric(rd_fit$coef[1]),
+    estimate = as.numeric(rd_fit$coef[2]),
     se = as.numeric(rd_fit$se[3]),
     pval = as.numeric(rd_fit$pv[3]),
     ci_lower = as.numeric(rd_fit$ci[3, 1]),
@@ -314,7 +322,7 @@ run_fixed_bandwidth_rd <- function(df, outcome, covariates, h_value, label, pre_
     outcome = outcome,
     pre_window = pre_window_label,
     post_window = post_window_label,
-    estimate = as.numeric(rd_fit$coef[1]),
+    estimate = as.numeric(rd_fit$coef[2]),
     se = as.numeric(rd_fit$se[3]),
     pval = as.numeric(rd_fit$pv[3]),
     ci_lower = as.numeric(rd_fit$ci[3, 1]),
@@ -512,7 +520,8 @@ table5_rolling_results <- purrr::map_dfr(TABLE5_POST_WINDOWS, function(post_wind
     )
 })
 
-table5_placebo_dataset <- build_event_window_dataset(conv_panel, TABLE5_PRE_WINDOW, TABLE5_POST_WINDOWS[[1]])
+table5_placebo_dataset <- build_event_window_dataset(conv_panel, TABLE5_PRE_WINDOW, TABLE5_POST_WINDOWS[[1]]) %>%
+  filter(has_pre == 1, has_post == 1)
 table5_placebo_results <- bind_rows(
   run_rd_result(
     table5_placebo_dataset,
@@ -672,8 +681,8 @@ donut_rows <- bind_rows(
   )$stats
 )
 
-write_csv(conv_main_event_sample, file.path(stacked_dir, "road_quality_event_sample_convnext.csv"))
-write_csv(yolo_main_bundle$event_sample, file.path(stacked_dir, "road_quality_event_sample_yolo.csv"))
+write_csv(conv_main_event_sample, file.path(stacked_dir, "road_quality_event_sample_convnext_analysis.csv"))
+write_csv(yolo_main_bundle$event_sample, file.path(stacked_dir, "road_quality_event_sample_yolo_analysis.csv"))
 write_csv(dynamic_results, file.path(stacked_dir, "road_quality_dynamic_rd.csv"))
 write_csv(window_grid_results, file.path(stacked_dir, "road_quality_window_grid.csv"))
 write_csv(balance_checks, file.path(stacked_dir, "road_quality_balance_checks.csv"))
@@ -721,13 +730,16 @@ table5_row_values <- function(table5_cols, outcome_key, value_fn) {
 }
 
 table5_lines <- c(
-  "\\begin{table}[ht]",
+  "\\begin{table}[H]",
   "    \\centering",
   "    \\caption{Road Quality after Failed Renewal Elections}",
   "    \\label{tab:roadquality_estimates}",
+  "    \\begin{singlespace}",
   "    \\begin{threeparttable}",
-  "        \\small",
-  "        \\begin{tabular*}{\\textwidth}{@{\\extracolsep{\\fill}}p{3.7cm}cccccc}",
+  "        \\footnotesize",
+  "        \\setlength{\\tabcolsep}{3pt}",
+  "        \\renewcommand{\\arraystretch}{0.88}",
+  "        \\begin{tabular*}{\\textwidth}{@{\\extracolsep{\\fill}}p{2.9cm}cccccc}",
   "            \\toprule",
   "            & (1) & (2) & (3) & (4) & (5) & (6) \\\\",
   paste0(
@@ -739,8 +751,8 @@ table5_lines <- c(
   "            \\multicolumn{7}{l}{\\textbf{Panel A: Road Quality Rating}} \\\\",
   "            \\midrule",
   paste0(
-    "            RQR & ",
-    table5_row_values(table5_columns, "rqr", function(row) fmt_est_plain(row$estimate)),
+    "            Estimate & ",
+    table5_row_values(table5_columns, "rqr", function(row) fmt_est(row$estimate, row$pval)),
     " \\\\"
   ),
   paste0(
@@ -749,22 +761,22 @@ table5_lines <- c(
     " \\\\"
   ),
   paste0(
-    "            Eff. bandwidth ($h$), RQR & ",
+    "            Eff. bandwidth ($h$) & ",
     table5_row_values(table5_columns, "rqr", function(row) fmt_num(row$h)),
     " \\\\"
   ),
   paste0(
-    "            Bias bandwidth ($b$), RQR & ",
+    "            Bias bandwidth ($b$) & ",
     table5_row_values(table5_columns, "rqr", function(row) fmt_num(row$b)),
     " \\\\"
   ),
   paste0(
-    "            Eff. observations, RQR & ",
+    "            Eff. observations & ",
     table5_row_values(table5_columns, "rqr", function(row) fmt_int(row$n_eff_left + row$n_eff_right)),
     " \\\\"
   ),
   paste0(
-    "            Total observations, RQR & ",
+    "            Total observations & ",
     table5_row_values(table5_columns, "rqr", function(row) fmt_int(row$n_total)),
     " \\\\"
   ),
@@ -772,8 +784,8 @@ table5_lines <- c(
   "            \\multicolumn{7}{l}{\\textbf{Panel B: Road Quality Score}} \\\\",
   "            \\midrule",
   paste0(
-    "            RQS & ",
-    table5_row_values(table5_columns, "rqs", function(row) fmt_est_plain(row$estimate)),
+    "            Estimate & ",
+    table5_row_values(table5_columns, "rqs", function(row) fmt_est(row$estimate, row$pval)),
     " \\\\"
   ),
   paste0(
@@ -782,37 +794,39 @@ table5_lines <- c(
     " \\\\"
   ),
   paste0(
-    "            Eff. bandwidth ($h$), RQS & ",
+    "            Eff. bandwidth ($h$) & ",
     table5_row_values(table5_columns, "rqs", function(row) fmt_num(row$h)),
     " \\\\"
   ),
   paste0(
-    "            Bias bandwidth ($b$), RQS & ",
+    "            Bias bandwidth ($b$) & ",
     table5_row_values(table5_columns, "rqs", function(row) fmt_num(row$b)),
     " \\\\"
   ),
   paste0(
-    "            Eff. observations, RQS & ",
+    "            Eff. observations & ",
     table5_row_values(table5_columns, "rqs", function(row) fmt_int(row$n_eff_left + row$n_eff_right)),
     " \\\\"
   ),
   paste0(
-    "            Total observations, RQS & ",
+    "            Total observations & ",
     table5_row_values(table5_columns, "rqs", function(row) fmt_int(row$n_total)),
     " \\\\"
   ),
   "            \\bottomrule",
   "        \\end{tabular*}",
   "        \\begin{tablenotes}[flushleft]",
-  "        \\small",
+  "        \\footnotesize",
   paste0(
     "        \\item \\textit{Notes:} Entries are bias-corrected sharp RD estimates at the 50\\% vote-share cutoff. ",
     "Column (1) is a placebo RD using average pre-election road quality over ", window_label_tex(TABLE5_PRE_WINDOW), ". ",
     "Columns (2)--(6) use rolling 3-year post-election windows, exclude $t+0$, and control for population and the corresponding pre-election outcome. ",
-    "Standard errors clustered by ten-digit FIPS code are in parentheses."
+    "Standard errors clustered by ten-digit FIPS code are in parentheses. ",
+    "Statistical significance levels are indicated as follows: *** $p<0.01$, ** $p<0.05$, * $p<0.1$."
   ),
   "        \\end{tablenotes}",
   "    \\end{threeparttable}",
+  "    \\end{singlespace}",
   "\\end{table}"
 )
 writeLines(table5_lines, file.path(tables, "road_quality_rd_table5.tex"))

@@ -209,13 +209,17 @@ def run_convnext_inference(manifest_rows: list[dict], out_csv: Path):
             if not images:
                 continue
 
-            inputs = processor(images=images, return_tensors="pt").to(DEVICE)
-            with torch.no_grad():
-                logits = model(**inputs).logits
-                probs = torch.softmax(logits, dim=-1).cpu().numpy()
+            try:
+                inputs = processor(images=images, return_tensors="pt").to(DEVICE)
+                with torch.no_grad():
+                    logits = model(**inputs).logits
+                    probs = torch.softmax(logits, dim=-1).cpu().numpy()
 
-            preds = probs.argmax(axis=1)
-            max_probs = probs.max(axis=1)
+                preds = probs.argmax(axis=1)
+                max_probs = probs.max(axis=1)
+            finally:
+                for img in images:
+                    img.close()
 
             for idx, row in enumerate(valid_rows):
                 pred_id = int(preds[idx])

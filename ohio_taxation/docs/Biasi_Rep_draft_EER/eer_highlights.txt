@@ -1,0 +1,5 @@
+The central QJE estimates reproduce almost exactly in Stata and an independent R implementation.
+Under narrow vote-margin windows the medium-run effects lose significance as samples shrink.
+The wide restricted-window intervals still contain the baseline: lost power, not a failed design.
+State-by-state effects are widely dispersed around the confirmed national average.
+The dispersion bounds how far the national return to school capital generalizes across states.

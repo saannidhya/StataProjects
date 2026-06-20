@@ -61,14 +61,15 @@ The next section presents our main results on the impact of cutting road mainten
   \caption{Effect on median house prices of failing to renew a road tax levy}
   \label{tab:median_sale_amount}
   \begin{threeparttable}
-%   \begin{tabular}{p{3cm}rrrrrrr}
-    \begin{tabular}{p{4.5cm}ccccccc}
+  \small
+  \setlength{\tabcolsep}{3pt}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}p{3.2cm}ccccccc}
     \toprule
     \multicolumn{8}{l}{\textbf{Panel A: Years $t-3$ through $t+3$}}\\
     \midrule
     Year       & $t\!-\!3$ & $t\!-\!2$ & $t\!-\!1$ & $t$ & $t\!+\!1$ & $t\!+\!2$ & $t\!+\!3$\\
     \midrule
-    Treatment effect           &  5,307 &     166 &    –273 &  –4,261 &  –3,908 & –11,001 & –14,733 \\
+    Treatment effect           &  5,307 &     166 &    –273 &  –4,261 &  –3,908 & –11,001 & –14,733$^{*}$ \\
     Standard error             & (7,341)& (6,943)& (7,391) & (7,955) & (8,719) & (9,405) & (7,989) \\
     Effective bandwidth ($h$)  & 10.30  & 10.06 &  8.76  &  7.97  &  9.78  &  9.63  & 11.93  \\
     Bias bandwidth ($b$)       & 20.22  & 17.48 & 14.39  & 13.03  & 17.50  & 18.22  & 22.69  \\
@@ -79,14 +80,14 @@ The next section presents our main results on the impact of cutting road mainten
     \midrule
     Year       & $t\!+\!4$ & $t\!+\!5$ & $t\!+\!6$ & $t\!+\!7$ & $t\!+\!8$ & $t\!+\!9$ & $t\!+\!10$\\
     \midrule
-    Treatment effect           & –21,701 & –21,706 & –17,365 & –15,975 & –21,984 & –19,857 & –16,090 \\
+    Treatment effect           & –21,701$^{***}$ & –21,706$^{**}$ & –17,365$^{**}$ & –15,975$^{**}$ & –21,984$^{**}$ & –19,857$^{**}$ & –16,090$^{*}$ \\
     Standard error             &  (7,747)&  (8,751)&  (8,355)&  (7,248)&  (9,074)&  (7,751)&  (9,027) \\
     Effective bandwidth ($h$)  &   8.52 &  11.20 &   9.79 &  13.16 &   8.25 &   7.28 &   6.24 \\
     Bias bandwidth ($b$)       &  16.25 &  20.16 &  17.32 &  23.42 &  15.28 &  14.09 &  16.27 \\
     Effective observations     &    688 &    922 &    764 &  1,061 &    591 &    505 &    402 \\
     Total observations         &  2,614 &  2,531 &  2,438 &  2,324 &  2,199 &  2,115 &  2,017 \\
     \bottomrule
-  \end{tabular}
+  \end{tabular*}
   \begin{tablenotes}[flushleft]
     \small
     \item \textit{Notes:} Outcome is median house price in constant 2010 U.S.\ dollars. Unit of observation is the city–year, so a treatment effect of –\$21,701 in year $t+4$ means that four years after the vote, cities that fail to renew road taxes have median sale prices \$21,701 lower than similar cities that renew. Covariates include the demographic and socioeconomic controls listed in Table~\ref{tab:variable_means_sd}.
@@ -216,15 +217,15 @@ Despite the reduction in sample size leading to wider standard errors in Figure 
         \hline
         Percentile & $t + 4$ & $t + 5$ & $t + 6$ & $t + 7$ & $t + 8$ & $t + 9$ & $t + 10$ \\
         \hline
-        10\% & -6,433 & -22,570 & -9,602 & -12,984 & -11,217 & -6,569 & -1,326 \\
+        10\% & -6,433 & -22,570$^{**}$ & -9,602 & -12,984 & -11,217 & -6,569 & -1,326 \\
              & (9,364) & (9,065) & (9,205) & (8,420) & (9,136) & (10,809) & (8,793) \\
-        20\% & -5,400 & -15,070 & 4,014 & -14,682 & -15,040 & -3,228 & 624 \\
+        20\% & -5,400 & -15,070 & 4,014 & -14,682$^{*}$ & -15,040$^{*}$ & -3,228 & 624 \\
              & (9,983) & (9,886) & (7,443) & (8,502) & (8,160) & (10,435) & (8,509) \\
-        70\% & -21,760 & -11,171 & -38,082 & -36,685 & -21,356 & -25,605 & -18,600 \\
+        70\% & -21,760$^{*}$ & -11,171 & -38,082$^{***}$ & -36,685$^{***}$ & -21,356$^{*}$ & -25,605$^{*}$ & -18,600$^{*}$ \\
              & (12,333) & (11,806) & (12,835) & (12,163) & (12,218) & (13,984) & (9,872) \\
-        80\% & -28,478 & -16,379 & -38,460 & -37,470 & -28,950 & -27,800 & -18,658 \\
+        80\% & -28,478$^{**}$ & -16,379 & -38,460$^{**}$ & -37,470$^{***}$ & -28,950$^{**}$ & -27,800$^{**}$ & -18,658 \\
              & (13,343) & (11,404) & (18,623) & (12,169) & (12,507) & (12,421) & (11,808) \\
-        90\% & -51,470 & -34,604 & -38,510 & -27,039 & -29,010 & -49,093 & -36,662 \\
+        90\% & -51,470$^{***}$ & -34,604$^{**}$ & -38,510$^{*}$ & -27,039$^{*}$ & -29,010$^{*}$ & -49,093$^{***}$ & -36,662$^{*}$ \\
              & (18,409) & (15,837) & (22,194) & (16,308) & (16,640) & (14,498) & (19,110) \\
         \hline
     \end{tabular}
@@ -274,7 +275,7 @@ For example, consider a scenario where a city votes to fail its renewal tax levy
     \midrule
     Year relative to vote      & $t\!-\!3$ & $t\!-\!2$ & $t\!-\!1$ & $t$ & $t\!+\!1$ & $t\!+\!2$ & $t\!+\!3$\\
     \midrule
-    Treatment effect           &  5,295 &     –369 &   1,207 &   –2,482 &   –3,107 &  –12,236 &  –15,026 \\
+    Treatment effect           &  5,295 &     –369 &   1,207 &   –2,482 &   –3,107 &  –12,236 &  –15,026$^{*}$ \\
     Standard error             & (7,255)& (7,359) & (7,776) & (8,482) & (9,270) & (10,123) & (8,746) \\
     Effective bandwidth ($h$)  & 10.25  &  9.70  &  8.84  &  7.48  &  9.19  &  8.20  & 10.09  \\
     Bias bandwidth ($b$)       & 20.08  & 16.41  & 14.45  & 12.03  & 16.04  & 16.33  & 20.21  \\
@@ -285,7 +286,7 @@ For example, consider a scenario where a city votes to fail its renewal tax levy
     \midrule
     Year relative to vote      & $t\!+\!4$ & $t\!+\!5$ & $t\!+\!6$ & $t\!+\!7$ & $t\!+\!8$ & $t\!+\!9$ & $t\!+\!10$\\
     \midrule
-    Treatment effect           &  –21,082 &  –16,827 &  –17,565 &  –18,179 &  –20,427 &  –29,970 &  –23,593 \\
+    Treatment effect           &  –21,082$^{**}$ &  –16,827 &  –17,565$^{*}$ &  –18,179$^{**}$ &  –20,427$^{**}$ &  –29,970$^{***}$ &  –23,593$^{**}$ \\
     Standard error             &  (9,145) & (11,228) & (10,128) &  (9,202) &  (9,829) &  (9,059) & (10,838) \\
     Effective bandwidth ($h$)  &   6.85  &  5.64  &  8.48  &  9.34  &  7.41  &  5.51  &  6.20  \\
     Bias bandwidth ($b$)       &  13.19  & 14.82  & 14.53  & 18.06  & 14.23  & 11.74  & 16.54  \\
@@ -340,15 +341,15 @@ Upon implementing this data filtration, we observe that the treatment effect of 
         \hline
         $t + 4$ & 2,578 & 9,149 & 9,419 & -12,987 \\
                 & (8,209) & (7,284) & (11,462) & (14,365) \\
-        $t + 5$ & -6,381 & -29,077 & 6,383 & 41,683 \\
+        $t + 5$ & -6,381 & -29,077 & 6,383 & 41,683$^{**}$ \\
                 & (9,086) & (20,680) & (10,786) & (17,836) \\
         $t + 6$ & 7,681 & 5,573 & -1,095 & -14,226 \\
                 & (9,616) & (8,120) & (8,612) & (15,733) \\
         $t + 7$ & 1,162 & 3,982 & -12,050 & 22,261 \\
                 & (10,468) & (8,191) & (9,396) & (19,765) \\
-        $t + 8$ & 4,334 & 12,881 & 3,593 & 31,696 \\
+        $t + 8$ & 4,334 & 12,881 & 3,593 & 31,696$^{***}$ \\
                 & (9,670) & (8,625) & (10,061) & (6,902) \\
-        $t + 9$ & 851 & 7,381 & -6,935 & 42,790 \\
+        $t + 9$ & 851 & 7,381 & -6,935 & 42,790$^{***}$ \\
                 & (5,921) & (6,333) & (7,114) & (15,663) \\
         $t + 10$ & 10,032 & -35,038 & 324 & -8,566 \\
                  & (10,599) & (35,569) & (8,220) & (17,281) \\

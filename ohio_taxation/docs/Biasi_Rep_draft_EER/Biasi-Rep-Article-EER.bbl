@@ -1,0 +1,219 @@
+
+
+% Bibstyle aea.bst version 2009.05.20
+
+\begin{thebibliography}{xx}
+
+\harvarditem[Abott et~al.]{Carolyn Abott, Vladimir Kogan, St{\'e}phane Lavertu
+  \harvardand\ Zachary Peskowitz}{2020}{abott2020school}
+{\bf Abott, Carolyn, Vladimir Kogan, St{\'e}phane Lavertu, and Zachary
+  Peskowitz.} 2020. ``School District Operational Spending and Student
+  Outcomes: Evidence from Tax Elections in Seven States.'' {\em Journal of
+  Public Economics}, 183:~104142.
+
+\harvarditem[Allcott]{Hunt Allcott}{2015}{allcott2015site}
+{\bf Allcott, Hunt.} 2015. ``Site Selection Bias in Program Evaluation.'' {\em
+  The Quarterly Journal of Economics}, 130(3):~1117--1165.
+
+\harvarditem[Baron]{E~Jason Baron}{2022}{baron2022school}
+{\bf Baron, E~Jason.} 2022. ``School Spending and Student Outcomes: Evidence
+  from Revenue Limit Elections in Wisconsin.'' {\em American Economic Journal:
+  Economic Policy}, 14(1):~1--39.
+
+\harvarditem[Biasi, Lafortune \harvardand\ Sch\"onholzer]{Barbara Biasi, Julien
+  Lafortune \harvardand\ David Sch\"onholzer}{2025}{biasi_what_2025}
+{\bf Biasi, Barbara, Julien Lafortune, and David Sch\"onholzer.} 2025. ``What
+  Works and for Whom? Effectiveness and Efficiency of School Capital
+  Investments Across the U.S.'' {\em The Quarterly Journal of Economics}.
+
+\harvarditem[Callaway \harvardand\ Sant'Anna]{Brantly Callaway \harvardand\
+  Pedro H~C Sant'Anna}{2021}{callaway2021difference}
+{\bf Callaway, Brantly, and Pedro H~C Sant'Anna.} 2021.
+  ``Difference-in-Differences with Multiple Time Periods.'' {\em Journal of
+  Econometrics}, 225(2):~200--230.
+
+\harvarditem[Calonico, Cattaneo \harvardand\ Titiunik]{Sebastian Calonico,
+  Matias~D Cattaneo \harvardand\ Roc{\'\i}o Titiunik}{2014}{calonico2014robust}
+{\bf Calonico, Sebastian, Matias~D Cattaneo, and Roc{\'\i}o Titiunik.} 2014.
+  ``Robust Nonparametric Confidence Intervals for Regression-Discontinuity
+  Designs.'' {\em Econometrica}, 82(6):~2295--2326.
+
+\harvarditem[Calonico et~al.]{Sebastian Calonico, Matias~D Cattaneo, Max~H
+  Farrell \harvardand\ Roc{\'\i}o Titiunik}{2017}{calonico2017rdrobust}
+{\bf Calonico, Sebastian, Matias~D Cattaneo, Max~H Farrell, and Roc{\'\i}o
+  Titiunik.} 2017. ``rdrobust: Software for Regression-Discontinuity Designs.''
+  {\em The Stata Journal}, 17(2):~372--404.
+
+\harvarditem[Cattaneo, Jansson \harvardand\ Ma]{Matias~D Cattaneo, Michael
+  Jansson \harvardand\ Xinwei Ma}{2020}{cattaneo2020simple}
+{\bf Cattaneo, Matias~D, Michael Jansson, and Xinwei Ma.} 2020. ``Simple Local
+  Polynomial Density Estimators.'' {\em Journal of the American Statistical
+  Association}, 115(531):~1449--1455.
+
+\harvarditem[Caughey \harvardand\ Sekhon]{Devin Caughey \harvardand\ Jasjeet~S
+  Sekhon}{2011}{caughey2011elections}
+{\bf Caughey, Devin, and Jasjeet~S Sekhon.} 2011. ``Elections and the
+  Regression Discontinuity Design: Lessons from Close U.S. House Races,
+  1942--2008.'' {\em Political Analysis}, 19(4):~385--408.
+
+\harvarditem[Cellini, Ferreira \harvardand\ Rothstein]{Stephanie~Riegg Cellini,
+  Fernando Ferreira \harvardand\ Jesse Rothstein}{2010}{cellini2010value}
+{\bf Cellini, Stephanie~Riegg, Fernando Ferreira, and Jesse Rothstein.} 2010.
+  ``The Value of School Facility Investments: Evidence from a Dynamic
+  Regression Discontinuity Design.'' {\em The Quarterly Journal of Economics},
+  125(1):~215--261.
+
+\harvarditem[Chang \harvardand\ Li]{Andrew~C Chang \harvardand\ Phillip
+  Li}{2015}{changli2015economics}
+{\bf Chang, Andrew~C, and Phillip Li.} 2015. ``Is Economics Research
+  Replicable? Sixty Published Papers from Thirteen Journals Say ``Usually
+  Not''.'' Board of Governors of the Federal Reserve System Finance and
+  Economics Discussion Series 2015-083, Washington, DC.
+
+\harvarditem[Christensen \harvardand\ Miguel]{Garret Christensen \harvardand\
+  Edward Miguel}{2018}{christensen2018transparency}
+{\bf Christensen, Garret, and Edward Miguel.} 2018. ``Transparency,
+  Reproducibility, and the Credibility of Economics Research.'' {\em Journal of
+  Economic Literature}, 56(3):~920--980.
+
+\harvarditem[Clemens]{Michael~A Clemens}{2017}{clemens2017meaning}
+{\bf Clemens, Michael~A.} 2017. ``The Meaning of Failed Replications: A Review
+  and Proposal.'' {\em Journal of Economic Surveys}, 31(1):~326--342.
+
+\harvarditem[Contat \harvardand\ Larson]{Justin Contat \harvardand\ William~D
+  Larson}{2024}{contat_larson_2024}
+{\bf Contat, Justin, and William~D Larson.} 2024. ``A Flexible Method of
+  Housing Price Index Construction Using Repeat-Sales Aggregates.'' {\em Real
+  Estate Economics}, 52(6):~1551--1583.
+
+\harvarditem[Cummins]{Joseph~R Cummins}{2017}{cummins2017heterogeneous}
+{\bf Cummins, Joseph~R.} 2017. ``Heterogeneous Treatment Effects in the Low
+  Track: Revisiting the Kenyan Primary School Experiment.'' {\em Economics of
+  Education Review}, 56:~40--51.
+
+\harvarditem[de~la Cuesta \harvardand\ Imai]{Brandon de~la Cuesta \harvardand\
+  Kosuke Imai}{2016}{delacuesta2016misunderstandings}
+{\bf de~la Cuesta, Brandon, and Kosuke Imai.} 2016. ``Misunderstandings About
+  the Regression Discontinuity Design in the Study of Close Elections.'' {\em
+  Annual Review of Political Science}, 19:~375--396.
+
+\harvarditem[Duvendack, Palmer-Jones \harvardand\ Reed]{Maren Duvendack,
+  Richard Palmer-Jones \harvardand\ W~Robert
+  Reed}{2017}{duvendack2017replication}
+{\bf Duvendack, Maren, Richard Palmer-Jones, and W~Robert Reed.} 2017. ``What
+  Is Meant by ``Replication'' and Why Does It Encounter Resistance in
+  Economics?'' {\em American Economic Review}, 107(5):~46--51.
+
+\harvarditem[Eggers et~al.]{Andrew~C Eggers, Olle Folke, Anthony Fowler, Jens
+  Hainmueller, Andrew~B Hall \harvardand\ James~M
+  Snyder~Jr}{2015}{eggers2015validity}
+{\bf Eggers, Andrew~C, Olle Folke, Anthony Fowler, Jens Hainmueller, Andrew~B
+  Hall, and James~M Snyder~Jr.} 2015. ``On the Validity of the Regression
+  Discontinuity Design for Estimating Electoral Effects: New Evidence from Over
+  40,000 Close Races.'' {\em American Journal of Political Science},
+  59(1):~259--274.
+
+\harvarditem[Galiani, Gertler \harvardand\ Romero]{Sebastian Galiani, Paul
+  Gertler \harvardand\ Mauricio Romero}{2017}{galiani2017incentives}
+{\bf Galiani, Sebastian, Paul Gertler, and Mauricio Romero.} 2017. ``Incentives
+  for Replication in Economics.'' National Bureau of Economic Research NBER
+  Working Paper 23576.
+
+\harvarditem[Goodman-Bacon]{Andrew
+  Goodman-Bacon}{2021}{goodmanbacon2021difference}
+{\bf Goodman-Bacon, Andrew.} 2021. ``Difference-in-Differences with Variation
+  in Treatment Timing.'' {\em Journal of Econometrics}, 225(2):~254--277.
+
+\harvarditem[Hamermesh]{Daniel~S Hamermesh}{2007}{hamermesh2007replication}
+{\bf Hamermesh, Daniel~S.} 2007. ``Viewpoint: Replication in Economics.'' {\em
+  Canadian Journal of Economics}, 40(3):~715--733.
+
+\harvarditem[Handel \harvardand\ Hanushek]{Danielle~V Handel \harvardand\
+  Eric~A Hanushek}{2024}{handel2024contexts}
+{\bf Handel, Danielle~V, and Eric~A Hanushek.} 2024. ``Contexts of Convenience:
+  Generalizing from Published Evaluations of School Finance Policies.'' {\em
+  Evaluation Review}, 48(3):~461--494.
+
+\harvarditem[Hong \harvardand\ Zimmer]{Kai Hong \harvardand\ Ron
+  Zimmer}{2016}{hong2016investing}
+{\bf Hong, Kai, and Ron Zimmer.} 2016. ``Does Investing in School Capital
+  Infrastructure Improve Student Achievement?'' {\em Economics of Education
+  Review}, 53:~143--158.
+
+\harvarditem[Imbens \harvardand\ Kalyanaraman]{Guido Imbens \harvardand\
+  Karthik Kalyanaraman}{2012}{imbens2012optimal}
+{\bf Imbens, Guido, and Karthik Kalyanaraman.} 2012. ``Optimal Bandwidth Choice
+  for the Regression Discontinuity Estimator.'' {\em The Review of Economic
+  Studies}, 79(3):~933--959.
+
+\harvarditem[Jackson \harvardand\ Mackevicius]{C~Kirabo Jackson \harvardand\
+  Claire~L Mackevicius}{2024}{jackson2024impacts}
+{\bf Jackson, C~Kirabo, and Claire~L Mackevicius.} 2024. ``What Impacts Can We
+  Expect from School Spending Policy? Evidence from Evaluations in the United
+  States.'' {\em American Economic Journal: Applied Economics},
+  16(1):~412--446.
+
+\harvarditem[Jackson, Johnson \harvardand\ Persico]{C~Kirabo Jackson, Rucker~C
+  Johnson \harvardand\ Claudia Persico}{2016}{jackson2016effects}
+{\bf Jackson, C~Kirabo, Rucker~C Johnson, and Claudia Persico.} 2016. ``The
+  Effects of School Spending on Educational and Economic Outcomes: Evidence
+  from School Finance Reforms.'' {\em The Quarterly Journal of Economics},
+  131(1):~157--218.
+
+\harvarditem[Lafortune, Rothstein \harvardand\ Schanzenbach]{Julien Lafortune,
+  Jesse Rothstein \harvardand\ Diane~Whitmore
+  Schanzenbach}{2018}{lafortune2018school}
+{\bf Lafortune, Julien, Jesse Rothstein, and Diane~Whitmore Schanzenbach.}
+  2018. ``School Finance Reform and the Distribution of Student Achievement.''
+  {\em American Economic Journal: Applied Economics}, 10(2):~1--26.
+
+\harvarditem[Lee]{David~S Lee}{2008}{lee2008randomized}
+{\bf Lee, David~S.} 2008. ``Randomized Experiments from Non-Random Selection in
+  U.S. House Elections.'' {\em Journal of Econometrics}, 142(2):~675--697.
+
+\harvarditem[Lee \harvardand\ Lemieux]{David~S Lee \harvardand\ Thomas
+  Lemieux}{2010}{lee_lemieux2010}
+{\bf Lee, David~S, and Thomas Lemieux.} 2010. ``Regression Discontinuity
+  Designs in Economics.'' {\em Journal of Economic Literature},
+  48(2):~281--355.
+
+\harvarditem[Martorell, Stange \harvardand\ McFarlin~Jr]{Paco Martorell, Kevin
+  Stange \harvardand\ Isaac McFarlin~Jr}{2016}{martorell2016investing}
+{\bf Martorell, Paco, Kevin Stange, and Isaac McFarlin~Jr.} 2016. ``Investing
+  in Schools: Capital Spending, Facility Conditions, and Student Achievement.''
+  {\em Journal of Public Economics}, 140:~13--29.
+
+\harvarditem[McCrary]{Justin McCrary}{2008}{mccrary2008manipulation}
+{\bf McCrary, Justin.} 2008. ``Manipulation of the Running Variable in the
+  Regression Discontinuity Design: A Density Test.'' {\em Journal of
+  Econometrics}, 142(2):~698--714.
+
+\harvarditem[Meager]{Rachael Meager}{2019}{meager2019understanding}
+{\bf Meager, Rachael.} 2019. ``Understanding the Average Impact of Microcredit
+  Expansions: A Bayesian Hierarchical Analysis of Seven Randomized
+  Experiments.'' {\em American Economic Journal: Applied Economics},
+  11(1):~57--91.
+
+\harvarditem[Meager]{Rachael Meager}{2022}{meager2022aggregating}
+{\bf Meager, Rachael.} 2022. ``Aggregating Distributional Treatment Effects: A
+  Bayesian Hierarchical Analysis of the Microcredit Literature.'' {\em American
+  Economic Review}, 112(6):~1818--1847.
+
+\harvarditem[Neilson \harvardand\ Zimmerman]{Christopher~A Neilson \harvardand\
+  Seth~D Zimmerman}{2014}{neilson2014effect}
+{\bf Neilson, Christopher~A, and Seth~D Zimmerman.} 2014. ``The Effect of
+  School Construction on Test Scores, School Enrollment, and Home Prices.''
+  {\em Journal of Public Economics}, 120:~18--31.
+
+\harvarditem[Rauscher]{Emily Rauscher}{2020}{rauscher2020delayed}
+{\bf Rauscher, Emily.} 2020. ``Delayed Benefits: Effects of California School
+  District Bond Elections on Achievement by Socioeconomic Status.'' {\em
+  Sociology of Education}, 93(2):~110--131.
+
+\harvarditem[Sun \harvardand\ Abraham]{Liyang Sun \harvardand\ Sarah
+  Abraham}{2021}{sunabraham2021estimating}
+{\bf Sun, Liyang, and Sarah Abraham.} 2021. ``Estimating Dynamic Treatment
+  Effects in Event Studies with Heterogeneous Treatment Effects.'' {\em Journal
+  of Econometrics}, 225(2):~175--199.
+
+\end{thebibliography}

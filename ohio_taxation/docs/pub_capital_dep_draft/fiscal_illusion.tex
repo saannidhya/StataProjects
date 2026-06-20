@@ -1,0 +1,68 @@
+% Conceptual bridge between Results (Section \ref{sec:result}) and the
+% structural model (Section \ref{sec:mech}).
+%
+% Goal: formalize the rational-expectations capitalization benchmark, document
+% how the empirical path of RD coefficients deviates from it, and motivate the
+% belief-updating microfoundation developed in the next section.
+
+The empirical pattern documented in Section \ref{sec:result} is consistent with a tax cut whose consequences are eventually capitalized, but only with a substantial delay. In this section we make the timing structure explicit. We compare the observed dynamic capitalization path with the path implied by a frictionless rational-expectations (RE) benchmark, identify the empirical wedge between the two, and articulate the two leading mechanisms --- limited attention and signal extraction --- that the structural model in Section \ref{sec:mech} formalizes.
+
+\subsection{The Rational-Expectations Benchmark}
+
+Let $\Delta_t \equiv p_{h,t}^{F} - p_{h,t}^{P}$ denote the difference in the (log) housing price between a jurisdiction that narrowly fails to renew the road-maintenance levy and one that narrowly passes, at horizon $\tau$ relative to the election year $t$. Let $\{A(G_{t+\tau})\}_{\tau \geq 0}$ denote the path of housing-amenity service flows under each outcome, where $G_{t+\tau}$ is the road-capital stock. Under rational expectations and a no-arbitrage condition, the marginal buyer at any date $s \leq t$ should equate the price gap to the discounted sum of the expected service-flow gap:
+\begin{equation}
+\Delta_s = \mathbb{E}_s \!\left[\sum_{\tau \geq 0} \beta^{\tau} \Delta A(G_{t+\tau}) \right] \cdot \frac{1}{r + \delta_h},
+\label{eq:re_benchmark}
+\end{equation}
+where $\beta$ is the household discount factor, $r$ the user-cost rate, and $\delta_h$ the housing depreciation rate\footnote{See the housing Euler derivation in Section \ref{sec:mech}}.
+
+Equation \ref{eq:re_benchmark} delivers three sharp testable predictions under RE:
+\begin{enumerate}
+\item[\textbf{P1.}] $\Delta_s = 0$ for $s < t$ (the outcome of a close election is, by construction, unforecastable within a narrow window around $v^* = 0.5$).
+\item[\textbf{P2.}] $\Delta_{t} - \Delta_{t-1} \approx \mathbb{E}_t [\sum_{\tau \geq 0} \beta^{\tau} \Delta A(G_{t+\tau})] / (r+\delta_h)$: the {\it entire} discounted future service-flow gap should be capitalized at the moment the election outcome is realized.
+\item[\textbf{P3.}] For $\tau > 0$, $\Delta_{t+\tau}$ should display no further drift other than the mechanical accumulation of expectational errors, which average to zero in expectation.
+\end{enumerate}
+
+\subsection{The Empirical Wedge}
+
+Section \ref{sec:anticipation} reports the pre-period coefficients $\theta^{ITT}_{-3}, \theta^{ITT}_{-2}, \theta^{ITT}_{-1}$ implied by Equation \ref{eq:itt_estimator}. These are economically small and statistically indistinguishable from zero. We thus fail to reject P1.
+
+In contrast, the post-period path strongly rejects P2 and P3. The estimated $\Delta_{t}$ at the election year and through $\tau = 3$ is small, statistically insignificant, and far below the present-value-of-service-flow magnitude implied by the eventual long-run capitalization. The price gap then opens sharply between $\tau = 4$ and $\tau = 9$, reaching a peak of roughly nine percent of the mean sale price, before partly closing by $\tau = 10$. The new combined-timeline figure (Figure \ref{fig:combined_timeline}, presented in Section \ref{sec:result}) overlays the dynamic price coefficients on the dynamic road-quality coefficients and makes the central empirical pattern transparent: the price response tracks {\it observed} road decay, not the {\it future} decay anticipated by the election outcome.
+
+The magnitude of this wedge is quantitatively important. The cumulative discounted price gap from $\tau = 0$ through $\tau = 3$ is, on average, less than five percent of the eventual long-run capitalization. A frictionless RE-pricing economy would have delivered approximately ninety-five percent of the long-run effect at $\tau = 0$. Instead, less than one-twentieth of it appears before the road decay itself is statistically detectable. 
+
+\subsection{Candidate Mechanisms}
+
+Three distinct microfoundations can reconcile the data with optimizing household behavior. All deliver delayed capitalization, and all nest the RE benchmark as a limiting case. They differ along two dimensions: (i) whether the friction lies on the {\it buyer} side of the housing market or on the {\it voter} side of the ballot box, and (ii) what the policy and welfare implications are.
+
+\paragraph{Mechanism A: Limited attention.}
+Following \citet{chetty2009salience} and \citet{finkelstein2009eztax}, households may rationally allocate attention away from low-salience fiscal decisions whose consequences are slow-moving and small per period. Under a fixed cognitive cost of evaluating the present value in Equation \ref{eq:re_benchmark}, agents update their belief about $G_{t+\tau}$ only when an attention-triggering event arrives. The physical deterioration of road surfaces --- a directly observable signal --- is such a trigger. Before the trigger, $\hat{G}_{t+\tau}$ remains at its pre-election baseline; after the trigger, $\hat{G}_{t+\tau}$ jumps to its updated value. Capitalization thus tracks the trigger, not the underlying fiscal shock. This is a {\it buyer-side} friction: it applies to whoever is pricing housing in the local market, whether or not that person voted in the levy referendum.
+
+\paragraph{Mechanism B: Signal extraction.}
+A second microfoundation, in the spirit of \citet{ouazad2024frictions} and \citet{bakkensen2022underwater}, posits that households cannot perfectly observe the rate at which their local maintenance budget translates into physical decay. They observe a noisy signal $s_t = G_t + \varepsilon_t$, where the variance of $\varepsilon_t$ shrinks as physical deterioration becomes more visible. Standard Bayesian updating then yields a posterior $\hat{G}_t$ that adjusts gradually --- slowly when noise dominates (i.e., shortly after the election, when roads still look unchanged) and rapidly once visible decay reveals the underlying maintenance cut. This is also a {\it buyer-side} friction. Section \ref{sec:belief_updating} formalizes it as the structural counterpart to the empirical wedge.
+
+\paragraph{Mechanism C: Voter myopia.}
+A third microfoundation locates the friction on the {\it voter} side of the political-economy decision rule rather than on the buyer side of the housing market. Voters at the moment of the referendum may not fully understand or appreciate the long-run consequences of cutting road-maintenance funding. The immediate benefit is salient and certain (a near-term tax saving of roughly \$76 per household per year), whereas the future cost is technically opaque (the chain from maintenance budgets to physical road decay to capitalized housing wealth is unfamiliar to non-experts), temporally distant (most of the capitalized loss arrives in years $\tau = 4$ through $\tau = 9$), and outcome-conditional (its magnitude depends on weather, traffic, and future re-vote behavior at subsequent renewal cycles). Two non-mutually-exclusive forces can generate this myopic bias. First, in a present-bias or hyperbolic-discounting framework \citep{laibson1997golden}, voters apply a subjective discount factor steeper than the rate at which housing markets capitalize future flows. Second, in a Tiebout sorting equilibrium \citep{Tiebout1956}, voters with short expected housing tenure place little weight on capitalization that arrives after their planned exit date --- a household intending to relocate within three years effectively prices the certain \$76 per year tax saving against an uncertain \$15{,}350 future loss they may not personally bear.
+
+Unlike Mechanisms A and B, Mechanism C is a {\it voter-side} friction. It distorts the political-economy decision rule at the ballot box but leaves the housing-market pricing rule (in principle) intact.
+
+\paragraph{Why Mechanism C alone cannot rationalize the price path.}
+A useful observation follows. The marginal home buyer at $t = 0$ sets the date-$0$ price by equating purchase cost to the present value of expected future amenity flows. If this buyer is fully rational and forward-looking --- as Mechanism C alone presumes for the housing market --- the date-$0$ price gap between narrowly-passing and narrowly-failing jurisdictions should equal the present value of the entire future maintenance shortfall. The empirical null at $\tau = 0$ documented in Section \ref{sec:result} therefore rules out a pure-Mechanism-C world: at least one of Mechanisms A or B must be operative on the buyer side to deliver the delayed-capitalization pattern. Mechanism C can be operative {\it in addition to} A and B on the voter side, and the most internally-consistent reading of our findings is that both layers are present --- voters at the ballot box and buyers in the housing market both under-weight the future amenity decline, for related but distinct reasons.
+
+\paragraph{Welfare implications differ by mechanism.}
+The mix matters for welfare. If the friction is purely buyer-side (Mechanisms A or B), the revealed-preference MVPF of $-1.4$ {\it understates} the welfare loss because voters did not internalize the long-run amenity decline they would experience under their own preferences. Information disclosure delivers welfare gains. If voter-side myopia (Mechanism C) is also operative, the welfare interpretation depends on whether the myopia is cognitive (voters did not fully comprehend the future cost, in which case the experience-based MVPF is the welfare-relevant measure) or preference-based (voters fully understood but applied a steep subjective discount rate or expected to exit before the loss materialized, in which case the choice-based MVPF approximately captures voter welfare). Since voters likely fall on a spectrum between these poles, Section \ref{sec:mvpf} reports both numbers and treats the choice-based MVPF of $-1.4$ as a lower bound (in absolute terms) on the welfare loss.
+
+\paragraph{Cross-sectional implications by mechanism.}
+The three mechanisms generate distinct cross-sectional signatures. Mechanisms A and B predict {\it buyer-side} heterogeneity by observation cost: urban and high-priced jurisdictions capitalize faster, because their buyers face a sharper signal at any given level of physical decay. Mechanism C predicts {\it voter-side} heterogeneity by tenure horizon and by age: jurisdictions with higher housing turnover or older voter populations should display larger pro-cut vote shares for any given levy size, conditional on covariates, since shorter expected tenure mechanically discounts the post-exit capitalization. The two sets of predictions are not mutually exclusive. We document buyer-side heterogeneity in Section \ref{sec:result} and report voter-side heterogeneity by housing-tenure and age proxies in Appendix \ref{sec:vote_share_heterogeneity}. The evidence is consistent with both layers being operative.
+
+\subsection{Distinguishing the Frictionless RE Benchmark Empirically}
+
+If either friction is operative, the {\it cross-sectional} pattern of capitalization should track the {\it cross-sectional} variation in attention or in signal quality. We exploit two pre-specified sources of variation:
+
+\begin{enumerate}
+\item {\it Urban versus rural areas.} Urban jurisdictions have denser traffic flows, more frequent direct observation of road surfaces by residents and prospective buyers, and more localized media coverage of local-government decisions. Both candidate frictions therefore predict {\it faster} and {\it larger} capitalization in urban areas. Section \ref{sec:result} reports a 7.6 percent decline for urban jurisdictions, with a price response that emerges noticeably earlier than in rural settings.
+
+\item {\it Price quantile of the housing stock.} Buyers of higher-priced homes are, in equilibrium, the most attentive to local-amenity heterogeneity because amenity differences enter their housing-consumption decision with the largest dollar stake. Both frictions therefore predict steeper percentage capitalization at higher quantiles of the price distribution. The evidence in Section \ref{sec:result} is consistent with this prediction.
+\end{enumerate}
+
+The frictionless RE benchmark cannot rationalize either pattern --- under RE, the cross-section of capitalization should mirror the cross-section of {\it expected service-flow elasticities}, not the cross-section of {\it observation costs}. Section \ref{sec:mech} formalizes this distinction inside a calibrated dynamic equilibrium model and uses it to discipline the strength of the friction parameter, thereby providing a structural counterpart to the reduced-form pattern documented here.

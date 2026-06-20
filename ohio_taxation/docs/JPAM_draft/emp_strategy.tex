@@ -1,0 +1,32 @@
+This section describes the research design used to estimate the local effect of narrowly failing to renew a road-maintenance levy. The estimand is an intent-to-treat effect for jurisdictions near the 50\% vote-share cutoff. It is not the average effect of all tax cuts, all road-spending cuts, or all road-maintenance choices. It is the effect of losing an existing dedicated maintenance revenue stream when a renewal referendum narrowly fails.
+
+\subsection{Regression Discontinuity in Renewal Elections}
+
+Consider jurisdiction $i$ holding a referendum in year $t$ to renew an existing road-maintenance levy. Let $v_{it}$ be the share of votes against renewal, and let $v^* = 0.50$ be the cutoff. A levy fails when opposition exceeds the majority threshold. We define:
+
+\begin{equation}
+F_{it} = 1(v_{it} > v^*)
+\end{equation}
+
+\noindent where $F_{it}$ indicates that the jurisdiction narrowly loses an existing road-maintenance revenue stream. The regression discontinuity design compares outcomes for jurisdictions just below and just above $v^*$. Around a narrow enough window, jurisdictions that barely renew and barely fail should be comparable except for the renewal outcome.
+
+The design is well suited to renewal levies for two reasons. First, the timing of a renewal election is determined by the expiration of a previously approved levy, usually after five years. This differs from a new capital levy, where local officials can choose when to ask voters for additional funding. Second, a failed renewal has a direct fiscal interpretation: revenue from that levy stops. The resulting estimate is therefore a local intent-to-treat effect of a close electoral decision to discontinue dedicated road-maintenance funding.
+
+\subsection{Dynamic RD Specification}
+
+We estimate effects by event time relative to the election. For each outcome $Y_{i,t+\tau}$ observed $\tau$ years after the referendum, we estimate:
+
+\begin{equation}
+Y_{i,t+\tau} = \alpha_\tau + \kappa_t + F_{it} \theta_{\tau}^{ITT} + P_g (v_{it}, \gamma_\tau) + Z_{it} \beta_\tau + \epsilon_{i,t + \tau}
+\label{eq:itt_estimator}
+\end{equation}
+
+\noindent where $\theta_{\tau}^{ITT}$ is the local effect of a failed renewal $\tau$ years after the vote, $\kappa_t$ are election-year fixed effects, $P_g (v_{it}, \gamma_\tau)$ is a polynomial in the vote-share running variable, and $Z_{it}$ includes demographic and socioeconomic covariates measured at the time of the vote. The main outcome is median house price in the jurisdiction-year. We also estimate analogous specifications for road-quality outcomes derived from road imagery.
+
+We use the bandwidth-selection approach of \cite{calonico2019regression} and estimate local polynomial regressions around the 50\% cutoff. Standard errors are clustered by city to account for serial correlation within jurisdictions. The dynamic specification lets us test for pre-election discontinuities and then trace how any post-election effects evolve as deferred maintenance becomes more visible.
+
+% \subsection{Identification Checks and Threats}
+
+% The identifying assumption is continuity of potential outcomes at the cutoff: absent the failed renewal, jurisdictions just above and just below 50\% opposition would have followed similar outcome paths. We assess this assumption in several ways. First, we test for manipulation of the running variable. The density test p-value is 0.98, providing no evidence that election outcomes are precisely sorted around the cutoff. Second, we examine covariate discontinuities at the threshold. Formal RD tests using baseline covariates as outcomes produce p-values between 0.234 and 0.981, and Appendix \ref{sec:appxb} reports the corresponding table and plots. Third, the house-price event study includes three pre-election years; the estimates before the vote are small and statistically indistinguishable from zero.
+
+% Two additional threats are especially relevant for policy interpretation. One is that a failed road levy could proxy for a broader anti-tax shock or simultaneous reductions in other public services. Section \ref{sec:robustness} therefore examines other local levies and shows that failed road renewals are not systematically associated with police, fire, recreation, or school levy failures. The other is that road-quality imagery availability could differ around the cutoff. The road-quality analysis uses close-election imagery with pre- and post-election windows and treats availability and timing as part of the measurement design; we interpret those estimates as mechanism evidence rather than as a standalone welfare calculation.

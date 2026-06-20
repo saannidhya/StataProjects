@@ -13,8 +13,14 @@ import os
 import numpy as np
 import pandas as pd
 import re
+import warnings
 from pathlib import Path
 from PIL import Image
+from sklearn.exceptions import ConvergenceWarning
+from sklearn.linear_model import ElasticNet
+from sklearn.model_selection import LeaveOneOut, cross_val_predict
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 # YOLO class mapping from your fine-tuned model
 CLASS_NAMES = {
@@ -49,12 +55,28 @@ CLASS_LABELS_BY_ID = {class_id: CLASS_LABELS[name] for class_id, name in CLASS_N
 
 
 # Define paths
-root = "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/"
-labels_path = root + "data/roads/runs_ohio/yolo11n_cpu_ohio_pred_streetview/labels/"
+root = Path("C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation/")
+
+label_dir_candidates = [
+    root / "data/roads/runs_ohio/yolo11_rdd2024_streetview_detector/predict_ohio_conf10_annotated_no_negs/labels",
+    root / "data/roads/runs_ohio/yolo11_rdd2024_streetview_detector/predict_ohio_conf10_annotated/labels",
+    root / "data/roads/runs_ohio/yolo11_rdd2024_streetview_detector/predict_ohio_annotated_v2/labels",
+    root / "data/roads/runs_ohio/yolo11_rdd2024_streetview_detector/predict_ohio_annotated/labels",
+    root / "data/roads/runs_ohio/yolo11_rdd2024_streetview_detector/predict_ohio/labels",
+    root / "data/roads/runs_ohio/yolo11n_cpu_ohio_pred_streetview/labels",
+]
+
+_existing_label_dirs = [p for p in label_dir_candidates if p.exists()]
+if _existing_label_dirs:
+    labels_dir = max(_existing_label_dirs, key=lambda p: len(list(p.glob("*.txt"))))
+else:
+    labels_dir = label_dir_candidates[0]
+labels_path = str(labels_dir) + "/"
 
 # ORIGINAL images that were fed to the YOLO model
-images_path = root + "data/roads/ohio/google streetview photos/"
-pcr_path = root + "data/roads/PCR/"
+images_dir = root / "data/roads/ohio/google streetview photos"
+images_path = str(images_dir) + "/"
+pcr_path = str(root / "data/roads/PCR") + "/"
 
 class YOLOPredictionLabelParser:
     """Parse Ultralytics YOLO prediction label files (one .txt per image).
@@ -217,8 +239,6 @@ def parse_filename(filename):
 
 
 # Get all txt files
-labels_dir = Path(labels_path)
-images_dir = Path(images_path)
 txt_files = sorted([p.name for p in labels_dir.glob("*.txt")])
 
 yolo_parser = YOLOPredictionLabelParser(CLASS_NAMES, dedupe=True)
@@ -276,6 +296,36 @@ for txt_file in txt_files:
             parsed[f"count_{cname}"] = int(summary["class_counts"].get(cname, 0))
 
         parsed_data.append(parsed)
+
+
+# =============================================================================
+# IMAGE-LEVEL dataframe: one row per label/image, including clean images
+# =============================================================================
+
+image_rows = []
+for img in parsed_data:
+    row = {
+        "filename": img.get("filename"),
+        "label_path": img.get("label_path"),
+        "tendigit_fips": img.get("tendigit_fips"),
+        "street_name": img.get("street_name"),
+        "township_name": img.get("township_name"),
+        "date": img.get("date"),
+        "latitude": img.get("latitude"),
+        "longitude": img.get("longitude"),
+        "heading": img.get("heading"),
+        "pitch": img.get("pitch"),
+        "fov": img.get("fov"),
+        "image_path": img.get("image_path"),
+        "image_width": img.get("image_width"),
+        "image_height": img.get("image_height"),
+        "n_detections": img.get("n_detections"),
+    }
+    for cname in CLASS_NAMES.values():
+        row[f"count_{cname}"] = int(img.get(f"count_{cname}", 0))
+    image_rows.append(row)
+
+df_images = pd.DataFrame(image_rows)
 
 
 # =============================================================================
@@ -346,6 +396,16 @@ _fips10 = (df_long["tendigit_fips"].astype(str).str.replace(r"\D+", "", regex=Tr
 df_long["county"] = _fips10.str.slice(2, 5)
 
 df_long24 = df_long.loc[df_long["year"].eq(2024)].copy()
+
+# Build the image-level panel used for county denominators, including clean images.
+df_images["year"] = (
+    df_images["date"].astype(str).str.slice(0, 4).pipe(pd.to_numeric, errors="coerce").astype("Int64")
+)
+_fips10_img = (
+    df_images["tendigit_fips"].astype(str).str.replace(r"\D+", "", regex=True).str.zfill(10)
+)
+df_images["county"] = _fips10_img.str.slice(2, 5)
+df_images24 = df_images.loc[df_images["year"].eq(2024)].copy()
 
 
 # Create DataFrame
@@ -556,9 +616,11 @@ odot_y = odot_target.set_index("county_fips3")["avg_pcr_nbr"].astype(float)
 # 2) Prepare MODEL arrays (2024 detections) keyed by county_fips3
 # -------------------------
 df_det = df_long24.copy()
+df_img = df_images24.copy()
 
 # ensure county is 3-digit string
 df_det["county_fips3"] = df_det["county"].astype(str).str.zfill(3)
+df_img["county_fips3"] = df_img["county"].astype(str).str.zfill(3)
 
 # OPTIONAL: keep only rows that map to an ODOT distress (drop nuisance classes)
 df_det["distress_weight"] = pd.to_numeric(df_det["distress_weight"], errors="coerce").fillna(0.0)
@@ -568,8 +630,8 @@ df_det["conf"] = pd.to_numeric(df_det["conf"], errors="coerce").fillna(0.0)
 df_det["area_norm"] = pd.to_numeric(df_det["area_norm"], errors="coerce").fillna(0.0)
 df_det["class_id"] = pd.to_numeric(df_det["class_id"], errors="coerce").fillna(-1).astype(int)
 
-# precompute n_images_by_county (does NOT depend on thresholds)
-n_images_by_county = df_det.groupby("county_fips3")["filename"].nunique().astype(float)
+# precompute n_images_by_county using all labeled images, including clean roads
+n_images_by_county = df_img.groupby("county_fips3")["filename"].nunique().astype(float)
 n_images_by_county = n_images_by_county.replace(0, np.nan)
 
 # restrict to counties we can compare (intersection)
@@ -667,12 +729,250 @@ def rmse(x, y):
     y = np.asarray(y, dtype=float)
     return float(np.sqrt(np.nanmean((x - y) ** 2)))
 
+def build_county_feature_matrix(df_img, df_det, counties, class_names):
+    """
+    Build a county-level feature library from image-level counts and detection-
+    level confidence/area summaries. Features are normalized per image so that
+    county coverage differences do not mechanically drive the score.
+    """
+    counties_index = pd.Index(counties, name="county_fips3")
+    feature_df = pd.DataFrame(index=counties_index)
+
+    img_group = df_img.groupby("county_fips3", sort=False)
+    n_images = img_group["filename"].nunique().reindex(counties_index).astype(float)
+    n_images_safe = n_images.replace(0.0, np.nan)
+
+    for cname in class_names.values():
+        count_col = f"count_{cname}"
+        count_per_img = img_group[count_col].mean().reindex(counties_index).fillna(0.0)
+        any_rate = (
+            img_group[count_col]
+            .apply(lambda s: (pd.to_numeric(s, errors="coerce").fillna(0.0) > 0).mean())
+            .reindex(counties_index)
+            .fillna(0.0)
+        )
+        feature_df[f"img_any_rate__{cname}"] = any_rate.astype(float)
+        feature_df[f"count_per_img__{cname}"] = count_per_img.astype(float)
+
+    if not df_det.empty:
+        det = df_det.copy()
+        det["conf_area"] = det["conf"] * det["area_norm"]
+
+        det_agg = (
+            det.groupby(["county_fips3", "class_name"], as_index=True)
+            .agg(
+                conf_sum=("conf", "sum"),
+                area_sum=("area_norm", "sum"),
+                conf_area_sum=("conf_area", "sum"),
+            )
+        )
+
+        for metric in ("conf_sum", "area_sum", "conf_area_sum"):
+            wide = (
+                det_agg[metric]
+                .unstack("class_name")
+                .reindex(index=counties_index, columns=list(class_names.values()))
+                .fillna(0.0)
+            )
+            wide = wide.div(n_images_safe, axis=0).fillna(0.0)
+            for cname in class_names.values():
+                feature_df[f"{metric}_per_img__{cname}"] = wide[cname].astype(float)
+    else:
+        for metric in ("conf_sum", "area_sum", "conf_area_sum"):
+            for cname in class_names.values():
+                feature_df[f"{metric}_per_img__{cname}"] = 0.0
+
+    # Remove degenerate features with no county-level variation.
+    non_constant_cols = [
+        col for col in feature_df.columns
+        if feature_df[col].replace([np.inf, -np.inf], np.nan).fillna(0.0).nunique() > 1
+    ]
+    return feature_df.loc[:, non_constant_cols].astype(float)
+
+def fit_learned_county_calibration(X, odot_pcr, counties):
+    """
+    Learn county-level PCR calibration directly from detector features.
+
+    The target is county-level deduction = 100 - ODOT_PCR. Features are all
+    non-negative defect burden summaries. A positive Elastic Net therefore
+    learns how much each feature should lower PCR. Hyperparameters are chosen
+    to maximize in-sample Pearson correlation, and we also report LOOCV fit.
+    """
+    counties_index = pd.Index(counties, name="county_fips3")
+    X = X.loc[counties_index].astype(float)
+    y_pcr = odot_pcr.loc[counties_index].astype(float)
+    y_ded = (100.0 - y_pcr).clip(lower=0.0, upper=100.0)
+
+    if X.shape[1] == 0:
+        raise ValueError("No non-constant county-level features available for learned calibration.")
+
+    alphas = np.logspace(-4, 1, 80)
+    l1_ratios = [0.05, 0.10, 0.20, 0.40, 0.60, 0.80, 1.00]
+
+    search_results = []
+    best = None
+
+    for l1_ratio in l1_ratios:
+        for alpha in alphas:
+            pipe = Pipeline(
+                steps=[
+                    ("scaler", StandardScaler()),
+                    (
+                        "model",
+                        ElasticNet(
+                            alpha=float(alpha),
+                            l1_ratio=float(l1_ratio),
+                            positive=True,
+                            fit_intercept=True,
+                            selection="cyclic",
+                            max_iter=200000,
+                        ),
+                    ),
+                ]
+            )
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=ConvergenceWarning)
+                pipe.fit(X, y_ded)
+
+            ded_fit = pipe.predict(X)
+            pcr_fit = np.clip(100.0 - ded_fit, 0.0, 100.0)
+
+            coef = pipe.named_steps["model"].coef_
+            n_nonzero = int(np.sum(np.abs(coef) > 1e-10))
+            row = {
+                "alpha": float(alpha),
+                "l1_ratio": float(l1_ratio),
+                "pearson": pearson_corr(pcr_fit, y_pcr.to_numpy(dtype=float)),
+                "spearman": spearman_corr(pcr_fit, y_pcr.to_numpy(dtype=float)),
+                "rmse": rmse(pcr_fit, y_pcr.to_numpy(dtype=float)),
+                "n_nonzero": n_nonzero,
+                "model_mean": float(np.mean(pcr_fit)),
+                "model_std": float(np.std(pcr_fit, ddof=1)) if len(pcr_fit) > 1 else 0.0,
+            }
+            search_results.append(row)
+
+            if (
+                best is None
+                or (row["pearson"] > best["pearson"] + 1e-12)
+                or (
+                    abs(row["pearson"] - best["pearson"]) <= 1e-12
+                    and row["spearman"] > best["spearman"] + 1e-12
+                )
+                or (
+                    abs(row["pearson"] - best["pearson"]) <= 1e-12
+                    and abs(row["spearman"] - best["spearman"]) <= 1e-12
+                    and row["rmse"] < best["rmse"] - 1e-12
+                )
+            ):
+                best = row | {"pipe": pipe}
+
+    if best is None:
+        raise RuntimeError("Learned calibration search did not produce a valid model.")
+
+    best_pipe = best["pipe"]
+    scaler = best_pipe.named_steps["scaler"]
+    model = best_pipe.named_steps["model"]
+    fitted_ded = best_pipe.predict(X)
+    fitted_pcr = np.clip(100.0 - fitted_ded, 0.0, 100.0)
+
+    loocv_pipe = Pipeline(
+        steps=[
+            ("scaler", StandardScaler()),
+            (
+                "model",
+                ElasticNet(
+                    alpha=float(best["alpha"]),
+                    l1_ratio=float(best["l1_ratio"]),
+                    positive=True,
+                    fit_intercept=True,
+                    selection="cyclic",
+                    max_iter=200000,
+                ),
+            ),
+        ]
+    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=ConvergenceWarning)
+        loocv_ded = cross_val_predict(loocv_pipe, X, y_ded, cv=LeaveOneOut())
+    loocv_pcr = np.clip(100.0 - loocv_ded, 0.0, 100.0)
+
+    raw_coef = model.coef_ / scaler.scale_
+    raw_intercept = float(model.intercept_ - np.sum(model.coef_ * scaler.mean_ / scaler.scale_))
+
+    coef_df = pd.DataFrame(
+        {
+            "feature": X.columns,
+            "coef_standardized": model.coef_,
+            "coef_raw": raw_coef,
+            "abs_coef_raw": np.abs(raw_coef),
+        }
+    ).sort_values(["abs_coef_raw", "feature"], ascending=[False, True])
+
+    search_df = pd.DataFrame(search_results).sort_values(
+        ["pearson", "spearman", "rmse"],
+        ascending=[False, False, True],
+    )
+
+    metrics_df = pd.DataFrame(
+        [
+            {
+                "model": "learned_in_sample",
+                "alpha": float(best["alpha"]),
+                "l1_ratio": float(best["l1_ratio"]),
+                "pearson": pearson_corr(fitted_pcr, y_pcr.to_numpy(dtype=float)),
+                "spearman": spearman_corr(fitted_pcr, y_pcr.to_numpy(dtype=float)),
+                "rmse": rmse(fitted_pcr, y_pcr.to_numpy(dtype=float)),
+                "model_mean": float(np.mean(fitted_pcr)),
+                "model_std": float(np.std(fitted_pcr, ddof=1)) if len(fitted_pcr) > 1 else 0.0,
+                "n_nonzero": int(np.sum(np.abs(model.coef_) > 1e-10)),
+                "raw_intercept_deduction": raw_intercept,
+            },
+            {
+                "model": "learned_loocv",
+                "alpha": float(best["alpha"]),
+                "l1_ratio": float(best["l1_ratio"]),
+                "pearson": pearson_corr(loocv_pcr, y_pcr.to_numpy(dtype=float)),
+                "spearman": spearman_corr(loocv_pcr, y_pcr.to_numpy(dtype=float)),
+                "rmse": rmse(loocv_pcr, y_pcr.to_numpy(dtype=float)),
+                "model_mean": float(np.mean(loocv_pcr)),
+                "model_std": float(np.std(loocv_pcr, ddof=1)) if len(loocv_pcr) > 1 else 0.0,
+                "n_nonzero": int(np.sum(np.abs(model.coef_) > 1e-10)),
+                "raw_intercept_deduction": raw_intercept,
+            },
+        ]
+    )
+
+    compare_df = pd.DataFrame(
+        {
+            "county_fips3": counties_index,
+            "odot_avg_pcr": y_pcr.to_numpy(dtype=float),
+            "model_avg_pcr_learned": fitted_pcr,
+            "model_avg_pcr_learned_loocv": loocv_pcr,
+        }
+    )
+    compare_df["diff_learned"] = compare_df["model_avg_pcr_learned"] - compare_df["odot_avg_pcr"]
+    compare_df["diff_learned_loocv"] = compare_df["model_avg_pcr_learned_loocv"] - compare_df["odot_avg_pcr"]
+
+    return {
+        "feature_matrix": X,
+        "search_df": search_df,
+        "metrics_df": metrics_df,
+        "coef_df": coef_df,
+        "compare_df": compare_df,
+    }
+
 # -------------------------
 # 5) Build candidate grids (quantile-based, keeps search size sane)
 # -------------------------
-# You can tighten/loosen these. Smaller grids = much faster.
-conf_vals = conf_arr[np.isfinite(conf_arr)]
-area_vals = area_arr[np.isfinite(area_arr)]
+# Use only mapped distress detections when constructing threshold candidates.
+# Nuisance detections contribute zero deduction and should not move severity or
+# extent cutoffs.
+mapped_mask = np.isfinite(base_w) & (base_w > 0)
+conf_vals = conf_arr[mapped_mask & np.isfinite(conf_arr)]
+area_vals = area_arr[mapped_mask & np.isfinite(area_arr)]
+
+if len(conf_vals) == 0 or len(area_vals) == 0:
+    raise ValueError("No mapped distress detections available for threshold search.")
 
 # candidate cutpoints from quantiles (dedup + sorted)
 conf_cands = np.unique(np.round(np.quantile(conf_vals, np.linspace(0.15, 0.85, 8)), 3))
@@ -743,3 +1043,45 @@ if best["params"] is not None:
     out_compare = run_dir / "county_pcr_compare_best_thresholds.csv"
     compare_df.to_csv(out_compare, index=False)
     print("Saved best-threshold county comparison:", out_compare)
+
+# =============================================================================
+# Learned county-level calibration
+# =============================================================================
+
+county_feature_df = build_county_feature_matrix(df_img, df_det, common_counties, CLASS_NAMES)
+learned = fit_learned_county_calibration(county_feature_df, odot_y, common_counties)
+
+out_features = run_dir / "county_feature_matrix_learned_calibration.csv"
+learned["feature_matrix"].reset_index().to_csv(out_features, index=False)
+
+out_search = run_dir / "learned_calibration_search_results.csv"
+learned["search_df"].to_csv(out_search, index=False)
+
+out_metrics = run_dir / "learned_calibration_metrics.csv"
+learned["metrics_df"].to_csv(out_metrics, index=False)
+
+out_coef = run_dir / "learned_calibration_coefficients.csv"
+learned["coef_df"].to_csv(out_coef, index=False)
+
+learned_compare = learned["compare_df"].copy()
+if best["params"] is not None:
+    learned_compare = learned_compare.merge(
+        compare_df[["county_fips3", "model_avg_pcr"]].rename(
+            columns={"model_avg_pcr": "model_avg_pcr_threshold"}
+        ),
+        on="county_fips3",
+        how="left",
+    )
+
+out_learned_compare = run_dir / "county_pcr_compare_learned_calibration.csv"
+learned_compare.to_csv(out_learned_compare, index=False)
+
+print("\nLearned calibration metrics:")
+print(learned["metrics_df"].to_string(index=False))
+print("\nTop learned-calibration features:")
+print(learned["coef_df"].head(10).to_string(index=False))
+print("\nSaved learned feature matrix:", out_features)
+print("Saved learned calibration search results:", out_search)
+print("Saved learned calibration metrics:", out_metrics)
+print("Saved learned calibration coefficients:", out_coef)
+print("Saved learned calibration county comparison:", out_learned_compare)

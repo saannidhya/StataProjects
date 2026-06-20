@@ -1,0 +1,42 @@
+\begin{table}[htbp]\centering
+\caption{Replication of BLS Table III: Mean Effects on Test Scores and House Prices}
+\label{tab:rep_meaneffects}
+\begin{threeparttable}
+\footnotesize
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccc@{}}
+\toprule
+\multicolumn{4}{l}{\textbf{Panel A. Test scores}}\\
+\addlinespace[2pt]
+Estimate & BLS & Stata & R\\
+\midrule
+1-4 years & 0.051*** (0.014) & 0.051*** (0.014) & 0.051*** (0.014)\\
+5-8 years & 0.096*** (0.023) & 0.096*** (0.023) & 0.096*** (0.023)\\
+9-12 years & 0.091*** (0.029) & 0.091*** (0.029) & 0.091*** (0.030)\\
+\addlinespace[6pt]\multicolumn{4}{l}{\textbf{Panel B. Math}}\\
+\addlinespace[2pt]
+Estimate & BLS & Stata & R\\
+\midrule
+1-4 years & 0.054*** (0.018) & 0.054*** (0.018) & 0.054*** (0.018)\\
+5-8 years & 0.096*** (0.028) & 0.096*** (0.028) & 0.096*** (0.028)\\
+9-12 years & 0.068** (0.033) & 0.068** (0.033) & 0.068** (0.033)\\
+\addlinespace[6pt]\multicolumn{4}{l}{\textbf{Panel C. ELA}}\\
+\addlinespace[2pt]
+Estimate & BLS & Stata & R\\
+\midrule
+1-4 years & 0.050*** (0.014) & 0.050*** (0.014) & 0.050*** (0.014)\\
+5-8 years & 0.102*** (0.022) & 0.102*** (0.022) & 0.102*** (0.022)\\
+9-12 years & 0.115*** (0.030) & 0.115*** (0.030) & 0.115*** (0.030)\\
+\addlinespace[6pt]\multicolumn{4}{l}{\textbf{Panel D. House Price Index}}\\
+\addlinespace[2pt]
+Estimate & BLS & Stata & R\\
+\midrule
+1-4 years & 2.397* (1.287) & 2.397* (1.287) & 2.397* (1.291)\\
+5-8 years & 6.783*** (2.047) & 6.783*** (2.047) & 6.783*** (2.055)\\
+9-12 years & 4.822** (1.927) & 4.822** (1.927) & 4.822** (1.934)\\
+\addlinespace[6pt]\bottomrule
+\end{tabular*}
+\begin{tablenotes}[flushleft]
+\item \emph{Notes:} Table compares point estimates reported in Table III of \cite{biasi_what_2025} (in ``BLS'' column), estimates produced using the original Stata replication code (in ``Stata'' column) and the replication code in R (in ``R'' column). Stars denote significance levels: $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}

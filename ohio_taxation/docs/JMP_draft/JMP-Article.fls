@@ -304,6 +304,11 @@ INPUT .\images\rd_plot_year_5_after_vote.png
 INPUT .\images\rd_plot_year_5_after_vote.png
 INPUT .\images\rd_plot_year_5_after_vote.png
 INPUT .\images\rd_plot_year_5_after_vote.png
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmex10.tfm
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT .\emp_strategy.tex
 INPUT .\emp_strategy.tex
 INPUT emp_strategy.tex
@@ -313,11 +318,6 @@ INPUT results.tex
 INPUT ..\..\data\outputs\tables\road_quality_rd_table5.tex
 INPUT ..\..\data\outputs\tables\road_quality_rd_table5.tex
 INPUT ..\..\data\outputs\tables\road_quality_rd_table5.tex
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmex10.tfm
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
-INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti10.tfm
 INPUT C:\Users\rawatsa\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\tcrm1095.tfm
 INPUT .\images\tes_gs_reg.png
