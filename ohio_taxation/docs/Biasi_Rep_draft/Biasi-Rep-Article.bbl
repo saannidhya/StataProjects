@@ -1,0 +1,50 @@
+
+
+% Bibstyle aea.bst version 2009.05.20
+
+\begin{thebibliography}{xx}
+
+\harvarditem[Abott et~al.]{Carolyn Abott, Vladimir Kogan, St{\'e}phane Lavertu
+  \harvardand\ Zachary Peskowitz}{2020}{abott2020school}
+{\bf Abott, Carolyn, Vladimir Kogan, St{\'e}phane Lavertu, and Zachary
+  Peskowitz.} 2020. ``School district operational spending and student
+  outcomes: Evidence from tax elections in seven states.'' {\em Journal of
+  Public Economics}, 183:~104142.
+
+\harvarditem[Baron]{E~Jason Baron}{2022}{baron2022school}
+{\bf Baron, E~Jason.} 2022. ``School spending and student outcomes: Evidence
+  from revenue limit elections in Wisconsin.'' {\em American Economic Journal:
+  Economic Policy}, 14(1):~1--39.
+
+\harvarditem[Biasi, Lafortune \harvardand\ Schönholzer]{Barbara Biasi, Julien
+  Lafortune \harvardand\ David Schönholzer}{2025}{biasi_what_2025}
+{\bf Biasi, Barbara, Julien Lafortune, and David Schönholzer.} 2025. ``What
+  Works and for Whom? Effectiveness and Efficiency of School Capital
+  Investments Across the U.S.'' {\em The Quarterly Journal of Economics}.
+
+\harvarditem[Cellini, Ferreira \harvardand\ Rothstein]{Stephanie~R Cellini,
+  Fernando Ferreira \harvardand\ Jesse Rothstein}{2010}{cellini2010value}
+{\bf Cellini, Stephanie~R, Fernando Ferreira, and Jesse Rothstein.} 2010. ``The
+  value of school facility investments: Evidence from a dynamic regression
+  discontinuity design.'' {\em The Quarterly Journal of Economics},
+  125(1):~215--261.
+
+\harvarditem[Contat \harvardand\ Larson]{Justin Contat \harvardand\ William~D
+  Larson}{2024}{contat_larson_2024}
+{\bf Contat, Justin, and William~D Larson.} 2024. ``A flexible method of
+  housing price index construction using repeat-sales aggregates.'' {\em Real
+  Estate Economics}, 52(6):~1551--1583.
+
+\harvarditem[Martorell, Stange \harvardand\ McFarlin~Jr]{Paco Martorell, Kevin
+  Stange \harvardand\ Isaac McFarlin~Jr}{2016}{martorell2016investing}
+{\bf Martorell, Paco, Kevin Stange, and Isaac McFarlin~Jr.} 2016. ``Investing
+  in schools: capital spending, facility conditions, and student achievement.''
+  {\em Journal of Public Economics}, 140:~13--29.
+
+\harvarditem[Neilson \harvardand\ Zimmerman]{Christopher~A Neilson \harvardand\
+  Seth~D Zimmerman}{2014}{neilson2014effect}
+{\bf Neilson, Christopher~A, and Seth~D Zimmerman.} 2014. ``The effect of
+  school construction on test scores, school enrollment, and home prices.''
+  {\em Journal of Public Economics}, 120:~18--31.
+
+\end{thebibliography}

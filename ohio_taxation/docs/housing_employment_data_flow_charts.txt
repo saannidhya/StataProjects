@@ -1,0 +1,58 @@
+ Flowchart to understand datapipeline forMedian SaleAmount Outcome
+
+
+
+
+cosub           panel property2 sois dta                roads levies2 9118 dt a
+        place
+                    mergingcensus androads    data
+    roads levies2 census 9118 dta
+                   I cleaning keepingonlylobsper county                  and
+                                                                               yearIt
+                                                        subdivision ti
+
+        reads and census dta
+
+
+
+
+    housands.it
+                                              censis c
+                             housing roads            yearsmatchesdta
+                 IMimatanousig.agg                          by jand
+                                                  aggregating
+                                              u
+                                            e.as amus cyeas.ata                          regression
+
+                                             Tonlyifcovariatesareneeded
+
+                                 sosub place panel property2 9018 dta                   orroadsand
+                                                                                                  census.at
+
+                                                                                         in STATArode
+  Flowchart to understand datapipeline for Employment outcome
+
+
+
+
+masterfile 200601 2021 92Sas bdat 19,435 152         with 2MMall missingobs
+              takingonlyuniqueaddress
+                                        columns
+              u by
+                   Address
+                            citystateZip
+                              I
+     unique addresses Sas bdat 993,025 afterremoving 3obswith s
+                                       addGeoidFIPScode
+               geolding t spatialjointo
+
+   unique addresses export after spatialjoin isv 993,025
+
+               joining geolodedaddresseswithFIPS
+                                            code
+                back to originaldate setusingAddress citystatezipcolumns
+                                         odj t s employment d f ses bdat is 274 347
+
+
+masterfile 200601 2021 92Sas bdat
+

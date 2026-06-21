@@ -1,0 +1,156 @@
+\pdfminorversion=6
+\documentclass[12pt]{article}
+
+\usepackage{amssymb,amsmath,amsfonts,geometry,ulem,graphicx,caption,color,setspace,sectsty,footmisc,natbib,pdflscape,array,hyperref}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{url}
+\usepackage{float,placeins,tabularx,longtable,booktabs,listings,threeparttable,subcaption}
+\hypersetup{colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue}
+
+\normalem
+\onehalfspacing
+\geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in}
+\frenchspacing
+
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+\newcommand{\inputifexists}[2]{\IfFileExists{#1}{\input{#1}}{\begin{center}\fbox{\parbox{0.88\linewidth}{#2}}\end{center}}}
+
+\begin{document}
+
+\begin{titlepage}
+\title{The Effects of School Capital Investments: A Reassessment\thanks{Acknowledgements: I am grateful to Barbara Biasi for sharing the data and replication code. All errors are my own.}}
+\author{Saannidhya Rawat\thanks{PhD Candidate, University of Cincinnati. Corresponding author: rawatsa@mail.uc.edu}}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+\noindent This paper extends \citet{biasi_what_2025}, who estimate the effects of school capital investments on student achievement and house prices using a stacked dynamic regression discontinuity design based on local bond elections. First, I independently reproduce their main first-stage and reduced-form estimates. Next, I audit the design's close-election logic by re-estimating the model under increasingly narrow vote-margin windows: the medium-run effects lose significance as the near-threshold sample collapses and standard errors widen several-fold, yet the restricted-window confidence intervals still contain the published estimates---suggesting a loss of statistical power for the near-threshold observations. Finally, I disaggregate the national estimates by state and find that the dispersion of local returns is large relative to the average; national level estimates mask substantial state-level heterogeneity that I interpret descriptively by relating these effects to the baseline capital stock, student composition and project mix of each state. 
+% Following \citet{clemens2017meaning}, I frame the extensions as robustness and external-validity checks around a confirmed result rather than as a challenge to it.
+\\
+\vspace{0in}\\
+\noindent\textbf{Keywords:} School capital investment, education finance, regression discontinuity, state heterogeneity, school bonds\\
+\vspace{0in}\\
+\noindent\textbf{JEL Codes:} H75, I22, I28, R31
+
+\bigskip
+\end{abstract}
+\setcounter{page}{0}
+\thispagestyle{empty}
+\end{titlepage}
+\pagebreak \newpage
+
+\doublespacing
+
+\section{Introduction} \label{sec:introduction}
+
+Capital investments in schools are a central part of local education finance. Districts use bond elections to renovate buildings, replace aging infrastructure, expand capacity, and improve learning environments. Whether these projects improve student achievement and neighborhood values is an empirical question with direct policy relevance: capital projects are expensive, locally financed, and often justified by both educational and housing-market returns. A long line of research has tried to recover their causal effects but has presented mixed evidence. \citet{cellini2010value} pioneered the use of a dynamic regression discontinuity (RD) design around close bond elections in California, finding that authorized spending raises house prices but has muted measured achievement effects; \citet{neilson2014effect} and \citet{martorell2016investing} reach mixed conclusions on test scores using construction timing and facility-condition variation; and \citet{hong2016investing} and \citet{rauscher2020delayed} document positive but uneven effects across districts and student subgroups. These results sit within a broader school-spending literature in which causal estimates are, on average, positive but heterogeneous \citep{jackson2016effects,lafortune2018school,baron2022school,abott2020school}; heterogeneity that the recent meta-analysis of \citet{jackson2024impacts} shows is the rule rather than the exception.
+
+\citet{biasi_what_2025}, hereafter BLS, provide the most comprehensive recent estimates of these effects. Using school bond elections across the United States from 1995 to 2017, they develop a stacked dynamic regression discontinuity design that compares districts around state-specific bond-passage thresholds while accounting for repeated elections and bond histories. Their main results show that bond authorization increases capital spending, raises test scores over the medium run, and is capitalized into house prices, and that these average returns mask substantial variation by project type and district characteristics. Because the paper is both methodologically ambitious and policy-relevant, it is a natural candidate for the kind of post-publication scrutiny that \citet{hamermesh2007replication}, \citet{clemens2017meaning}, and \citet{christensen2018transparency} argue should be routine in economics but remains rare \citep{changli2015economics,galiani2017incentives,duvendack2017replication}.
+
+In this paper, I replicate and extend the work of \citet{biasi_what_2025}. I re-run the original Stata workflow and obtain the published first-stage and reduced-form estimates almost exactly, and I confirm them with an independently coded implementation in R. In the taxonomy of \citet{clemens2017meaning}, this is a successful \emph{verification} that the headline tables can be regenerated from the replication package with high fidelity.
+
+Next, I assess the robustness of the design's ``close-election'' logic. The published specification uses the full analysis sample with flexible polynomial controls for the running variable; identification of a local effect at the threshold therefore rests on functional-form extrapolation away from the cutoff, the well-known tension in RD practice between efficiency and locality \citep{lee_lemieux2010,calonico2014robust,imbens2012optimal}. I treat the full-sample estimates as the baseline and re-estimate the model under increasingly narrow vote-margin windows. As the window tightens the near-threshold sample collapses, standard errors widen several-fold, and the medium-run effects lose significance; but the restricted-window confidence intervals continue to contain the published estimates. I interpret these results as the signature of loss of power near the threshold rather than evidence against the design, consistent with the broad validity of close-election RD documented by \citet{eggers2015validity} and the cautions of \citet{caughey2011elections} and \citet{delacuesta2016misunderstandings}.
+
+The third contribution assesses external validity by disaggregating the national estimates by state. \citet{biasi_what_2025} already report rich heterogeneity by project type and district demographics; my aim is complementary and explicitly generalization-oriented. A single national average is a precision-weighted aggregate of heterogeneous local effects \citep{goodmanbacon2021difference,sunabraham2021estimating,callaway2021difference}, so its policy relevance for any one state depends on how much the underlying effects vary---precisely the ``contexts of convenience'' problem that \citet{handel2024contexts} and \citet{allcott2015site} raise for school-finance evidence. I therefore report state-specific effects and read their dispersion as a map of where the national result is more and less likely to travel, relating it to descriptive state-level summaries of project mix, baseline capital stock, and student composition. Because the number of states is small and state characteristics are not randomly assigned, this mapping is descriptive rather than causal, and I interpret the per-state estimates as a distribution of noisy effects in the spirit of \citet{meager2019understanding}.
+
+The paper is organized as follows. Section \ref{sec:data_rep} characterizes the original study, data, and replication design. Section \ref{sec:replication} reports the computational reproduction. Section \ref{sec:bandwidth} presents the vote-margin robustness audit. Section \ref{sec:extension} reports the state-level heterogeneity and external-validity evidence. Section \ref{sec:result} concludes.
+
+\section{Original Study and Replication Design} \label{sec:data_rep}
+
+\input{data_and_method.tex}
+
+\section{Computational Replication of Main Results} \label{sec:replication}
+
+\subsection{First Stage}
+
+Table \ref{tab:rep_firststage} presents the replication of the first-stage effects of bond authorization on school expenditures reported in Table II of \citet{biasi_what_2025}. The Stata replication reproduces the original estimates exactly, matching point estimates and standard errors across the expenditure categories. The independent R implementation yields nearly identical estimates, with only trivial numerical differences. The first-stage results confirm that bond passage leads to substantial increases in capital expenditures in years 1--5, followed by a decline as projects move toward completion.
+
+\input{tables/rep_firststage.tex}
+
+\subsection{Mean Effects}
+
+Table \ref{tab:rep_meaneffects} replicates the reduced-form effects on test scores and house prices from Table III of \citet{biasi_what_2025}. Across overall test scores, math, ELA, and the house price index, the replicated estimates closely match the published results. The computational replication therefore supports the central conclusion of the original study: school bond authorization increases school capital investment and is followed by gains in measured achievement and housing values.
+
+\input{tables/rep_meaneffects.tex}
+
+\section{Robustness to Election-Margin Restrictions} \label{sec:bandwidth}
+
+A regression discontinuity design identifies a treatment effect \emph{at} the cutoff, but the published specification estimates that effect from the full sample using flexible polynomial controls for the vote margin. Identification of the local effect therefore relies in part on extrapolation of those polynomials toward the threshold from elections decided by wide margins---the standard efficiency-versus-locality trade-off in RD estimation \citep{lee_lemieux2010,calonico2014robust,imbens2012optimal}. A natural robustness check is to ask whether the headline patterns survive when the comparison is forced to be more local. This section reports that check; following \citet{clemens2017meaning}, it is a robustness exercise around the baseline, not a competing estimator.
+
+Figure \ref{fig:margin_dist} displays the distribution of vote margins in the replication sample, where the margin is defined as the difference between the share of yes votes and the state-mandated approval threshold. The density is continuous through the threshold, with no pronounced bunching just above zero---the qualitative pattern that formal density tests \citep{mccrary2008manipulation,cattaneo2020simple} are designed to detect, and the kind of setting in which close-election RD has been shown to be broadly valid across tens of thousands of races \citep{eggers2015validity}. The baseline BLS specification uses this full sample with flexible controls for the running variable and the stacked DRD structure described above. I preserve that specification as the benchmark and estimate additional versions that restrict the sample to elections within 20, 15, 10, and 5 percentage points of the threshold.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.96\textwidth]{images/hist_margin.png}
+    \caption{School Bond Election Vote Margins}
+    \label{fig:margin_dist}
+\end{figure}
+
+Narrower windows move the comparison closer to the RD cutoff but sharply reduce the sample. Appendix Table \ref{tab:bandwidth_sample_counts} shows that moving from the full sample to a $\pm$5-percentage-point window cuts the test-score panel from about 1.05 million to 49 thousand observations and the contributing elections from roughly 10,500 to 4,100, while the treated share falls from 0.85 to 0.58 as the retained elections become more balanced around the threshold. Figure \ref{fig:bandwidth_sensitivity_fig} plots the resulting coefficient path across windows for each outcome, and Appendix Table \ref{tab:bandwidth_sensitivity} reports the underlying estimates. In principle a change in the estimates as the window tightens admits three readings: the full-sample estimator could be leaning on functional-form extrapolation; the local estimand at the cutoff could genuinely differ from the full-sample average; or precision could simply collapse as the effective sample shrinks. The evidence is most consistent with the third. The medium- and long-run test-score effects, which are positive and significant in the full sample (0.038 and 0.047 standard deviations), attenuate toward zero and lose significance as the window narrows, with standard errors widening three- to five-fold (from about 0.011 to 0.055); at the two tightest windows the point estimates even turn slightly negative. The first-stage capital-spending effect behaves the same way, strongly positive in the full sample but insignificant once the sample is restricted. Crucially, these restricted-window estimates are too imprecise to separate the positive baseline from zero: their confidence intervals generally contain the full-sample estimate, so the near-threshold data neither overturn nor independently confirm the dynamic effects. If anything, the house-price effects \emph{sharpen} at intermediate windows, turning positive and significant at the $\pm$15- and $\pm$20-point bandwidths. Two features argue against reading this instability as a design failure rather than a power loss: the running-variable density is smooth through the threshold (Figure \ref{fig:margin_dist}), the pattern that formal manipulation tests are built to detect \citep{mccrary2008manipulation,cattaneo2020simple}, and close-election RD designs are broadly valid in settings like this one \citep{eggers2015validity,delacuesta2016misunderstandings}. The audit thus leaves the original conclusions standing while making their basis transparent: by using information away from the cutoff, the full-sample specification is far better powered to detect the dynamic effects than any near-threshold subsample \citep{imbens2012optimal,calonico2014robust}. A fully nonparametric local-polynomial implementation with data-driven bandwidths and formal density diagnostics \citep{calonico2017rdrobust,cattaneo2020simple} is the natural way to push the local analysis further and is left to future work.
+
+\begin{figure}[p]
+    \centering
+    \renewcommand{\thesubfigure}{\Alph{subfigure}}
+    \begin{subfigure}{0.60\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../biasi2025/figures/eer/bandwidth_sensitivity_capital.pdf}
+        \caption{Capital spending per pupil}
+        \label{fig:bandwidth_capital}
+    \end{subfigure}
+
+    \vspace{0.2em}
+    \begin{subfigure}{0.60\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../biasi2025/figures/eer/bandwidth_sensitivity_tests.pdf}
+        \caption{Test scores}
+        \label{fig:bandwidth_tests}
+    \end{subfigure}
+
+    \vspace{0.2em}
+    \begin{subfigure}{0.60\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../biasi2025/figures/eer/bandwidth_sensitivity_hpi.pdf}
+        \caption{House price index}
+        \label{fig:bandwidth_hpi}
+    \end{subfigure}
+    \caption{Coefficient Path Under Vote-Margin Restrictions}
+    \label{fig:bandwidth_sensitivity_fig}
+    \captionsetup{font=footnotesize}
+    \caption*{\footnotesize\textit{Notes:} Each panel traces the average short-, medium-, and long-run effect across the full sample (baseline) and samples restricted to within 20, 15, 10, and 5 points of the threshold; see Appendix Table \ref{tab:bandwidth_sensitivity} for the underlying estimates and exact horizon definitions.}
+\end{figure}
+
+\section{State-Level Heterogeneity and Descriptive Mechanisms} \label{sec:extension}
+
+\input{results.tex}
+
+\section{Conclusion} \label{sec:result}
+
+This paper starts by independently regenerating the original first-stage and reduced-form estimates of \citet{biasi_what_2025}. Next, it extends the analysis by restricting the sample to different vote-margin windows around the decision threshold. I find that the medium-run effects lose significance as the near-threshold sample collapses, yet the restricted-window confidence intervals still contain the published estimates---a power loss near the threshold rather than a contradiction of the design. Finally, the state-level decomposition shows that the national average is a weighted blend of heterogeneous local returns in capital spending, test scores, and house prices.
+
+Taken together, these results strengthen the original study while developing a more nuanced understanding of the effects. The dispersion across states is a quantitative statement of the ``contexts of convenience'' cautionary tale of \citet{handel2024contexts}: a national average estimated from the states that happen to hold and report close bond elections need not describe the return to capital in a given state. The descriptive associations between state effects and project mix, baseline capital stock, and student composition are weak and are not causal evidence about institutions or project categories. Instead, they highlight where additional data collection and a properly powered, design-based mechanism analysis would be valuable for understanding why the return to capital investment generalizes well to some states and not others.
+
+\section*{Data and Code Availability}
+
+Author-written code will be made available as supplementary material and archived in a public repository. Access to the underlying data follows the terms of the Biasi, Lafortune and Sch\"onholzer replication package and its third-party data providers.
+
+% This study uses the replication files distributed with \citet{biasi_what_2025}. The underlying microdata are redistributed only under the terms attached to that package and to its third-party sources (NCES, the Stanford Education Data Archive, and the \citet{contat_larson_2024} house price index). All code written for this replication---the Stata workflow that reproduces the original tables, the independent R implementation, the vote-margin robustness scripts, the state sample audit, and the descriptive state-level mechanism tables and figures---together with package versions (Stata 19 with \texttt{reghdfe}, \texttt{estout}, \texttt{texdoc}, \texttt{coefplot}, and \texttt{rdrobust}; R 4.6) and a README documenting the build, will be made available upon publication. 
+% is archived in a public repository (\url{https://github.com/[REPO-TO-BE-ADDED]}) and is available as supplementary material. Where redistribution of the original data is restricted, the repository provides the scripts and instructions needed to reproduce every result from the original replication package.
+
+% \section*{Declaration of Generative AI Use}
+
+% Generative AI tools were used to assist with code debugging, copy-editing, and reference formatting. The author reviewed and verified all analyses, results, and interpretations and takes full responsibility for the content of the manuscript.
+
+\singlespacing
+\setlength\bibsep{0pt}
+\bibliographystyle{aea}
+\bibliography{eer_references}
+
+\clearpage
+\appendix
+\section*{Appendix}
+\renewcommand{\thesubsection}{A.\arabic{subsection}}
+\setcounter{subsection}{0}
+\input{appendix.tex}
+
+\end{document}

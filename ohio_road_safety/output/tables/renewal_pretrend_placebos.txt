@@ -1,0 +1,93 @@
+Close-renewal placebo checks on pre-election outcomes
+
+                             fatal_crashes_per_10k_m3 fatal_crashes_per_10k_m2
+Dependent Var.:              fatal_crashes_per_10k_m3 fatal_crashes_per_10k_m2
+                                                                              
+Constant                               -2.903 (2.315)           -2.278 (1.729)
+failed_levy                           0.1691 (0.7465)          -0.9480 (1.046)
+margin_against                       -0.0318 (0.1732)          0.0877 (0.1677)
+pop_election                        8.02e-6 (1.17e-5)       -2.38e-5 (1.61e-5)
+medfamy_election                  -2.78e-5. (1.46e-5)        1.29e-5 (1.89e-5)
+poverty_election                       -3.587 (3.378)          -0.3558 (3.487)
+unemprate_election                      5.468 (3.787)            2.170 (4.382)
+pctown_election                       6.793** (2.505)           3.873* (1.710)
+failed_levy x margin_against          0.2673 (0.4135)          0.1761 (0.3445)
+____________________________ ________________________ ________________________
+S.E.: Clustered                            by: county               by: county
+Observations                                      132                      150
+R2                                            0.09427                  0.05188
+Adj. R2                                       0.03537                 -0.00191
+
+                             fatal_crashes_per_10k_m1 log_median_sale_amount_m3
+Dependent Var.:              fatal_crashes_per_10k_m1 log_median_sale_amount_m3
+                                                                               
+Constant                                3.878 (6.158)         10.52*** (0.3380)
+failed_levy                          -0.7414 (0.7322)           0.1199 (0.2162)
+margin_against                       -0.0134 (0.1686)          -0.0288 (0.0420)
+pop_election                       -1.54e-5 (1.66e-5)        7.68e-6* (3.63e-6)
+medfamy_election                   -5.76e-5 (5.23e-5)      1.31e-5*** (3.64e-6)
+poverty_election                       -7.111 (12.54)           -1.374 (0.9262)
+unemprate_election                     -1.106 (8.126)           -0.9146 (1.254)
+pctown_election                         2.861 (2.487)           0.2539 (0.5848)
+failed_levy x margin_against         -0.0162 (0.2953)           0.0479 (0.0445)
+____________________________ ________________________ _________________________
+S.E.: Clustered                            by: county                by: county
+Observations                                      163                       129
+R2                                            0.05107                   0.40784
+Adj. R2                                       0.00177                   0.36836
+
+                             log_median_sale_amount_m2
+Dependent Var.:              log_median_sale_amount_m2
+                                                      
+Constant                             10.49*** (0.3408)
+failed_levy                           -0.0267 (0.1453)
+margin_against                         0.0334 (0.0340)
+pop_election                         4.44e-6. (2.4e-6)
+medfamy_election                  1.83e-5*** (3.11e-6)
+poverty_election                      -0.5684 (0.6455)
+unemprate_election                    -0.7581 (0.8835)
+pctown_election                       -0.0171 (0.3489)
+failed_levy x margin_against          -0.0113 (0.0428)
+____________________________ _________________________
+S.E.: Clustered                             by: county
+Observations                                       146
+R2                                             0.50670
+Adj. R2                                        0.47789
+
+                             log_median_sale_amount_m1  log_total_wages_m3
+Dependent Var.:              log_median_sale_amount_m1  log_total_wages_m3
+                                                                          
+Constant                             10.32*** (0.2860)    17.13*** (1.640)
+failed_levy                           -0.0114 (0.1715)    -0.2142 (0.4529)
+margin_against                         0.0011 (0.0305)     0.1198 (0.1257)
+pop_election                        8.23e-6. (4.63e-6) 0.0001*** (2.24e-5)
+medfamy_election                     1.29e-5* (5.6e-6)   3.16e-5* (1.3e-5)
+poverty_election                       -1.362 (0.9675)       3.609 (3.296)
+unemprate_election                     0.4099 (0.9091)      -5.883 (4.408)
+pctown_election                        0.5208 (0.4749)    -4.425** (1.650)
+failed_levy x margin_against           0.0109 (0.0404)     0.0071 (0.2011)
+____________________________ _________________________ ___________________
+S.E.: Clustered                             by: county          by: county
+Observations                                       160                 129
+R2                                             0.37832             0.49862
+Adj. R2                                        0.34539             0.46519
+
+                              log_total_wages_m2  log_total_wages_m1
+Dependent Var.:               log_total_wages_m2  log_total_wages_m1
+                                                                    
+Constant                        19.49*** (1.090)   19.99*** (0.9971)
+failed_levy                      0.1674 (0.6208)    -0.1348 (0.3852)
+margin_against                   0.1056 (0.1481)    0.2095* (0.0934)
+pop_election                 0.0001*** (2.24e-5) 0.0001*** (2.16e-5)
+medfamy_election              2.42e-5* (1.06e-5)   1.8e-5* (8.38e-6)
+poverty_election                  -1.967 (2.292)      -3.125 (2.152)
+unemprate_election                -1.160 (3.610)     -0.8407 (3.170)
+pctown_election                -6.483*** (1.544)   -6.057*** (1.186)
+failed_levy x margin_against    -0.1045 (0.1570)   -0.2066. (0.1224)
+____________________________ ___________________ ___________________
+S.E.: Clustered                       by: county          by: county
+Observations                                 148                 160
+R2                                       0.51475             0.54402
+Adj. R2                                  0.48682             0.51987
+---
+Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1

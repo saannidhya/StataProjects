@@ -1,0 +1,62 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+colorlinks   = true,
+urlcolor     = blue,
+linkcolor    = black,
+citecolor    = black
+}
+\usepackage{parskip}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\setstretch{1.15}
+\frenchspacing
+
+\begin{document}
+
+\hfill
+\begin{minipage}[t]{0.50\textwidth}
+    \raggedleft
+    \IfFileExists{lcb_logo.png}{\includegraphics[width=\linewidth]{lcb_logo.png}}{}
+\end{minipage}
+
+Dear Editors of the \emph{Journal of Applied Econometrics},
+
+I am pleased to submit my manuscript, \emph{``The Effect of School Capital Investments: A State-Level Perspective''}, for consideration as a {\bf replication article} in the Replication Section of the \emph{Journal of Applied Econometrics}.
+
+This paper revisits and extends the analysis of {\bf Biasi, Lafortune and Sch\"onholzer (2025, \emph{Quarterly Journal of Economics})}, who study the effects of school capital investments on student outcomes and house prices using a rich dataset of school bond referendums across the United States. Their paper introduces a stacked dynamic regression discontinuity (DRD) design to estimate the impact of passing versus failing school capital measures on outcomes such as capital spending, test scores, and house prices.
+
+My replication has two main components. First, I conduct a narrow-sense replication of the core results in Biasi, Lafortune and Sch\"onholzer using two different software, Stata and R. I reconstruct their stacked DRD estimators and reproduce their main tables and figures for capital spending, student outcomes and house prices. The replicated estimates match the published results closely in magnitude, precision, and dynamics, thereby reinforcing confidence in the original findings and in the robustness of the stacked DRD implementation to software choice. I also identify important caveat when using the full distribution of running variable instead of focusing on ``close elections''.
+
+Second, I provide a wide-sense replication by exploring state-level heterogeneity in the treatment effects of school capital investments. Using the same identification strategy and underlying data, I estimate stacked DRD models separately by state and summarize the resulting distribution of treatment effects. This extension reveals substantial cross-state variation in the effects on both student outcomes and housing markets, suggesting that pre-existing institutional conditions, state-level finance systems, and local implementation may play an important role in mediating the impact of school capital investments. These findings complement the national-average results in the original paper and speak directly to the Replication Section’s goal of assessing the external validity and robustness of studies across different contexts.
+
+\textbf{Data and Code Availability.} All data used in this paper originate from the public replication package of Biasi, Lafortune and Sch\"onholzer (2025). Upon acceptance, I will deposit all replication code (Stata and R), together with documentation for both the verification and state-level extension analyses, in the \emph{Journal of Applied Econometrics} Data Archive, in accordance with the journal’s data and code policies. The materials will allow other researchers to reproduce all tables and figures in the manuscript without difficulty.
+
+\textbf{Conflict of Interest.} I declare that I have no conflicts of interest to disclose.
+
+\textbf{External Funding.} No external funding was received for this project.
+
+All research described in the manuscript was conducted in accordance with the ethical guidelines of the \emph{Journal of Applied Econometrics}. 
+
+Thank you for considering my submission. I hope that this replication and state-level extension will be a useful contribution to the Replication Section and to readers interested in both the methodology and the substantive policy question of school capital investment.
+
+Sincerely,\\[1ex]
+
+\begin{flushleft}
+    % Signature if available (compiles even if missing)
+\includegraphics[width=0.30\textwidth]{sign.jpg}
+\end{flushleft}
+
+\begin{minipage}[t]{0.60\textwidth}
+    {\Large Saani Rawat}\\
+    PhD Candidate, Department of Economics\\
+    Carl H. Lindner College of Business\\
+    University of Cincinnati\\
+    (513)~546--0601\\
+    \href{mailto:rawatsa@mail.uc.edu}{rawatsa@mail.uc.edu}\\
+    \url{https://saannidhya.github.io/}\\[2ex]
+\end{minipage}
+
+\end{document}

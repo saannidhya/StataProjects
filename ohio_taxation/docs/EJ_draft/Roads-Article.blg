@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Roads-Article.aux
+Reallocating 'name_of_file' (item size: 1) to 4 items.
+The style file: aea.bst
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+Database file #1: aej_references.bib
+Warning--empty journal in ruggieri_drd_2025
+You've used 54 entries,
+            2695 wiz_defined-function locations,
+            912 strings with 13400 characters,
+and the built_in function-call counts, 364147 in all, are:
+= -- 61434
+> -- 3639
+< -- 0
++ -- 29918
+- -- 1141
+* -- 32770
+:= -- 70576
+add.period$ -- 379
+call.type$ -- 54
+change.case$ -- 702
+chr.to.int$ -- 54
+cite$ -- 55
+duplicate$ -- 790
+empty$ -- 2097
+format.name$ -- 1177
+if$ -- 65477
+int.to.chr$ -- 5
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 169
+num.names$ -- 594
+pop$ -- 55
+preamble$ -- 1
+purify$ -- 810
+quote$ -- 0
+skip$ -- 652
+stack$ -- 0
+substring$ -- 88709
+swap$ -- 322
+text.length$ -- 756
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 208
+warning$ -- 1
+while$ -- 1330
+width$ -- 0
+write$ -- 272
+(There was 1 warning)

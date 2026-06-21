@@ -1,0 +1,40 @@
+\begin{table}[htbp]\centering
+    \caption{Replication of BLS Table II: First Stage Effects on Expenditures}
+    \label{tab:rep_firststage}
+    \begin{threeparttable}
+    \footnotesize
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccc@{}}
+    \toprule
+    \multicolumn{4}{l}{\textbf{Panel A. Capital expenditure}}\\
+    \addlinespace[2pt]
+    Estimate & BLS  & Stata & R\\
+    % Estimate & (1) & (2) & (3)\\
+    \midrule
+    1-5 years & 325*** (93)  & 325*** (93)  & 327*** (93) \\
+    6-8 years & -239** (104) & -239** (104) & -207* (106) \\
+    9-10 years& 2 (110)      & 2 (110)      & 46 (110) \\
+    \addlinespace[6pt]
+    \multicolumn{4}{l}{\textbf{Panel B. Current expenditure}}\\
+    \addlinespace[2pt]
+    Estimate & BLS  & Stata & R\\
+    \midrule
+    1-5 years & 7 (30)     & 7 (30)     & -6 (30) \\
+    6-8 years & -32 (47)   & -32 (47)   & -42 (47) \\
+    9-10 years& -64 (51)   & -64 (51)   & -76 (52) \\
+    \addlinespace[6pt]
+    \multicolumn{4}{l}{\textbf{Panel C. Other non-instructional services}}\\
+    \addlinespace[2pt]
+    Estimate & BLS  & Stata & R\\
+    \midrule
+    1-5 years & 3 (4)  & 3 (4)  & 3 (4) \\
+    6-8 years & 7 (7)  & 7 (7)  & 7 (7) \\
+    9-10 years& 10 (8) & 10 (8) & 10 (9) \\
+    \addlinespace[6pt]
+    \bottomrule
+    \end{tabular*}
+    \begin{tablenotes}[flushleft]
+    \item \emph{Notes:} Table compares point estimates reported in Table II of \cite{biasi_what_2025} (in ``BLS'' column), estimates produced using the original Stata replication code (in ``Stata'' column) and the replication code in R (in ``R'' column). Standard errors are in parentheses.
+    $^{*}p<0.10$, $^{**}p<0.05$, $^{***}p<0.01$.
+    \end{tablenotes}
+    \end{threeparttable}
+\end{table}

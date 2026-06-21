@@ -1,0 +1,119 @@
+
+
+% Bibstyle aea.bst version 2009.05.20
+
+\begin{thebibliography}{xx}
+
+\harvarditem[Adukia, Asher \harvardand\ Novosad]{Anjali Adukia, Sam Asher
+  \harvardand\ Paul Novosad}{2020}{adukia2020}
+{\bf Adukia, Anjali, Sam Asher, and Paul Novosad.} 2020. ``Educational
+  investment responses to economic opportunity: Evidence from Indian road
+  construction.'' {\em American Economic Journal: Applied Economics},
+  12(1):~348--376.
+
+\harvarditem[Asher \harvardand\ Novosad]{Sam Asher \harvardand\ Paul
+  Novosad}{2020}{asher2020}
+{\bf Asher, Sam, and Paul Novosad.} 2020. ``Rural roads and local economic
+  development.'' {\em American Economic Review}, 110(3):~797--823.
+
+\harvarditem[Beenstock, Feldman \harvardand\ Felsenstein]{Michael Beenstock,
+  Daniel Feldman \harvardand\ Daniel Felsenstein}{2016}{beenstock2016hedonic}
+{\bf Beenstock, Michael, Daniel Feldman, and Daniel Felsenstein.} 2016.
+  ``Hedonic pricing when housing is endogenous: The value of access to the
+  trans-Israel highway.'' {\em Journal of Regional Science}, 56(1):~134--155.
+
+\harvarditem[Biasi, Lafortune \harvardand\ Schönholzer]{Barbara Biasi, Julien
+  Lafortune \harvardand\ David Schönholzer}{2025}{biasi_what_2025}
+{\bf Biasi, Barbara, Julien Lafortune, and David Schönholzer.} 2025. ``What
+  {Works} and for {Whom}? {Effectiveness} and {Efficiency} of {School}
+  {Capital} {Investments} {Across} the {U}.{S}.*.'' {\em The Quarterly Journal
+  of Economics}, qjaf013. \_eprint:
+  https://academic.oup.com/qje/advance-article-pdf/doi/10.1093/qje/qjaf013/61946414/qjaf013.pdf.
+
+\harvarditem[Brewer et~al.]{Ethan Brewer, Jason Lin, Peter Kemper, John Hennin
+  \harvardand\ Dan Runfola}{2021}{brewer2021}
+{\bf Brewer, Ethan, Jason Lin, Peter Kemper, John Hennin, and Dan Runfola.}
+  2021. ``Predicting road quality using high resolution satellite imagery: A
+  transfer learning approach.'' {\em Plos one}, 16(7):~e0253370.
+
+\harvarditem[Cellini, Ferreira \harvardand\ Rothstein]{Stephanie~R Cellini,
+  Fernando Ferreira \harvardand\ Jesse Rothstein}{2010}{cellini2010value}
+{\bf Cellini, Stephanie~R, Fernando Ferreira, and Jesse Rothstein.} 2010. ``The
+  value of school facility investments: Evidence from a dynamic regression
+  discontinuity design.'' {\em The Quarterly Journal of Economics},
+  125(1):~215--261.
+
+\harvarditem[Chaurey \harvardand\ Le]{Ritam Chaurey \harvardand\ Duong~Trung
+  Le}{2022}{chaurey2022}
+{\bf Chaurey, Ritam, and Duong~Trung Le.} 2022. ``Infrastructure maintenance
+  and rural economic activity: Evidence from India.'' {\em Journal of Public
+  Economics}, 214:~104725.
+
+\harvarditem[Currier, Glaeser \harvardand\ Kreindler]{Lauren Currier, Edward~L
+  Glaeser \harvardand\ Gabriel~E Kreindler}{2023}{currier2023}
+{\bf Currier, Lauren, Edward~L Glaeser, and Gabriel~E Kreindler.} 2023.
+  ``Infrastructure Inequality: Who Pays the Cost of Road Roughness?'' National
+  Bureau of Economic Research Working Paper w31981.
+
+\harvarditem[Edel \harvardand\ Sclar]{Matthew Edel \harvardand\ Elliott
+  Sclar}{1974}{edel1974taxes}
+{\bf Edel, Matthew, and Elliott Sclar.} 1974. ``Taxes, spending, and property
+  values: Supply adjustment in a Tiebout-Oates model.'' {\em Journal of
+  political Economy}, 82(5):~941--954.
+
+\harvarditem[Gibbons \harvardand\ Machin]{Stephen Gibbons \harvardand\ Stephen
+  Machin}{2005}{gibbons2005valuing}
+{\bf Gibbons, Stephen, and Stephen Machin.} 2005. ``Valuing rail access using
+  transport innovations.'' {\em Journal of Urban Economics}, 57(1):~148--169.
+
+\harvarditem[Gibbons et~al.]{Stephen Gibbons, Teemu Lyytik{\"a}inen, Henry~G
+  Overman \harvardand\ Rosa Sanchis-Guarner}{2019}{gibbons2019new}
+{\bf Gibbons, Stephen, Teemu Lyytik{\"a}inen, Henry~G Overman, and Rosa
+  Sanchis-Guarner.} 2019. ``New road infrastructure: The effects on firms.''
+  {\em Journal of Urban Economics}, 110:~35--50.
+
+\harvarditem[Gonzalez-Navarro \harvardand\ Quintana-Domeque]{Marco
+  Gonzalez-Navarro \harvardand\ Climent
+  Quintana-Domeque}{2016}{gonzalez2016paving}
+{\bf Gonzalez-Navarro, Marco, and Climent Quintana-Domeque.} 2016. ``Paving
+  streets for the poor: Experimental analysis of infrastructure effects.'' {\em
+  Review of Economics and Statistics}, 98(2):~254--267.
+
+\harvarditem[Hettige]{Hemamala Hettige}{2006}{hettige2006}
+{\bf Hettige, Hemamala.} 2006. {\em When do rural roads benefit the poor and
+  how? An in-depth analysis based on case studies.} Asian Development Bank.
+
+\harvarditem[Hoogendoorn et~al.]{Sander Hoogendoorn, Jochem van Gemeren, Paul
+  Verstraten \harvardand\ Kees Folmer}{2019}{hoogendoorn2019house}
+{\bf Hoogendoorn, Sander, Jochem van Gemeren, Paul Verstraten, and Kees
+  Folmer.} 2019. ``House prices and accessibility: Evidence from a
+  quasi-experiment in transport infrastructure.'' {\em Journal of Economic
+  Geography}, 19(1):~57--87.
+
+\harvarditem[KAYA \harvardand\ {\c{C}}odur]{{\"O}mer KAYA \harvardand\
+  Muhammed~Yasin {\c{C}}odur}{2024}{kaya2024n}
+{\bf KAYA, {\"O}mer, and Muhammed~Yasin {\c{C}}odur.} 2024. ``N-RDD2024: Road
+  damage and defects.'' {\em Mendeley Data}, 4.
+
+\harvarditem[Levkovich, Rouwendal \harvardand\ Van~Marwijk]{Oleg Levkovich, Jan
+  Rouwendal \harvardand\ Rolf Van~Marwijk}{2016}{levkovich2016effects}
+{\bf Levkovich, Oleg, Jan Rouwendal, and Rolf Van~Marwijk.} 2016. ``The effects
+  of highway development on housing prices.'' {\em Transportation},
+  43(2):~379--405.
+
+\harvarditem[Li et~al.]{Shanjun Li, Jun Yang, Ping Qin \harvardand\ Shouyang
+  Chonabayashi}{2016}{li2016wheels}
+{\bf Li, Shanjun, Jun Yang, Ping Qin, and Shouyang Chonabayashi.} 2016.
+  ``Wheels of fortune: Subway expansion and property values in Beijing.'' {\em
+  Journal of Regional Science}, 56(5):~792--813.
+
+\harvarditem[Oates]{Wallace~E. Oates}{1972}{Oates1972}
+{\bf Oates, Wallace~E.} 1972. {\em Fiscal Federalism.} New York:Harcourt Brace
+  Jovanovich.
+
+\harvarditem[Rioja]{Felix~K Rioja}{2003}{rioja2003}
+{\bf Rioja, Felix~K.} 2003. ``Filling potholes: macroeconomic effects of
+  maintenance versus new investments in public infrastructure.'' {\em Journal
+  of Public Economics}, 87(9-10):~2281--2304.
+
+\end{thebibliography}

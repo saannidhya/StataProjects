@@ -1,0 +1,2540 @@
+    Voting Down Road Maintenance: Local Tax Relief,
+            Road Quality, and House Values*
+                       Saannidhya Rawat                David M. Brasington
+
+                                           June 16, 2026
+
+
+
+                                                Abstract
+
+      Local governments often finance infrastructure maintenance through recurring taxes
+      that are renewed by voters periodically. Utilizing a quasi-experimental setting, we
+      study what happens when voters narrowly reject dedicated road-maintenance funding.
+      Using 3,184 Ohio renewal referendums from 1991 to 2021, we compare jurisdictions just
+      above and below the 50 percent cutoff in a dynamic regression discontinuity design.
+      A failed renewal removes an existing revenue stream that costs households about $76
+      per year and equals about 11% of local road-maintenance spending. Narrow failures
+      produce delayed housing-market losses: median sale prices fall by about $15,350, or
+      9%, over the decade after the vote, with losses emerging after year four. Road imagery
+      classified with a fine-tuned AI vision model shows post-election road-quality declines of
+      up to 13%. Effects are larger in urban areas, for higher-value houses, and after larger
+      levy failures.
+
+
+      Keywords: Road Maintenance; Local Public Finance; Housing Values; Infrastructure;
+      Regression Discontinuity.
+      JEL Codes: R42, H71, R31, C21
+
+
+
+   * Acknowledgements: We are grateful for comments from CK Tang, Guoyang Yang, Dan Boles, Eunjee
+Kwon, Gary Painter, Olivier Parent, Jeffrey Mills, Nayoung Lee, Matias Cattaneo, and Chris Bollinger, to
+CoreLogic® for leasing us the housing dataset, to Albert Saiz, Lu Han, Siqi Zheng, David Albouy, Chao
+Liu, Tony Yezer and other attendees at the AREUEA-ASSA Conference, AREUEA National Conference
+and UEA North American Meeting for their insightful comments. We thank John Schroeder, Public Service
+Director of Beavercreek township, Ohio, for his insights on funding and maintenance of local roads in Ohio.
+No external funding was received for this project. No conflicts of interest exist for either author.
+    PhD Student, University of Cincinnati. Corresponding author: rawatsa@mail.uc.edu
+     Professor, University of Cincinnati
+1       Introduction
+
+The United States has about 4.2 million miles of public road, and roughly three-quarters
+of it—some 3.2 million miles—is owned not by states but by local governments (Federal
+Highway Administration, 2022). Keeping this network drivable is expensive and chronically
+shortchanged: state and local governments spend roughly $206 billion a year on highways
+and roads, yet only 44% of it goes to operations and maintenance rather than new capac-
+ity (Urban Institute, 2021). The bill for deferring upkeep is mounting. The 2025 ASCE
+Infrastructure Report Card grades the nation’s existing roads a D+, with 39% of roads in
+poor or mediocre condition and a projected $684 billion funding gap over the next decade
+(American Society of Civil Engineers, 2025), even as the federal gasoline tax that backstops
+the Highway Trust Fund has held at 18.4 cents per gallon since 1993 (Peter G. Peterson
+Foundation, 2024). In a mature road network, the binding fiscal choice is increasingly not
+whether to build, but whether to maintain.
+    A great deal of existing research has focused on the effects of new roads1 , especially in
+developing nations, providing valuable policy insights and spurring development initiatives
+like China’s Belt and Road Initiative (Huang, 2016) and India’s Pradhan Mantri Gram
+Sadak Yojana (Asher and Novosad, 2020). However, the endogenous selection of these
+projects makes it difficult to separate the effects of new roads from the underlying economic
+conditions that motivated their construction, as infrastructure investments are not exogenous
+events but are deliberate policy choices. New road placement is selected by policymakers
+and may be endogenous to anticipated economic growth, unobserved local characteristics, or
+uncontrolled political factors. Moreover, in mature economies with extensive road networks,
+the central policy question is often not where to build new roads but how to maintain existing
+ones.
+    1
+     See Ghani, Goswami and Kerr (2016), Beenstock, Feldman and Felsenstein (2016), Levkovich, Rouwen-
+dal and Van Marwijk (2016), Hoogendoorn et al. (2019), Theisen and Emblem (2021), Gibbons et al. (2019),
+Fretz, Parchet and Robert-Nicoud (2022). Some papers have also observed adverse effects of new roads such
+as state-led repression (González et al., 2025) and environmental degradation (Asher, Garg and Novosad,
+2020).
+
+
+                                                   1
+   In this paper, we avoid endogeneity issues by studying property taxes that fund the
+maintenance of existing roads and by utilizing a quasi-experimental setting that arises from
+analyzing close elections. We assemble a panel of 3,184 road-tax renewal referendums in Ohio
+from 1991 to 2021 and link the election records to financial records of local governments,
+CoreLogic house-sale transactions, community characteristics, and satellite imagery of local
+roads. Our empirical strategy compares jurisdictions where road-maintenance renewals nar-
+rowly fail with jurisdictions where they narrowly pass, using vote threshold to identify local
+fiscal shocks2 (Cellini, Ferreira and Rothstein, 2010; Biasi, Lafortune and Schönholzer, 2025).
+The running variable is the share of votes against renewal, and treatment occurs when that
+share exceeds the 50% threshold. Because renewal elections are scheduled by the expiration
+of prior levies rather than by a new discretionary investment proposal, close elections isolate
+local effects of losing an existing maintenance revenue source. Using our rich data, we first
+estimate the expected loss in the road maintenance budget for a local government after a tax
+cut from a failed renewal of road maintenance levy. Next, we estimate the effect of cutting
+local road maintenance taxes on housing prices. Finally, to understand the underlying chan-
+nel, we fine-tune an Artificial Intelligence (AI) vision model using more than 53,000 satellite
+images from Brewer et al. (2021) to predict changes in road quality after a road maintenance
+tax cut.
+   Our empirical findings reveal that when a neighborhood cuts its renewal road maintenance
+taxes, an average household saves about $76 per year and the local government faces an 11%
+loss in maintenance funds, its house prices decrease by around $15,350 (9%) and road quality
+declines by up to 13% in precisely estimated delayed post-election windows. In rolling 3-year
+post-election windows, we find little immediate road-quality response in years 1 to 3 after the
+vote, followed by statistically significant deterioration in years 2 to 4 and continued strong
+negative effects in years 3 to 5.
+   We provide suggestive evidence on that mechanism using road imagery and a fine-tuned
+   2
+       Grosz and Milton (2025) also study the effects of changes in these voting thresholds.
+
+
+
+                                                       2
+vision model that classifies road-surface quality. The imagery evidence shows no meaningful
+pre-election discontinuity in road quality, but post-election road-quality scores fall by up
+to 13% estimated post-election windows. Taken together, the evidence is consistent with
+a channel in which failed renewals reduce available maintenance funding, which may lead
+to gradual declines in road quality and, over time, to reductions in house prices once such
+deterioration becomes salient.
+   The distribution of effects also matters for policy. The price declines are concentrated
+in urban jurisdictions and are larger for higher-value houses and larger levy failures. We
+interpret these patterns as evidence about incidence and capitalization rather than as direct
+evidence about household wealth or welfare. Sellers in affected markets may bear capitalized
+losses, buyers may benefit from lower purchase prices while inheriting lower service quality,
+and although current taxpayers receive short-run tax relief, these savings are eclipsed by
+the long-run decline in local asset values. The results therefore highlight this public finance
+trade-off and document the effects of public disinvestment decisions on local asset values.
+   The paper contributes to three strands of research. First, we extend work on infras-
+tructure and housing markets from new construction toward the maintenance of existing
+public infrastructure. By exploiting close elections for renewal levies earmarked to fund
+road maintenance, we mitigate endogeneity concerns and estimate the capitalization of road
+maintenance decisions on local house prices. Second, we contributes to local public finance
+literature by showing how ballot-box decisions over dedicated revenue streams affect house-
+hold wealth and highlighting the trade-off between short-term tax relief and long-term cap-
+ital losses. Third, we demonstrate how scalable remote-sensing measures can help evaluate
+public infrastructure policies where administrative road-condition data are unavailable or
+inconsistent.
+   The rest of the paper proceeds as follows. Section 1.1 positions the study in the literatures
+on infrastructure, capitalization, and road-quality measurement. Section 2 describes Ohio’s
+local road-finance institutions, the renewal elections, the housing data, and the road-quality
+
+
+                                               3
+measure. Section 3 presents the dynamic regression discontinuity design and the identify-
+ing assumptions. Section 4 reports house-price, road-quality, heterogeneity, and robustness
+results. Section 5 discusses policy mechanisms and interpretation, and Section 6 concludes.
+
+
+1.1    Literature
+
+This paper connects three lines of research: infrastructure capitalization, local public finance,
+and the measurement of infrastructure quality. The common thread is that households do
+not buy homes separate from the local public-service bundle. Along with a house, they buy
+access to a jurisdiction’s taxes, services, and expected public infrastructure maintenance
+choices. Consequently, road-maintenance renewal elections are both fiscal decisions and
+housing-market signals.
+   Infrastructure and house values. A large literature studies how transportation in-
+frastructure affects local housing markets. Much of this work focuses on new infrastructure
+or major upgrades. For example, Gonzalez-Navarro and Quintana-Domeque (2016) stud-
+ies randomized street paving in Mexico and finds large increases in property values, while
+Theisen and Emblem (2021) and related work estimate capitalization effects from new or
+improved transportation access (Dubé, Legros and Devaux, 2018). These studies are im-
+portant, but they address a different policy margin than the one facing many U.S. local
+governments. In mature road networks, the central question is often not where to build a
+new road but whether to preserve existing roads before deferred maintenance becomes costly
+and visible.
+   The maintenance margin is less studied, especially for local roads in developed economies.
+Gertler et al. (2024) examines highway maintenance in Indonesia and finds that better road
+quality affects local economic activity and housing prices. The classic capitalization study
+of Edel and Sclar (1974) examines local public spending and house values in the Boston area
+but predates modern quasi-experimental designs and high-frequency administrative housing
+data. Our contribution is to study local road maintenance in a setting where existing revenue
+
+
+                                               4
+streams are periodically renewed or cut by voters and where close elections provide quasi-
+experimental variation.
+   Local public finance and ballot-box decisions. The local public finance tradition
+emphasizes that property values capitalize local taxes and public services (Oates, 1969,
+1972). Recent work on local tax relief has documented the immediate capitalization effects
+of property tax cuts (Moulton, Waller and Wentland, 2018), but it has not focused on
+the long term effects of cutting dedicated maintenance funding. Renewal levies make this
+trade-off explicit. If voters renew a levy, they continue paying a dedicated tax and preserve
+maintenance funding. If they reject it, they receive near-term tax relief but reduce the
+local government’s capacity to maintain a public asset. This setting is related to the use of
+referendum discontinuities in public finance, including Cellini, Ferreira and Rothstein (2010),
+but differs in an important way: we study renewals for existing maintenance rather than new
+capital spending. Renewal timing is set by the expiration of prior levies, which helps separate
+the maintenance-funding shock from the endogenous timing of new investment proposals.
+   Measuring road quality. A key challenge to evaluating infrastructure policy is mea-
+surement. Engineering measures such as the International Roughness Index and Pavement
+Condition Index can be costly, irregular, and unavailable for many local roads. Currier,
+Glaeser and Kreindler (2023) shows how vertical-acceleration signals can be used to con-
+struct road-roughness measures in places with sufficient platform coverage, while Wong et al.
+(2017) relies on standardized field surveys to measure road quality in rural China. Our ap-
+proach is different and complements these existing methods. We fine-tune a vision model on
+labeled road samples to construct a consistent road-quality measures for Ohio jurisdictions.
+This approach allows us to build a panel of road images to observe whether lost maintenance
+revenue is followed by road deterioration.
+
+
+
+
+                                              5
+2     Background & Data
+
+2.1    Policy Setting: How are Local Roads Funded in Ohio?
+
+The policy setting is useful because renewal levies connect a concrete household tax bill to a
+dedicated local maintenance service. Voters are not deciding whether to start an unusually
+large capital project; they are deciding whether to continue an existing revenue stream for
+the upkeep of roads already in place. This section describes the institutional details needed
+to interpret those votes and the data used to measure their consequences.
+    Roads in Ohio are funded through a combination of federal, state, and local sources. A
+significant portion of road funding provided by federal and state governments comes from gas
+taxes, which are currently set at $0.18 per gallon for federal tax and $0.38 per gallon for Ohio
+state tax. Additional sources for these two levels of government include vehicle registration
+fees, license plate fees, tolls, and driver’s license fees. Funding for local governments largely
+comes from property taxes. Below, we provide an overview of road funding in Ohio from
+national, state, and local sources.
+    Federal Funding. U.S. Department of Transportation provides funding for road in-
+frastructure through the Federal Highway Administration (FHWA). The FHWA provides
+funding for the construction, maintenance, and operation of highways, bridges, and tun-
+nels. The federal government provides funding for road infrastructure through the Highway
+Trust Fund (HTF), which is funded by the federal gas tax. The HTF is divided into two
+accounts: the Highway Account and the Mass Transit Account. The Highway Account is
+used to fund highway construction and maintenance, while the Mass Transit Account is
+used to fund public transportation projects. The federal government also provides funding
+for road infrastructure through the Surface Transportation Block Grant Program or Biparti-
+san Infrastructure Law (U.S. Department of Transportation, 2022), which provides funding
+for road projects that are not eligible for funding through the HTF. Nevertheless, federal
+government funding for road infrastructure is generally limited, as in 2022, about 4/5th of
+
+
+                                               6
+all funding came from state and local governments (Peter G. Peterson Foundation, 2024).
+   State Funding. In Ohio, gas taxes, licensing fees and user fees account for 69% of the
+state’s road funding (Boesen, 2021). The Ohio Department of Transportation is responsible
+for the allocation of state funds, which are used for both maintenance and new construc-
+tion. However, about 70% of funds goes to new highway construction, 2% is given to local
+governments as grants and only 4% of state funds are directed towards road maintenance
+(Ohio Department of Transportation, 2023). The remaining funds are part of payroll and
+operating expenses and other miscellaneous expenses. Hence, most of the road maintenance
+funding for local, neighborhood-specific roads in Ohio comes from local governments.
+   Local Funding. Local governments in Ohio fund roads mainly through property taxes,
+although the extent of this funding varies across different localities. These municipalities
+have the authority to levy property taxes specifically for road maintenance, providing a
+crucial source of funding for the upkeep of local infrastructure. For instance, as per our
+correspondence with Beavercreek Township, 61% of its road funds come from property taxes,
+and only 8% from gas taxes. Moreover, 77% of funding for roads in Beavercreek Township
+is provided by the local government and 11% of the overall local government budget is
+allocated to roadway maintenance (Public Service Department of Beavercreek Township,
+2025). We can see that local roads are primarily funded by local governments in Ohio and
+road maintenance funding is a significant part of the local government’s budget.
+
+
+2.2       Local Taxation in Ohio
+
+Background. Ohio consists of 88 counties, each covering about 464 square miles3 . Each
+county was historically divided into about 15 equally-sized townships, which do not cross
+county lines. Citizens can petition to incorporate as a village, which has a different type of
+government structure than a township and the ability to levy both income and property taxes,
+whereas townships may only levy property taxes. When a village exceeds 5,000 population
+   3
+       This is roughly 1,200 square kilometers.
+
+
+
+                                                  7
+in Ohio, it is reclassified as a city. Villages and cities may cross township and county lines,
+dissolve, or annex parts of contiguous townships. Villages, cities and townships, which we
+call “cities” for brevity, are the most local governmental unit in Ohio. Each local government
+covers about 18.2 miles2 (47.1 km2 ) on average. The Ohio Revised Code (ORC) separates
+property taxes into unvoted and voted levies. Local governments can levy unvoted property
+taxes up to 1% of the assessed value of property without voter approval. Beyond this limit,
+local governments must seek voter approval through tax levies. These levies can be for new
+taxes or for the renewal of existing taxes, and can be earmarked for specific purposes such as
+building a new school, funding police and fire departments, or maintaining local roads. Since
+we are interested in the effect of cutting road maintenance funding, we focus on renewal levies
+slated for road maintenance. Our data on renewal road tax levies include 3,184 referendums
+and cover 617 local governments in Ohio.
+   The type of tax levy we study is for the renewal of road tax levies. Most of the renewal
+taxes we consider have stated purposes of “road and bridges repair”, “road repair”, “street
+fund”, and “street improvements”, although there are less common stated purposes like
+“repair and maintenance of streets and sewers system” and “resurfacing and rehabilitation
+of city streets”4 . The construction of new roads and bridges, in contrast, would be funded
+with a tax levy for additional money, not a renewal tax; and it would likely be funded by
+a bond levy lasting 20 or 30 years. Our dataset includes tax levies such as a 2-mill, 5-year
+renewal in Adams Township (Champaign County) in 1995; a 3-mill, 5-year renewal in Lore
+City Village in 2016; and a 2.5-mill, 5-year renewal in Pataskala City in 2007.
+   Renewal levies. Levies that had originally passed typically expire, and the most com-
+mon duration to collect a levy is five years, representing about 90% of the road tax levies
+in our sample. When a levy expires, voters have the option to renew it or let it lapse. If a
+tax levy is renewed, taxes and funding from that revenue stream continues. If 50% or fewer
+votes approve the levy, it fails. When a tax levy for additional funding fails, there is no
+   4
+       These purposes are as per the financial reports of the local governments.
+
+
+
+                                                       8
+increase in funding, but existing funding from other tax levies continues as normal. When
+a renewal tax levy fails, funding from that tax levy stops. 99% of the road tax levies in our
+sample are property taxes, which is our tax of interest5 .
+   Most RD studies that use voting data to look at the impact of funding changes examine
+new tax levies for additional funding. Cellini, Ferreira and Rothstein (2010) observes that
+votes for additional tax money may not be statistically independent; a vote may be proposed
+until it passes. We minimize this source of endogeneity of new votes by only considering
+renewal votes (Brasington, 2017). While a government may choose when to put a vote for
+additional funding on the ballot and keep proposing the new tax until it is passed, when a
+vote passes, it has an expiration date. So if a road tax levy for additional funding passes in
+2007 to last five years, in 2012 voters will have the chance to renew or reject the tax. The
+timing of the vote in 2012 is not endogenous, having been set in 2007. If voters renew it in
+2012, it will be up for renewal again in 2017. The exogeneity of the timing of a renewal tax
+levy contrasts with the timing of new taxes for additional money as explained by Cellini,
+Ferreira and Rothstein (2010) because local governments can endogenously choose the timing
+of a new tax levy to coincide with positive economic conditions or positive sentiment toward
+government action, making an election more likely to pass.
+   Spending impact of failing to renew a levy. When a renewal tax levy fails, the
+local government loses the funding from that tax levy. The local government may still have
+tax levies for other purposes in effect, but the road tax levy that failed to renew is no longer
+collected. We determine the dollar amount in consideration when a household is making a
+decision on whether to vote for or against a renewal road tax levy, and we call it Average
+Road Tax per household, which is the tax amount that a household will pay if the levy is
+successfully renewed. Average Road Tax per household is computed following Equation 1:
+   5
+       The remaining 1% are income taxes.
+
+
+
+
+                                               9
+       Average Road Tax per householdit = millage rateit × Average Assessed valueit                     (1)
+
+
+where i is the city, t is the year, and millage-rate 6 is the predetermined millage amount set
+for the road tax levy. The Average Assessed value is 35% of the average appraisal value7 ,
+which for our study equals the average sale price of houses in the city for that year. From
+this, we can also compute the average road tax per city by multiplying the average road tax
+per household with the number of households in the city.
+    Although we acknowledge a large variation in the appraisal value across cities and in
+millage rates across referendums, we find that the average road tax per household is $76,
+and the average road tax per city is $167,011 as shown in Table 1. We do not observe any
+significant difference in the average road tax per household between cities that renew and
+cut road tax levies, which suggests the levies up for renewal are not systematically different
+between areas that renew and areas that fail to renew them. Whenever a renewal tax levy
+fails, the local government loses the funding from that tax levy, which is the average road tax
+per city. This loss in funding directly impacts local government’s spending budget needed to
+maintain local roads in Ohio and accounts for 11% of a local government’s budget for road
+maintenance 8 .
+   6
+      Millage-rate is property tax rate expressed in mills (tax per $1,000 of assessed value).
+   7
+      Assessment ratio of 35%, as set by Ohio Department of Taxation (2020).
+    8
+      For townships within our effective bandwidth, we use the average expenditure by the public works
+department as our base, which is $1,528,404 as per their audited financial reports. All local roads in such
+municipalities are funded via this department. Average loss in maintenance spending for areas that cut their
+renewal levy is $163,547, thus giving us 11% = 1,528,404
+                                                  163,547
+                                                           × 100
+
+
+
+
+                                                    10
+               Table 1: Spending impact of failing to renew a Road Tax Levy
+
+                                                Aggregate        Renewed           Cut
+
+             Panel A: road tax per
+             household
+             Mean                                       76            75            79
+                                                     (55)            (53)          (62)
+
+             Panel B: road tax per
+             city
+             Mean                                  167,011         167,648       163,547
+                                                  (340,268)       (340,628)     (338,671)
+
+            Notes: This table presents descriptive statistics for two measures of the money
+            collected via road tax levies. Panel A reports the mean and standard deviation
+            (SD) of the road tax per household per year. Panel B reports the mean and
+            SD of the total road tax collected per city. “Aggregate” denotes the full sample,
+            while “Renewed” and “Cut” refer to levies that were renewed and failed to renew
+            respectively. All monetary values are in constant 2010 U.S. dollars and rounded
+            to the nearest integer.
+
+
+
+2.3    Running Variable
+
+The running variable plays a critical role in RD, which in this study represents the proportion
+of votes against the renewal of a road tax levy. A vote share of 50% or more against the
+renewal road tax levy means the levy fails and the tax will no longer be collected, resulting
+in a stoppage of road funding via that particular tax levy. There are 3,184 referendum
+results in our sample, 83% of which renew the tax, and 17% of which cut taxes and road
+maintenance. The Great Financial Crisis falls in the middle of our dataset, so readers might
+wonder if voting behavior was affected, but we find vote share the same to two decimal
+points during and outside the years 2008-2009. Our key identification assumption is that
+
+
+                                                   11
+the election results are not predetermined and vote share is not precisely manipulated to
+fall just above or below the cutoff. This assumption allows us to exploit the randomization
+around the cutoff and provides the variation needed to identify the causal effect of cutting
+road tax. We test this assumption using a density test detailed below and covariate balance
+tests (see Appendix C).
+   Density test. A classic RD assumption states that agents cannot precisely manipulate
+the running variable to fall just above or below the cutoff. In our context, it means that the
+election results are not determined prior to when the ballot takes place. In other words, no
+individuals, organizations, higher levels of government, foreign governments, or the firm that
+programs the voting machines are dictating the precise vote share for the renewal road tax
+levy referendums raised by a city. The standard way to test this assumption is to perform a
+density test like that of Cattaneo, Jansson and Ma (2020), which is based on the idea that
+manipulation of elections might cause a clustering of votes just to one side of the cutoff,
+with a pronounced drop-off on the other side of the cutoff. The p-value of this density test
+is 0.98. A histogram of vote share is shown in Figure 1 that graphically illustrates the lack
+of abrupt change in density.
+   Although Table 3 shows covariate balance between sets of cities that pass and fail to renew
+road tax levies, covariate values could still jump from one side of the cutoff to another. A drop
+in education levels, for example, could cause a drop in house prices that might coincide with
+a change in treatment, so that what might look like a treatment effect from cutting taxes and
+spending might in fact be caused by lower education levels. Graphs that suggest covariate
+smoothness around the cutoff are found in Appendix C. A formal way to assess covariate
+smoothness is to use each covariate as an outcome variable in a regression of the running
+variable and the treatment effect dummy. When we do so, the p-value of the treatment
+effect dummy varies from 0.234 to 0.981, as shown in Table 13, indicating no statistically
+significant jump in covariate values.
+
+
+
+
+                                               12
+                          Figure 1: Histogram of Running Variable
+
+
+2.4    Outcome Variable: Median House Price
+
+Our house price data comes from a CoreLogic® dataset of actual sales transaction prices in
+Ohio from 1995 through 2021 containing over 7 million observations. The dependent variable,
+Median House Price, reflects the median sale price of houses within a specific city and year.
+For example, for the houses sold in Delaware Township during the year 2002, the median
+sale price was $205,041. We take precaution to only include arm’s-length transactions, and
+we restrict our attention to single-family residential structures for comparability. The overall
+sample mean for the 10-year period from the time of votes considered in this study is $166,082
+in constant 2010 dollars with a standard deviation of $372,135 which suggests the presence
+of outliers. Although our use of median sale price addresses outliers, one of our robustness
+checks drops 1% tails and re-estimates the treatment effects (Figure 7).
+
+                                              13
+                      Figure 2: Median Sale Price of Houses: 5 years after vote
+
+
+   Figure 2 shows house prices from five years after the vote graphed alongside the percent
+of votes against the tax levy9 . The points represent the mean house price for the 10 repre-
+sentative bins of vote shares for the average effective bandwidth around the cutoff of 50%.
+This visual pattern indicates a discrete jump in house prices at the 50% threshold, implying
+that tax levy failures lead to reduced property values.
+
+
+2.5       Road Quality
+
+Roads in Ohio last 15-20 years and deteriorate faster with poor drainage, utility cuts to the
+road, and snowplow damage (City of Hudson, 2020). To understand the effect of cutting
+local road taxes on road quality, we fine-tune an AI vision model on satellite imagery data
+from Brewer et al. (2021). Following the seminal work on text-based Transformers in Natural
+Language Processing (NLP) by Vaswani (2017), vision transformers (ViTs) were introduced
+by Google Brain’s team and are part of a recent class of deep learning models that have
+shown to outperform classic Convolutional Neural Networks (CNNs) on image classification
+tasks (Dosovitskiy, 2020). Nevertheless, a more recent class of vision models learns from
+   9
+       after deflating to 2010 U.S. dollars
+
+
+                                                 14
+ViTs and uses CNNs to achieve high accuracy on image classification tasks (Woo et al.,
+2023). We use one such model to classify road quality from satellite images10 . Below, we
+outline the steps we take to assess road quality.
+    Satellite Images for fine-tuning. Fine-tuning a vision model involves taking a pre-
+trained model and adapting it for a specific image-classification task. In order to ensure
+appropriate fine-tuning and enable our vision model to accurately predict road quality, we
+need large-scale road-image data. We use the road-image dataset of Brewer et al. (2021)
+which consists of 53,677 labeled satellite images of roads in different conditions, and a clas-
+sification representing quality of each road: 0 (poor), 1 (decent) and 2 (high). We divide the
+data into training, validation and test datasets, and use 70% of the data for training, 15%
+for validation and 15% for testing. For a detailed analysis of the road-image dataset, see the
+Appendix, Section E. In section 4.2, we present the results from our fine-tuned model, when
+applied to roads in areas with close elections within the effective bandwidth.
+    Ohio Roads Imagery. While the fine-tuning of our vision image-classification model
+uses images from Brewer et al. (2021), our Ohio application uses road-centered aerial im-
+agery collected from public imagery sources. We first use Google Earth Engine to collect
+images from the National Agriculture Imagery Program (NAIP), which provides repeated
+high-resolution aerial imagery for Ohio over much of our study period11 . To make sure
+the imagery corresponds to actual roads, we begin with TIGER road geometries that are
+spatially joined to county subdivisions, sample points along road line segments in each sub-
+division, and download image chips centered on those road points12 . Each chip covers a
+fixed ground window around the sampled road location, and the image manifest records
+the county-subdivision identifier, road name, image year, latitude, longitude, and file name.
+  10
+      see the Appendix, Section E for details.
+  11
+      We considered using Google Earth Pro for satellite images but found these images too sparse to form a
+panel dataset for our study.
+   12
+      An image chip is a small cropped tile from a larger aerial image centered on the road location used for
+prediction.
+
+
+
+
+                                                     15
+This procedure yields a panel-like set of road images across subdivisions and years13 . In the
+empirical analysis, predicted road quality is aggregated within pre-election and post-election
+windows around each renewal election, election-year imagery is omitted, and each window
+is censored at adjacent renewal elections so the same subdivision-year is not reused across
+levy cycles.
+    Road Quality Metrics. For road quality analysis, we use two metrics derived from
+our fine-tuned vision model: the Road Quality Rating (RQR) and the Road Quality Score
+(RQS).
+    Road Quality Rating. Our fine-tuned vision model classifies each road image into one of
+three categories: 0 (poor), 1 (average), or 2 (high). This rating is based on visual cues such
+as pavement quality, visible cracks, patchwork, and overall surface condition, as learned by
+the vision model from the labeled training data. For each image, the model outputs both the
+predicted class and a confidence score, which reflects the model’s certainty in its prediction.
+These ratings provide a standardized, objective measure of road quality across locations and
+time periods, enabling us to compare changes in road conditions before and after tax levy
+referendums for both treated and control groups.
+    Road Quality Score. Even though our original model output is a road quality rating14 , we
+also convert the discrete model output to a continuous measure of road quality between 1 and
+100. This conversion uses two variables: the predicted road quality rating and confidence
+score15 and refer to this as Road Quality Score (RQS). The formula for this conversion is as
+follows:
+  13
+      We also construct a companion set of images from the Ohio Statewide Imagery Program (OSIP3) using
+the same road-point sampling strategy. OSIP3 provides sharper imagery for later years, and we use it to
+check and supplement coverage in supporting diagnostics. However, because OSIP3 begins only after 2017,
+the main road-quality estimates in Table 5 report NAIP-based Road Quality Rating and Road Quality
+Score outcomes so that the units remain directly interpretable across post-election windows. The pooled
+NAIP-OSIP3 standardized estimates are used only in supporting diagnostics.
+   14
+      This is a direct result of our training data from Brewer et al. (2021) which uses the discrete 0 (low), 1
+(medium), 2 (high) road-quality metric.
+   15
+      During the prediction process, we asked the fine-tuned vision model its confidence in the prediction i.e.
+the probability of the prediction being correct, a number between 0 and 1.
+
+
+
+
+                                                      16
+                   RQS = 1 + [(r̂ + τ · ĉ) · w · I{r̂ ̸= 0} + (1 − τ ) · ĉ · w · I{r̂ = 0}]   (2)
+
+where r̂ is the predicted road quality rating, ĉ is the confidence score, w is a relative weight
+for allotted size of each road quality rating group, 0, 1, and 2. τ is a parameter for confidence
+weights16 . The RQS ranges from 1 to 100, where 1 indicates poor quality and 100 indicates
+high quality. We use this RQS in our analysis to assess the impact of cutting local road
+taxes on road quality.
+   Next, we share a summary of means and standard deviations of the predicted road
+quality rating and road quality score for the treatment and control groups, before and after
+the referendum.
+  16
+       We set this equal to 0.8 in our main results.
+
+
+
+
+                                                       17
+              Table 2: Predicted Road Quality by Treatment Status and Period
+
+                                       Treated (Failed Levy)            Control (Renewed Levy)
+
+  Panel A: Road Quality Rating (0, 1, 2)
+  Pre-Election (t − 3 to t − 1)                     1.55                               1.52
+                                                  (0.540)                            (0.553)
+  Post-Election (t + 2 to t + 4)                    1.52                               1.53
+                                                  (0.616)                            (0.541)
+
+  Panel B: Road Quality Score (1–100)
+  Pre-Election (t − 3 to t − 1)                     63.4                               62.4
+                                                   (18.0)                             (18.2)
+  Post-Election (t + 2 to t + 4)                    62.7                               62.7
+                                                   (19.3)                             (17.9)
+
+ Notes: The control group comprises NAIP image chips from jurisdiction-election observations that suc-
+ cessfully renewed their road tax levies; the treated group comprises those that failed to renew. The table
+ uses the NAIP image predictions underlying the road-quality RD estimates in Table 5. The pre-election
+ period is t − 3 to t − 1, the post-election period is t + 2 to t + 4, election-year imagery is omitted, and
+ windows are censored at adjacent renewal elections. Ratings are derived from our fine-tuned vision model.
+ Scores follow Equation 2. Standard deviations are in parentheses.
+
+
+   Panel A of Table 2 summarizes the Road Quality Rating (RQR) in the NAIP image
+sample. Treated areas, i.e. jurisdictions that cut their renewal road tax levies, have a pre-
+election average RQR of 1.55, compared to 1.52 in control areas. In the post-election window
+from t + 2 to t + 4, the corresponding averages are 1.52 for treated areas and 1.53 for control
+areas.
+   Panel B of Table 2 presents the continuous Road Quality Score (RQS). Treated areas
+have a pre-election average RQS of 63.4, compared to 62.4 in control areas. In the post-
+election window from t + 2 to t + 4, the averages are 62.7 and 62.7, respectively. These raw
+
+
+                                                     18
+comparisons are descriptive and do not have a causal interpretation. The formal evidence
+in Section 4.2 comes from the stacked-event regression discontinuity design, which compares
+jurisdictions locally around the renewal threshold, controls for pre-election road quality, and
+examines rolling post-election windows.
+
+
+2.6       Covariates
+
+Covariates can be useful in RD studies, although they are not necessary for the identification
+of treatment effects. One use of covariates is to increase the precision of treatment effect
+estimates. The other is to see if cities that barely pass and fail tax levies are similar to each
+other like the theory of RD says they should be. Table 3 shows covariate means for both the
+global sample of all votes in the data set as well as the local sample within a representative
+effective bandwidth of the 0.50 cutoff. The effective bandwidth displayed in Table 3 is the
+mean bandwidth for all the housing outcome regressions. The first columns for the global
+sample show similar values of characteristics between cities that renew and cut road taxes
+and spending, but it is the two rightmost columns that are critical for the credibility of the
+RD design.
+      The data, captured at the time of the vote and as observed in Table 3, shows minimal
+differences within the effective bandwidth: mean population differs by only 301, and median
+family income varies by $436, measured in 2010 U.S. dollars. Other variables, including
+poverty rates, married household percentages, educational attainment, age distribution, and
+racial composition, show differences of two percentage points or less, bolstering the compara-
+bility of the treatment and control groups. This similarity supports interpreting post-election
+outcome differences near the cutoff as effects of the renewal decision rather than pre-existing
+differences17 .
+  17
+       We also find similar covariate means for cities that have no road tax levies, which we explain in Section
+4.4
+
+
+
+
+                                                       19
+Table 3: Variable Means & Standard Deviation by Road Tax Levy Renewal Status
+ Variable                           Global                          Effective
+                        Full Sample Renewed    Cut   Renewed (Control) Cut (Treatment)
+ Population                5,072      4,733   5,139        4,885            5,186
+                          (7,936)    (7,291) (8,058)      (7,036)          (8,229)
+ Poverty Rate               0.11       0.11    0.11         0.10             0.11
+                           (0.08)     (0.07)  (0.08)       (0.07)           (0.08)
+ % with Kids                0.39       0.40    0.39         0.39             0.39
+                           (0.08)     (0.08)  (0.08)       (0.07)           (0.08)
+ % Households with          0.09       0.09    0.09         0.09             0.08
+ Children under 18
+                          (0.06)      (0.05)    (0.06)    (0.06)                 (0.05)
+ % Less than High          0.16        0.18      0.15      0.18                   0.16
+ School Education
+                          (0.11)      (0.12)    (0.11)    (0.12)                 (0.10)
+ % Some College            0.25        0.24      0.25      0.24                   0.25
+ Education
+                          (0.06)      (0.06)    (0.06)    (0.07)                 (0.06)
+ % Renters                 0.20        0.20      0.20      0.19                   0.20
+                          (0.11)      (0.10)    (0.11)    (0.09)                 (0.11)
+ Unemployment Rate         0.05        0.05      0.05      0.05                   0.06
+                          (0.04)      (0.03)    (0.04)    (0.03)                 (0.04)
+ % White                   0.96        0.97      0.96      0.97                   0.97
+                          (0.07)      (0.07)    (0.07)    (0.07)                 (0.08)
+ % Black                   0.02        0.02      0.02      0.02                   0.02
+                          (0.07)      (0.06)    (0.07)    (0.07)                 (0.07)
+ % Married                 0.59        0.60      0.59      0.61                   0.60
+                          (0.09)      (0.08)    (0.09)    (0.08)                 (0.09)
+ % Separated               0.01        0.01      0.01      0.01                   0.01
+                          (0.01)      (0.01)    (0.01)    (0.01)                 (0.01)
+ Income Heterogeneity      0.10        0.09      0.10      0.09                   0.09
+ Index
+                          (0.08)     (0.07)     (0.08)    (0.07)                (0.06)
+ Median Family            61,018     58,761     61,467    59,934                60,370
+ Income
+                         (17,649)    (13,915) (18,270)   (13,655)               (15,713)
+ % Under 5 Years Old       0.06        0.06     0.06       0.06                   0.06
+                          (0.02)      (0.02)   (0.02)     (0.02)                 (0.02)
+ % Aged 5 to 17            0.20        0.21     0.20       0.20                   0.20
+                          (0.05)      (0.04)   (0.05)     (0.04)                 (0.05)
+ % Aged 18 to 64           0.60        0.60     0.60       0.60                   0.60
+                          (0.05)      (0.05)   (0.05)     (0.04)                 (0.05)
+ % Racial Minority         0.04         0.03    0.04       0.03                   0.03
+                          (0.07)      (0.07)   (0.07)     (0.08)                 (0.07)
+ Number of                3,184        2,656    528        653                    269
+ Observations
+
+
+
+
+                                               20
+3     Empirical Strategy
+
+This section describes the research design used to estimate the local effect of narrowly failing
+to renew a road-maintenance levy. The estimand is an intent-to-treat effect for jurisdictions
+near the 50% vote-share cutoff. It is not the average effect of all tax cuts, all road-spending
+cuts, or all road-maintenance choices. It is the effect of losing an existing dedicated mainte-
+nance revenue stream when a renewal referendum narrowly fails.
+
+
+3.1    Regression Discontinuity in Renewal Elections
+
+Consider jurisdiction i holding a referendum in year t to renew an existing road-maintenance
+levy. Let vit be the share of votes against renewal, and let v ∗ = 0.50 be the cutoff. A levy
+fails when opposition exceeds the majority threshold. We define:
+
+
+                                       Fit = 1(vit > v ∗ )                                   (3)
+
+where Fit indicates that the jurisdiction narrowly loses an existing road-maintenance revenue
+stream. The regression discontinuity design compares outcomes for jurisdictions just below
+and just above v ∗ . Around a narrow enough window, jurisdictions that barely renew and
+barely fail should be comparable except for the renewal outcome.
+    The design is well suited to renewal levies for two reasons. First, the timing of a renewal
+election is determined by the expiration of a previously approved levy, usually after five years.
+This differs from a new capital levy, where local officials can choose when to ask voters for
+additional funding. Second, a failed renewal has a direct fiscal interpretation: revenue from
+that levy stops. The resulting estimate is therefore a local intent-to-treat effect of a close
+electoral decision to discontinue dedicated road-maintenance funding.
+
+
+
+
+                                               21
+3.2    Dynamic RD Specification
+
+We estimate effects by event time relative to the election. For each outcome Yi,t+τ observed
+τ years after the referendum, we estimate:
+
+
+                   Yi,t+τ = ατ + κt + Fit θτIT T + Pg (vit , γτ ) + Zit βτ + ϵi,t+τ        (4)
+
+where θτIT T is the local effect of a failed renewal τ years after the vote, κt are election-
+year fixed effects, Pg (vit , γτ ) is a polynomial in the vote-share running variable, and Zit
+includes demographic and socioeconomic covariates measured at the time of the vote. The
+main outcome is median house price in the jurisdiction-year. We also estimate analogous
+specifications for road-quality outcomes derived from road imagery.
+    We use the bandwidth-selection approach of Calonico et al. (2019) and estimate local
+polynomial regressions around the 50% cutoff. Standard errors are clustered by city to
+account for serial correlation within jurisdictions. The dynamic specification lets us test for
+pre-election discontinuities and then trace how any post-election effects evolve as deferred
+maintenance becomes more visible.
+
+
+
+4     Results
+
+This section shares the results of our study. We first estimate whether narrowly failing
+to renew road-maintenance tax cuts changes house values. We then examine road quality
+as mechanism evidence, describe incidence across places and housing-market segments, and
+summarize robustness checks that address alternative explanations.
+
+
+4.1    House Prices Decline
+
+Table 4 reports local house price estimates for the effect of narrowly failing to renew road
+maintenance tax cuts.
+
+
+
+                                                 22
+Each treatment effect estimate represents the difference in median sale price between ju-
+risdictions just above and just below the renewal-failure cutoff. We show dynamic effects
+starting three years before the vote and extending to ten years after the vote. Pre-election
+estimates are small and statistically indistinguishable from zero. Post-election effects are
+also modest in the first few years, but become economically and statistically meaningful
+beginning in year t + 4. Estimates for years 4 through 9 after the vote are statistically
+significant, and the estimate for year t + 10 remains negative but is less precise. Averaging
+over the post-vote decade, narrowly failing to renew a road-maintenance levy is associated
+with a $15,350 decline in median house price, or about 9% of the average house value in the
+dataset18 . The delayed timing is consistent with a maintenance channel: the tax relief is
+immediate, but deterioration and capitalization unfold gradually.
+  18
+     The average treatment effect estimate of approximately $15,350 was divided by the mean house sale
+price in the dataset of $166,000 to get 9%.
+
+
+
+
+                                                 23
+        Table 4: Delayed House-Price Effects after a Failed Road-Maintenance Renewal
+
+ Panel A: Years t − 3 through t + 3
+
+ Year                             t−3        t−2         t−1         t        t+1        t+2         t+3
+
+ Treatment effect                5,307       166         –273     –4,261     –3,908     –11,001    –14,733
+ Standard error                 (7,341)    (6,943)      (7,391)   (7,955)    (8,719)    (9,405)    (7,989)
+ Effective bandwidth (h)         10.30      10.06        8.76      7.97       9.78       9.63       11.93
+ Bias bandwidth (b)              20.22      17.48        14.39     13.03      17.50      18.22      22.69
+ Effective observations           724        725         650        587        774        778       1,003
+ Total observations              2,552      2,631        2,696     2,784      2,764      2,699      2,640
+
+ Panel B: Years t + 4 through t + 10
+
+ Year                             t+4        t+5         t+6       t+7        t+8        t+9        t+10
+
+ Treatment effect               –21,701    –21,706      –17,365   –15,975   –21,984     –19,857    –16,090
+ Standard error                 (7,747)    (8,751)      (8,355)   (7,248)    (9,074)    (7,751)    (9,027)
+ Effective bandwidth (h)          8.52      11.20        9.79      13.16      8.25       7.28        6.24
+ Bias bandwidth (b)              16.25      20.16        17.32     23.42      15.28      14.09      16.27
+ Effective observations           688        922         764       1,061       591        505        402
+ Total observations              2,614      2,531        2,438     2,324      2,199      2,115      2,017
+
+Notes: Outcome is median house price in constant 2010 U.S. dollars. Unit of observation is the city–year,
+
+so a treatment effect of –$21,701 in year t+4 means that four years after the vote, cities that fail to renew
+
+road taxes have median sale prices $21,701 lower than similar cities that renew. Covariates include the
+
+demographic and socioeconomic controls listed in Table 3.
+
+
+   Figure 3 summarizes the same estimates visually. Each dot is the event-time treatment
+effect and each bar is the 95% confidence interval. The pre-election years and the first three
+post-election years provide little evidence of a discontinuity in median sale prices. The decline
+appears only after several years, which is the timing one would expect if a failed renewal first
+
+                                                   24
+                Figure 3: Delayed House-Price Losses Emerge after Year 4
+
+
+reduces maintenance capacity and then affects housing markets as road conditions become
+more salient to buyers and sellers.
+
+
+4.2    Road Quality as Mechanism Evidence
+
+The house-price estimates are consistent with capitalization of lower road quality, but price
+effects alone do not necessarily establish that roads deteriorate after funding is cut. We
+therefore estimate analogous RD specifications using road-quality measures derived from
+road imagery and the vision model described in Section 2.5. The model classifies road quality
+on a three-point rating and we convert these ratings into a Road Quality Score (RQS) from
+1 to 100.
+   Table 5 reports stacked-event RD estimates at the 50% vote-share cutoff. Column (1) is
+a placebo estimate using average pre-election road quality from t − 3 through t − 1. Columns
+(2)–(6) use rolling three-year post-election windows. The placebo estimate is small and
+
+                                             25
+                 Table 5: Road Quality Decline after a Failed Renewal Election
+
+                                   t−3          t+1          t+2          t+3           t+4         t+5
+                                  to t−1       to t+3       to t+4       to t+5        to t+6      to t+7
+ Panel A: Road Quality Rating
+Change in Road Quality             0.042       0.017       -0.188∗      -0.238∗∗∗       -0.250      -0.075
+                                  (0.089)     (0.080)      (0.099)       (0.070)       (0.163)     (0.232)
+Eff. bandwidth (h)                  7.47       10.85         4.53          4.43          5.11        7.06
+Bias bandwidth (b)                 13.21       18.55         8.73          8.34          7.11        8.96
+Eff. observations                   170         209           53            46            34          23
+Total observations                  515         378          279           221           132          46
+ Panel B: Road Quality Score
+Change in Road Quality             1.144       0.648       -6.914∗∗     -8.362∗∗∗       -9.626      -5.038
+                                  (3.035)     (3.088)       (3.445)      (2.621)       (6.401)     (9.094)
+Eff. bandwidth (h)                  7.38        8.84          4.66         4.68          5.15        7.09
+Bias bandwidth (b)                 13.01       15.31          8.83         8.73          7.11        8.99
+Eff. observations                   167         160            55           51            34          24
+Total observations                  515         378           279          221           132          46
+ Notes: Entries are bias-corrected sharp RD estimates at the 50% vote-share cutoff. Column (1) is
+a placebo RD using average pre-election road quality over t−3 to t−1. Columns (2)–(6) use rolling
+3-year post-election windows, exclude t + 0, and control for population and the corresponding pre-
+election outcome. Standard errors clustered by ten-digit FIPS code are in parentheses.
+
+
+statistically insignificant for both the discrete rating and the 100-point score. In the RQS
+panel, beginning at t+2 and t+3, the precisely estimated declines are about 6.9 and 8.4 points
+on the 100-point scale. Relative to a pre-election Road Quality Score of about 63 points, the
+precisely estimated post-election effects imply declines of roughly 11% in years t + 2 to t + 4
+and 13% in years t+3 to t+519 . The pattern supports the proposed mechanism: jurisdictions
+that narrowly fail to renew road-maintenance funding subsequently exhibit lower measured
+road quality.
+    We read road-quality evidence as supporting evidence on the maintenance channel rather
+than as a stand-alone estimate of the full effect of levy failures on road conditions. The im-
+  19
+     We compute these percentages as 100 × |β̂w |/RQS  ¯ pre , where β̂w is the RD estimate for post-election
+                   ¯
+window w and RQS pre is the average pre-election Road Quality Score. Using the pre-election means in
+           ¯ pre = (63.4+62.4)/2 = 62.9. Thus, the t+2 to t+4 estimate implies 100×6.914/62.9 = 10.99%,
+Table 2, RQS
+and the t + 3 to t + 5 estimate implies 100 × 8.362/62.9 = 13.29%. Because these outcomes are rolling three-
+year averages, the percentages describe average road-quality levels within each post-election window rather
+than cumulative year-by-year deterioration.
+
+
+
+                                                     26
+agery sample is smaller than the housing sample and depends on the availability of compa-
+rable pre- and post-election road imagery, as well as the underlying fine-tuning of the vision
+model. For that reason, we use it to assess whether the direction and timing of physical
+road deterioration align with the house-price estimates, while the main outcome remains the
+capitalization response in the full housing panel.
+
+
+4.3     Incidence and Heterogeneity
+
+The policy implications depend not only on the average effect but also on where losses are
+concentrated. We therefore examine whether the capitalization response differs between
+urban and rural jurisdictions, larger and smaller levy failures, and lower- and higher-value
+segments of the housing market. These estimates speak to incidence: who is most exposed
+to the asset-value consequences of deferred maintenance?
+
+
+    Urban vs Rural neighborhoods: The capitalization of road quality may differ across
+places because housing supply, commuting patterns, density, and buyer salience differ be-
+tween urban and rural markets. We classify urban areas using data from the U.S. Census
+Bureau20 .
+    As shown by Figure 4, we do not find consistent price declines in rural areas after a
+renewal tax levy narrowly fails. In urban areas, however, house prices decline beginning
+around six years after the vote. The stronger urban response may reflect denser road use,
+greater buyer salience, or more inelastic housing supply (Brasington, 2002). Overall, urban
+house prices decrease by $13,302 on average over the decade21 after a failed renewal.
+
+
+
+    Tax magnitude: We next ask whether larger failed levies produce larger losses. Splitting
+  20
+      Urban areas are identified using data from U.S Census Bureau. We strictly consider urban areas with
+an allocation factor of at least 0.3 in 2010 and do not consider urbanized clusters, making our classification
+of urban areas more restrictive.
+   21                           13,302
+      This is equal to 7.6% = 175,217  × 100, where the denominator is average sale price of houses in urban
+areas in our dataset.
+
+
+
+                                                     27
+Figure 4: Urban Areas Drive the House-Price Decline
+
+
+
+
+                        28
+at the median levy size does not show a clear difference. The largest quartile of levies,
+however, represents a more substantial fiscal shock, with millage rates from 2.1 to 8 mills.
+Figure 5 presents results for this subsample.
+
+
+
+
+              Figure 5: Larger Failed Levies Imply Larger House-Price Losses
+
+
+   Despite the reduction in sample size and wider confidence intervals, the decline for large
+failed levies is roughly $30,000, about twice the full-sample average. This pattern is consistent
+with an intensive-margin interpretation: larger reductions in dedicated maintenance revenue
+are followed by larger capitalized losses.
+
+
+
+   RD Quantile Estimation: Finally, we estimate quantile-level treatment effects follow-
+ing Frandsen, Frölich and Melly (2012). This analysis asks whether lower- and higher-value
+housing-market segments respond differently to the same local fiscal shock.
+   Table 6 shows larger and more consistent declines in the upper part of the house-price
+distribution, especially beginning around year 6. Lower quantiles do not exhibit the same
+
+                                                29
+Figure 6: Higher-Value Housing Segments Show Larger Capitalized Losses
+
+
+
+
+                                 30
+         Table 6: Higher-Value Housing Segments Show Larger Capitalized Losses
+
+      Percentile t + 4       t+5          t+6          t+7        t+8      t+9          t + 10
+      10%         -6,433    -22,570      -9,602       -12,984    -11,217  -6,569        -1,326
+                 (9,364)    (9,065)     (9,205)       (8,420)    (9,136) (10,809)      (8,793)
+      20%         -5,400    -15,070       4,014       -14,682    -15,040  -3,228          624
+                 (9,983)    (9,886)     (7,443)       (8,502)    (8,160) (10,435)      (8,509)
+      70%        -21,760    -11,171     -38,082       -36,685    -21,356 -25,605       -18,600
+                (12,333)   (11,806)    (12,835)      (12,163)   (12,218) (13,984)      (9,872)
+      80%        -28,478    -16,379     -38,460       -37,470    -28,950 -27,800       -18,658
+                (13,343)   (11,404)    (18,623)      (12,169)   (12,507) (12,421)     (11,808)
+      90%        -51,470    -34,604     -38,510       -27,039    -29,010 -49,093       -36,662
+                (18,409)   (15,837)    (22,194)      (16,308)   (16,640) (14,498)     (19,110)
+
+    Notes: The outcome is median house price in constant 2010 U.S. dollars. The unit of
+   observation is the city-year, so a treatment effect of −$28,478 means that at the 80th
+   percentile of house prices four years after the vote, cities that fail to renew road taxes and
+   the associated spending have houses that sell for $28,478 less than cities that vote to renew
+   them. Covariates include demographic and socioeconomic characteristics as described in
+   Table 3.
+
+consistent pattern. We interpret this as evidence that higher-value housing-market segments
+capitalize road-quality deterioration more strongly; it should not be read as direct evidence
+about household wealth, since household wealth is not directly observed. Figure 6 contrasts
+the 20th and 80th percentiles visually.
+
+
+4.4     Threats to Validity and Robustness
+
+This subsection addresses the main alternative explanations. The empirical strategy sec-
+tion showed no evidence of manipulation in the running variable, no statistically significant
+covariate discontinuities, and no pre-election house-price discontinuities. Here we focus on
+three additional threats to validity of our empirical design: later road levies that could con-
+taminate the treatment path, arbitrary discontinuities at placebo cutoffs, and the possibility
+that a failed road renewal proxies for broader anti-tax sentiment.
+
+
+   Removing contaminated observations: Estimates may be biased if tax levies for
+additional money pass after renewal tax levy decisions. To address this concern, we exclude
+
+
+                                                31
+observations from our analysis if a tax levy for additional funding is introduced and passed
+within a ten-year period following a renewal tax levy vote, as these votes may contaminate
+the treatment effect of the renewal tax levy vote. For example, consider a scenario where a
+city votes to cut its renewal tax levy in the year 2000. If that city subsequently introduces
+and passes a tax levy for additional road spending in 2004, we exclude all votes for that
+city from 2005 through 2010. This exclusion ensures that the effect on house prices from
+the 2000 vote are captured for uncontaminated years but not for years after 2004 when the
+effect of additional road taxes may counteract the drop in tax money from the elections in
+the year 2000.
+
+
+
+
+                                             32
+Table 7: Effect on median house prices of failing to renew a road tax levy – uncontaminated
+observations only
+
+ Panel A: Years t − 3 through t + 3
+
+ Year relative to vote            t−3         t−2           t−1         t        t+1        t+2         t+3
+
+ Treatment effect                5,295       –369          1,207     –2,482    –3,107     –12,236     –15,026
+ Standard error                 (7,255)     (7,359)       (7,776)    (8,482)   (9,270)    (10,123)     (8,746)
+ Effective bandwidth (h)         10.25        9.70         8.84       7.48       9.19       8.20        10.09
+ Bias bandwidth (b)              20.08       16.41         14.45      12.03     16.04       16.33       20.21
+ Effective observations           719         682           630       510        680         604         763
+ Total observations              2,552       2,574         2,593      2,640     2,627       2,536       2,449
+
+ Panel B: Years t + 4 through t + 10
+
+ Year relative to vote            t+4         t+5           t+6       t+7        t+8        t+9         t+10
+
+ Treatment effect               –21,082     –16,827       –17,565    –18,179   –20,427    –29,970     –23,593
+ Standard error                 (9,145)    (11,228)       (10,128)   (9,202)   (9,829)     (9,059)    (10,838)
+ Effective bandwidth (h)          6.85        5.64          8.48      9.34       7.41       5.51        6.20
+ Bias bandwidth (b)              13.19       14.82         14.53      18.06     14.23       11.74       16.54
+ Effective observations           473         367           573       609        442         303         322
+ Total observations              2,389       2,274         2,145      2,016     1,890       1,787       1,666
+
+Notes: Sample excludes any potentially contaminated city–year observations. Outcome is median house
+
+price in constant 2010 U.S. dollars. Each coefficient is the difference between treated and control cities in the
+
+indicated year; standard errors are heteroskedasticity-robust. All regressions control for the demographic
+
+and socioeconomic covariates listed in Table 3.
+
+
+   After this filtration, the post-election house-price pattern remains consistent with the
+baseline estimates. Standard errors increase because the sample is smaller, but the delayed
+negative effects remain visible.
+
+
+                                                     33
+   Placebo cutoffs: In our primary analysis, the pivotal threshold for the vote share
+running variable is 50%, indicating whether a renewal levy passes or fails. Although we find
+significant treatment effects using this 50% threshold, it could be random jumps in the data
+rather than cutting road taxes and funding that are responsible for the significant estimates.
+To this end we conduct a series of placebo tests using alternative cutoffs: 30%, 40%, 60%,
+and 70%. Table 8 below summarizes the results from the placebo cutoffs analysis.
+              Table 8: Robust Treatment Effect Estimate for Placebo Cutoffs
+
+                Years after vote        30%         40%      60%      70%
+                t+4                    2,578       9,149     9,419  -12,987
+                                      (8,209)     (7,284) (11,462) (14,365)
+                t+5                    -6,381     -29,077    6,383   41,683
+                                      (9,086)    (20,680) (10,786) (17,836)
+                t+6                    7,681       5,573    -1,095  -14,226
+                                      (9,616)     (8,120) (8,612) (15,733)
+                t+7                    1,162       3,982   -12,050  22,261
+                                     (10,468)     (8,191) (9,396) (19,765)
+                t+8                    4,334      12,881     3,593   31,696
+                                      (9,670)     (8,625) (10,061) (6,902)
+                t+9                     851        7,381    -6,935  42,790
+                                      (5,921)     (6,333) (7,114) (15,663)
+                t + 10                10,032      -35,038     324    -8,566
+                                     (10,599)    (35,569) (8,220) (17,281)
+
+                Notes: Robust treatment effect estimates at placebo cutoffs using
+               the estimator from Calonico et al. (2017). The unit of observation
+               is the city-year. Standard errors are reported in parentheses below
+               each estimate.
+
+
+   Table 8 does not show consistently significant treatment effects for any placebo cutoff.
+This pattern supports the interpretation that the observed discontinuity is tied to the actual
+50% renewal threshold rather than arbitrary jumps in the running variable.
+   Winsorization: The debate over whether to include or exclude outliers continues,
+with some research suggesting that trimming outliers does not improve mean squared er-
+ror (Bollinger and Chandra, 2005). We now drop the 1% tails to help curtail the influence
+of outliers. The overall sample mean after dropping 1% tails is $150,505 in constant 2010
+dollars with a standard deviation of $115,646. After performing this winsorization step,
+
+                                                34
+we re-estimate the treatment effect of failing to renew a road tax levy on housing outcome
+variables. The results from this estimation process are summarized in Figure 7 below:
+
+
+
+
+Figure 7: Effect of Cutting Road Maintenance Taxes on Median Housing Price after 1%
+Winsorization
+
+
+   The treatment effect estimates with winsorization are qualitatively and quantitatively
+similar to the baseline estimates.
+   Other Tax Levies: A potential threat to identification is that a cut in road tax levy
+might be correlated with cuts in other local tax levies, or may simply reveal an underlying,
+time-varying taste for lower taxes or smaller government. If the same electorate simulta-
+neously rejects (or approves) levies for police, fire, recreation, or schools, our estimated
+road-maintenance effect could in fact be picking up broader changes in local public-service
+bundles that are themselves capitalised into housing prices. To address this concern, we
+examine whether the election results of a renewal road levy is systematically correlated with
+the results of other levy referenda held on the same ballot or within the same fiscal year i.e.
+
+
+                                              35
+whenever a road tax levy is cut, are there elections and subsequent tax cuts for other tax
+levies as well?
+   Table 9: Association of Road Tax Levy Referenda Results with Other Types of Levies
+
+                              Police                   Fire             Recreational               School
+       Estimate                0.248                  0.053                  0.015                  -0.024
+                              (0.153)                (0.043)                (0.317)                (0.092)
+Notes: This table presents coefficients from regressions associating road tax levy referendum outcomes
+with outcomes for other types of levies (police, fire, recreational, school). Standard errors are reported
+in parentheses. All regression control for year and neighborhood fixed effects, as well as neighborhood
+characteristics. The school levy analysis is conducted at the county level, while all other analyses are at the
+county subdivisions level. Statistical significance levels are indicated as follows: *** p < 0.01, ** p < 0.05,
+* p < 0.1.
+
+
+    Table 9 reports coefficients from separate regressions in which each column regresses the
+pass/fail outcome of another levy type on the pass/fail outcome of road tax levy22 , controlling
+for year fixed effects, jurisdiction fixed effects, and demographic covariates. For school levies
+we cluster to the county level as an approximation, while all other specifications are at the
+township/city (“county subdivision”) level. The point estimates are small and statistically
+indistinguishable from zero: a failed road-maintenance renewal is neither more nor less likely
+to coincide with the failure of levies earmarked for police, fire, recreation, or schools. For
+example, the largest coefficient, 0.248 for police levies, has a standard error of 0.153 and is
+not significant even at the 10 percent level. These results suggest that voters treat the road-
+maintenance question separately from other local tax questions, and that decisions to cut
+or renew road funding are not simply proxies for a general anti-tax or austerity sentiment.
+Consequently, our main RD estimates are unlikely to be confounded by contemporaneous
+changes in other public services.
+    A more comprehensive approach is to check for balance in other tax levies around the
+cutoff. We collect all 50,000 local tax levies for all municipal purposes from 1991 to 2021,
+including current expense levies, parks and recreation levies, and police levies. Within the
+effective bandwidth, jurisdictions that barely renew road taxes have a non-road tax levy
+  22
+    This is represented by a dummy variable indicating a cut in road tax levies, with 1 as denoted as a cut
+and 0 denoted as a renewal.
+
+
+                                                      36
+on the same ballot 48.1% of the time, while jurisdictions that barely fail to renew have
+one 47.96% of the time. Among jurisdictions with non-road levies on the ballot, the barely
+renewed group experiences another tax change 12% of the time and the barely failed group
+does so 15% of the time. These balances suggest that the house-price results are unlikely to
+be driven by broad changes in the local public-service bundle.
+
+
+
+5     Policy Mechanisms and Interpretation
+
+For policymakers, the estimates point to an important trade-off between short-term tax relief
+and long-term capital losses. A failed renewal produces immediate tax relief for current
+taxpayers, but it also removes dedicated revenue for public infrastructure that deteriorates
+gradually. As shown in Table 4, the housing market responds to the failure of these renewals
+with a decline in property values about four years after the vote. This lag may reflect the
+time it takes for infrastructure disrepair to become salient to homeowners and potential
+buyers, be it through potholes, increased travel times, or reduced safety. The delayed timing
+of the house-price response, together with the road-quality evidence, is consistent with the
+following sequence: the levy failure reduces maintenance capacity, road conditions worsen in
+later years, and buyers and sellers capitalize lower public-service quality into house prices.
+    This interpretation matters because lower house prices are not mechanically equivalent to
+a social welfare loss. Current homeowners who sell after deterioration becomes visible may
+bear capitalized losses. Future buyers may pay lower prices but receive lower road quality.
+Current taxpayers receive short-run tax relief, while local governments face a smaller mainte-
+nance budget and potentially higher future repair costs if deferred maintenance compounds.
+The evidence therefore identifies an important fiscal and asset-value consequence of failed
+renewals, but the welfare calculation depends on how voters value tax relief, road quality,
+and future repair risk.
+    The urban and high-value-market results also sharpen the public-management implica-
+
+
+
+                                              37
+tions. In dense markets, roads are more visible, more intensively used, and more likely
+to be capitalized into property values. Higher-value housing segments show larger price
+declines, suggesting that some owners are more exposed to the asset-value consequences
+of deferred maintenance. Local governments considering renewal campaigns may therefore
+need to communicate not only the annual household tax cost, but also the lifecycle cost of
+under-maintenance and the possibility that avoided taxes are capitalized into lower property
+values.
+    Three practical implications follow. First, it may help to frame renewal levies gently as
+decisions about preserving local infrastructure, rather than only as tax increases or cuts.
+Second, asset-condition reporting can help voters connect current maintenance funding to
+future road quality. Third, maintenance reserves may reduce the risk that a close renewal
+failure produces a sudden loss of dedicated maintenance capacity for local roads.
+
+
+
+6     Conclusion
+
+Local infrastructure policy often turns on ordinary fiscal choices rather than dramatic new
+investments. This paper studies one such choice: whether voters renew dedicated road-
+maintenance funding. Using 3,184 Ohio renewal referendums and a dynamic regression
+discontinuity design around close elections, we estimate the consequences of narrowly voting
+down an existing maintenance levy.
+    The results show that failed renewals have delayed but meaningful housing-market con-
+sequences. A failed levy removes about 11% of a local road-maintenance budget on average.
+House prices do not fall immediately, but beginning about four years after the vote, median
+sale prices decline by about $15,350 over the post-election decade, or roughly 9% of the av-
+erage house value in the data. NAIP aerial imagery derived road-quality estimates provide
+suggestive mechanism evidence: post-election road-quality scores fall by up to 13%. Effects
+are concentrated in urban markets, higher-value housing segments, and larger levy failures.
+
+
+
+                                             38
+   For policymakers, the central lesson is that renewal votes should be evaluated as infras-
+tructure preservation and household-wealth decisions, not only as tax decisions. A household
+may save a relatively small annual tax payment when a renewal fails, but the community
+may later face lower road quality and capitalized asset-value losses. Clear asset-condition
+reporting, maintenance lifecycle communication, and stable preservation funding can help
+voters weigh those costs before deferred maintenance becomes visible.
+   The estimates are local to jurisdictions near the 50% renewal threshold and should not be
+interpreted as the average effect of every road tax cut. They nevertheless identify a common
+and policy-relevant margin: close elections that decide whether existing local maintenance
+funding continues. As state and local governments confront aging infrastructure, the evidence
+suggests that maintaining ordinary assets can be as important for local welfare and housing
+markets as building new ones.
+
+
+References
+American Society of Civil Engineers. 2025. “2025 Infrastructure Report Card: Roads.”
+ Roads grade D+; 39% of major roads in poor or mediocre condition; $684 billion projected
+ funding gap over ten years. Accessed: 2026-06-15.
+Asher, Sam, and Paul Novosad. 2020. “Rural roads and local economic development.”
+ American Economic Review, 110(3): 797–823.
+Asher, Sam, Teevrat Garg, and Paul Novosad. 2020. “The ecological impact of trans-
+ portation infrastructure.” The Economic Journal, 130(629): 1173–1199.
+Beenstock, Michael, Daniel Feldman, and Daniel Felsenstein. 2016. “Hedonic pricing
+ when housing is endogenous: The value of access to the trans-Israel highway.” Journal of
+ Regional Science, 56(1): 134–155.
+Biasi, Barbara, Julien Lafortune, and David Schönholzer. 2025. “What works and
+  for whom? Effectiveness and efficiency of school capital investments across the U.S.” The
+  Quarterly Journal of Economics, qjaf013.
+Boesen, Ulrik. 2021. “How are your state’s roads funded?” Accessed: 2025-01-23.
+Bollinger, Christopher R, and Amitabh Chandra. 2005. “Iatrogenic specification er-
+ ror: A cautionary tale of cleaning data.” Journal of Labor Economics, 23(2): 235–257.
+Brasington, David M. 2002. “Edge versus center: Finding common ground in the capi-
+ talization debate.” Journal of Urban Economics, 52(3): 524–541.
+
+
+
+                                             39
+Brasington, David M. 2017. “School spending and new construction.” Regional Science
+ and Urban Economics, 63: 76–84.
+Brewer, Ethan, Jason Lin, Peter Kemper, John Hennin, and Dan Runfola. 2021.
+ “Predicting road quality using high resolution satellite imagery: A transfer learning ap-
+ proach.” Plos one, 16(7): e0253370.
+Calonico, Sebastian, Matias D Cattaneo, Max H Farrell, and Rocı́o Titiunik. 2017.
+ “rdrobust: Software for regression-discontinuity designs.” The Stata Journal, 17(2): 372–
+ 404.
+Calonico, Sebastian, Matias D Cattaneo, Max H Farrell, and Rocı́o Titiunik. 2019.
+ “Regression discontinuity designs using covariates.” Review of Economics and Statistics,
+ 101(3): 442–451.
+Cattaneo, Matias D, Michael Jansson, and Xinwei Ma. 2020. “Simple local polyno-
+ mial density estimators.” Journal of the American Statistical Association, 115(531): 1449–
+ 1455.
+Cellini, Stephanie R, Fernando Ferreira, and Jesse Rothstein. 2010. “The value
+ of school facility investments: Evidence from a dynamic regression discontinuity design.”
+ The Quarterly Journal of Economics, 125(1): 215–261.
+Chatterjee, Santanu, John Gibson, and Felix Rioja. 2017. “Optimal public debt
+ redux.” Journal of Economic Dynamics and Control, 83: 162–174. Originally circulated as
+ ICePP Working Paper No. 16-13 at Georgia State University.
+Chetty, Raj, Adam Guren, Day Manoli, and Andrea Weber. 2011. “Are micro and
+ macro labor supply elasticities consistent? A review of evidence on the intensive and
+ extensive margins.” American Economic Review, 101(3): 471–475.
+City of Hudson. 2020. “Asphalt Road Resurfacing Frequently Asked Questions (FAQ’s).”
+  Accessed: 2025-05-19.
+Cooley, Thomas F. 1995. Frontiers of business cycle research. Princeton University Press.
+Currier, Lauren, Edward L Glaeser, and Gabriel E Kreindler. 2023. “Infrastructure
+ inequality: Who pays the cost of road roughness?” National Bureau of Economic Research
+ Working Paper w31981.
+Dosovitskiy, Alexey. 2020. “An image is worth 16x16 words: Transformers for image
+ recognition at scale.” arXiv preprint arXiv:2010.11929.
+Dubé, Jean, Diègo Legros, and Nicolas Devaux. 2018. “From bus to tramway: Is
+ there an economic impact of substituting a rapid mass transit system? An empirical
+ investigation accounting for anticipation effect.” Transportation Research Part A: Policy
+ and Practice, 110: 73–87.
+Edel, Matthew, and Elliott Sclar. 1974. “Taxes, spending, and property values: Supply
+ adjustment in a Tiebout-Oates model.” Journal of Political Economy, 82(5): 941–954.
+Federal Highway Administration. 2022. “Highway Statistics 2022.” U.S. Department
+  of Transportation; public road length by ownership, Highway Performance Monitoring
+
+                                            40
+  System. Local governments (counties, municipalities, and townships) own about 3.2 million
+  miles—roughly 76%—of all U.S. public road mileage. Accessed: 2026-06-15.
+Frandsen, Brigham R., Markus Frölich, and Blaise Melly. 2012. “Quantile treatment
+  effects in the regression discontinuity design.” Journal of Econometrics, 168(2): 382–395.
+Fretz, Stephan, Raphaël Parchet, and Frédéric Robert-Nicoud. 2022. “Highways,
+  market access and spatial sorting.” The Economic Journal, 132(643): 1011–1036.
+Gertler, Paul J, Marco Gonzalez-Navarro, Tadeja Gračner, and Alexander D
+ Rothenberg. 2024. “Road maintenance and local economic development: Evidence from
+ Indonesia’s highways.” Journal of Urban Economics, 143: 103687.
+Ghani, Ejaz, Arti Grover Goswami, and William R Kerr. 2016. “Highway to success:
+ The impact of the Golden Quadrilateral project for the location and performance of Indian
+ manufacturing.” The Economic Journal, 126(591): 317–357.
+Gibbons, Stephen, Teemu Lyytikäinen, Henry G Overman, and Rosa Sanchis-
+ Guarner. 2019. “New road infrastructure: The effects on firms.” Journal of Urban Eco-
+ nomics, 110: 35–50.
+González, Felipe, Josepa Miquel-Florensa, Mounu Prem, and Stéphane Straub.
+ 2025. “The dark side of infrastructure: Roads, repression and land in authoritarian
+ Paraguay.” The Economic Journal, 135(666): 653–669.
+Gonzalez-Navarro, Marco, and Climent Quintana-Domeque. 2016. “Paving streets
+ for the poor: Experimental analysis of infrastructure effects.” Review of Economics and
+ Statistics, 98(2): 254–267.
+Grosz, Michel, and Ross Milton. 2025. “Relaxing electoral constraints in local education
+ funding.” Journal of Policy Analysis and Management, 44(4): 1394–1416.
+Hoogendoorn, Sander, Jochem van Gemeren, Paul Verstraten, and Kees Folmer.
+ 2019. “House prices and accessibility: Evidence from a quasi-experiment in transport
+ infrastructure.” Journal of Economic Geography, 19(1): 57–87.
+Huang, Yiping. 2016. “Understanding China’s belt & road initiative: motivation, frame-
+ work and assessment.” China Economic Review, 40: 314–321.
+Levkovich, Oleg, Jan Rouwendal, and Rolf Van Marwijk. 2016. “The effects of
+  highway development on housing prices.” Transportation, 43(2): 379–405.
+Moulton, Jeremy G, Bennie D Waller, and Scott A Wentland. 2018. “Who benefits
+ from targeted property tax relief? Evidence from Virginia elections.” Journal of Policy
+ Analysis and Management, 37(2): 240–264.
+Oates, Wallace E. 1969. “The effects of property taxes and local public spending on
+ property values: An empirical study of tax capitalization and the Tiebout hypothesis.”
+ Journal of Political Economy, 77(6): 957–971.
+Oates, Wallace E. 1972. Fiscal federalism. New York:Harcourt Brace Jovanovich.
+Ohio Department of Taxation. 2020. “Real property tax – General.” Accessed: 2025-01-
+
+
+                                            41
+  30.
+Ohio Department of Transportation. 2023. “2023 Annual Report.” Accessed: 2024-01-
+ 23.
+Peter G. Peterson Foundation. 2024. “The Highway Trust Fund explained.” Accessed:
+ 2025-01-23.
+Public Service Department of Beavercreek Township. 2025. “Road funding & main-
+ tenance in Beavercreek Township, Ohio.” Personal communication, Email to Saannidhya
+ Rawat, January 21, 2025.
+Rioja, Felix K. 2003. “Filling potholes: Macroeconomic effects of maintenance versus new
+ investments in public infrastructure.” Journal of Public Economics, 87(9-10): 2281–2304.
+Theisen, Theis, and Anne Wenche Emblem. 2021. “The road to higher prices: Will
+ improved road standards lead to higher housing prices?” The Journal of Real Estate
+ Finance and Economics, 62: 258–282.
+Urban Institute. 2021. “Highway and road expenditures.” State and Local Finance Initia-
+ tive, State and Local Backgrounders; fiscal year 2021 figures ($206 billion in state and local
+ highway and road spending, of which 44% was operations and maintenance). Accessed:
+ 2026-06-15.
+U.S. Bureau of Labor Statistics. 2024. “Consumer Expenditures in 2023.” U.S. Bureau
+ of Labor Statistics BLS Report. Published on BLS website.
+U.S. Department of Transportation. 2022. “The bipartisan infrastructure law will de-
+ liver for Ohio.” Accessed: 2025-01-23.
+Vaswani, A. 2017. “Attention is all you need.” Advances in Neural Information Processing
+ Systems.
+Wong, Ho Lun, Yu Wang, Renfu Luo, Linxiu Zhang, and Scott Rozelle. 2017.
+ “Local governance and the quality of local infrastructure: Evidence from village road
+ projects in rural China.” Journal of Public Economics, 152: 119–132.
+Woo, Sanghyun, Shoubhik Debnath, Ronghang Hu, Xinlei Chen, Zhuang Liu,
+ In So Kweon, and Saining Xie. 2023. “Convnext v2: Co-designing and scaling convnets
+ with masked autoencoders.” 16133–16142.
+
+
+
+
+                                              42
+Appendix
+A     Road Tax Renewal Elections in Ohio
+
+
+
+
+Figure 8: All Road Tax Renewal Elections           Figure 9: Close Road Tax Renewal Elections
+in Ohio (1991-2021)                                in Ohio (1991-2021)
+
+    Figure 8 displays the distribution of county subdivisions in Ohio that held at least one
+road tax renewal election between 1991 and 2021. The map reveals that although elections
+are relatively dispersed, they are more common in metropolitan areas such as Cleveland,
+Columbus, Cincinnati, Toledo etc. For jurisdictions that held multiple elections during this
+period, Figure 9 focuses on the subset of elections that were decided by narrow margins,
+specifically those closest to the 50% approval threshold that forms the basis of our regres-
+sion discontinuity analysis. These close elections provide the quasi-experimental variation
+we exploit to identify the causal effects of road tax levy decisions on housing prices, and we
+do not observe any spatial clustering of the appearance of these close elections on the ballot,
+as well as the results of these close elections. The geographic distribution of close elections
+largely mirrors that of all elections, suggesting that narrow electoral outcomes are not sys-
+tematically concentrated in particular types of communities, which supports the validity of
+our identification strategy.
+
+
+B     Additional Tables
+B.1     Full set of Treatment Effects
+Tables below present the full set of treatment effects for the results presented in our hetero-
+geneity analysis and robustness checks. Table 10 presents the treatment effects after applying
+1% Winsorization to the data, ensuring robustness against outliers. Table 11 breaks down
+the treatment effects by urban and rural categories, highlighting the differential impacts on
+housing prices based on the urbanization level.
+
+
+                                              43
+Table 10: Full set of estimates – Median Housing Price (after 1% Winsorization)
+
+ Year relative Estimate             Std. error     p-value     Confidence interval
+ to vote
+ t−3              258                  6,217         0.967     [−11,927, 12,443]
+ t−2             1,870                 6,257         0.765     [−10,393, 14,134]
+ t−1             3,489                 7,202         0.628
+ t              −1,626                 6,730         0.809     [−14,818, 11,566]
+ t+1            −4,312                 8,906         0.628     [−21,767, 13,143]
+ t+2            −8,190                 8,099         0.312     [−24,063, 7,683]
+ t+3            −13,275                7,588         0.080     [−28,146, 1,597]
+ t+4            −22,582                7,904         0.004     [−38,074, −7,090]
+ t+5            −20,952                9,554         0.028     [−39,678, −2,225]
+ t+6            −18,793                8,789         0.033     [−36,020, −1,566]
+ t+7            −17,918                7,180         0.013     [−31,990, −3,845]
+ t+8            −21,146                8,921         0.018     [−38,631, −3,660]
+ t+9            −17,789                7,770         0.022     [−33,018, −2,561]
+ t + 10         −13,147                7,526         0.081     [−27,898, 1,604]
+
+ Notes: Supplements Figure 7 in main text. This table reports the treatment-effect
+estimates of cutting road tax levies (relative to renewing them) from three years before
+to ten years after the vote. Columns show the year relative to the referendum vote,
+estimated treatment effect, standard error, p-value, and 95% confidence interval. Data
+are winsorized at the 1% level. All regressions include the covariates listed in Table 3.
+The outcome is the median house price in constant 2010 U.S. dollars (city-year obser-
+vations). A coefficient of −22,582 at t + 4 means that, four years after the vote, cities
+that cut their levies had median house prices $22,582 lower than those that renewed.
+Standard errors are robust and clustered at the county-subdivision level.
+
+
+
+
+                                           44
+       Table 11: Treatment Effects on Housing Prices by Urban vs. Rural Categories
+                                       Panel A: Urban
+ Year     Estimate              Std. Error        p-value                     Conf. Interval
+ t−3      -2,636                8,066             0.744                       [-18,446, 13,173]
+ t−2      -9,607                7,310             0.189                       [-23,935, 4,722]
+ t−1      1,045                 6,496             0.872
+ t        458                   7,873             0.954                       [-14,973, 15,889]
+ t+1      -5,087                7,617             0.504                       [-20,016, 9,843]
+ t+2      -3,675                9,077             0.686                       [-21,465, 14,115]
+ t+3      -11,657               7,667             0.128                       [-26,684, 3,370]
+ t+4      -8,846                9,162             0.334                       [-26,804, 9,112]
+ t+5      -8,967                9,311             0.336                       [-27,217, 9,284]
+ t+6      -24,476               7,127             0.001                       [-38,446, -10,507]
+ t+7      -14,457               7,869             0.066                       [-29,880, 966]
+ t+8      -26,174               8,921             0.003                       [-43,659, -8,688]
+ t+9      -19,469               8,221             0.018                       [-35,582, -3,357]
+ t + 10   -23,969               10,364            0.021                       [-44,284, -3,655]
+                                       Panel B: Rural
+ Year     Estimate              Std. Error        p-value                     Conf. Interval
+ t−3      6,384                 9,962             0.522                       [-13,142, 25,910]
+ t−2      1,609                 7,758             0.836                       [-13,597, 16,814]
+ t−1      -835                  8,354             0.920
+ t        -8,727                9,351             0.351                       [-27,056, 9,601]
+ t+1      5,731                 7,458             0.442                       [-8,886, 20,349]
+ t+2      -2,970                7,107             0.676                       [-16,899, 10,960]
+ t+3      -1,866                6,538             0.775                       [-14,681, 10,949]
+ t+4      -10,505               8,641             0.224                       [-27,441, 6,431]
+ t+5      -16,897               7,564             0.026                       [-31,722, -2,072]
+ t+6      -4,561                6,551             0.486                       [-17,402, 8,280]
+ t+7      -7,632                8,936             0.393                       [-25,146, 9,882]
+ t+8      -469                  8,063             0.954                       [-16,273, 15,335]
+ t+9      -11,492               8,383             0.170                       [-27,923, 4,940]
+ t + 10   1,851                 7,790             0.812                       [-13,417, 17,119]
+ Notes: Supplements Figure 4 in text. Each panel reports separate regressions of median house price
+on a referendum “cut vs. maintain” indicator, broken down by Urban and Rural classifications.
+Columns show the year relative to the referendum vote, estimated treatment effect, standard error,
+p-value, and 95% confidence interval. A negative estimate indicates lower house prices in areas that
+cut their road taxes relative to areas that maintain them. Standard errors are robust and clustered
+at the county-subdivision level.
+
+
+
+
+                                                45
+        Table 12: Treatment Effect on Housing Prices for Top-Quartile Tax Cuts
+
+ Year relative to vote         Estimate      Std. error     p-value     Confidence interval
+ t−3                             -2,850        13,435        0.832      [−29,183, 23,482]
+ t−2                            -13,984        13,290        0.293      [−40,032, 12,064]
+ t−1                              447          12,148        0.971
+ t                              -10,456        15,381        0.497      [−40,603, 19,692]
+ t+1                             -6,199        16,738        0.711      [−39,006, 26,608]
+ t+2                            -18,657        17,844        0.296      [−53,631, 16,317]
+ t+3                            -30,307        21,968        0.168      [−73,365, 12,751]
+ t+4                            -31,679        13,072        0.015      [−57,300, −6,058]
+ t+5                            -37,063        26,790        0.167      [−89,571, 15,446]
+ t+6                            -29,830        15,478        0.054      [−60,167, 508]
+ t+7                            -47,933        13,968        0.001      [−75,310, −20,557]
+ t+8                            -38,800        16,894        0.022      [−71,913, −5,687]
+ t+9                            -44,279        13,410        0.001      [−70,563, −17,995]
+ t + 10                         -38,659        17,087        0.024      [−72,150, −5,168]
+
+ Notes: Supplements Figure 5 in the text. Estimates compare cities that failed to renew a large
+(top-quartile) road maintenance tax levy with similar cities that renewed. Columns show the
+year relative to the referendum vote, estimated treatment effect, standard error, p-value, and
+95% confidence interval. The outcome is median house price in constant 2010 U.S. dollars; the
+unit of observation is the city–year. Covariates from Table 3 are included in every regression.
+A treatment effect of −$31,679 in year t + 4 means that four years after the vote, treated cities’
+median sale prices are $31,679 lower than those of renewing cities. Standard errors are robust
+and clustered at the county-subdivision level.
+
+
+
+
+                                               46
+C      Additional Robustness Tests
+A key RD assumption is that observations just above and below the threshold are comparable
+in all aspects except for treatment status. Table 13 presents balance tests across community
+characteristics at the voting threshold. As shown, demographic and socioeconomic vari-
+ables—including population size, poverty rates, educational attainment, employment status,
+and racial composition—exhibit no statistically significant discontinuities at the cutoff. The
+absence of any discontinuity suggests that our estimated effects on housing prices represent
+the impact of failing to renew road tax levies rather than pre-existing community differ-
+ences. This balance verification via a formal RD test, using covariates as the outcome vari-
+able, strengthens our conclusion that the observed housing price effects stem from decisions
+regarding road tax levies, not from underlying differences in community characteristics.
+
+C.1     Covariate Discontinuity Table
+
+                        Table 13: Covariate Discontinuity Test Results
+
+ Variable                   Estimate Std. error            p-value    Confidence interval
+ Population                     −388   1,094                0.722      [−2,532, 1,755]
+ Poverty Rate                   0.017  0.014                0.234      [−0.011, 0.045]
+ % with Kids                 −0.007    0.012                0.539      [−0.030, 0.015]
+ % Households with Chil-      0.0001   0.007                0.981      [−0.014, 0.014]
+ dren < 18
+ % Less than High School     −0.004    0.020                0.834       [−0.043, 0.035]
+ Education
+ % Some College Education    −0.012    0.011                0.274       [−0.034, 0.009]
+ % Renters                   −0.005    0.015                0.754       [−0.035, 0.025]
+ Unemployment Rate           −0.002    0.006                0.733       [−0.013, 0.009]
+ % White                     −0.007    0.011                0.499       [−0.028, 0.014]
+ % Black                     −0.004    0.009                0.685       [−0.021, 0.014]
+ % Married                   −0.013    0.015                0.374       [−0.042, 0.016]
+ % Separated                    0.001  0.002                0.485       [−0.002, 0.004]
+ Income Heterogeneity Index     0.007  0.013                0.566       [−0.018, 0.033]
+ Median Family Income ($)    −3,147    2,963                0.288       [−8,953, 2,660]
+ % Under 5 Years Old         −0.006    0.004                0.126       [−0.013, 0.002]
+ % Aged 5 to 17              −0.007    0.007                0.284       [−0.021, 0.006]
+ % Aged 18 to 64                0.004  0.008                0.611       [−0.012, 0.021]
+ % Racial Minority              0.007  0.011                0.499       [−0.014, 0.028]
+Notes: Each row reports the estimated discontinuity at the levy-approval cutoff for the specified
+covariate, using robust local-linear RD with the mean effective bandwidth. Confidence intervals
+are 95%.
+
+
+C.2     Covariate Discontinuity Plots
+
+                                                47
+           % Renters                                            Poverty Rate
+
+
+
+
+          % With Kids                                             % White
+
+
+
+
+% with Less than High School edu-
+cation                                                   % Attended Some College
+
+
+
+
+            % Black                                              Population
+                                         48
+                   Figure 10: Covariate Discontinuity Plots - Part 1
+        % Married                                           % Separated
+
+
+
+
+Income Heterogeneity Index                             Median Family Income
+
+
+
+
+ % Less than 5 years old                              % between 5 to 17 years
+
+
+
+
+ % between 18 to 64 years             49                     % Minority
+
+               Figure 11: Covariate Discontinuity Plots - Part 2
+                                           % Households with Children 18 years
+Unemployment Rate                          old or less
+
+
+          Figure 12: Covariate Discontinuity Plots - Part 3
+
+
+
+
+                                 50
+C.3    Bandwidth Sensitivity Analysis
+
+
+
+
+                        Figure 13: Bandwidth Sensitivity Analysis
+
+    Figure 13 plots the differences in mean estimate of the outcome variable, median house
+prices, between treated and control groups across a grid of bandwidth choices to observe how
+sensitive the estimates are to the choice of bandwidth. For instance, an RD bandwidth of
+5 on the x-axis corresponds to including all observations within 5 percentage points of the
+cutoff (i.e., between 45% and 55% vote share). The y-axis shows the corresponding estimated
+treatment effect for that bandwidth choice. As shown, estimates are consistently negative
+starting year t+4 and of comparable magnitude over a broad interval around the MSERD
+optimal bandwidth used in the main analysis. The relative flatness of the curve near the
+optimal bandwidth indicates that our main result is not driven by a finely tuned bandwidth
+choice.
+
+
+
+
+                                            51
+D      A Dynamic General Equilibrium Model of Roads
+D.1      Representative Household
+The economy is populated by a representative, infinitely–lived household that maximizes
+utility over consumption23 , housing services, and local amenities while disliking labor (in-
+cluding commuting time). In its most general form, the household’s problem is to choose
+sequences of consumption {ct }∞                           ∞                            ∞
+                               t=0 , housing stock {ht+1 }t=0 , private capital {Kt+1 }t=0 , and
+labor supply {nt }∞
+                  t=0 to maximize lifetime utility:
+
+
+                                                     ∞
+                                                     X
+                                                           β t ũ ct , ht , nt , Gt ,
+                                                                                   
+                                max                                                        0 < β < 1,              (5)
+                      {ct ,ht ,nt ,Kt+1 ,ht+1 }∞
+                                               t=0
+                                                     t=0
+
+
+    We consider the following utility function,
+                                              h    κα A(Gt )           1+θ i
+                 ũ ct , ht , nt , Gt       exp −
+                                            = ct ht h    nt [1 + ϕ(Gt )]                 (6)
+                                                  1+θ
+   where ct denotes non–housing consumption, ht the flow of housing services, and A(Gt )
+the amenity derived from the public capital stock Gt , which represents the quality of local
+public goods.
+    After taking logs, we can write the utility function as a convenient separable specification
+                                                           κ h               i1+θ
+              u ct , ht , nt , Gt = ln ct + αh A(Gt ) ln ht −   nt 1 + ϕ(Gt )       ,      (7)
+                                                          1+θ
+    with nt hours of market work, ϕ(Gt ) ≥ 0 a commuting factor that rises as road quality
+falls, κ > 0, and θ > 0 is the inverse Frisch elasticity of labor supply i.e. 1θ is the Frisch
+elasticity of labor supply with respect to real wages. The parameter αh captures the house-
+hold’s preference for housing services, and A(Gt ) is a function that captures how public
+infrastructure quality (e.g., roads) affects the utility derived from housing. The term ϕ(Gt )
+captures the disutility of commuting, which increases as road quality deteriorates.
+    Budget Constraint and Capital/Housing Accumulation:
+    Let wt be the real wage, rt the rental rate on private capital Kt , ph,t the pre–tax purchase
+price of one unit of housing stock, τL the labor–income tax rate, and τh the property-tax rate
+levied on the value of the housing stock. The household’s per-period budget can be written
+in the following way:
+
+               ct + it + ph,t xt = (1 − τL )wt nt + rt Kt −                                   τ ph,t ht            (8)
+                                                                                              |h {z   }
+                                                                                        property tax on holdings
+
+
+where xt is net housing investment and it is private–capital investment. The capital and
+  23
+    Since we don’t have any random variables or distributions, we are not dealing with any expectations or
+expected utility.
+
+
+
+                                                                 52
+housing asset laws of motion are
+
+                           Kt+1 = (1 − δK )Kt + it ,          δK ∈ (0, 1),                       (9)
+                           ht+1 = (1 − δh )ht + xt ,         δh ∈ (0, 1).                       (10)
+
+   Equivalently, we can substitute out it and xt to rewrite the budget constraint as,
+
+
+   ct + Kt+1 − (1 − δK )Kt + ph,t [ht+1 − (1 − δh )ht ] = (1 − τL )wt nt + rt Kt − τh ph,t ht   (11)
+
+   Optimality Conditions:
+   Maximization of (7) subject to (8)–(11) yields:
+  1. Consumption–Saving Euler Equation: The household equalizes the marginal util-
+     ity of consuming an additional unit today to the discounted utility of saving it until
+     tomorrow. This yields:
+
+
+                                                                        ∂nt+1                
+      Uc (ct , ht , A(Gt )) = βUc (ct+1 , ht+1 , A(Gt+1 )) (1 − τL )wt+1       + rt+1 + 1 − δK . (12)
+                                                                         ∂Kt+1
+
+     which simplifies (under certainty and taking labor choices as separate) to
+                                                                        
+                             Uc (ct , ·) = βUc (ct+1 , ·) 1 + rt+1 − δK                         (13)
+
+     In other words, the marginal rate of intertemporal substitution equals the net dis-
+     counted return on capital after depreciation. This is the standard Euler equation
+     ensuring optimal capital accumulation.
+     Moreover, given that Uc = c1t from our utility specification, we have
+
+                                      1       1                
+                                         =β      1 + rt+1 − δK                                  (14)
+                                      ct    ct+1
+
+  2. Labor–leisure trade–off: The household chooses labor nt such that the marginal
+     disutility of working (including commuting) equals the after-tax marginal benefit of
+     earning wages. Formally,
+
+
+                          −Un (ct , ht , A(Gt )) = (1 − τL )wt Uc (ct , ht , A(Gt ))            (15)
+
+     where Un is the partial derivative of utility with respect to labor (negative due to
+     disutility) and Uc is the partial derivative with respect to consumption. Using our
+     utility form, we get
+                                                θ                              1
+                          Un = −κ nt (1 + ϕ(Gt )) (1 + ϕ(Gt )),           Uc =                  (16)
+                                                                                 ct
+
+                                                  53
+  Thus, the labor optimality condition 15 becomes:
+                                        θ              (1 − τL )wt
+                        κ nt (1 + ϕ(Gt )) (1 + ϕ(Gt )) =                               (17)
+                                                             ct
+
+                                             1+θ θ (1 − τL )wt
+                              κ 1 + ϕ(Gt )       nt =                                  (18)
+                                                        ct
+                                      "                          #1/θ
+                                              (1 − τL ) wt
+                               nt =                       1+θ                         (19)
+                                          κ ct 1 + ϕ(Gt )
+
+  Intuitively, the marginal rate of substitution between leisure (or time) and consumption
+  equals the real after-tax wage. An increase in commuting factor ϕ(Gt ) (worse roads)
+  raises the left-hand side (effective disutility of labor), leading the household to supply
+  less labor for a given wage. This aligns with the idea that poor road quality reduces
+  effective labor supply as households require higher compensation to work the same
+  hours because commuting erodes their usable time.
+
+3. Euler equation for Housing: From our utility function, we have uc,t = 1/ct and
+   uh,t = αh A(Gt )/Ht . The FOC with respect to Ht+1 gives
+                                   h                                      i
+                      ph,t uc,t = β uh,t+1 + uc,t+1 (1 − δh − τh ) ph,t+1     (20)
+
+  or, in consumption units,
+                              ct h                                  ct+1 i
+                  ph,t = β      (1 − δh − τh ) ph,t+1 + αh A(Gt+1 )                    (21)
+                           ct+1                                     Ht+1
+
+                        h                ct                             ct i
+                ph,t = β (1 − δh − τh )      ph,t+1 + αh A(Gt+1 (τh ))                 (22)
+                                        ct+1                           Ht+1
+
+  The equation 22 encapsulates how the current price of housing ph,t reflects the dis-
+  counted value of future benefits from owning housing and the benefits associated with
+  holding it. The bracketed terms are, respectively, the after–tax, after–depreciation
+  resale value next period and the service dividend (marginal value of one more unit
+  of housing services) next period. The first term inside the brackets represents the
+  discounted future resale value of the housing asset after accounting for depreciation
+  and property taxes. The second term captures the flow of housing services (ameni-
+  ties) derived from owning the house, adjusted for the quality of public infrastructure
+  A(Gt+1 (τh )) and scaled by consumption per unit of housing stock. Notice that the
+  amenity value A(Gt+1 (τh )) depends on the future road quality, which in turn is influ-
+  enced by the current property tax τh through its effect on maintenance spending, as
+  explained in subsequent subsections. A cut in τh today leads to lower maintenance
+  Mt , causing Gt+1 to decline over time, which reduces A(Gt+1 (τh )) and thus lowers the
+
+
+                                             54
+      service dividend from housing. This mechanism captures how changes in public infras-
+      tructure quality, driven by tax policy, affect housing prices through their impact on
+      the flow of housing services.
+
+D.2     Representative Firm
+A competitive firm produces output Yt with Cobb–Douglas technology
+
+                            Yt = Ktαk (At Lt )1−αk ,    0 < αk < 1,                       (23)
+   enforcing factor–price equalization
+                                               Yt                Yt
+                              wt = (1 − αk )      ,    rt = αk      .                     (24)
+                                               Lt                Kt
+    Profit Maximization. The firm operates in a competitive market for inputs and output,
+so it hires labor and rents capital until factor prices equal their marginal products. In each
+period, the firm solves             
+                               max F (Kt , Lt ) − wt Lt − rt Kt ,                         (25)
+                               Kt ,Lt
+
+taking wage wt and capital rental rt as given. The first-order conditions are:
+
+  1. Labor demand:
+                                                                            Yt
+                            wt = (1 − αk )Ktαk (At Lt )−αk = (1 − αk )         .          (26)
+                                                                            Lt
+      This is the usual result that the real wage equals the marginal product of labor (M PL ).
+
+  2. Capital demand:
+                                                                     Yt
+                                 rt = αk Ktαk −1 (At Lt )1−αk = αk      .                 (27)
+                                                                     Kt
+      Thus, the rental rate on capital equals the marginal product of capital (M PK ).
+
+Under constant returns and competitive markets, the firm earns zero economic profit in
+equilibrium (all output is paid out to factors). This means
+
+                                        Yt = wt Lt + rt Kt                                (28)
+
+in equilibrium. Because poor local roads can indirectly reduce effective labor supplied (house-
+holds may choose smaller Lt ) or even the productivity of labor (if At were to depend on Gt ),
+the equilibrium wage and output will adjust accordingly. In our model, we focus on the
+household-side mechanism; we do not explicitly insert Gt into F (·) so At is treated as exoge-
+nous, but one could imagine an extension where At = A(Gt ) similar to household amenities
+function, making public infrastructure a productive externality that boosts TFP. That would
+reinforce the mechanism: a decline in Gt would lower productivity and thus lower wages from
+the firm side as well. For now, wages change endogenously mainly due to labor supply shifts
+in the simple model.
+
+                                                55
+D.3        Government and Public Infrastructure
+Taxation and Spending. The government collects taxes and uses the revenue to finance
+road maintenance. Taxes have two components: an exogenous property tax τh (subject to
+voter approval) and an endogenous tax (such as τL on labor income, or potentially a lump-
+sum tax) that provides additional revenue. Denote by Ttexo the exogenous tax revenue from
+the voted levy, and Ttendo the endogenous tax revenue from other sources. For example,
+if τL is a labor tax, then Ttendo = τL wt nt , which varies with the economy and is therefore
+“endogenous”. The property tax revenue is Ttexo = τh ph,t ht each period, directly tied to the
+housing market outcome.
+   The government budget constraint is:
+
+                                            Ttendo + Ttexo = Mt ,                        (29)
+
+assuming all tax revenue is spent on road maintenance Mt . We abstract from any other
+government consumption or transfers.
+    In a scenario where the road tax is cut (e.g., τh drops to zero after a failed levy vote),
+Ttexo falls exogenously. For a balanced budget, maintenance spending Mt must be reduced
+by an equal amount. This captures the immediate fiscal impact of the tax cut, such as an
+observed 11% loss in road maintenance funding empirically.
+    Public Capital (Roads) Accumulation. The stock of public road infrastructure Gt
+evolves over time depending on maintenance. We adopt a law of motion in line with Rioja
+(2003) to formalize how insufficient maintenance leads to infrastructure depreciation, whereas
+sufficient maintenance can maintain road quality24 . Let δG be the “normal” depreciation
+rate of roads (wear-and-tear if adequately maintained). Actual effective depreciation δG,t
+can exceed δG if maintenance is below the requirement. A convenient formulation is:
+
+                                           Gt+1 = Gt (1 − δG,t ),                        (30)
+   where                                           n        Mt o
+                                     δG,t = φ · max 0, 1 −        .                      (31)
+                                                           δG Gψt
+
+   In words, if maintenance spending Mt falls short of the amount needed to cover normal
+depreciation (δG Gt ), the depreciation rate increases proportionally to the shortfall. The
+parameter φ ≥ 0 governs how sensitive the infrastructure is to under-maintenance. For ex-
+ample, if Mt is only half of δG Gt , then 1 − δGMGt t = 0.5, and δG,t = 0.5φ; this means roads
+wear out. If Mt is zero (no upkeep), depreciation could jump substantially (if φ is large, Gt
+may deteriorate very quickly). On the other hand, if Mt is at least δG Gt (maintenance fully
+covers yearly wear), then δG,t = 0 (no deterioration). We also assume δG,t cannot go be-
+low 0 even if Mt exceeds δG Gt (any extra maintenance beyond replacing depreciation might
+marginally improve roads but with diminishing returns). This Riojas-style law of motion
+captures the intuition that lack of maintenance shortens the life of existing public capi-
+  24
+       In this setup, roads can only be maintained, not improved.
+
+
+                                                     56
+tal. Maintenance spending effectively slows down depreciation, preserving the infrastructure
+stock; cutting maintenance causes Gt to decline faster over time. Importantly, a reduction
+in the road tax τh translates to lower Mt and thus a gradual decline in Gt over several peri-
+ods. The deterioration in road quality will typically become noticeable after a few periods
+of under-maintenance, consistent with evidence that the negative effects on road conditions
+(and subsequently house prices) emerge with a lag. In our model, that lag is endogenously
+determined by the above law of motion – if Mt drops at t = 0, Gt will depreciate a bit faster
+each period, compounding into a significant drop in infrastructure quality after some years.
+
+D.4      Housing Market
+Housing is a tradable asset in fixed aggregate supply h̄25 . With a representative household,
+market clearing is
+                                     ht = H̄ for all t.                                  (32)
+Given (32), the price ph,t is determined by the housing Euler (21) and the paths of {ct , Gt }. In
+steady state, substituting ct+1 = ct = c, ht+1 = ht = h = H̄, Gt+1 = Gt = G, and ph,t+1 = ph,t = ph
+into (21) yields the user–cost formula:
+                                               β                  c
+                               ph =                        αh A(G) .                                (33)
+                                       1 − β(1 − δh − τh )        h
+    Better roads i.e. higher A(G) higher raise ph . Larger h reduces marginal service value
+(log utility), lowering ph ceteris paribus.
+    The steady-state housing price formula in equation (33) reveals how the discount factor
+β interacts with depreciation δh and property taxes τh to determine asset valuation. The
+            β
+term 1−β(1−δ  h −τh )
+                      represents the present value multiplier that converts the flow of housing
+services into an asset price.
+    To understand this multiplier, consider that 1−δh −τh represents the net retention rate of
+housing value after accounting for physical depreciation and tax obligations. The household
+effectively loses fraction δh + τh of the housing asset’s value each period through wear and
+tax payments. The remaining fraction 1 − δh − τh carries forward to the next period, where
+it generates both service flows and continuation value.
+    The economic intuition is clear: higher property taxes τh reduce the net retention rate,
+making housing a less attractive store of value and lowering equilibrium prices. A patient
+household (high β) values future service flows more highly, increasing the multiplier and
+thus housing prices. Conversely, rapid depreciation δh erodes the asset’s continuation value,
+reducing prices through the same channel.
+    This formulation also shows why property tax cuts can have ambiguous effects on housing
+prices in our model. While lower τh directly increases the multiplier and boosts prices, it
+also reduces maintenance funding, leading to infrastructure decay that lowers the service
+flow αh A(G). The net effect depends on the relative magnitudes of these opposing forces
+and their timing.
+  25
+     This means that the total quantity of housing is constant over time, and any changes in demand will
+only affect prices. We can also allow extensions to the model that incorporate changes in housing supply.
+
+
+
+                                                   57
+D.5      Competitive Equilibrium
+We now define a recursive competitive equilibrium for this economy. Given an initial private
+capital stock K0 and initial public capital (road quality) G0 , and a sequence of exogenous tax
+policy {τh,t } (with a drop in τh at the time of the tax cut shock), a competitive equilibrium is
+a sequence of allocations {ct , ht+1 , nt , Kt+1 , Mt , Gt }t≥0 and prices {wt , rt , ph,t }t≥0 such that:
+
+   1. Household Optimization: Given prices and taxes, the representative household
+      chooses {ct , ht+1 , nt , Kt+1 } to maximize its utility subject to its budget and accumula-
+      tion constraints. The household’s choice satisfies the first-order optimality conditions
+      described above (Consumption and housing Euler equations, labor supply condition,
+      and housing demand condition, etc.), and the transversality condition on capital hold-
+      ing.
+   2. Firm Optimization: The representative firm chooses inputs {Kt , Lt } each period to
+      maximize profit. In equilibrium, Lt = nt (labor market clears) and Kt = Kt held by the
+      household (capital market clears), and the wage and rental rates satisfy wt = FL (Kt , Lt )
+      and rt = FK (Kt , Lt ) as given by the Cobb-Douglas marginal products. This ensures
+      the firm’s first-order conditions are met and profit is zero.
+   3. Government Budget and Public Capital: The government budget constraint
+      holds each period: Ttendo + Ttexo = Mt , with Ttexo = τh,t ph,t ht and Ttendo = τL wt nt . The
+      road maintenance Mt feeds into the law of motion for Gt : given Gt at the start of
+      period t, the next period’s public capital Gt+1 is determined by Gt+1 = Gt (1 − δG,t )
+      with δG,t increasing if Mt is insufficient (as specified above). The government sets Mt
+      according to the available tax revenue each period.
+   4. Market Clearing: All markets clear in equilibrium:
+          Goods market: Output is used for private consumption, private investment,
+           and public maintenance. The resource constraint each period is:
+
+                                                 Yt = ct + it + Mt .                                 (34)
+
+            Total output Yt produced by the firm equals the sum of household consumption
+            ct , private investment it , and government demand for road maintenance Mt .
+          Labor market: Lt = nt . The labor supplied by the household equals labor
+           demanded by the firm. The real wage adjusts such that this holds.
+          Capital market: The firm’s capital input equals the household’s capital stock:
+           Kt (used in production) = Kt (owned by household). The rental rate rt adjusts
+           to clear this market.
+          Housing market: ht = H̄. The total housing demanded by the household
+           equals the fixed housing stock. The house price ph,t adjusts each period to clear
+           the housing market.
+   5. Consistency: The expectations of the household are consistent with realized out-
+      comes. In a deterministic steady-state scenario, this means the household correctly
+
+                                                   58
+      anticipates the path of prices and Gt . In a perfect-foresight or rational expectations
+      equilibrium, the household foresees that a cut in τh implies lower future Mt and thus
+      a gradually declining Gt , factoring this into its decisions. The sequence {ph,t } reflects
+      the present value of housing services given the expected decline in amenities.
+
+D.6     Solving the model
+The steady-state equilibrium can be characterized as a system of 9 equations in 9 unknowns.
+We solve for the following endogenous variables: (c, n, K, Y, w, r, q, M, G), where q ≡ (1 +
+τh )ph is the effective housing price and housing quantity is fixed at h = H̄.
+
+D.6.1    System of Equilibrium Equations
+The steady-state equilibrium is determined by the following 9 independent equations:
+
+  1. Euler equation (steady-state): From the intertemporal optimality condition:
+
+                            1 = β(1 + r − δK )      ⇒       r = δK + β −1 − 1               (35)
+
+      This pins down the rental rate r directly from parameters.
+
+  2. Firm capital pricing: From profit maximization:
+                                                        Y
+                                              r = αk                                        (36)
+                                                        K
+      This relates the output-capital ratio to the rental rate.
+
+  3. Firm wage pricing: With labor market clearing L = n:
+                                                             Y
+                                           w = (1 − αk )                                    (37)
+                                                             n
+      This relates the wage to output and labor supply.
+
+  4. Production technology: The Cobb-Douglas production function:
+
+                                        Y = K αk (A · n)1−αk                                (38)
+
+      This ties together output, capital, and labor.
+
+  5. Labor-leisure trade-off: From household optimization:
+
+                                                            (1 − τL )w
+                                   κ[1 + ϕ(G)]1+θ nθ =                                      (39)
+                                                                c
+      This links labor supply to wages, consumption, and road quality through commuting
+      costs.
+
+
+
+                                               59
+   6. Housing price determination: From the housing Euler equation in steady state:
+                                                  β                      c
+                                    q=                        · αh A(G)                                (40)
+                                          1 − β(1 − δh − τh )           H̄
+
+       This determines the housing price from the present value of housing services, incorpo-
+       rating the discount factor and net retention rate.
+
+   7. Government budget constraint: Balanced budget condition:
+
+                                             M = τL wn + τh ph H̄                                      (41)
+
+       This defines maintenance spending from tax revenues.
+
+   8. Road quality steady-state: From the law of motion Gt+1 = Gt (1 − δG,t ):
+                                                                   
+                                                               M
+                 G = G(1 − δG ) where δG = max 0, φ 1 − norm ψ                                         (42)
+                                                             δG G
+                                                                   norm ψ
+       In the minimal-upkeep steady state, this simplifies to M = δG   G .
+
+   9. Resource constraint: Goods market clearing with capital accumulation:
+
+                                              c = Y − δK K − M                                         (43)
+
+       Note that i = K − (1 − δK )K = δK K in steady state. This accounts for the allocation
+       of output between consumption, investment, and maintenance.
+
+D.7      Transitional Dynamics and Welfare Analysis
+To analyze the transitional dynamics following a tax cut, we solve the model numerically
+two different ways: under perfect foresight26 and partial adjustment27 . The key steps are:
+
+   1. Calibration: Assign parameter values based on empirical estimates or literature
+      benchmarks. For example, β, αh , η, κ, θ, δK , δG , and φ are calibrated to match
+      observed household behavior, infrastructure depreciation rates, and labor supply elas-
+      ticities.
+
+   2. Initial Steady State: Compute the pre-tax-cut steady state by solving the equilib-
+      rium conditions under the initial τh . This provides baseline values for {Mt , Gt , ph,t , ct , nt , Yt }.
+
+   3. Shock Implementation: Introduce the tax cut by reducing τh at t = 0. Solve the
+      model forward to trace the path of endogenous variables {Mt , Gt , ph,t , ct , nt , Yt } as the
+      economy transitions to the new steady state.
+  26
+      Households are forward-looking and adjust their behavior immediately to changes in policy and economic
+conditions.
+   27
+      Households adjust their behavior gradually in response to changes in policy and economic conditions.
+
+
+
+                                                    60
+   4. Dynamic Path: Use one of the methods stated above to compute the full transition
+      path of {Mt , Gt , ph,t , ct , nt , Yt }. Households anticipate the future decline in Gt due to
+      lower maintenance and adjust their consumption, labor supply, and housing demand
+      accordingly. The path of Gt is updated each period using the law of motion in equation
+      30.
+
+   5. Welfare Analysis: Compute the household’s lifetime utility before and after the tax
+      cut. Decompose the welfare change into short-run gains (higher disposable income)
+      and long-run losses (lower amenities and higher commuting costs).
+
+   6. Sensitivity Analysis: Vary key parameters (e.g., φ, αh , θ) to test the robustness
+      of the results. Examine how the magnitude of the tax cut or alternative government
+      policies affect outcomes.
+
+    The numerical solution involves iterating on the household’s Euler equations, firm con-
+ditions, and government budget constraint while updating Gt using its law of motion. This
+allows us to simulate the gradual decline in road quality and its impact on housing prices,
+labor supply, and overall welfare.
+
+D.8      Discussion of Policy Shock
+A permanent cut in the voted levy lowers τh exogenously. In the short run, disposable
+income rises as tax burden decreases, but Gt is initially unchanged. This leads to a sharp
+increase in consumption but also a sharp decrease in maintenance budget. Over time, reduced
+maintenance spending accelerates depreciation in equation 30, lowering A(Gt ) and raising
+ϕ(Gt ); this depresses labor supply, housing demand, and therefore equilibrium house prices,
+as demonstrated in Section D.10.
+
+D.9      Model Calibration
+The model parameters are calibrated based on empirical evidence and standard values from
+the literature. Table 14 summarizes the calibrated values used in the analysis. These values
+are chosen to reflect realistic economic conditions. For example, β = 0.96 corresponds to
+a 4% annual discount rate, while δK = 0.05 reflects typical depreciation rates for private
+capital. Other parameters such as labor disutility parameters κ and θ are calibrated to
+match observed labor supply elasticities, and φ captures the empirical sensitivity of road
+quality to maintenance shortfalls.
+
+D.10       Model Results
+The model is solved numerically using both a perfect foresight and a partial adjustment
+algorithm to simulate the economy’s response to a permanent cut in the road maintenance
+tax τh . Below, we present the key results from partial adjustment simulations28 .
+  28
+    We focus on partial adjustment results here as they are better equipped for illiquid housing markets and
+gradual behavioral responses. Perfect foresight results are qualitatively similar but exhibit sharper short-run
+dynamics.
+
+
+                                                      61
+                    Table 14: Baseline calibration and sensitivity ranges
+
+Parameter      Model block              Baseline       Sensitivity    Key empirical
+                                                         range        source
+β              Household                   0.96         0.94–0.99     Cooley (1995)
+               intertemporal
+               utility
+αh             Utility weight on           0.35         0.25–0.40     (U.S. Bureau of
+               housing services                                       Labor Statistics,
+                                                                      2024)
+η              Amenity elasticity          0.88                       †
+θ              Inverse Frisch                2           1.5–4.0      Chetty et al. (2011)
+               elasticity labor
+               supply
+κ              Labor-disutility             2.9            2.9        Chatterjee, Gibson
+               scale                                                  and Rioja (2017)
+αk             Private capital             0.30         0.25–0.40     Chatterjee, Gibson
+               share                                                  and Rioja (2017)
+δK             Private capital             0.06         0.04–0.08     Cooley (1995)
+               depreciation
+               (annual)
+δh             Housing                     0.05         0.04–0.08
+               depreciation
+               (annual)
+ norm
+δG             Road stock                  0.25                       †
+               depreciation
+φ              Under-                      0.64         0.25–0.75     Rioja (2003)
+               maintenance
+               sensitivity
+γ              Commuting                   0.47                       †
+               disutility
+               sensitivity
+ψ              Maintenance                 0.47                       †
+               requirement
+               elasticity
+τL             Labor income tax            0.35                       †
+               share for roads
+Note: † Calibrated to match empirical moments
+
+
+
+
+                                                  62
+    A reduction in τh from 1% to 0% leads to an decrease in maintenance budget Mt and
+     road quality Gt , which declines gradually over time due to the law of motion for public
+     capital.
+
+    The house price ph,t first increases and then falls significantly as the amenity value
+     A(Gt ) declines, reflecting the reduced desirability of housing in areas with deteriorating
+     roads
+
+   The figures 14 illustrates the dynamics of key variables over time following the tax cut.
+The model’s transitional dynamics following a permanent reduction in the property tax from
+1 mills to 0 mills.
+
+
+
+
+                  Figure 14: Dynamics of variables following the tax cut.
+
+    Figure 14 plots the full transition paths (percentage deviations from baseline). Most
+of the adjustment in Mt and qt occurs early, while Gt converges more gradually as under-
+maintenance compounds over time. Findings from Figure 14 are summarized below:
+
+    Roads and maintenance. Following the road tax cut, the road maintenance budget
+     drops by about 10% and then drifts to roughly −11% (top-left panel of Figure 14).
+     Given the law of motion for roads, Gt declines gradually and monotonically over the
+     simulated horizon.
+
+    House prices. The housing price qt initially shows a small blip (about +0.3%) and
+     then declines smoothly toward a long-run drop of an average of 9% over the simulated
+     horizon as the amenity value A(Gt ) deteriorates.
+
+    Aggregates. The macro aggregates move modestly: labor nt falls by about −3.0%,
+     output also Yt by about −3%, and consumption ct increases by about 3% in the long
+     run. Consumption exhibits a slight short-run overshoot (of +3%) as households ini-
+     tially respond to higher disposable income from the tax cut, before settling slightly
+
+                                              63
+      above baseline (bottom row). This reflects the household’s initial response to higher
+      disposable income from the tax cut, followed by adjustments and substitution effect as
+      road quality declines.
+
+
+
+
+     Figure 15: Model vs Empirical Estimates of House Prices Following the Tax Cut.
+
+
+Model vs. empirical house-price path. Figure 15 compares the model-implied house-
+price response to the event-study estimates in Figure 3. After aligning the time units, the
+model tracks the medium- and long-run decline well, squarely within the empirical confidence
+band. The model is slightly conservative initially as the drop in housing prices occurs more
+gradually than the empirical estimates. Nevertheless, the overall magnitude and timing
+of the decline remain consistent with the data as the model starts to deviate from the
+baseline around year 2 and approaches a long-run average drop of about 9% by year 10.
+This pattern is consistent with the mechanism presented in the paper: eliminating the tax
+reduces maintenance revenues, which gradually lowers road quality, depresses amenity A(Gt ),
+and in turn pulls down housing valuations.
+    Overall, the calibrated model generates transitional dynamics for maintenance, road qual-
+ity, and house prices that closely follow the empirical path while remaining slightly less sharp
+at the short-run trough.
+
+D.11      Model Limitations
+  1. Representative agent assumption. Heterogeneity in income or commuting pref-
+     erences could attenuate price effects. Sensitivity analyses with quasi-linear preferences
+     or idiosyncratic ϕ(Gt ) show qualitative robustness.
+
+
+
+                                              64
+  2. No spatial heterogeneity. We currently ignore spatial heterogeneity. The model
+     intentionally abstracts from space for tractability. Future work can embed Gt in a
+     Rosen–Roback framework to capture cross-location sorting.
+
+  3. Fixed housing stock. Allowing new construction would introduce a supply elasticity
+     that dampens price responses. Empirical evidence suggests housing supply in many
+     U.S. jurisdictions is quite inelastic.
+
+  4. No direct productivity role for roads. Incorporating Gt into firm TFP At would
+     further enrich the model. However, this would require additional assumptions about
+     how road quality affects firm location and productivity, which is beyond our current
+     scope.
+
+   The DGE framework formalizes the intuition that road–maintenance tax cuts provide
+immediate relief but, by undermining infrastructure quality, erode local amenities and raise
+commuting costs, culminating in lower house values and welfare.
+
+D.12        Derivations of Key Equations
+D.12.1      Derivation of the Euler Equation for consumption 14
+Below Uc ≡ ∂u/∂c and λt is the Lagrange multiplier on the period-t budget constraint.
+   Set up the Lagrangian:
+
+     ∞
+     X        h                                                                                   i
+L=         β t u(ct , ht , A(Gt ))+λt (1−τL )wt nt +rt Kt −τh ph,t ht −ct −ph,t ht −Kt+1 +(1−δK )Kt .
+     t=0
+
+   FOC w.r.t. consumption ct :
+
+     ∂L
+         =0       =⇒     β t Uc (ct , ht , A(Gt )) − λt = 0     =⇒     λt = β t Uc (ct , ht , A(Gt )).   (A1)
+     ∂ct
+   FOC w.r.t. next-period capital Kt+1 :
+
+          ∂L                                h              ∂nt+1                i
+               =0       =⇒        −λt + λt+1 (1 − τL )wt+1       + rt+1 + 1 − δK = 0.                    (A2)
+         ∂Kt+1                                             ∂Kt+1
+
+   Combine (A1) and (A2):
+   Insert λt and λt+1 from (A1) into (A2):
+
+
+     t                           t+1
+                                                                  h              ∂nt+1                i
+   β Uc (ct , ht , A(Gt )) = β         Uc (ct+1 , ht+1 , A(Gt+1 )) (1 − τL )wt+1       + rt+1 + 1 − δK .
+                                                                                 ∂Kt+1
+
+   Divide both sides by β t to obtain:
+
+
+                                                        65
+                                                         h              ∂nt+1                i
+     Uc (ct , ht , A(Gt )) = βUc (ct+1 , ht+1 , A(Gt+1 )) (1 − τL )wt+1       + rt+1 + 1 − δK .
+                                                                        ∂Kt+1
+                        ∂nt+1
+    Why the derivative ∂K t+1
+                              ? Capital chosen today affects tomorrow’s labor choice only
+through the household’s optimal plan. If, as we assume, labor in each period is chosen
+independently of the inherited capital stock, this derivative is zero and the term drops out,
+giving the familiar
+                                                                       
+                             Uc (ct , ·) = βUc (ct+1 , ·) 1 + rt+1 − δK ,
+    which is the standard Euler equation for intertemporal consumption smoothing.
+Equation 10 still contains the marginal utility of consumption Uc (·). Because the one-period
+utility function chosen is:
+                                                                   κ                1+θ
+         u(ct , ht , A(Gt )) = ln ct + αh ln ht + η ln A(Gt ) −       nt (1 + ϕ(Gt ))     ,        (6)
+                                                                  1+θ
+its partial derivative with respect to consumption is:
+                                                    ∂u    1
+                          Uc (ct , ht , A(Gt )) =       =      (log utility)
+                                                    ∂ct   ct
+   Substituting Uc into the Euler Equation:
+   Start from Eq. 10:                                              
+                        Uc (ct , ·) = β Uc (ct+1 , ·) 1 + rt+1 − δK .                             (10)
+   Replace Uc with 1c (log utility):
+
+                                   1       1                
+                                      =β      1 + rt+1 − δK
+                                   ct    ct+1
+   This is exactly Eq. 11:
+                                   1       1                
+                                      =β      1 + rt+1 − δK                                       (11)
+                                   ct    ct+1
+
+D.12.2    Labor–leisure trade–off
+To derive the labor-leisure trade-off condition, we start by computing the partial derivatives
+of the utility function with respect to consumption and labor:
+    For consumption:
+                                                               1
+                                     uc (ct , ht , nt , Gt ) =                           (B1)
+                                                               ct
+    For labor, we have:
+                                                                 θ           
+                       un (ct , ht , nt , Gt ) = − κ nt 1 + ϕ(Gt )    1 + ϕ(Gt ) .                (B2)
+
+   Optimal labour supply equates the marginal disutility of work to the after-tax marginal
+
+                                                    66
+benefit of wages:
+
+                       − un (ct , ht , nt , Gt ) = (1 − τL ) wt uc (ct , ht , nt , Gt )
+   Using B1 and B2, we can rewrite this as:
+                                       θ             (1 − τL ) wt
+                         κ nt 1 + ϕ(Gt )    1 + ϕ(Gt ) =
+                                                             ct
+   This is exactly the condition we wanted to derive:
+                                            1+θ θ   (1 − τL ) wt
+                                κ 1 + ϕ(Gt )    nt =
+                                                         ct
+                                              "                          #1/θ
+                                                      (1 − τL ) wt
+                                  nt =                            1+θ
+                                                  κ ct 1 + ϕ(Gt )
+
+D.12.3    Euler equation for Housing
+We derive the housing Euler starting from the household’s problem.
+
+1. Primitives. Per–period utility:
+                                                                    κ                1+θ
+             u(ct , ht , nt , Gt ) = ln ct + αh A(Gt ) ln ht −         nt (1 + ϕ(Gt ))     .
+                                                                   1+θ
+Marginal utilities (holding Gt fixed):
+
+                                       1                     ∂u       A(Gt )
+                              uc,t =      ,         uh,t =       = αh        .
+                                       ct                    ∂ht       ht
+
+2. Budget constraint in stock form. Using Ht+1 = (1 − δh )Ht + xt and substituting
+xt = Ht+1 − (1 − δh )Ht , the period-t budget is
+                                             
+            ct + it + ph,t Ht+1 − (1 − δh )Ht = (1 − τL )wt nt + rt Kt − τh ph,t Ht .
+
+   Rearrange the housing terms:
+
+          −ph,t Ht+1 + ph,t (1 − δh )Ht − τh ph,t Ht = −ph,t Ht+1 + ph,t (1 − δh − τh )Ht .
+
+3. Lagrangian. Let λt be the multiplier on the budget constraint:
+
+
+
+
+                                                        67
+               ∞
+               X      n
+                      t
+          L=         β u(ct , ht , nt , Gt )
+               t=0
+                              
+                          + λt (1 − τL )wt nt + rt Kt − ct − it − ph,t (Ht+1 − (1 − δh )Ht )
+                                                                 o
+                            − τh ph,t Ht − (Kt+1 − (1 − δK )Kt )                                    (44)
+
+4. FOCs for ct and Ht+1 . Consumption:
+                                          ∂L
+                                              = 0 ⇒ λt = uc,t .
+                                          ∂ct
+   For Ht+1 (differentiating with respect to the housing stock chosen for next period):
+             ∂L
+                  =0:          β t+1 uh,t+1 + β t+1 λt+1 ph,t+1 (1 − δh − τh ) − β t λt ph,t = 0.
+            ∂Ht+1
+   Divide by β t and rearrange:
+                                                                          
+                            ph,t λt = β uh,t+1 + λt+1 ph,t+1 (1 − δh − τh ) .
+
+5. Replace multipliers with marginal utility of consumption. Since λt = uc,t :
+                                 h                                    i
+                    ph,t uc,t = β uh,t+1 + uc,t+1 (1 − δh − τh )ph,t+1 ,
+
+which is equation (20).
+
+6. Convert to consumption units. Divide both sides by uc,t+1 :
+                          uc,t     h                       uh,t+1 i
+                    ph,t        = β (1 − δh − τh )ph,t+1 +
+                         uc,t+1                            uc,t+1
+                                 uc,t      ct+1
+   With uc,t = 1/ct we have              =      , so
+                                uc,t+1       ct
+                                       ct h                        uh,t+1 i
+                          ph,t = β          (1 − δh − τh )ph,t+1 +          .
+                                     ct+1                          uc,t+1
+                                                     
+   Substitute uh,t+1 /uc,t+1 = αh A(Gt+1 )/Ht+1 · ct+1 :
+                                ct h                                       ct+1 i
+                     ph,t = β         (1 − δh − τh )ph,t+1 + αh A(Gt+1 )
+                               ct+1                                       Ht+1
+
+which is equation (21).
+
+
+
+
+                                                     68
+E     Road-Quality Vision Model: Fine-Tuning and Eval-
+      uation
+In this section, we document our pipeline to classify road-surface quality from satellite im-
+agery into three classes: poor (0), medium (1), and high (2). We begin from an ImageNet-
+pretrained vision model called ConvNeXt V2, available on Hugging Face and supported by
+Meta AI (Woo et al., 2023). We use the ConvNeXt V2 backbone and fine-tune the base
+version of the model on labeled road imagery from Brewer et al. (2021). The resulting model
+produces categorical ratings which can be converted into a continuous Road Quality Score
+(RQS), used in Section 4.2.
+
+Fine-tuning Workflow. Figure 16 summarizes the end-to-end workflow. We begin with
+a corpus of 53,677 satellite tiles (224x224 pixels) labeled for road quality from Brewer et al.
+(2021). We feed these images into a ConvNeXt V2 model, replacing the original classification
+head with a 3-way softmax layer. We then fine-tune the entire model end-to-end using cross-
+entropy loss and the AdamW optimizer. The training process is monitored via a validation
+set, and we select the best-performing checkpoint based on minimum validation loss. Finally,
+we evaluate the fine-tuned model on a held-out test set to report accuracy, F1, and class-wise
+precision and recall.
+
+
+
+
+               Figure 16: Fine-tuning workflow for road-quality classification
+
+
+
+
+                                              69
+Data and Training. We fine-tune ConvNeXt V2 trained on ImageNet-1k dataset. The
+classification head is replaced by a 3-way softmax. We fine-tune the model for 3 epochs and
+use cross-entropy loss, AdamW optimizer with learning rate of 5 × 10−5 and weight decay
+of 0.01, and a batch size of 16 for training and 32 for evaluation. Inputs use the model’s
+ImageNet normalization; no explicit augmentation. We use a weighted, stratified 70/15/15
+split and select the checkpoint with the lowest validation loss.
+
+     Split        Share   Stratified    Weights       Rationale
+     Train        70%      By label      3/2/1        Mitigates class imbalance by allocating
+                                                      more minority-class samples to training,
+                                                      improving gradient signal and stability.
+     Validation   15%      By label      3/2/1        Class-aware monitoring consistent with
+                                                      “Train” split, used for model selection
+                                                      (min. val. loss).
+     Test         15%      By label      3/2/1        Hold-out evaluation with comparable
+                                                      class mix for fair assessment across splits.
+
+Table 15: Split design and class-aware allocation. Weights are used only to allocate per-class
+counts into splits, not as loss weights.
+
+
+Model Evaluation Metrics. We report accuracy, macro F1, and class-wise precision/recall
+to account for any residual imbalance. We also provide a confusion matrix to diagnose sys-
+tematic confusions between adjacent quality classes.
+
+              Table 16: Overall accuracy by split (fine-tuned ConvNeXt V2).
+
+                               Split           Overall Accuracy
+                               Train                0.9115
+                               Validation           0.8525
+                               Test                 0.8337
+
+
+Table 17: Confusion matrix on the held-out Test set (N=1,539). Low/Medium/High corre-
+spond to classes 0/1/2.
+
+                                                       Predicted
+                                                Low     Medium     High
+                                      Low        33        11        9
+                          Actual      Medium     12        78       181
+                                      High        2        41      1172
+
+   Table 16 presents model accuracy results on training, validation and test datasets. Ac-
+curacy is 0.9115 on train, 0.8525 on validation, and 0.8337 on test, indicating a good fit
+without overfitting on training data. As expected, accuracy declines slightly from train to
+
+                                                70
+          Table 18: Classification metrics on the Test set derived from Table 17.
+
+                      Class          Precision    Recall       F1     Support
+                      0                0.702          0.623   0.660       53
+                      1                0.600          0.288   0.389      271
+                      2                0.861          0.965   0.910     1,215
+                      Macro avg        0.721          0.625   0.653     1,539
+                      Weighted avg     0.810          0.834   0.810     1,539
+                      Accuracy                   0.8337                 1,539
+
+
+validation to test. However, the gap between validation and test is less than 10 percentage
+points, suggesting good generalization across unseen data.
+    Table 17 shows the confusion matrix on the held-out test set and is useful to understand
+the types of errors the model makes when classifying road quality. As presented in the table,
+most errors are between adjacent classes: medium (1) is often predicted as high (2), and
+poor (0) occasionally as medium (1). Confusions between poor (0) and high (2) are rare,
+while high (2) is predominantly classified correctly.
+    Table 18 presents per-class metrics. Class 2 attains high precision and recall, driving
+weighted averages near overall accuracy, which suggests the model is very reliable at identi-
+fying high-quality roads. Class 1 shows low recall, lowering macro F1 and reflecting difficulty
+on borderline surfaces. This means the model often misses medium-quality roads, misclas-
+sifying them as high quality. Class 0 performs moderately, with balanced precision/recall
+relative to its smaller support, indicating reasonable reliability on poor-quality roads despite
+fewer examples. Overall, the model excels at identifying high-quality roads but nevertheless
+struggles more with medium and poor classes, especially in recall for medium quality.
+
+Base vs. Fine-Tuned ConvNeXt V2. Table 19 summarizes the main gains from end-
+to-end adaptation. We compare our fine-tuned ConvNeXt V2 against a baseline where the
+pretrained backbone is frozen and only the classification head is trained. This linear-probe
+baseline on frozen ImageNet features approach is common in transfer learning.
+
+                      Table 19: Fine-tuned vs. baseline ConvNeXt V2.
+
+                          Model                           Overall Accuracy
+                          Fine-tuned ConvNeXt V2               0.8337
+                          Baseline ConvNeXt V2                 0.2586
+
+    Fine-tuning improves test accuracy by 57.51 (from 0.2586 to 0.8337) percentage points, a
+more than 220% relative gain. This indicates that adapting the pretrained backbone to road
+imagery is crucial for learning task-specific features and achieving reliable generalization,
+justifying end-to-end fine-tuning over a frozen baseline.
+
+
+
+                                                 71
+

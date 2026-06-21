@@ -1,0 +1,40 @@
+\begin{table}[H]
+    \centering
+    \caption{Road Quality after Failed Renewal Elections}
+    \label{tab:roadquality_estimates}
+    \begin{singlespace}
+    \begin{threeparttable}
+        \footnotesize
+        \setlength{\tabcolsep}{3pt}
+        \renewcommand{\arraystretch}{0.88}
+        \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}p{2.9cm}cccccc}
+            \toprule
+            & (1) & (2) & (3) & (4) & (5) & (6) \\
+            & \shortstack{$t\!-\!3$\\to $t\!-\!1$} & \shortstack{$t\!+\!1$\\to $t\!+\!3$} & \shortstack{$t\!+\!2$\\to $t\!+\!4$} & \shortstack{$t\!+\!3$\\to $t\!+\!5$} & \shortstack{$t\!+\!4$\\to $t\!+\!6$} & \shortstack{$t\!+\!5$\\to $t\!+\!7$} \\
+            \midrule
+            \multicolumn{7}{l}{\textbf{Panel A: Road Quality Rating}} \\
+            \midrule
+            Estimate & 0.054 & 0.031 & -0.222$^{**}$ & -0.279$^{***}$ & -0.278$^{*}$ & -0.076 \\
+            & (0.098) & (0.080) & (0.099) & (0.070) & (0.163) & (0.232) \\
+            Eff. bandwidth ($h$) & 8.89 & 10.85 & 4.53 & 4.43 & 5.11 & 7.06 \\
+            Bias bandwidth ($b$) & 15.86 & 18.55 & 8.73 & 8.34 & 7.11 & 8.96 \\
+            Eff. observations & 161 & 209 & 53 & 46 & 34 & 23 \\
+            Total observations & 381 & 378 & 279 & 221 & 132 & 46 \\
+            \midrule
+            \multicolumn{7}{l}{\textbf{Panel B: Road Quality Score}} \\
+            \midrule
+            Estimate & 1.254 & 0.955 & -8.102$^{**}$ & -9.791$^{***}$ & -10.647$^{*}$ & -5.191 \\
+            & (3.143) & (3.088) & (3.445) & (2.621) & (6.401) & (9.094) \\
+            Eff. bandwidth ($h$) & 11.10 & 8.84 & 4.66 & 4.68 & 5.15 & 7.09 \\
+            Bias bandwidth ($b$) & 18.58 & 15.31 & 8.83 & 8.73 & 7.11 & 8.99 \\
+            Eff. observations & 212 & 160 & 55 & 51 & 34 & 24 \\
+            Total observations & 381 & 378 & 279 & 221 & 132 & 46 \\
+            \bottomrule
+        \end{tabular*}
+        \begin{tablenotes}[flushleft]
+        \footnotesize
+        \item \textit{Notes:} Entries are bias-corrected sharp RD estimates at the 50\% vote-share cutoff. Column (1) is a placebo RD using average pre-election road quality over $t\!-\!3$ to $t\!-\!1$. Columns (2)--(6) use rolling 3-year post-election windows, exclude $t+0$, and control for population and the corresponding pre-election outcome. Standard errors clustered by ten-digit FIPS code are in parentheses. Statistical significance levels are indicated as follows: *** $p<0.01$, ** $p<0.05$, * $p<0.1$.
+        \end{tablenotes}
+    \end{threeparttable}
+    \end{singlespace}
+\end{table}

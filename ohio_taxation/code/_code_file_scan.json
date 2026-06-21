@@ -1,0 +1,1403 @@
+﻿[
+    {
+        "Name":  ".env",
+        "Ext":  ".env",
+        "Lines":  2,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "additional_road_levies_and_tax_receipts.R",
+        "Ext":  ".r",
+        "Lines":  197,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "biasi_estimator_on_new_road_levies.do",
+        "Ext":  ".do",
+        "Lines":  233,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "biasi_estimator_on_new_road_levies.r",
+        "Ext":  ".r",
+        "Lines":  241,
+        "R_Source":  "file.path(root, \"code\", \"biasi_utils.R\"",
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "biasi_utils.r",
+        "Ext":  ".r",
+        "Lines":  91,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "covariate_discontinuity_test.do",
+        "Ext":  ".do",
+        "Lines":  70,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "covariate_discontinuity_test.R",
+        "Ext":  ".r",
+        "Lines":  61,
+        "R_Source":  [
+                         "paste0(code,\"/utility_functions.R\"",
+                         "paste0(code,\"/housing_data_setup.R\""
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "covariates_balance_test.R",
+        "Ext":  ".r",
+        "Lines":  424,
+        "R_Source":  [
+                         "paste0(code,\"/housing_data_setup.R\"",
+                         "paste0(code,\"/employment_data_setup.R\"",
+                         "paste0(code,\"/road_spending_reg_discontinuity_agg_w_covariates.R\""
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "covariates_smoothness_plots.do",
+        "Ext":  ".do",
+        "Lines":  50,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "did_data_setup.R",
+        "Ext":  ".r",
+        "Lines":  209,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "download_spending_reports.py",
+        "Ext":  ".py",
+        "Lines":  224,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "os",
+                           "pandas",
+                           "requests",
+                           "datetime",
+                           "selenium",
+                           "selenium.webdriver.common.by",
+                           "selenium.webdriver.support.ui",
+                           "re",
+                           "logging",
+                           "sys",
+                           "time"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "emp_did_agg_analysis.R",
+        "Ext":  ".r",
+        "Lines":  198,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "employment_data_setup.R",
+        "Ext":  ".r",
+        "Lines":  369,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "fars_data_setup.R",
+        "Ext":  ".r",
+        "Lines":  212,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "geocode_corelogic.r",
+        "Ext":  ".r",
+        "Lines":  634,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "housing_data_setup.R",
+        "Ext":  ".r",
+        "Lines":  309,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "import_streetview_images.py",
+        "Ext":  ".py",
+        "Lines":  318,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "streetview",
+                           "os",
+                           "sys",
+                           "geopandas",
+                           "shapely.geometry",
+                           "logging",
+                           "time"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "import_streetview_images_new.py",
+        "Ext":  ".py",
+        "Lines":  374,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "streetview",
+                           "os",
+                           "sys",
+                           "geopandas",
+                           "shapely.geometry",
+                           "logging",
+                           "time",
+                           "dotenv",
+                           "math"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "local_govt_road_spending.R",
+        "Ext":  ".r",
+        "Lines":  240,
+        "R_Source":  [
+                         "paste0(code,\"/utility_functions.R\"",
+                         "paste0(code,\"/housing_data_setup.R\""
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "masterfile_2006q1_2024q4_geocoding.r",
+        "Ext":  ".r",
+        "Lines":  193,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "odjfs_benchmarking.R",
+        "Ext":  ".r",
+        "Lines":  161,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "odjfs_data_setup.sas",
+        "Ext":  ".sas",
+        "Lines":  285,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\sas_utility_functions\\util_load_macro_functions.sas",
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "odjfs_data_setup_for_biasi.R",
+        "Ext":  ".r",
+        "Lines":  432,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "odjfs_firms.sas",
+        "Ext":  ".sas",
+        "Lines":  104,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  "C:\\Users\\rawatsa\\OneDrive - University of Cincinnati\\sas_utility_functions\\util_load_macro_functions.sas",
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "oh_road_get_coords.r",
+        "Ext":  ".r",
+        "Lines":  61,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "ohio_detect_roads.py",
+        "Ext":  ".py",
+        "Lines":  310,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "__future__",
+                           "csv",
+                           "os",
+                           "shutil",
+                           "dataclasses",
+                           "pathlib",
+                           "typing",
+                           "torch",
+                           "PIL",
+                           "tqdm",
+                           "transformers"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "ohio_road_housing_census_merge.do",
+        "Ext":  ".do",
+        "Lines":  253,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "ohio_road_housing_census_merge.R",
+        "Ext":  ".r",
+        "Lines":  214,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "ohio_road_housing_census_merge.txt",
+        "Ext":  ".txt",
+        "Lines":  916,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "ohio_road_housing_census_merge_log_7jul2022.docx",
+        "Ext":  ".docx",
+        "Lines":  48,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "ohio_roads_geometry_setup.R",
+        "Ext":  ".r",
+        "Lines":  55,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "parse_spending_reports.py",
+        "Ext":  ".py",
+        "Lines":  32,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "os",
+                           "pandas",
+                           "re"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "parse_xmls.R",
+        "Ext":  ".r",
+        "Lines":  98,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "pcr_streetview_images.py",
+        "Ext":  ".py",
+        "Lines":  746,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "os",
+                           "numpy",
+                           "pandas",
+                           "re",
+                           "pathlib",
+                           "PIL"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "rd_bandwidth_sensitivity.R",
+        "Ext":  ".r",
+        "Lines":  150,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_new_levy_and_reports_analysis.R",
+        "Ext":  ".r",
+        "Lines":  317,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_quality.py",
+        "Ext":  ".py",
+        "Lines":  382,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "os",
+                           "ee",
+                           "math",
+                           "time",
+                           "pathlib",
+                           "rasterio",
+                           "numpy",
+                           "PIL"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_quality_analysis.R",
+        "Ext":  ".r",
+        "Lines":  391,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_renewal_levy_and_reports_analysis.r",
+        "Ext":  ".r",
+        "Lines":  325,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_did_agg_w_covariates.R",
+        "Ext":  ".r",
+        "Lines":  31,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg.do",
+        "Ext":  ".do",
+        "Lines":  210,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg.R",
+        "Ext":  ".r",
+        "Lines":  317,
+        "R_Source":  [
+                         "paste0(code,\"/housing_data_setup.R\"",
+                         "paste0(code,\"/utility_functions.R\""
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_cut_renewal_funding.R",
+        "Ext":  ".r",
+        "Lines":  68,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_emp.do",
+        "Ext":  ".do",
+        "Lines":  88,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_emp.R",
+        "Ext":  ".r",
+        "Lines":  934,
+        "R_Source":  "paste0(code,\"/utility_functions.R\"",
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_placebo_cutoffs.do",
+        "Ext":  ".do",
+        "Lines":  99,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_placebo_cutoffs.R",
+        "Ext":  ".r",
+        "Lines":  55,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_qte.do",
+        "Ext":  ".do",
+        "Lines":  178,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_qte.R",
+        "Ext":  ".r",
+        "Lines":  729,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_w_covariates.do",
+        "Ext":  ".do",
+        "Lines":  98,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_w_covariates.R",
+        "Ext":  ".r",
+        "Lines":  564,
+        "R_Source":  [
+                         "paste0(code,\"/utility_functions.R\"",
+                         "paste0(code,\"/housing_data_setup.R\"",
+                         "paste0(code,\"/roads_data_setup.R\""
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_agg_w_yhat.do",
+        "Ext":  ".do",
+        "Lines":  105,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  {
+
+                     },
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "road_spending_reg_discontinuity_by_mill_percent.R",
+        "Ext":  ".r",
+        "Lines":  301,
+        "R_Source":  "paste0(code,\"/housing_data_setup.R\"",
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "roads_ai_model.jl",
+        "Ext":  ".jl",
+        "Lines":  833,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  {
+
+                       }
+    },
+    {
+        "Name":  "roads_ai_model_oh.jl",
+        "Ext":  ".jl",
+        "Lines":  196,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  {
+
+                       }
+    },
+    {
+        "Name":  "roads_data_setup.R",
+        "Ext":  ".r",
+        "Lines":  113,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "roads_model_dge.jl",
+        "Ext":  ".jl",
+        "Lines":  722,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  {
+
+                       }
+    },
+    {
+        "Name":  "roads_model_dge.py",
+        "Ext":  ".py",
+        "Lines":  780,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "numpy",
+                           "scipy",
+                           "pandas",
+                           "matplotlib.pyplot",
+                           "scipy.optimize"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "roads_model_dge_house.py",
+        "Ext":  ".py",
+        "Lines":  646,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "numpy",
+                           "typing",
+                           "dataclasses",
+                           "matplotlib.pyplot",
+                           "scipy.optimize",
+                           "pathlib"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "roads_model_dge_new.jl",
+        "Ext":  ".jl",
+        "Lines":  749,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  {
+
+                       }
+    },
+    {
+        "Name":  "roads_model_dge_recalibrated.py",
+        "Ext":  ".py",
+        "Lines":  415,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "numpy",
+                           "pandas",
+                           "dataclasses",
+                           "typing",
+                           "scipy.optimize"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "roads_support.R",
+        "Ext":  ".r",
+        "Lines":  838,
+        "R_Source":  "paste0(code,\"/utility_functions.R\"",
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "robustness_tests_misc.R",
+        "Ext":  ".r",
+        "Lines":  73,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "street_image_rectangles.py",
+        "Ext":  ".py",
+        "Lines":  90,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "os",
+                           "cv2",
+                           "numpy",
+                           "pandas"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "streetview_oh_data_extract.py",
+        "Ext":  ".py",
+        "Lines":  41,
+        "R_Source":  [
+
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+                           "os",
+                           "streetview"
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "urban_vs_rural.R",
+        "Ext":  ".r",
+        "Lines":  315,
+        "R_Source":  [
+                         "paste0(code,\"/housing_data_setup.R\"",
+                         "paste0(code,\"/utility_functions.R\""
+                     ],
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    },
+    {
+        "Name":  "utility_functions.R",
+        "Ext":  ".r",
+        "Lines":  381,
+        "R_Source":  {
+
+                     },
+        "Stata_Do":  [
+
+                     ],
+        "SAS_Include":  [
+
+                        ],
+        "Py_Imports":  [
+
+                       ],
+        "JL_Include":  [
+
+                       ]
+    }
+]

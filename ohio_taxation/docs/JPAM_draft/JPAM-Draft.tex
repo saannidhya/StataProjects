@@ -1,0 +1,158 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb,amsmath,amsfonts,eurosym,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,natbib,pdflscape,subfigure,array}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks   = true,
+  urlcolor     = blue,
+  linkcolor    = black,
+  citecolor    = blue
+}
+\usepackage{xcolor} 
+\definecolor{lightblue}{RGB}{100,149,237}
+\usepackage{longtable} 
+\usepackage{amssymb} 
+\usepackage{url}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{amsmath}
+% \usepackage{amsthm}	
+\usepackage{amsfonts, amssymb, float, placeins, tabularx, array, longtable, booktabs, listings} 
+\usepackage{natbib}
+\usepackage{threeparttable}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{multirow}
+\normalem
+
+\onehalfspacing
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}{Proposition}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newtheorem{hyp}{Hypothesis}
+\newtheorem{subhyp}{Hypothesis}[hyp]
+\renewcommand{\thesubhyp}{\thehyp\alph{subhyp}}
+
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+
+\geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\pagenumbering{gobble}
+\pagestyle{empty}
+\begin{titlepage}
+\thispagestyle{empty}
+\title{Voting Down Road Maintenance: The Fiscal Illusion of Local Tax Relief and House Values}
+% \thanks{Acknowledgements: We are grateful for comments from CK Tang, Guoyang Yang, Dan Boles, Eunjee Kwon, Gary Painter, Olivier Parent, Jeffrey Mills, Nayoung Lee, Matias Cattaneo, and Chris Bollinger, to CoreLogic® for leasing us the housing dataset, to Albert Saiz, Lu Han, Siqi Zheng, David Albouy, Chao Liu, Tony Yezer and other attendees at the AREUEA-ASSA Conference, AREUEA National Conference and UEA North American Meeting for their insightful comments. We thank John Schroeder, Public Service Director of Beavercreek township, Ohio, for his insights on funding and maintenance of local roads in Ohio. No external funding was received for this project. No conflicts of interest exist for either author.}}
+% \author{Saannidhya Rawat\thanks{PhD Student, University of Cincinnati. Corresponding author: rawatsa@mail.uc.edu}  \and David M. Brasington\thanks{Professor, University of Cincinnati}}
+% \date{\today} 
+\maketitle
+ 
+% \vspace{-2em} 
+% \noindent
+% \begin{center}
+% \textbf{\href{https://saannidhya.github.io/saannidhya/research/}{\textcolor{lightblue}{Please click here for the latest draft.}}}
+% \end{center}
+
+\begin{abstract} 
+\noindent Local governments often finance infrastructure maintenance through recurring taxes that are renewed by voters periodically. Utilizing a quasi-experimental setting, we study what happens when voters narrowly reject dedicated road-maintenance funding. Using 3,184 Ohio renewal referendums from 1991 to 2021, we compare jurisdictions just above and below the 50 percent cutoff in a dynamic regression discontinuity design. A failed renewal removes an existing revenue stream that costs households about \$76 per year and equals about 11\% of local road-maintenance spending. Narrow failures produce delayed housing-market losses: median sale prices fall by about \$15,350, or 9\%, over the decade after the vote, with losses emerging after year four. Road imagery classified with a fine-tuned vision model shows post-election road-quality declines of up to 16\%. Price effects are larger in urban areas, for higher-value houses, and after larger levy failures. A benefit-cost assessment implies a net loss to households of about \$1.4 for every dollar of forgone road-maintenance funding.
+% Renewal votes are therefore infrastructure preservation decisions, not only tax decisions.
+\\
+\vspace{0in}\\
+\noindent\textbf{Keywords:} Road Maintenance; Local Public Finance; Housing Values; Infrastructure; Regression Discontinuity.\\ \textbf{JEL Codes:} R42, H71, R31, C21 \\
+
+\end{abstract} 
+\thispagestyle{empty}
+\end{titlepage}
+\clearpage
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+\pagestyle{plain}
+\setcounter{page}{1}
+
+\doublespacing
+
+% \input{taft_part.tex}
+
+\section{Introduction} \label{sec:introduction}
+
+\input{intro.tex}
+
+% \section{Literature Review} \label{sec:literature}
+   
+\input{lit_review.tex}
+
+\section{Background \& Data} \label{sec:data}
+
+\input{data.tex}
+
+\section{Empirical Strategy} \label{sec:empirical}
+
+\input{emp_strategy.tex}
+
+\section{Results} \label{sec:result}
+
+\input{results.tex}
+
+\section*{Data Availability Statement}
+Replication code and documentation for the analyses will be made available in a public repository. Election data, local financial records, NAIP imagery, and other public inputs used in the analysis are available from the sources cited in the paper. CoreLogic housing transaction data are proprietary and cannot be redistributed. Researchers seeking access must obtain them directly from CoreLogic under a separate data-use agreement. Replication files that use restricted CoreLogic data will include code to reproduce the analysis for users with authorized access.
+
+% \section{Discussions} \label{sec:discussion}
+
+% \section{Conclusion} \label{sec:conclusion}
+
+\singlespacing
+\setlength\bibsep{6pt}
+\bibliographystyle{aea}
+% \bibliography{Placeholder}
+
+\bibliography{aej_references}
+
+\clearpage
+
+\appendix
+\section*{Appendix} \label{sec:appendix}
+\input{appendix.tex}
+
+
+
+\clearpage
+
+% \onehalfspacing
+
+% \section*{Tables} \label{sec:tab}
+% \addcontentsline{toc}{section}{Tables}
+
+
+% \section*{Figures} \label{sec:fig}
+% \addcontentsline{toc}{section}{Figures}
+
+%\begin{figure}[hp]
+%  \centering
+%  \includegraphics[width=.6\textwidth]{../fig/placeholder.pdf}
+%  \caption{Placeholder}
+%  \label{fig:placeholder}
+%\end{figure}
+
+
+
+
+\clearpage
+
+% \section*{Appendix A. Placeholder} \label{sec:appendixa}
+% \addcontentsline{toc}{section}{Appendix A}
+
+
+
+\end{document}

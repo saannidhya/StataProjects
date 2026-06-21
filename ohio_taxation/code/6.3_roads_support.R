@@ -1,0 +1,1103 @@
+#================================================================================================================#
+# Purpose : Support for paper and presentations. Miscellaneous support work goes here based on Qs from audience.
+# Name    : Saani Rawat
+# Created : 11/8/2024
+# Log     : 1. 1/12/2025: made a more formal update to code. Added Qs that each snippet answers.
+#           2. 1/16/2025: results from test run of fine-tuned gpt-4 model by Vikram
+#           3. 2/26/2025: Added regression analysis for Road quality
+#           4. 7/12/2025: checking which tendigit_fips and elections quality at different bandwidths
+#           5. 9/12/2025: Added code to check sample sizes for road quality analysis
+#           6. 1/14/2026: Added code to look at hedonics
+#================================================================================================================#
+
+library(fixest)
+library(MASS) 
+library(tidyverse)
+library(fixest)
+# specify the set up location
+root <- "C:/Users/rawatsa/OneDrive - University of Cincinnati/StataProjects/ohio_taxation"
+data <- paste0(root,"/data")
+code <- paste0(root,"/code")
+tables <- paste0(data,"/outputs/tables")
+plots <- paste0(data,"/outputs/plots")
+# specify the shared location
+shared <- "//cobshares.uccob.uc.edu/economics$/Julia/roads"
+
+source(paste0(code,"/0_utility_functions.R"))
+
+
+#==========================================================================================================#
+# Q. Is there an overall importance of roads? Why does having good roads matter for a country/area/state?
+# GDP Per Capita vs Road Quality
+# Q. How is road quality index developed by World Bank?
+#==========================================================================================================#
+
+# import excel file
+gdp_vs_road_quality_world_bank <- readxl::read_excel(paste0(data,"/gdp_vs_road_quality_world_bank.xlsx")) 
+
+# plotting the data using ggplot
+
+yr_list <- c("2017", "2018", "2019", "2020")
+
+pt <- purrr::map(yr_list, ~ pivot_wider(gdp_vs_road_quality_world_bank %>% select(c(`Economy ISO3`, `Economy Name`, Indicator, .x )), 
+                                  names_from = `Indicator`, values_from = .x ) %>% 
+             rename(road_quality = `GCI 4.0: Road quality index (0-100, best)`, gdp =  `GDP (current US$)`,
+                    gdp_per_cap = `GDP per capita (current US$)`) 
+           )
+names(pt) <- yr_list
+
+# Fit a linear model
+model <- lm(log(gdp_per_cap) ~ road_quality, data = pt$`2018`)
+slope <- coef(model)[2]  # Extract the slope coefficient
+
+ggplot(data = pt$`2018`, aes(x = road_quality, y = log(gdp_per_cap))) +
+  geom_point(color = "#2E86C1", size = 3, alpha = 0.7) +  # Adding color, size, and transparency to points
+  geom_smooth(method = "lm", color = "#E74C3C", linetype = "dashed", size = 1.2) +  # Changing line color, type, and size
+  theme_minimal(base_size = 15) +  # Adjusting base font size
+  labs(
+    title = "GDP per Capita vs Road Quality: 2018",
+    x = "Road Quality",
+    y = "Log of GDP per Capita",
+    caption = "Source: World Bank Global Competitive Index 4.0 "
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 20, color = "#34495E"),  # Centering, bolding, and coloring the title
+    axis.title = element_text(face = "italic", size = 15, color = "#34495E"),  # Styling axis titles
+    axis.text = element_text(size = 12, color = "#2C3E50"),  # Styling axis text
+    panel.grid.major = element_line(color = "#D5D8DC", size = 0.8),  # Customizing grid lines
+    panel.grid.minor = element_blank(),  # Removing minor grid lines
+    # plot.background = element_rect(fill = "#F5F5F5"),  # Changing plot background color
+    legend.position = "none"
+  ) 
+  # ggsave(paste0(plots,"/gdp_vs_road_quality.png"))
+
+
+#==========================================================================================================#
+# Observing individual cities, villages and townships
+# A tale of two tonwships: Andover and Morgan (within same county)
+#==========================================================================================================#
+
+# 2008 Waynesville voted for a cut, saw a decline in general fund exp of 35%
+roads_and_census %>% filter(tendigit_fips == 3903580990) %>% relocate(treated , .after = votesagainst)
+
+# Amanda, cut took place in 2005
+roads_and_census %>% filter(tendigit_fips == 3904501630) %>% relocate(treated , .after = votesagainst)
+
+# Beavercreek
+roads_and_census %>% filter(tendigit_fips == 3905704720) %>% relocate(treated , .after = votesagainst)
+
+# export to csv
+roads_and_census %>% select(tendigit_fips, year, pop) %>% arrange(desc(pop),tendigit_fips, year) %>%
+  write_csv(paste0(data,"/pop_list.csv"))
+
+rdt <- roads_and_census %>% filter(tendigit_fips %in% c(3900902750, 3903573264, 3904129694, 3904580206, 3905704220, 3905704720, 3905704724, 3905725914, 3906116616, 3906131752, 3908549056, 3908559430, 3908585484, 3909303352, 3909356966, 3909903198, 3909907468, 3910380304, 3910962848, 3911333922, 3911336610, 3911377504, 3911381494, 3915112000, 3915138094, 3915141314, 3915162078, 3915162988))
+
+
+roads_and_census %>% filter(tendigit_fips %in% c(3908559430)) %>% relocate(treated , .after = votesagainst)
+                                                 
+rdt %>% 
+  mutate(renewals = if_else(treated == 0, 1, 0),
+         cuts = if_else(treated == 1, 1, 0)) %>%
+  group_by(tendigit_fips, treated) %>%
+  summarise(
+    renewals = sum(renewals),
+    cuts = sum(cuts)
+  ) %>% 
+  filter(treated == 0) %>%
+  arrange(desc(renewals))
+
+
+cuts <- rdt %>% 
+  mutate(renewals = if_else(treated == 0, 1, 0),
+         cuts = if_else(treated == 1, 1, 0)) %>%
+  group_by(tendigit_fips, treated) %>%
+  summarise(
+    renewals = sum(renewals),
+    cuts = sum(cuts)
+  ) %>% 
+  filter(treated == 1) %>%
+  arrange(desc(cuts))
+cuts
+
+
+# Andover vs Morgan townships
+
+# Andover
+roads_and_census %>% filter(tendigit_fips == 3900702064) %>% relocate(treated , .after = votesagainst) %>% 
+  select(pop, medfamy, childpov) %>%
+  summarize(mean = mean(pop), sd = sd(pop))
+
+# morgan
+roads_and_census %>% filter(tendigit_fips == 3900752066) %>% relocate(treated , .after = votesagainst) 
+
+
+compare_covariates <- function(data, city_col, covariates, city1, city2) {
+  # Set options to avoid scientific notation
+  options(scipen = 999)  
+  # Filter data for the two specified cities
+  data_city1 <- subset(data, data[[city_col]] == city1)
+  data_city2 <- subset(data, data[[city_col]] == city2)
+  
+  # Initialize a results data frame to store comparisons
+  results <- data.frame(
+    Covariate = covariates,
+    City1_Mean = sapply(covariates, function(cov) mean(data_city1[[cov]], na.rm = TRUE)),
+    City1_SD = sapply(covariates, function(cov) sd(data_city1[[cov]], na.rm = TRUE)),
+    City2_Mean = sapply(covariates, function(cov) mean(data_city2[[cov]], na.rm = TRUE)),
+    City2_SD = sapply(covariates, function(cov) sd(data_city2[[cov]], na.rm = TRUE))
+  )
+  
+  return(results)
+}
+
+# covariates with p-val < 0.05
+compare_covariates(roads_and_census, "tendigit_fips", c("pop", "medfamy", "childpov"), 3900702064, 3900752066)
+
+
+# 3900702064 = Andover, 3900752066 = Morgan
+compare_covariates(roads_and_census, "tendigit_fips", covs_list, 3900702064, 3900752066) %>% filter(p_value < 0.05)
+#> Compared to Morgan, Andover has 
+#> 1. more people
+#> 2. more poverty
+#> 3. less median family income
+#> 4. more renters than owners
+#> 5. older population
+#> 6. less people married
+#> 7. less educated population
+#> The two townships are not identical. AND, their referendum results are different.
+
+# The two
+
+roads_and_census %>% filter(between(votes_pct_against, cutoff - tes_bw, cutoff + tes_bw))
+
+# comparing house price now
+compare_covariates(housing_dfs$housing_roads_census_t_plus_0_matches, "TENDIGIT_FIPS", c("SALE_AMOUNT"), 3900702064, 3900752066)
+
+housing_dfs$housing_roads_census_t_plus_0_matches %>% filter(tendi)
+
+colnames(housing_dfs$housing_roads_census_t_plus_0_matches)
+
+#==========================================================================================================#
+# What areas have the closest votes that failed? i.e. they could've been in control but got treated
+# Identifying county subdivisions with the closest votes that failed
+#==========================================================================================================#
+
+
+tes_gs_bw <- mean(map_dbl(gs[4:length(gs)], ~ .x$bws[1,1]))
+
+# importing subdivision and county name
+cty_sub_names <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xlsx")) %>% janitor::clean_names() %>% 
+                    select(all_of(c("tendigit_fips", "name_note_if_split_between_two_counties", "county_name", "split_flag"))) %>% 
+                    rename(subdivision = name_note_if_split_between_two_counties, county = county_name) %>%
+                    mutate(subdivision = if_else(split_flag == 1,
+                               trimws(str_replace(subdivision, "(village|city).*", "\\1")),
+                               subdivision)) 
+
+
+# Find the county subdivisions with the closest votes that failed - agg 
+closest_votes_agg <- roads_and_census %>%
+                      # filter(between(votes_pct_against, cutoff - tes_gs_bw, cutoff + tes_gs_bw)) %>%
+                      filter(between(votes_pct_against, cutoff - mean_eff_bw, cutoff + mean_eff_bw)) %>%
+                      arrange(votes_pct_against) %>% 
+                      group_by(tendigit_fips) %>%
+                      summarize(num_votes = n(), min_year = min(year), max_year = max(year), mean_vote_result = mean(votes_pct_against), num_failed = sum(treated), num_passed = num_votes - num_failed, max_pop = max(pop)) %>% 
+                      arrange(desc(num_votes)) %>%
+                      filter(max_year >= 2010) %>% # because we need before-after data
+                      left_join(cty_sub_names, by = "tendigit_fips")
+
+closest_votes_agg %>% arrange(desc(num_failed)) %>%
+  readr::write_csv(paste0(data,"/outputs/tables/hp_rd_fips_within_mean_eff_bw.csv"))
+  # readr::write_csv(paste0(data,"/outputs/tables/rd_fips_close_elections_gs_bw.csv"))
+
+# Find the county subdivisions with the closest votes that failed 
+closest_votes <- roads_and_census %>%
+                    # filter(between(votes_pct_against, cutoff - tes_gs_bw, cutoff + tes_gs_bw)) %>%
+                    filter(between(votes_pct_against, cutoff - mean_eff_bw, cutoff + mean_eff_bw)) %>%
+                    arrange(treated, desc(votes_pct_against)) %>% 
+                    select(tendigit_fips, year, votes_pct_against, treated, pop) %>%
+                    left_join(cty_sub_names, by = "tendigit_fips") %>%
+                    relocate(c(subdivision, county) , .after = tendigit_fips) %>%
+                    filter(year >= 2010) # because we need before-after data
+
+closest_votes %>% 
+  readr::write_csv(paste0(data,"/outputs/tables/hp_rd_fips_within_mean_eff_bw_main.csv"))
+
+# cty_sub_names <- readxl::read_excel(paste0(data,"/ohio-only-all-geocodes-2016.xlsx")) %>% janitor::clean_names() %>% 
+#   select(all_of(c("tendigit_fips", "name_note_if_split_between_two_counties", "county_name", "split_flag"))) %>% 
+#   rename(subdivision = name_note_if_split_between_two_counties, county = county_name) %>%
+#   mutate(subdivision = if_else(split_flag == 1,
+#                                trimws(str_replace(subdivision, "(village|city).*", "\\1")),
+#                                subdivision)) 
+
+# roads_and_census %>% 
+#   left_join(cty_sub_names, by = "tendigit_fips") %>% relocate(c(subdivision, county) , .after = tendigit_fips) %>% filter(pop > 10000) %>%
+#   group_by(tendigit_fips, subdivision, county) %>% 
+#   summarize(num_elections = n(), min_year = min(year), max_year = max(year), pop = mean(pop)) %>% 
+#   arrange(desc(pop)) 
+
+
+  # filter(tolower(county) == "ashtabula" & year == 2012) %>% View()
+
+mm <- purrr::map(housing_dfs, ~ .x %>% filter(year > 1991 & !is.na(SALE_AMOUNT)) %>% 
+            summarize(mean = mean(SALE_AMOUNT), median = median(SALE_AMOUNT), sd = sd(SALE_AMOUNT)))
+
+mean(purrr::map_dbl(mm[4:14], ~ .x$mean))
+
+housing_dfs$housing_roads_census_t_plus_0_matches %>% 
+  filter(year > 1991 & !is.na(SALE_AMOUNT)) %>% 
+  summarize(mean = mean(SALE_AMOUNT), median = median(SALE_AMOUNT), sd = sd(SALE_AMOUNT))
+
+# -16441/170000
+
+# Exporting areas with "close elections" starting 2010. output it as .Rdata.
+# closest_votes %>% filter(max_year >= 2010) %>% pull(tendigit_fips) %>% unique %>% as.character() %>%
+#   writeLines(., paste0(data,"/roads/tendigit_fips_close_elections_gs_bw.txt"))
+
+
+#==========================================================================================================#
+# TIGERS shapefile identifying roads
+# 
+#==========================================================================================================#
+
+oh_cosub <- sf::read_sf(paste0(data,"/roads/TIGERS/tl_2010_39_cousub00/tl_2010_39_cousub00.shp"))
+oh_prisec <- sf::read_sf(paste0(data,"/roads/TIGERS/tl_2010_39_prisecroads/tl_2010_39_prisecroads.shp"))
+
+close_fips <- readLines(paste0(data,"/roads/tendigit_fips_close_elections_gs_bw.txt"))
+
+oh_cosub_sub <- oh_cosub %>%
+  select(COSBIDFP00, NAME00, NAMELSAD00, UR00 , CLASSFP00, geometry) %>%
+  filter(COSBIDFP00 %in% close_fips)
+
+oh_prisec_local <- oh_prisec %>%
+  filter(RTTYP == "M") %>%
+  select(LINEARID, FULLNAME, RTTYP, MTFCC, geometry)
+
+oh_roads_by_cousub <- st_intersection(oh_cosub_sub, oh_prisec_local)
+
+# plot(oh_roads_by_cousub$geometry, col = "blue", main = "Roads by County Subdivision")
+
+# Export the object as a shapefile
+# st_write(oh_roads_by_cousub, paste0(data, "/roads/ohio/oh_roads_by_cousub.gpkg"), delete_dsn = TRUE)
+
+st_write(oh_roads_by_cousub, paste0(data, "/roads/ohio/oh_roads_by_cousub.geojson"), delete_dsn = TRUE)
+
+# oh_prisec %>% filter(RTTYP  == "M") %>% .$MTFCC %>% st_drop_geometry() %>% unique
+# 
+# plot(oh_prisec["FULLNAME"])
+# plot(oh_prisec %>% filter(RTTYP  == "M") %>% .["FULLNAME"])
+
+
+
+#==========================================================================================================#
+# Regressions with covariates as outcome
+#==========================================================================================================#
+
+#==========================================================================================================#
+# Hedonic Regression 
+#==========================================================================================================#
+
+
+# Hedonic regression with year F.E 
+hm1 <- purrr::map(dfs_agg_covs, ~ lm(data = .x, 
+                             median_sale_amount ~ pop + childpov + poverty + pctwithkids + pctsinparhhld + pctlesshs + pcthsgrad + pctsomecoll + pctbachelors + pctgraddeg + unemprate + medfamy + pctown + pctlt5 + pct5to17 + pct18to64 + pct65pls + pctwhite + pctblack + pctamerind + pctapi + pctotherrace + raceherfindahl + pcthisp + pctmarried + pctnevermarr + pctseparated + pctdivorced + lforcepartrate + incherfindahl + factor(year)) )
+
+purrr::map(hm1, summary)
+
+# Hedonic regression with year F.E and county F.E
+
+dfs_agg_covs
+
+
+
+#==========================================================================================================#
+#  Q. Does your tax cut for road tax levies correlate with cut for any other levies (in the same year), 
+#     after controlling for other covariates, year and area F.E?
+#==========================================================================================================#
+
+# method 1. Correlate between road tax levy cut and other levy cuts, after controlling for other covariates
+#======================================================================#
+# Dataset with other tax levies ----
+#======================================================================#
+
+# importing excel file
+referendums <- readxl::read_excel(paste0(data, "/tax_levies_ohio7.xlsx")) %>% janitor::clean_names()
+
+colnames(referendums)
+referendums$purpose2 %>% unique %>% sort
+
+#===================================================#
+# Police
+#===================================================#
+
+rds_with_police <- rds %>% filter(description == "R") %>%
+  inner_join(filter(referendums, tolower(purpose2) == "police"), 
+             by = c("year", "tendigit_fips")) %>% 
+  mutate(votes_pct_against_police = (votes_against/ (votes_for + votes_against))*100,
+         police_treated  = if_else(votes_pct_against_police > cutoff, 1, 0),
+         votes_pct_against = 100 - votes_pct_for,
+         roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+
+lm_police <- lm(police_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_police) %>% summary 
+
+#===================================================#
+# Fire
+#===================================================#
+
+rds_with_fire <- rds %>% filter(description == "R") %>%
+  inner_join(filter(referendums, tolower(purpose2) == "fire"), 
+             by = c("year", "tendigit_fips")) %>% 
+  mutate(votes_pct_against_fire = (votes_against/ (votes_for + votes_against))*100,
+         fire_treated  = if_else(votes_pct_against_fire > cutoff, 1, 0),
+         votes_pct_against = 100 - votes_pct_for,
+         roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+
+lm_fire <- lm(fire_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_fire) %>% summary 
+
+#===================================================#
+# Current Expenses
+#===================================================#
+
+rds_with_current <- rds %>% filter(description == "R") %>%
+  inner_join(filter(referendums, tolower(purpose2) == "current expenses"), 
+             by = c("year", "tendigit_fips")) %>% 
+  mutate(votes_pct_against_curr_exp = (votes_against/ (votes_for + votes_against))*100,
+         current_treated  = if_else(votes_pct_against_curr_exp > cutoff, 1, 0),
+         votes_pct_against = 100 - votes_pct_for,
+         roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+
+lm_current <- lm(current_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_current)  %>% summary
+
+# cor(rds_with_current$roads_treated, rds_with_current$current_treated)
+# table(rds_with_current$roads_treated, rds_with_current$current_treated)
+
+#===================================================#
+# Recreation
+#===================================================#
+
+rds_with_rec <- rds %>% filter(description == "R") %>%
+  inner_join(filter(referendums, tolower(purpose2) == "recreation"), 
+             by = c("year", "tendigit_fips")) %>% 
+  mutate(votes_pct_against_rec = (votes_against / (votes_for + votes_against))*100,
+         rec_treated  = if_else(votes_pct_against_rec > cutoff, 1, 0),
+         votes_pct_against = 100 - votes_pct_for,
+         roads_treated = if_else(votes_pct_against > cutoff, 1, 0) )
+
+lm_rec <- lm(rec_treated ~ roads_treated + factor(year) + factor(tendigit_fips) + medfamy + poverty + pop + pctrent + pctbachelors, data = rds_with_rec) %>% summary
+
+#===================================================#
+# School District (fips info not available,  
+#                  so doing at county level)
+#===================================================#
+rds_cty <- filter(referendums, tolower(purpose2) == "roads" & description == "R") %>% 
+  mutate(votes_pct_against_rds = 100 - (votes_for / (votes_for + votes_against))*100,
+         roads_treated = if_else(votes_pct_against_rds > cutoff, 1, 0)) %>%
+  group_by(county, year) %>%
+  summarize(road_cuts = sum(roads_treated)) 
+  
+schl_cty <- filter(referendums, tolower(purpose2) == "school") %>% 
+  mutate(votes_pct_against_schl = 100 - (votes_for / (votes_for + votes_against))*100,
+         school_treated = if_else(votes_pct_against_schl > cutoff, 1, 0)) %>%
+  group_by(county, year) %>%
+  summarize(school_cuts = sum(school_treated)) 
+
+rds_with_school <- inner_join(rds_cty, schl_cty, by = c("county", "year")) 
+
+lm_school <- lm(school_cuts ~ road_cuts + factor(year) + factor(county), data = rds_with_school) %>% summary
+
+# Conclusion: Road tax levies ONLY correlate with Current Expense tax levies.
+
+# coefficients
+lm_police$coefficients["roads_treated", "Estimate"]
+lm_fire$coefficients["roads_treated", "Estimate"]
+lm_current$coefficients["roads_treated", "Estimate"]
+lm_rec$coefficients["roads_treated", "Estimate"]
+lm_school$coefficients["road_cuts", "Estimate"]
+
+# standard errors
+lm_police$coefficients["roads_treated", "Std. Error"]
+lm_fire$coefficients["roads_treated", "Std. Error"]
+lm_current$coefficients["roads_treated", "Std. Error"]
+lm_rec$coefficients["roads_treated", "Std. Error"]
+lm_school$coefficients["road_cuts", "Std. Error"]
+
+# method 2. Run a regression with road tax levy cut as outcome and other levy cuts as covariates
+
+
+#==========================================================================================================#
+#  Q. Does road quality actually change after the tax cuts?
+#     Results show they do.
+#==========================================================================================================#
+
+roads_and_census %>% dplyr::select(all_of(c("tendigit_fips", "year", "subdivisionname", "county", "description", "treated"))) %>%
+  filter(tendigit_fips == "3902982852")
+
+colnames(roads_and_census)
+roads_and_census %>% filter(tolower(trimws(subdivisionname)) == "thompson") %>%
+  relocate(treated, .after = description) 
+
+# Regression analysis #
+above_roads <- readr::read_csv(paste0(data,"/roads/ohio/above/above_predictions_with_flag.csv")) %>% 
+  mutate(treat_flag = 1, # Above means these areas are above the cutoff for % votes against i.e. cut their renewal taxes 
+         road_quality_score = round(((predicted_label + confidence) / 3) * 99 + 1, 1),
+         road_quality_score2 = case_when(
+           predicted_label == 0 ~ 1 + (1 - 0.4*confidence) * 99 / 3 ,
+           TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.5*confidence * 99 / 3 
+         ) |> round(1) ,
+         road_quality_score3 = case_when(
+           predicted_label == 0 ~ (1 - 0.8*confidence) * 99 / 3 ,
+           TRUE                 ~ predicted_label * 99 / 3  + 0.8*confidence * 99 / 3         ) |> round(1) 
+         )  %>%
+  mutate(year = stringr::str_extract(image, "(\\d{4}|\\d{2})(?=\\.jpg)"),
+         year = ifelse(nchar(year) == 2, paste0("20", year), year),
+         year = as.integer(year)) %>%
+  mutate(year_diff = abs(year - election_year)) %>% 
+  relocate(year, .after = election_year) %>%
+  relocate(year_diff, .after = year)
+
+below_roads <- readr::read_csv(paste0(data,"/roads/ohio/below/below_predictions_with_flag.csv")) %>% 
+  mutate(treat_flag = 0,
+         road_quality_score = round(((predicted_label + confidence) / 3) * 99 + 1, 1),
+         road_quality_score2 = case_when(
+           predicted_label == 0 ~ 1 + (1 - 0.4*confidence) * 99 / 3 ,
+           TRUE                 ~ 1 + predicted_label * 99 / 3  + 0.4*confidence * 99 / 3 
+         ) |> round(1),
+         road_quality_score3 = case_when(
+           predicted_label == 0 ~ (1 - 0.8*confidence) * 99 / 3 ,
+           TRUE                 ~ predicted_label * 99 / 3  + 0.8*confidence * 99 / 3         ) |> round(1) 
+         ) %>%
+  mutate(year = stringr::str_extract(image, "(\\d{4}|\\d{2})(?=\\.jpg)"),
+         year = ifelse(nchar(year) == 2, paste0("20", year), year),
+         year = as.integer(year)) %>%
+  mutate(year_diff = abs(year - election_year)) %>% 
+  relocate(year, .after = election_year) %>%
+  relocate(year_diff, .after = year)
+
+roads_close <- bind_rows(above_roads, below_roads) %>% mutate(did = post_election_flag*treat_flag)
+
+# group means 
+roads_close %>%
+  group_by(treat_flag, post_election_flag) %>%
+  summarize(mean = mean(predicted_label), sd = sd(predicted_label) ,
+            mean_score = mean(road_quality_score), sd_score = sd(road_quality_score) ,
+            mean_score2 = mean(road_quality_score2), sd_score2 = sd(road_quality_score2) ,
+            mean_score3 = mean(road_quality_score3), sd_score3 = sd(road_quality_score3) ,
+            # ,n = n()
+  ) %>% print(width = Inf)
+  # select(treat_flag, post_election_flag, mean_score3, sd_score3)
+
+# for before referendum, what's the mean time-gap between election time and satellite photo time?
+mean(roads_close %>% filter(post_election_flag == 0) %>% pull(year_diff))
+# 2.28 years
+
+# for after referendum, what's the mean time-gap between election time and satellite photo time?
+mean(roads_close %>% filter(post_election_flag == 1) %>% pull(year_diff))
+# 3.31 years
+
+# before and after: treatment group
+road_above_lm <- lm(data = above_roads, formula = predicted_label ~ post_election_flag)
+summary(road_above_lm)
+# before and after: control group
+road_below_lm <- lm(data = below_roads, formula = predicted_label ~ post_election_flag)
+summary(road_below_lm)
+
+# before and after: treatment group
+road_above_rqs_lm <- lm(data = above_roads, formula = road_quality_score2 ~ post_election_flag)
+summary(road_above_rqs_lm)
+# before and after: control group
+road_below_rqs_lm <- lm(data = below_roads, formula = road_quality_score2 ~ post_election_flag)
+summary(road_below_rqs_lm)
+
+
+lm(data = roads_close %>% filter(post_election_flag == 0), formula = predicted_label ~ treat_flag ) %>% summary
+lm(data = roads_close %>% filter(post_election_flag == 1), formula = predicted_label ~ treat_flag ) %>% summary
+
+road_lm <- lm(data = roads_close, formula = road_quality_score2 ~  treat_flag + post_election_flag + treat_flag*post_election_flag)
+summary(road_lm)
+
+above_roads[above_roads$post_election_flag == 1, "predicted_label"] %>% pull(predicted_label) %>% mean
+below_roads[below_roads$post_election_flag == 1, "predicted_label"] %>% pull(predicted_label) %>% mean
+
+# Diff-in-Diff analysis #
+ 
+mean(roads_close$predicted_label)
+mean(above_roads$predicted_label)
+
+
+roads_lm <- lm(data = roads_close, formula = predicted_label ~ post_election_flag + treat_flag + did) 
+summary(roads_lm)
+
+# effect of cutting local road tax on road quality
+roads_did <- feols(predicted_label ~ did | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips) 
+summary(roads_did)
+
+model2 <- lm(predicted_label ~ treat_flag * post_election_flag, data = roads_close)
+# Cluster by township (tendigit_fips)
+coeftest(model2, vcov = vcovCL, cluster = ~year)
+
+model3 <- lm(road_quality_score ~ treat_flag * post_election_flag  + factor(County), data = roads_close)
+# Cluster by township (tendigit_fips)
+coeftest(model3, vcov = vcovCL, cluster = ~tendigit_fips)
+
+feols(road_quality_score ~ did  | post_election_flag + treat_flag, data = roads_close) %>% summary 
+feols(road_quality_score2 ~ did  | post_election_flag + treat_flag, data = roads_close) %>% summary 
+
+feols(road_quality_score ~ did  | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips) %>% summary 
+feols(road_quality_score2 ~ did  | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips) %>% summary 
+
+
+feols(road_quality_score ~ did  | post_election_flag + treat_flag, se = "jk", data = roads_close, cluster = ~year) %>% summary 
+
+feols(road_quality_score2 ~ did  | post_election_flag + treat_flag, data = roads_close, cluster = ~year) %>% summary 
+
+
+roads_close$tendigit_fips2 <- as.factor(roads_close$tendigit_fips)
+
+jhk <- feols(road_quality_score ~ did  | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips) %>%
+  boottest("did", B = 999, clustid = ~tendigit_fips, param = "did")
+
+m2  <- feols(road_quality_score2 ~ did | post_election_flag + treat_flag, data = roads_close)
+
+vcov_cr2 <- clubSandwich::vcovCR(m2, cluster = roads_close$tendigit_fips, type = "CR2")
+coef_test(m2, vcov = vcov_cr2, test = "Satterthwaite") 
+
+
+did_mod <- feols(
+  predicted_label ~ did | post_election_flag + treat_flag,
+  data = roads_close                       # <-- no SEs yet
+)
+summary(did_mod, vcov = ~ year)
+V_cr2 <- clubSandwich::vcovCR(did_mod,
+                              cluster = roads_close$tendigit_fips,
+                              type    = "CR2")        # small-sample adj. :contentReference[oaicite:3]{index=3}
+
+clubSandwich::coef_test(did_mod, vcov = V_cr2, test = "Satterthwaite") 
+
+V_cr3j <- summclust::vcov_CR3J(did_mod, cluster = "year")  # leverages leave-one-cluster-out :contentReference[oaicite:5]{index=5}
+keep <- names(coef(did_mod))          # returns "did"
+V_cr3j_trim <- V_cr3j[keep, keep, drop = FALSE]
+summary(did_mod, .vcov = V_cr3j_trim)  
+
+
+did_mod0 <- feols(predicted_label ~ did | post_election_flag + treat_flag,
+                  data = roads_close)
+
+boot_res <- fwildclusterboot::boottest(
+  did_mod0,
+  param    = "did",
+  clustid  = "tendigit_fips",   # OR c("tendigit_fips","year") for 2-way
+  B        = 9999           # draws
+  # bootwild = "rademacher"       # default, fastest :contentReference[oaicite:7]{index=7}
+)
+
+boot_res$p_val  
+
+roads_twp_yr <- roads_close |>
+  dplyr::group_by(tendigit_fips, year,
+                  treat_flag, post_election_flag) |>
+  dplyr::summarise(score = mean(road_quality_score2), .groups = "drop") |>
+  dplyr::mutate(did = treat_flag * post_election_flag)
+
+agg_mod <- feols(score ~ did | post_election_flag + treat_flag,
+                 data = roads_twp_yr)
+
+summary(agg_mod, vcov = ~ tendigit_fips)
+
+summary(did_mod,
+        vcov = ~ tendigit_fips,
+        ssc  = ssc(cluster.df = "conventional",   # or "min", default
+                   adj        = TRUE,            # HC1 vs HC0 factor
+                   cluster.adj = TRUE))          # Bell-McCaffrey adj. :contentReference[oaicite:10]{index=10}
+
+
+## Taking into account trinary outcome ##
+
+# 1. Option 1: Linear Probability Model
+# poor
+roads_close$poor_quality <- as.integer(roads_close$predicted_label == 0)
+did_poor <- feols(poor_quality ~ did | post_election_flag + treat_flag, data = roads_close, cluster = ~tendigit_fips)
+summary(did_poor)
+
+# medium
+roads_close$medium_quality <- as.integer(roads_close$predicted_label == 1)
+did_medium <- feols(medium_quality ~ did | post_election_flag + treat_flag, data = roads_close, cluster = ~County)
+summary(did_medium)
+
+# good
+roads_close$good_quality <- as.integer(roads_close$predicted_label == 2)
+did_good <- feols(good_quality ~ did | post_election_flag + treat_flag, data = roads_close, cluster = ~County)
+summary(did_good)
+
+# 2. Option 2: Ordered Logit Model
+roads_close$did_interact <- roads_close$post_election_flag * roads_close$treat_flag
+roads_ord_did <- polr(factor(predicted_label) ~ did_interact + factor(post_election_flag) + factor(treat_flag), data = roads_close, method = "logistic")
+summary(roads_ord_did)
+
+# Using confidence variable
+
+#==========================================#
+# Small sample problem
+#==========================================#
+
+# road elections within mean effective bandwidth
+roads_and_census_close <- roads_and_census %>% filter(between(votes_pct_against, cutoff - 6, cutoff + 6)) %>% 
+  filter((tolower(subdivisiontype) == "township") & (year >= 2006)) 
+
+# Every single township we analyzed for road quality was indexed a "close election"
+roads_close %>% select(tendigit_fips) %>% distinct() %>% 
+      left_join(roads_and_census_close %>% select(tendigit_fips) %>% mutate(match = 1), by = "tendigit_fips") %>% print(n = Inf)
+
+# However, how many "close elections" were actually analyzed for road quality?
+roads_and_census_close %>% select(tendigit_fips) %>% distinct() %>% 
+    left_join(roads_close %>% select(tendigit_fips) %>% distinct() %>% mutate(match = 1), by = "tendigit_fips") %>% 
+    group_by(match) %>% summarize(n = n())
+# Only 14% of the "close elections" were analyzed for road quality, mainly due to lack of "before and after" images for each area.
+# Reasons for small sample size:
+#' 1. Only townships
+#' 2. Only elections after 2006
+#' 3. Only elections with images both before and after election year
+
+#------------------------------------------#
+## RD regression within the bandwidth
+#------------------------------------------#
+
+roads_close
+
+roads_and_census %>% filter(tendigit_fips %in% unique(roads_close$tendigit_fips))
+
+yrs_tbl <- roads_close |>                          # 81×13
+  distinct(tendigit_fips, year) |>                 # keep only fips–year pairs
+  group_by(tendigit_fips) |>
+  summarise(img_years = list(year), .groups = "drop")
+
+elec_ok <- roads_and_census |>                     # 279×49
+  inner_join(yrs_tbl, by = "tendigit_fips") |>
+  rowwise() |>
+  mutate(
+    has_before = any(img_years <  year),           # at least one image earlier
+    has_after  = any(img_years >  year),           # at least one image later
+    keep       = has_before & has_after            # both must be TRUE
+  ) |>
+  ungroup() |>
+  filter(keep) |>                                  # ➊ only elections with B&A
+  select(-img_years, -has_before, -has_after, -keep) %>%
+  arrange(tendigit_fips, year)
+
+
+rd_df <- roads_close %>% 
+  left_join(elec_ok, by = c("tendigit_fips")) %>%
+  arrange(tendigit_fips, year.x) 
+
+rd_df_pre <- rd_df %>% filter(post_election_flag == 0)
+rd_df_post <- rd_df %>% filter(post_election_flag == 1)
+
+
+
+h_left  <- abs(min(rd_df_post$votes_pct_against, na.rm = TRUE) - cutoff)          # distance to the left-most point
+h_right <- abs(max(rd_df_post$votes_pct_against, na.rm = TRUE) - cutoff)          # distance to the right-most point
+
+rdrobust(  y = rd_df_pre$predicted_label,,
+           x = rd_df_pre$votes_pct_against,
+           c = cutoff,
+           bwselect = "manual",
+           h = c(h_left, h_right) ,
+           # covs = y %>%
+           #   dplyr::select(x) ,
+           all = TRUE, kernel = "tri", bwselect = "mserd", p = 1, q = 2, cluster = rd_df_pre$tendigit_fips) %>% summary
+
+rdrobust(  y = rd_df_post$predicted_label,
+           x = rd_df_post$votes_pct_against,
+           c = cutoff,
+           # bwselect = "manual",
+           h = c(h_left, h_right) ,
+           # covs = y %>%
+           #   dplyr::select(x) ,
+           all = TRUE) %>% summary
+
+rd_df_post %>%
+  group_by(treat_flag) %>%
+  summarize(mean = mean(predicted_label), sd = sd(predicted_label) ,
+            mean_score = mean(road_quality_score), sd_score = sd(road_quality_score) ,
+            mean_score2 = mean(road_quality_score2), sd_score2 = sd(road_quality_score2) 
+            # ,n = n()
+  )
+
+roads_and_census %>% filter(tendigit_fips == 3908939102)
+
+#==========================================================================================================#
+#  Q. Does one election change the probability of having another election?
+#     # Check most common duration
+#>    # check how often referendums take place in a city (more than 5 years?)
+#>
+#==========================================================================================================#
+
+roads_and_census$duration %>% unique %>% sort
+
+# Roughly 90% of the time, 5 years
+roads_and_census %>% mutate(duration = as.numeric(duration)) %>% group_by(duration) %>% summarize(prop = n()/nrow(roads_and_census) )
+# Most common duration is 5 years
+
+fre <- roads_and_census %>% group_by(tendigit_fips) %>%
+  summarize(max_year = max(year), min_year = min(year), count = n()) %>%
+  mutate(diff = max_year - min_year, freq = diff/count) %>% 
+  filter(freq != 0)
+  
+fre$freq %>% summary
+# Elections happen every 4 years on average. So last year of levy might have a "double" effect.
+
+
+#==========================================================================================================#
+#  Latest failed referendum for "close' elections and cities, townships with population above 10,000
+#>    
+#==========================================================================================================#
+
+
+fips_list <- c(3902374119, 3915162988, 3915142168, 3908174608, 3909356966, 3915319036, 3911377504, 3911377504, 3900729624, 3903573264, 3903580990, 3908585484, 3909963968, 3913946578, 3915156294, 3902351912, 3902978890, 3904781718, 3906176028, 3908559430, 3909975126, 3915162078, 3915328448, 3905503590, 3905911003, 3905704720, 3905704724, 3913303086, 3900902750, 3903526446, 3904129694, 3905513988, 3908518196, 3908523618, 3908546494, 3909903198, 3915141314, 3915318658, 3901366628, 3902346788, 3902923730, 3903310030, 3904361714, 3906116616, 3906131752, 3908549056, 3908559416, 3909907468, 3915112000, 3915138094, 3915374130, 3917341328)
+
+# subsetting based on the fips that satisfy the required criteria, taking failed levies only, group by and take max year for each fips
+
+roads_and_census %>% 
+  filter(treated == 1 & tendigit_fips %in% fips_list) %>% 
+  group_by(tendigit_fips) %>%
+  summarize(latest_fail_yr = max(year)) %>% filter(latest_fail_yr >= 2010) -> fail_yrs
+
+
+fail_yrs
+
+#==========================================================================================================#
+#  Q. What tendigit_fips qualify for road quality assessment, and at what bandwidth?
+#>
+#==========================================================================================================#
+
+
+
+roads_and_census %>%
+  mutate(votes_pct_against_ctr = votes_pct_against - 50) %>%
+  filter(between(votes_pct_against_ctr, -14,14) ) %>%
+  distinct(tendigit_fips)
+
+#==========================================================================================================#
+#  Q. A map of areas with road tax elections, and those with close elections
+#>
+#==========================================================================================================#
+
+library(tigris)
+options(tigris_use_cache = TRUE)
+library(leaflet)
+library(sf)
+
+# Always get sf objects and cache locally (faster next time)
+options(tigris_class = "sf", tigris_use_cache = TRUE)
+
+# Get all Ohio county subdivisions
+oh_cousub_all <- county_subdivisions(state = "OH", cb = TRUE, year = 2021)
+
+# oh_cousub_rd <- roads_and_census %>% mutate(GEOID = str_pad(tendigit_fips, width = 10, side = "left", pad = "0")) %>%
+oh_cousub_rd <- closest_votes %>% mutate(GEOID = str_pad(tendigit_fips, width = 10, side = "left", pad = "0")) %>%
+  # distinct(GEOID, treated) %>%
+  left_join(oh_cousub_all, by = "GEOID")
+
+# Create a simple plot of Ohio county subdivisions with road elections
+oh_cousub_rd_sf <- oh_cousub_rd %>%
+  filter(!is.na(geometry)) %>%
+  st_as_sf()
+
+close_p <- ggplot() +
+  # First layer: all county subdivisions (background)
+  geom_sf(data = oh_cousub_all, fill = "lightgray", color = "white", size = 0.1, alpha = 0.3) +
+  # Second layer: areas with elections
+  geom_sf(data = oh_cousub_rd_sf, aes(fill = factor(treated)), color = "black", size = 0.2) +
+  scale_fill_manual(values = c("0" = "lightblue", "1" = "darkred"),
+                    labels = c("0" = "Renewed", "1" = "Cut"),
+                    name = "Treatment") +
+  theme_void() +
+  labs(title = "Ohio Subdivisions with close road tax renewal elections: 1991 to 2021",
+        subtitle = "Areas with tax cuts vs renewals") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12))
+# close_p
+ggsave(filename = paste0(plots, "/ohio_subdivisions_close_elections_map.png"), plot = close_p, width = 10, height = 8, dpi = 300)
+
+
+
+oh_cousub_rd_all <- roads_and_census %>% mutate(GEOID = str_pad(tendigit_fips, width = 10, side = "left", pad = "0")) %>%
+  left_join(oh_cousub_all, by = "GEOID")
+
+oh_cousub_rd_all_sf <- oh_cousub_rd_all %>%
+filter(!is.na(geometry)) %>%
+st_as_sf()
+
+elections_p <- ggplot() +
+  # First layer: all county subdivisions (background)
+  geom_sf(data = oh_cousub_all, fill = "lightgray", color = "white", size = 0.1, alpha = 0.3) +
+  # Second layer: areas with elections
+  geom_sf(data = oh_cousub_rd_all_sf, color = "black", size = 0.2, fill = "lightgreen") +
+  theme_void() +
+  labs(title = "Ohio Subdivisions with road tax renewal elections: 1991 to 2021") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12))
+
+# elections_p
+ggsave(filename = paste0(plots, "/ohio_subdivisions_elections_map.png"), plot = elections_p, width = 10, height = 8, dpi = 300)
+
+
+
+#==========================================================================================================#
+# investigating raw housing sales data and hedonics - 1/14/2026
+#==========================================================================================================#
+
+# housing dataset
+hs <- haven::read_dta(paste0(shared,"/housesales_9521_slim.dta"))
+
+View(hs[1:1000,])
+
+summary(hs)
+
+hs2 <- hs %>% filter(!is.na(SALE_AMOUNT) & SALE_AMOUNT > 0)
+
+
+sum(is.na(hs$SALE_AMOUNT))/nrow(hs)
+# SALE AMOUNT: :2136786 NA values out of 7145839 i.e. 29.9% missing
+
+hs %>% filter(!is.na(SALE_AMOUNT)) %>% 
+group_by(year) %>%
+summarize(n = n(), prop = n()/nrow(.)) %>%
+  arrange(year) %>% print(n = Inf)
+
+# Hedonics: Size, Total Rooms, Bath rooms, AC, Basement
+# unique(hs$acres)
+
+sort(as.integer(unique(hs$total_rooms)))
+#  [1] "6"   "5"   "8"   "."   "10"  "7"   "4"   "12"  "3"   "9"   "11"  "1"  
+# [13] "16"  "2"   "14"  "13"  "15"  "23"  "47"  "52"  "35"  "54"  "29"  "26" 
+# [25] "17"  "31"  "18"  "91"  "20"  "34"  "43"  "63"  "36"  "92"  "93"  "22" 
+# [37] "25"  "42"  "74"  "45"  "19"  "32"  "21"  "33"  "30"  "24"  "28"  "99" 
+# [49] "44"  "40"  "96"  "39"  "64"  "53"  "98"  "51"  "83"  "70"  "55"  "60" 
+# [61] "81"  "80"  "37"  "76"  "48"  "68"  "94"  "46"  "85"  "72"  "56"  "50" 
+# [73] "66"  "95"  "27"  "82"  "73"  "38"  "84"  "67"  "291" "65"  "999" "78" 
+# [85] "69"  "77"  "160" "226" "153"
+sort(unique(hs$total_baths_calculated))
+unique(hs$ac) # [1] "." "1" "0"
+unique(hs$basement)  # [1] "." "1" "0"
+
+# Convert character variables to numeric where needed
+hs3 <- hs2 %>%
+  mutate(
+    total_rooms = as.numeric(total_rooms),
+    total_baths_calculated = as.numeric(total_baths_calculated),
+    ac = as.numeric(ac),
+    basement = as.numeric(basement)
+  )
+
+# Create list of hedonic variables
+hedonic_vars <- c("total_rooms", "total_baths_calculated", "agehouse", "ac", "cond_exc", "cond_vgood", "cond_good",  "cond_fair", "cond_poor", "onestory")
+
+# Use purrr::map to create group summaries for each variable
+hedonic_group_summary <- purrr::map(hedonic_vars, ~ {
+  hs3 %>%
+    filter(!is.na(.data[[.x]])) %>%
+    group_by(across(all_of(.x))) %>%
+    summarise(
+      n = n(),
+      prop = n()/nrow(.),
+      mean_sale = mean(SALE_AMOUNT, na.rm = TRUE),
+      median_sale = median(SALE_AMOUNT, na.rm = TRUE),
+      sd_sale = sd(SALE_AMOUNT, na.rm = TRUE),
+      .groups = "drop"
+    )
+})
+names(hedonic_group_summary) <- hedonic_vars
+
+print(hedonic_group_summary$total_rooms, n = Inf)
+print(hedonic_group_summary$total_baths_calculated, n = Inf)
+print()
+
+
+# Trim extreme sale amounts (remove top and bottom 1%)
+hs2_trimmed <- hs2 %>%
+  filter(SALE_AMOUNT >= quantile(SALE_AMOUNT, 0.01, na.rm = TRUE) &
+         SALE_AMOUNT <= quantile(SALE_AMOUNT, 0.99, na.rm = TRUE))
+
+
+View(hs2[1:1000,])
+
+# Distribution of SALE_AMOUNT
+# Calculate statistics
+sale_stats <- hs2_trimmed %>%
+  summarise(
+    mean_sale = mean(SALE_AMOUNT, na.rm = TRUE),
+    median_sale = median(SALE_AMOUNT, na.rm = TRUE),
+    mode_sale = as.numeric(names(sort(table(round(SALE_AMOUNT, -3)), decreasing = TRUE)[1]))
+  )
+
+ggplot(data = hs2_trimmed, aes(x = SALE_AMOUNT)) +
+  geom_histogram(bins = 50, fill = "#2E86C1", color = "white", alpha = 0.7) +
+  geom_vline(aes(xintercept = sale_stats$mean_sale, color = "Mean"), 
+             linetype = "dashed", size = 1) +
+  geom_vline(aes(xintercept = sale_stats$median_sale, color = "Median"), 
+             linetype = "dashed", size = 1) +
+  geom_vline(aes(xintercept = sale_stats$mode_sale, color = "Mode"), 
+             linetype = "dashed", size = 1) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  scale_color_manual(name = "Statistics", 
+                     values = c("Mean" = "#E74C3C", "Median" = "#F39C12", "Mode" = "#27AE60")) +
+  theme_minimal(base_size = 15) +
+  labs(
+    title = "Distribution of Sale Amount (1% tails trimmed)",
+    # subtitle = sprintf("Mean: %s | Median: %s | Mode: %s", 
+    #                   scales::dollar(sale_stats$mean_sale),
+    #                   scales::dollar(sale_stats$median_sale),
+    #                   scales::dollar(sale_stats$mode_sale)),
+    x = "Sale Amount",
+    y = "Frequency"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 18, color = "#34495E"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "#34495E"),
+    axis.title = element_text(face = "italic", size = 14, color = "#34495E"),
+    axis.text = element_text(size = 12, color = "#2C3E50"),
+    legend.position = "right"
+  )
+
+# mean(hs2$SALE_AMOUNT)
+
+#==========================================#
+### Hedonic Balance Check ###
+#==========================================#
+
+# Import all .csv files from data/housing directory using purrr::map
+housing_files <- list.files(path = paste0(data, "/housing"),  pattern = "\\.csv$", full.names = TRUE)
+
+housing_data_list <- purrr::map(housing_files, readr::read_csv)
+names(housing_data_list) <- basename(housing_files) %>%  stringr::str_remove("\\.csv$")
+
+hs0 <- housing_data_list$housing_roads_census_t_plus_0_matches %>% 
+    mutate(votes_pct_against = votes_against / (votes_for + votes_against) * 100,
+          treated = if_else(votes_pct_against > 50, 1, 0))
+View(hs0[1:1000,])
+
+# Balance check on hedonics
+
+# Define treatment and control based on votes_pct_against
+hs0_clean <- hs0 %>%
+  filter(!is.na(sale_amount) & sale_amount > 0) %>% 
+  filter(description == "R") %>%
+  mutate(
+    total_rooms = as.numeric(total_rooms),
+    total_baths_calculated = as.numeric(total_baths_calculated),
+    ac = as.numeric(ac),
+    basement = as.numeric(basement),
+    agehouse = as.numeric(agehouse),
+    condo = as.numeric(condo),
+    onestory = as.numeric(onestory),
+    cond_exc = as.numeric(cond_exc),
+    cond_vgood = as.numeric(cond_vgood),
+    cond_good = as.numeric(cond_good),
+    cond_fair = as.numeric(cond_fair),
+    cond_poor = as.numeric(cond_poor)
+  )
+
+# View(hs0_clean[1:1000,])
+
+# Function to check balance for hedonic variables
+check_hedonic_balance <- function(data, vars) {
+  balance_results <- purrr::map_df(vars, function(var) {
+    # Filter out missing values for the variable
+    data_clean <- data %>% filter(!is.na(.data[[var]]))
+    
+    # Calculate means by treatment status
+    treated_mean <- mean(data_clean %>% filter(treated == 1) %>% pull(!!sym(var)), na.rm = TRUE)
+    control_mean <- mean(data_clean %>% filter(treated == 0) %>% pull(!!sym(var)), na.rm = TRUE)
+    
+    # Calculate standard deviations
+    treated_sd <- sd(data_clean %>% filter(treated == 1) %>% pull(!!sym(var)), na.rm = TRUE)
+    control_sd <- sd(data_clean %>% filter(treated == 0) %>% pull(!!sym(var)), na.rm = TRUE)
+        
+    tibble(
+      Variable = var,
+      Treated_Mean = treated_mean,
+      Treated_SD = treated_sd,
+      Control_Mean = control_mean,
+      Control_SD = control_sd
+    )
+  })
+  
+  return(balance_results)
+}
+
+# 1. Full sample balance check
+cat("\n=== Balance Check: Full Sample ===\n")
+balance_full <- check_hedonic_balance(hs0_clean, c("universal_building_square_feet", "acres", hedonic_vars) )
+print(balance_full, n = Inf, width = Inf)
+
+# 2. Close to cutoff (within 5 percentage points)
+hs0_close <- hs0_clean %>%
+  filter(between(votes_pct_against, 40, 60))
+
+cat("\n=== Balance Check: Close to Cutoff (40-60% votes against) ===\n")
+balance_close <- check_hedonic_balance(hs0_close, c("universal_building_square_feet", "acres", hedonic_vars) )
+print(balance_close, n = Inf, width = Inf)
+
+# Export balance tables
+readr::write_csv(balance_full, paste0(tables, "/hedonic_balance_full_sample.csv"))
+readr::write_csv(balance_close, paste0(tables, "/hedonic_balance_close_cutoff.csv"))
+
+# Summary statistics by treatment status
+cat("\n=== Sample Sizes ===\n")
+cat(sprintf("Full sample - Treated: %d, Control: %d\n", 
+            sum(hs0_clean$treated == 1, na.rm = TRUE),
+            sum(hs0_clean$treated == 0, na.rm = TRUE)))
+cat(sprintf("Close to cutoff - Treated: %d, Control: %d\n",
+            sum(hs0_close$treated == 1, na.rm = TRUE),
+            sum(hs0_close$treated == 0, na.rm = TRUE)))
+
+# Create a visualization of balance (standardized differences)
+library(ggplot2)
+
+balance_plot_data <- bind_rows(
+  balance_full %>% mutate(Sample = "Full Sample"),
+  balance_close %>% mutate(Sample = "Close to Cutoff")
+)
+
+ggplot(balance_plot_data, aes(x = Variable, y = Std_Diff, fill = Sample)) +
+  geom_col(position = "dodge") +
+  geom_hline(yintercept = c(-0.1, 0.1), linetype = "dashed", color = "red") +
+  coord_flip() +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Balance Check: Standardized Differences in Hedonic Variables",
+    subtitle = "Red dashed lines indicate ±0.1 threshold",
+    x = "Variable",
+    y = "Standardized Difference (Treated - Control)",
+    fill = "Sample"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  )
+
+ggsave(paste0(plots, "/hedonic_balance_comparison.png"), width = 10, height = 8, dpi = 300)
+
+
+## IS THERE A JUMP IN HEDONICS AT THE CUTOFF?
+
+x <- hs0_clean$votes_pct_against
+c <- 50  # your cutoff (adjust if different)
+
+covs <- c("universal_building_square_feet","acres","total_rooms",
+          "total_baths_calculated","agehouse","ac","basement",
+          "cond_exc","cond_vgood","cond_good","cond_fair","cond_poor",
+          "onestory")
+
+bal_rd <- purrr::map_dfr(covs, function(z) {
+  fit <- rdrobust(y = hs0_clean[[z]], x = x, c = c, p = 1, bwselect = "mserd", all = TRUE, kernel = "triangular")
+  data.frame(
+    variable = z,
+    tau = fit$coef[3],
+    se  = fit$se[3],
+    p   = fit$pv[3]
+  )  
+}) %>%  mutate(p = format(p, scientific = FALSE))
+
+# sq feet, acres, total rooms, total baths, ac, cond_exc, cond_poor show no jump at cutoff

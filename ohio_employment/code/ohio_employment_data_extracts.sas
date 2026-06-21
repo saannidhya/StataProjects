@@ -6,19 +6,42 @@
 			 18feb2022  SR Checked validity of masterfile_2006q1_2020q4 file. Found one merging issue (year 2020)
 			 07mar2022	SR Fixed 2020 merge issue. Added new 2021 data (upto Q2). Create master df file (2006-2021Q2)
 			 06apr2022  SR Added data with NAICS code. Fixed issue of MEEI == 2 as per Dr. Jones' suggestion
+			 28apr2023  SR Created a new dataset that contains only unique address for Haiqing Liu. Dataset name: unique_addresses.sas7bdat
+			 30may2023  SR Cleaned unique_addresses.sas7bdat to remove spurious addresses
+			 15jun2023  SR Used unique_addresses_spatial_join.csv, which was created in ArcGIS Pro after geocoding appropriately formatted 
+						   addresses in unique_addresses.sas7bdat, to identify tendigitfips for each observation in masterfile_2006q1_2020q4 file for Ohio Taxation project.
+			 11jul2023  SR Used unique_addresses_export_after_spatial_join.csv instead, which now contains ALL unique addresses. Output: odjfs_employment_df 
+			 21sep2023  SR Started to update code to generate masterfile_2006q1_2022q3 file
+			 25sep2023  SR solved data type issue for some variables in 2022 datasets by using guessingrows=MAX. This slows down the run but improves accuracy.
+			 27sep2023  SR Used new 2022 data provided by ODJFS (for all quarters)
+			 21mar2024  SR Added new 2023 data provided by ODJFS (up to 3Q23)
+			  8Aug2024	SR Updating to include 4Q23
+			 29jan2025  SR Updating to include up to 2Q24
+			 20Aug2025  SR Updated script to include up to 4Q24 for Dr. Jones and Tarim from Fort Washington Capital Partners Group
+			  5Sep2025  SR Removed special characters like "->" preventing ArcGIS Geocoding and Spatial Join for masterfile_2006q1_2024q4_full_cleaned.csv and masterfile_2006q1_2024q4_full.csv
+			 24Feb2026  SR Updating to include up to 2Q25
+			  3Mar2026  SR Updating to include up to 3Q25
+			  9 Jun 26  SR Updating to change pl_zip column name to zip for 2021 data. Updating to include up to 4Q25
 \*=================================================================================================*/
 
+*setting up macro variables;
+%let root = C:\Users\rawatsa\OneDrive - University of Cincinnati\StataProjects\ohio_employment;
+%let data = &root.\data;
+%let data_gis = &data.\address_geocoding\address_geocoding_arcgis;
 %let in_loc = C:\QCEW Data - Ohio\ES202;
+%let out_csv = &in_loc.\extracts;
+%let tax_emp_loc = C:\Users\rawatsa\OneDrive - University of Cincinnati\StataProjects\ohio_taxation\data\employment;
 
-libname in ("&in_loc.","&in_loc.\2021");
+libname in ("&in_loc.","&in_loc.\2021","&in_loc.\2022","&in_loc.\2023", "&in_loc.\2024", "&in_loc.\2025");
 libname out "&in_loc.\extracts";
+libname data "&data.";
 
 *loading in utility functions;
 %include "C:\Users\rawatsa\OneDrive - University of Cincinnati\sas_utility_functions\util_load_macro_functions.sas";
 %util_load_macro_functions(C:\Users\rawatsa\OneDrive - University of Cincinnati\sas_utility_functions,subfolder=1);
 
 *Import macro;
-%macro import_df(in_loc = , df = , file_type = , out_df = , drop_list = , rename_list = );
+%macro import_df(in_loc = , df = , file_type = , out_df = , drop_list = , rename_list = , meei_flag = 1, guessingrows = 1000 );
 
 	proc import datafile="&in_loc.\&df." 
 		%if %sysfunc(findw(%upcase(&file_type.), CSV)) %then %do; dbms = csv %end;
@@ -32,9 +55,15 @@ libname out "&in_loc.\extracts";
 				%if &rename_list. ^= %then %do;
 					rename = (&rename_list.)
 				%end;
-			where=(strip(meei) ^= "2")  /*removing meei == 2*/
+			%if &meei_flag. = 1 %then %do;
+				where=(strip(meei) ^= "2")  /*removing meei == 2*/
+			%end;
 	)
 	;
+	%if %sysfunc(findw(%upcase(&file_type.), CSV)) %then %do;
+/*		guessingrows=100000;*/
+		guessingrows=&guessingrows.;
+	%end;
 	run;
 
 %mend import_df;
@@ -42,8 +71,8 @@ libname out "&in_loc.\extracts";
 *----------------------------------------------------------------------------------------
 *	Importing data
 *----------------------------------------------------------------------------------------;
-*2006-2018 will be used;
-proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace out=masterfile_2006q1_2020q4; run;
+*2006-2018 will be used. This is because year 2019 NAICS codes are missing in this dataset AND year 2020 had a merge mismatch;
+proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace out=masterfile_2006q1_2020q4 (where=(year <= 2018 and year ne .)); run;
 *2019;
 %import_df(in_loc = &in_loc.,
 			df = current_UCMA191.csv, file_type = csv, out_df = df_2019q1, 
@@ -74,13 +103,173 @@ proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace 
 %import_df(in_loc = &in_loc.\2021,
 			df = current_UCMA2021Q1.csv, file_type = csv, out_df = df_2021q1, 
 			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
-			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
 )
 %import_df(in_loc = &in_loc.\2021,
 			df = current_UCMA2021Q2.csv, file_type = csv, out_df = df_2021q2, 
 			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
-			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zipx = zip4 org_type = orgtype cnty = county
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
 )
+%import_df(in_loc = &in_loc.\2021,
+			df = current_UCMA213.csv, file_type = csv, out_df = df_2021q3, 
+			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
+)
+%import_df(in_loc = &in_loc.\2021,
+			df = current_UCMA214.csv, file_type = csv, out_df = df_2021q4, 
+			drop_list = comment cipseaflag phone liab_date add_source eol_date react_date auxnaics own, 
+			rename_list = rep_unit = repunit pl_ad1 = address pl_city = city pl_state = state pl_zip = zip pl_zipx = zip4 org_type = orgtype cnty = county
+)
+*2022;
+proc import 
+    datafile="&in_loc.\2022\26sep\UCMA 1Q22.xlsx"
+    out=df_2022q1 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2022\26sep\UCMA 2Q22.xlsx"
+    out=df_2022q2 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2022\26sep\UCMA 3Q22.xlsx"
+    out=df_2022q3 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2022\26sep\UCMA 4Q22.xlsx"
+    out=df_2022q4 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+*2023;
+proc import 
+    datafile="&in_loc.\2023\UCMA 1Q23.xlsx"
+    out=df_2023q1 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2023\UCMA 2Q23.xlsx"
+    out=df_2023q2 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2023\UCMA 3Q23.xlsx"
+    out=df_2023q3 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2023\UCMA 4Q23.xlsx"
+    out=df_2023q4 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+*2024;
+proc import 
+    datafile="&in_loc.\2024\UCMA 1Q24.xlsx"
+    out=df_2024q1 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2024\UCMA 2Q24.xlsx"
+    out=df_2024q2 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2024\UCMA 3Q24.xlsx"
+    out=df_2024q3 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2024\UCMA 4Q24.xlsx"
+    out=df_2024q4 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+*2025;
+proc import 
+    datafile="&in_loc.\2025\UCMA 1Q25.xlsx"
+    out=df_2025q1 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2025\UCMA 2Q25.xlsx"
+    out=df_2025q2 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2025\UCMA 3Q25.xlsx"
+    out=df_2025q3 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+proc import 
+    datafile="&in_loc.\2025\UCMA 4Q25.xlsx"
+    out=df_2025q4 (drop= SECONDARY_STREET 'UI Contact Phone'n ADD_SOURCE "Liability Date"n 'End of Liability Date'n 'Reactivation Date'n 'Ownership Code'n
+					  rename=(RUN = repunit FEIN = ein 'Pred UIN'n = puin 'Pred RUN'n = prun 'Succ UIN'n = suin 'Succ RUN'n = srun 'Legal Name'n=legal
+							 'Trade Name'n=trade DELIVERY_STREET=address zipx = zip4 'Organization Type Code'n=orgtype 'Reporting Unit Description'n = RUD 'County Code'n=County 
+							 'Month 1 Emp'n = m1 'Month 2 Emp'n = m2 'Month 3 Emp'n = m3 'Total Wages'n = wage 'MEEI Code'n = meei))
+    dbms=xlsx 
+    replace;
+run;
+
+/*'Reporting Unit Description'n = RUD*/
 
 *----------------------------------------------------------------------------------------
 *	Cleaning data
@@ -89,9 +278,9 @@ proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace 
 * converting data type for each variable;
 %macro loop(qtr_list = 2019q1 2019q2 2019q3 2019q4 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2);
 	%do i = 1 %to %sysfunc(countw(&qtr_list.));
-		data df_%scan(&qtr_list.,&i.," ") (drop= naics2 year2 quarter2 county2 m1_ m2_ m3_ wage_);
+		data df_%scan(&qtr_list.,&i.," ") (drop= naics2 year2 quarter2 county2 m1_ m2_ m3_ wage_ meei_);
 			retain year quarter ;
-			set df_%scan(&qtr_list.,&i.," ") (rename= (naics = naics2 year = year2 quarter = quarter2 county = county2 m1 = m1_ m2 = m2_ m3 = m3_ wage = wage_));
+			set df_%scan(&qtr_list.,&i.," ") (rename= (naics = naics2 year = year2 quarter = quarter2 county = county2 m1 = m1_ m2 = m2_ m3 = m3_ wage = wage_ meei = meei_));
 				naics = input(naics2, best32.);
 				year = input(year2, best32.);
 				quarter = input(quarter2, best32.);
@@ -100,10 +289,14 @@ proc import datafile="&in_loc.\MasterFile_2006Q1_2020Q4.dta" dbms=STATA replace 
 				m2 = input(m2_, best32.);
 				m3 = input(m3_, best32.);
 				wage = input(wage_, best32.);
+				meei = input(meei_, best32.);
 		run;
 	%end;
 %mend ;
-%loop();
+%loop(qtr_list = 2019q1 2019q2 2019q3 2019q4 2020q1 2020q2 2020q3 2020q4 2021q1 2021q2 2021q3 2021q4 2022q1 2022q2 2022q3 2022q4);
+/*%loop(qtr_list = 2022q1 2022q2 2022q3 2022q4)*/
+%loop(qtr_list = 2023q1 2023q2 2023q3 2023q4 2024q1 2024q2 2024q3 2024q4 2025q1 2025q2 2025q3 2025q4)
+
 
 *removing illegible entries using EINs (see ohio_data_checks.sas for more details);
 *removing duplicate columns created due to incorrect merge for 2020;
@@ -128,7 +321,7 @@ proc sql;
 				, Zip
 				, Zip4
 				, RUD
-				, MEEI
+				, input(meei, best32.) as meei
 				, OrgType
 				, County
 				, input(naics, best32.) as naics
@@ -140,7 +333,7 @@ proc sql;
 				where strip(EIN) ^= "043583679" and 
 					  strip(EIN) ^= "201731623" and 
 					  strip(EIN) ^= "462603341" and
-					  year <= 2018
+					  year <= 2018 and calculated meei ^= 2
 
 ;
 quit;
@@ -149,11 +342,11 @@ quit;
 *	Exporting Master Data
 *----------------------------------------------------------------------------------------;
 
-*append all years together (2006 onwards) and exporting as sas dataset;
+*21,159,278 obs;*append all years together (2006 onwards) and exporting as sas dataset;
 proc sql;
-	create table out.masterfile_2006q1_2021q2	(where = (strip(EIN) ^= "043583679" and 
+	create table out.masterfile_2006q1_2025q4	(where = (strip(EIN) ^= "043583679" and 
 														  strip(EIN) ^= "201731623" and 
-														  strip(EIN) ^= "462603341")) 
+														  strip(EIN) ^= "462603341" and meei ^= 2)) 
 				as 
 	   select *
 	   	  from masterfile_2006q1_2018q4
@@ -187,10 +380,301 @@ proc sql;
 		   outer union corr
 	   select *
 	   	  from df_2021q2
+		   outer union corr
+	   select *
+	   	  from df_2021q3
+		   outer union corr
+	   select *
+	   	  from df_2021q4
+		   outer union corr
+	   select *
+	   	  from df_2022q1
+		   outer union corr
+	   select *
+	   	  from df_2022q2
+		   outer union corr
+	   select *
+	   	  from df_2022q3
+		   outer union corr
+	   select *
+	   	  from df_2022q4
+		   outer union corr
+	   select *
+	   	  from df_2023q1
+		   outer union corr
+	   select *
+	   	  from df_2023q2
+		   outer union corr
+	   select *
+	   	  from df_2023q3
+		   outer union corr
+	   select *
+	   	  from df_2023q4
+		   outer union corr
+	   select *
+	   	  from df_2024q1
+		   outer union corr
+	   select *
+	   	  from df_2024q2
+		   outer union corr
+	   select *
+	   	  from df_2024q3
+		   outer union corr
+	   select *
+	   	  from df_2024q4
+		   outer union corr
+	   select *
+	   	  from df_2025q1
+		   outer union corr
+	   select *
+	   	  from df_2025q2
+		   outer union corr
+	   select *
+	   	  from df_2025q3
+		   outer union corr
+	   select *
+	   	  from df_2025q4
 	;
 quit;
 
+*----------------------------------------------------------------------------------------
+*	count, employment and wage checks
+*----------------------------------------------------------------------------------------;
+proc sql;
+	create table count as
+		select year, quarter, COUNT(*) AS ObsCount
+			from out.masterfile_2006q1_2025q3
+				group by year, quarter
+;
+quit;
+proc sql;
+	create table empl as
+		select *, mean(m1,m2,m2) AS avg_persons
+			from out.masterfile_2006q1_2025q4
+				group by year, quarter
+;
+quit;
+proc sql;
+	create table empl2 as
+		select year, quarter, sum(avg_persons) AS avg_persons
+			from empl
+				group by year, quarter
+;
+quit;
+proc sql;
+	create table wage as
+		select year, quarter, sum(wage) AS wages
+			from out.masterfile_2006q1_2025q4
+				group by year, quarter
+;
+quit;
+DATA wage;
+    SET wage;
+    IF Quarter = 1 THEN Date = MDY(3, 31, Year);
+    ELSE IF Quarter = 2 THEN Date = MDY(6, 30, Year);
+    ELSE IF Quarter = 3 THEN Date = MDY(9, 30, Year);
+    ELSE IF Quarter = 4 THEN Date = MDY(12, 31, Year);
+    FORMAT Date DATE9.;
+RUN;
+%util_plt_line(df = wage 
+                , x = date
+                , y = wages
+                , x_lab = "Date"
+                , y_lab = "wages"
+                , title = "Ohio Aggregate quarterly wages"
+                , subtitle = "2006 - 2025"
+                , legend_hide = 0
+                , y_scale = Dollar9.
+                , highlight_x_start = "31MAR2020"D
+                , highlight_x_end   = "30JUN2021"D
+                , highlight_x_lab = "COVID Recession"
+                );
+
+*----------------------------------------------------------------------------------------
+*	Converting the exported SAS dataset into a Stata dataset
+*----------------------------------------------------------------------------------------;
+proc export 
+		    data=out.masterfile_2006q1_2025q4
+		    outfile="&out_csv.\masterfile_2006q1_2025q4.dta" 
+		    dbms=dta 
+		    replace;
+run;
+
+*----------------------------------------------------------------------------------------
+*	Converting the exported SAS dataset into a CSV
+*----------------------------------------------------------------------------------------;
+proc export data=out.masterfile_2006q1_2025q4
+   outfile="&out_csv.\masterfile_2006q1_2025q4.csv"
+   dbms=csv replace;
+   putnames=yes;
+run;
+
+*----------------------------------------------------------------------------------------
+*	Creating a dataset that contains unique addresses
+*----------------------------------------------------------------------------------------;
+proc sql;
+	create table unique_addresses as
+		select distinct address, city, state, county, zip
+			from out.masterfile_2006q1_2025q4;
+quit;
+* 1,211,442 obs. Some are blank.;
+
+
+*----------------------------------------------------------------------------------------
+*	cleaning unique addresses
+*----------------------------------------------------------------------------------------;
+*importing and removing text issues;
+proc sql;
+	create table out.unique_addresses_2006q1_2025q4 as
+		select strip(lowcase(address)) as Address, strip(lowcase(city)) as City, state, zip
+			from unique_addresses
+				where address is not missing and 
+					  not strip(lowcase(address)) in ("**address needed**", "** address needed **", ".", "0",",", "1", "'","none", "no address provided") and 
+					  strip(state) = "OH" and
+					  (index(address, '') = 0) and (index(city, '') = 0) /* removes 3 observations with this special character */
+;
+quit;
+
+*identifying observations with special character  . ArcGIS Pro stops reading the file whenever it identifies this special character;
+/*proc sql;*/
+/*    create table spec_char_obs as*/
+/*    select **/
+/*    from unique_addresses*/
+/*    where (index(address, '') > 0) or (index(city, '') > 0);*/
+/*quit;*/
+
+*----------------------------------------------------------------------------------------
+*	exporting cleaned unique_addresses dataset to a csv file for ArcGIS Pro
+*----------------------------------------------------------------------------------------;
+proc export data=out.unique_addresses_2006q1_2025q4
+   outfile="&out_csv.\unique_addresses_2006q1_2025q4.csv"
+   dbms=csv replace;
+   putnames=yes;
+run;
 
 
 
+*----------------------------------------------------------------------------------------
+*	Combining out.masterfile_2006q1_2021q2 with geocoded unique addresses from ArcGIS Pro
+*	Only "usual" unique addresses were matched by ArcGIS Pro.
+*----------------------------------------------------------------------------------------;
+
+proc import datafile="&data_gis.\unique_addresses_export_after_spatial_join.csv" dbms=csv replace 
+			out=unique_addresses_w_fips (keep= Address	City	State	Zip GEOID	NAME	NAMELSAD INTPTLAT	INTPTLON rename=(geoid = tendigit_fips)); 
+run;
+
+data unique_addresses_w_fips_ (drop=zip rename=(zip_ = zip) );
+ set unique_addresses_w_fips;
+	Zip_ = PUT(Zip, best.);
+run;
+
+
+/*data unique_addresses_w_fips_2;*/
+/* set unique_addresses_w_fips_;*/
+/* 	where INTPTLON is missing;*/
+/*run;*/
+
+proc sql;
+	create table unique_addresses_w_fips_2 as
+	select distinct strip(lowcase(a.address)) as address,  strip(lowcase(a.city)) as city, strip(lowcase(a.state)) as state, strip(lowcase(a.zip)) as zip,
+					tendigit_fips, NAME, NAMELSAD, INTPTLAT, INTPTLON
+	from unique_addresses_w_fips_ as a;
+quit;
+
+proc sql;
+	create table masterfile_2006q1_2021q2 (drop = address_ city_ state_ zip_) as
+		select *
+			from out.masterfile_2006q1_2021q2 as a
+				left join unique_addresses_w_fips_2 (rename = (address=address_ city=city_ state=state_ zip=zip_)) as b
+					on strip(lowcase(a.address)) = strip(lowcase(b.address_)) and 
+					   strip(lowcase(a.city)) = strip(lowcase(b.city_)) and 
+					   strip(lowcase(a.state)) = strip(lowcase(b.state_)) and 
+					   strip(lowcase(a.zip)) = strip(lowcase(b.zip_));
+quit;
+
+/*%put WARNING: total obs: %util_aux_nobs(out.masterfile_2006q1_2021q2); *20,365,595;*/
+
+proc sql;
+	create table data.odjfs_employment_df as
+		select *
+			from masterfile_2006q1_2021q2 
+				where INTPTLAT is not missing and INTPTLON is not missing;
+quit;
+ 
+* 20241727 obs;
+/*%put WARNING: data.odjfs_employment_df obs: %util_aux_nobs(data.odjfs_employment_df); *4,306,668;*/
+
+
+/*proc sql;*/
+/*	create table data.odjfs_employment_df_no_zip (drop = address_ city_ state_ zip_) as*/
+/*		select **/
+/*			from out.masterfile_2006q1_2021q2 as a*/
+/*				inner join unique_addresses_w_fips_ (rename = (address=address_ city=city_ state=state_ zip=zip_)) as b*/
+/*					on strip(lowcase(a.address)) = strip(lowcase(b.address_)) and */
+/*							strip(lowcase(a.city)) = strip(lowcase(b.city_)) and */
+/*							strip(lowcase(a.state)) = strip(lowcase(b.state_)) */
+/*							;*/
+/*quit;*/
+
+
+*----------------------------------------------------------------------------------------------------------
+*	Importing and cleaning masterfile_2006q1_2024q4_full.csv
+*	Only "usual" addresses were matched by ArcGIS Pro Geocoding + Spatial join
+*----------------------------------------------------------------------------------------------------------;
+
+/*proc import datafile="&out_csv.\masterfile_2006q1_2024q4.dta" dbms=dta replace out=masterfile_2006q1_2024q4; run;*/
+
+proc sql;
+	create table fgfg as
+	select *
+	from out.masterfile_2006q1_2024q4 (obs = 29237)
+;
+quit;
+
+*importing and removing text issues;
+proc sql;
+	create table masterfile_2006q1_2024q4 as
+		select  Year,
+				Quarter,
+				Pad,
+				UIN,
+				RepUnit,
+				EIN,
+				PUIN,
+				PRUN,
+				SUIN,
+				SRUN,
+				Legal,
+				Trade,
+				strip(lowcase(address)) as Address,
+				strip(lowcase(city)) as City,
+				State,
+				Zip,
+				Zip4,
+				RUD,
+				meei,
+				OrgType,
+				County,
+				naics,
+				M1,
+				M2,
+				M3,
+				Wage,
+				pl_zip
+			from out.masterfile_2006q1_2024q4
+				where address is not missing and 
+					  not strip(lowcase(address)) in ("**address needed**", "** address needed **", ".", "0",",", "1", "'","none", "no address provided") and
+					   (index(Legal, '') = 0) and (index(Trade, '') = 0) and
+					  (index(address, '') = 0) and (index(city, '') = 0) /* removes observations with this special character */
+;
+quit;
+
+*----------------------------------------------------------------------------------------
+*	exporting cleaned masterfile_2006q1_2024q4_full_cleaned dataset to a csv file for ArcGIS Pro
+*----------------------------------------------------------------------------------------;
+proc export data=masterfile_2006q1_2024q4
+   outfile="&tax_emp_loc.\masterfile_2006q1_2024q4_clean.csv"
+   dbms=csv replace;
+   putnames=yes;
+run;
 

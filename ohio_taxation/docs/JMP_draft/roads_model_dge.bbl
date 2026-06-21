@@ -1,0 +1,41 @@
+
+
+% Bibstyle aea.bst version 2009.05.20
+
+\begin{thebibliography}{xx}
+
+\harvarditem[Chatterjee, Gibson \harvardand\ Rioja]{Santanu Chatterjee, John
+  Gibson \harvardand\ Felix Rioja}{2017}{chatterjee2017optimal}
+{\bf Chatterjee, Santanu, John Gibson, and Felix Rioja.} 2017. ``Optimal Public
+  Debt Redux.'' {\em Journal of Economic Dynamics and Control}, 83:~162--174.
+  Originally circulated as ICePP Working Paper No.\ 16‑13 at Georgia State
+  University.
+
+\harvarditem[Chetty et~al.]{Raj Chetty, Adam Guren, Day Manoli \harvardand\
+  Andrea Weber}{2011}{chetty2011micro}
+{\bf Chetty, Raj, Adam Guren, Day Manoli, and Andrea Weber.} 2011. ``Are Micro
+  and Macro Labor Supply Elasticities Consistent? A Review of Evidence on the
+  Intensive and Extensive Margins.'' {\em American Economic Review},
+  101(3):~471--475.
+
+\harvarditem[Cooley]{Thomas~F Cooley}{1995}{cooley1995frontiers}
+{\bf Cooley, Thomas~F.} 1995. {\em Frontiers of business cycle research.}
+  Princeton University Press.
+
+\harvarditem[King, Plosser \harvardand\ Rebelo]{Robert~G King, Charles~I
+  Plosser \harvardand\ Sergio~T Rebelo}{1988}{king1988}
+{\bf King, Robert~G, Charles~I Plosser, and Sergio~T Rebelo.} 1988.
+  ``Production, growth and business cycles: I. The basic neoclassical model.''
+  {\em Journal of monetary Economics}, 21(2-3):~195--232.
+
+\harvarditem[Rioja]{Felix~K Rioja}{2003}{rioja2003}
+{\bf Rioja, Felix~K.} 2003. ``Filling potholes: Macroeconomic effects of
+  Maintenance versus New Investments in public infrastructure.'' {\em Journal
+  of Public Economics}, 87(9-10):~2281--2304.
+
+\harvarditem[{U.S. Bureau of Labor Statistics}]{{U.S. Bureau of Labor
+  Statistics}}{2024}{bls2023consumer}
+{\bf {U.S. Bureau of Labor Statistics}.} 2024. ``Consumer Expenditures in
+  2023.'' U.S. Bureau of Labor Statistics BLS Report. Published on BLS website.
+
+\end{thebibliography}

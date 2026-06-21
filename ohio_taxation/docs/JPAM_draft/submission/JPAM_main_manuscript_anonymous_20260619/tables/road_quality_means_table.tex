@@ -1,0 +1,38 @@
+\begin{table}[H]
+    \centering
+    \caption{Predicted Road Quality by Treatment Status and Period}
+    \label{tab:road_quality_panel}
+    \begin{threeparttable}
+    \begin{minipage}{\linewidth}
+    \centering
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{lccccc}
+        \toprule
+        & \multicolumn{2}{c}{\textbf{Global}} & \multicolumn{3}{c}{\textbf{Effective}} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-6}
+        & Control & Treated & Control & Treated & Difference \\
+        & (Renewed) & (Failed) & (Renewed) & (Failed) & (Treated$-$Control) \\
+        \midrule
+        \multicolumn{6}{l}{\textbf{Panel A: Road Quality Rating (0, 1, 2)}} \\
+        Pre-Election ($t\!-\!3$ to $t\!-\!1$)  & 1.49 & 1.55 & 1.56 & 1.66 & 0.10 \\
+                       & (0.24) & (0.19) & (0.07) & (0.06) & (0.10) \\
+        Post-Election ($t\!+\!3$ to $t\!+\!5$) & 1.55 & 1.65 & 1.72 & 1.44 & -0.28$^{***}$ \\
+                       & (0.23) & (0.18) & (0.05) & (0.07) & (0.07) \\
+        \addlinespace
+        \multicolumn{6}{l}{\textbf{Panel B: Road Quality Score (RQS)}} \\
+        Pre-Election ($t\!-\!3$ to $t\!-\!1$)  & 61.4 & 63.4 & 64.1 & 66.8 & 2.7 \\
+                       & (8.2) & (6.9) & (2.2) & (2.3) & (3.6) \\
+        Post-Election ($t\!+\!3$ to $t\!+\!5$) & 63.1 & 66.6 & 69.0 & 59.2 & -9.8$^{***}$ \\
+                       & (7.9) & (6.5) & (1.8) & (2.7) & (2.6) \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.5em}
+    \begin{tablenotes}[flushleft]
+        \footnotesize
+        \item \textit{Notes:} The treated group comprises observations that failed to renew their road tax levies. The control group comprises those that renewed. The sample is the ConvNeXt V2 stacked-event NAIP road imagery sample with valid pre- and post-window imagery. Election-year imagery is omitted and windows are censored at adjacent renewal elections. \textit{Global} columns are unweighted descriptive means across all observations with standard deviations in parentheses, with no bandwidth restriction. \textit{Effective} columns are local-linear RD fits at the 50\% vote-against cutoff, using the MSE-optimal bandwidth of $h\approx4.4$--$4.7$ percentage points; these are fitted values at the cutoff with standard errors in parentheses, and the treated value is the control fit plus the RD estimate. 
+        The pre-election rows are a placebo balance check and show no significant treated--control gap at the cutoff (RQR $p=0.33$, RQS $p=0.45$), consistent with comparability near the threshold.
+        \item Significance: *** $p<0.01$, ** $p<0.05$, * $p<0.1$.
+    \end{tablenotes}
+    \end{minipage}
+    \end{threeparttable}
+\end{table}

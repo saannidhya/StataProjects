@@ -1,0 +1,93 @@
+Close-renewal reduced form: failure on lagged employment outcomes, t+2 to t+5
+
+                             log_total_wages_post_avg_p2_p5
+Dependent Var.:              log_total_wages_post_avg_p2_p5
+                                                           
+Constant                                   16.78*** (3.191)
+failed_levy                                   1.584 (1.811)
+margin_against                              0.0010 (0.2875)
+pop_election                              0.0002. (9.05e-5)
+medfamy_election                            5.4e-5 (6.4e-5)
+poverty_election                              9.524 (10.72)
+unemprate_election                           -6.502 (12.49)
+pctown_election                              -7.243 (4.496)
+failed_levy x margin_against               -0.4651 (0.5155)
+____________________________ ______________________________
+S.E.: Clustered                                  by: county
+Observations                                             25
+R2                                                  0.52013
+Adj. R2                                             0.28020
+
+                             log_total_wages_diff_p2_p5_vs_pre
+Dependent Var.:              log_total_wages_diff_p2_p5_vs_pre
+                                                              
+Constant                                       0.1832 (0.2902)
+failed_levy                                   -0.1261 (0.1280)
+margin_against                                 0.0422 (0.0359)
+pop_election                                 1.15e-5 (1.03e-5)
+medfamy_election                            -4.88e-6 (6.48e-6)
+poverty_election                               -1.448 (0.8538)
+unemprate_election                               1.140 (1.105)
+pctown_election                                0.4989 (0.3483)
+failed_levy x margin_against                   0.0001 (0.0609)
+____________________________    ______________________________
+S.E.: Clustered                                     by: county
+Observations                                                25
+R2                                                     0.35102
+Adj. R2                                                0.02653
+
+                             log_avg_persons_post_avg_p2_p5
+Dependent Var.:              log_avg_persons_post_avg_p2_p5
+                                                           
+Constant                                    6.876** (2.349)
+failed_levy                                  0.7483 (1.266)
+margin_against                              0.0713 (0.2131)
+pop_election                              0.0002* (6.98e-5)
+medfamy_election                          3.73e-5 (4.65e-5)
+poverty_election                              6.433 (7.474)
+unemprate_election                           -2.237 (8.318)
+pctown_election                             -5.840. (3.348)
+failed_levy x margin_against               -0.4882 (0.3856)
+____________________________ ______________________________
+S.E.: Clustered                                  by: county
+Observations                                             25
+R2                                                  0.56832
+Adj. R2                                             0.35249
+
+                             log_establishments_post_avg_p2_p5
+Dependent Var.:              log_establishments_post_avg_p2_p5
+                                                              
+Constant                                        3.358* (1.485)
+failed_levy                                   -0.0267 (0.6563)
+margin_against                                 0.0681 (0.1167)
+pop_election                                0.0001** (4.04e-5)
+medfamy_election                             2.19e-5 (2.54e-5)
+poverty_election                                 5.472 (4.349)
+unemprate_election                              -2.922 (4.827)
+pctown_election                                 -2.514 (2.117)
+failed_levy x margin_against                  -0.2219 (0.2335)
+____________________________    ______________________________
+S.E.: Clustered                                     by: county
+Observations                                                25
+R2                                                     0.69862
+Adj. R2                                                0.54793
+
+                             entrants_post_avg_p2_p5 exits_post_avg_p2_p5
+Dependent Var.:              entrants_post_avg_p2_p5 exits_post_avg_p2_p5
+                                                                         
+Constant                               4.692 (9.541)        99.42 (63.08)
+failed_levy                           -1.690 (2.801)        4.876 (11.99)
+margin_against                       0.1565 (0.9576)       -1.656 (4.457)
+pop_election                      0.0021*** (0.0002)     0.0035* (0.0016)
+medfamy_election                   -1.41e-5 (0.0002)     -0.0006 (0.0007)
+poverty_election                      -6.332 (18.05)       -110.6 (109.0)
+unemprate_election                    -5.143 (20.27)       -27.18 (80.49)
+pctown_election                       -5.158 (9.145)       -69.86 (45.24)
+failed_levy x margin_against          0.0676 (1.109)      -0.0338 (4.879)
+____________________________ _______________________ ____________________
+S.E.: Clustered                           by: county           by: county
+Observations                                      25                   25
+R2                                           0.93135              0.58931
+Adj. R2                                      0.89702              0.38396
+---
+Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1

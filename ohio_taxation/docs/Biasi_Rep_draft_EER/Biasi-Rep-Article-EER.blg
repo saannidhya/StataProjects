@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Biasi-Rep-Article-EER.aux
+Reallocating 'name_of_file' (item size: 1) to 4 items.
+The style file: aea.bst
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+Database file #1: eer_references.bib
+You've used 36 entries,
+            2695 wiz_defined-function locations,
+            805 strings with 10222 characters,
+and the built_in function-call counts, 221907 in all, are:
+= -- 37184
+> -- 2358
+< -- 0
++ -- 17975
+- -- 738
+* -- 19956
+:= -- 43228
+add.period$ -- 252
+call.type$ -- 36
+change.case$ -- 468
+chr.to.int$ -- 36
+cite$ -- 36
+duplicate$ -- 535
+empty$ -- 1490
+format.name$ -- 747
+if$ -- 39879
+int.to.chr$ -- 5
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 115
+num.names$ -- 396
+pop$ -- 36
+preamble$ -- 1
+purify$ -- 540
+quote$ -- 0
+skip$ -- 434
+stack$ -- 0
+substring$ -- 53497
+swap$ -- 214
+text.length$ -- 504
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 144
+warning$ -- 0
+while$ -- 920
+width$ -- 0
+write$ -- 183

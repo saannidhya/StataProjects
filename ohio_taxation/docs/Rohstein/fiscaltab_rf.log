@@ -1,0 +1,543 @@
+-------------------------------------------------------------------------------------------------------------------------
+       log:  C:\Documents and Settings\Jesse Rothstein\My Documents\projects\caelections\archive\fiscaltab_rf.log
+  log type:  text
+ opened on:   2 Mar 2010, 09:24:15
+
+. 
+. # delimit;
+delimiter now ;
+. version 9.2;
+
+. set more off;
+
+. clear;
+
+. /************************************************************
+> * fiscaltab_rf.do
+> * Jesse Rothstein
+> * October 25, 2008
+> *
+> * Run reduced-form regressions for finance outcomes.
+> * Uses data from recursivepanel.dta, created by "makerecursivepanel.do".
+> *
+> **************************************************************/
+> 
+> 
+> set mem 100m;
+
+Current memory allocation
+
+                    current                                 memory usage
+    settable          value     description                 (1M = 1024k)
+    --------------------------------------------------------------------
+    set maxvar         5000     max. variables allowed           1.909M
+    set memory          100M    max. data space                100.000M
+    set matsize         400     max. RHS vars in models          1.254M
+                                                            -----------
+                                                               103.163M
+
+. *local projectbase "t:\projects\caelections";
+. *local projectbase "/Volumes/Dept/WWS/Research/Rothstein/projects/caelections";
+. use if gobond==1 using recursivepanel;
+
+. *Use only years -2 to +6;
+.  keep if dyear>=-2 & dyear<=6;
+(15089 observations deleted)
+
+.  *Drop other variables;
+.   foreach v in percent percent2 percent3 win fakewin req numelec gobond parcel_cap {;
+  2.     forvalues y=7/19 {;
+  3.       drop `v'_`y';
+  4.       };
+  5.     forvalues y=3/19 {;
+  6.       drop `v'_m`y';
+  7.       };
+  8.     };
+
+. /*
+> *Restrict to measures with all dyears -2 to 2;
+>  sort newleaid measnum dyear;
+>  isid newleaid measnum dyear;
+>  gen inwindow=(dyear>=-2 & dyear<=2);
+>  by newleaid measnum: gen ninwindow=sum(inwindow);
+>  by newleaid measnum: gen havewindow=(ninwindow[_N]==5);
+>  tab dyear ninwindow if havewindow~=1;
+>  keep if havewindow==1;
+>  drop inwindow ninwindow havewindow;
+> */
+> 
+> *Clean up the measure outcomes;
+.  gen bondonballot=isgobond*(dyear~=0);
+
+.  gen winbond=bondonballot*iswin;
+(1 missing value generated)
+
+.  replace winbond=0 if bondonballot==0 & iswin==.;
+(1 real change made)
+
+. tab year, gen(yrdums);
+
+ schoolyear |
+starting yr |
+   of elec. |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       1987 |         91        0.96        0.96
+       1988 |        123        1.29        2.25
+       1989 |        179        1.88        4.13
+       1990 |        224        2.36        6.49
+       1991 |        266        2.80        9.28
+       1992 |        313        3.29       12.57
+       1993 |        378        3.97       16.55
+       1994 |        407        4.28       20.83
+       1995 |        496        5.22       26.04
+       1996 |        549        5.77       31.82
+       1997 |        601        6.32       38.13
+       1998 |        614        6.46       44.59
+       1999 |        664        6.98       51.57
+       2000 |        711        7.48       59.05
+       2001 |        728        7.65       66.70
+       2002 |        719        7.56       74.26
+       2003 |        685        7.20       81.46
+       2004 |        667        7.01       88.48
+       2005 |        590        6.20       94.68
+       2006 |        506        5.32      100.00
+------------+-----------------------------------
+      Total |      9,511      100.00
+
+. tab dyear, gen(dydums);
+
+      dyear |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         -2 |      1,163       12.23       12.23
+         -1 |      1,194       12.55       24.78
+          0 |      1,230       12.93       37.71
+          1 |      1,128       11.86       49.57
+          2 |      1,097       11.53       61.11
+          3 |      1,041       10.95       72.05
+          4 |        977       10.27       82.33
+          5 |        888        9.34       91.66
+          6 |        793        8.34      100.00
+------------+-----------------------------------
+      Total |      9,511      100.00
+
+. *Exclude year 0 from all analyses;
+. foreach v of varlist gobond_0 win_0 percent_0 percent2_0 percent3_0 req_0 {;
+  2.         rename `v' tmp_`v';
+  3.         };
+
+. /*
+> *Prepare bins;
+>   foreach v in gobond win percent percent2 percent3 req {;
+>         gen bin1_`v'=`v'_m2+`v'_m1+tmp_`v'_0;
+>         gen bin2_`v'=`v'_1+`v'_2;
+>         gen bin3_`v'=`v'_3+`v'_4+`v'_5+`v'_6;
+>   };
+> */
+> 
+> *Add together state and federal revenue;
+.  gen tstfedrev_pp=tstrev_pp+tfedrev_pp;
+(2541 missing values generated)
+
+. *Start to run the regressions;
+. *Design:  MEASURE FEs, cubic controls, GO bonds only;
+. ;
+.  *Start with unrestricted effects, leaving out future years;
+.   foreach v of varlist totalexp_pp tcapout_pp tcurinst_pp tstfedrev_pp {;
+  2.          if "`v'"=="totalexp_pp" {;
+  3.                 local apprep "replace";
+  4.          };
+  5.          else {;
+  6.                 local apprep "append";
+  7.          };
+  8.      areg `v' yrdums* dydums* win_? req_?
+>               percent_? percent2_? percent3_?
+>           if gobond==1, absorb(refid) cluster(newleaid);
+  9.      *Tests:  All past;
+.       testparm win_?;
+ 10.       local p_past=r(p);
+ 11.      outreg using "fiscaltab_rf.txt", bdec(8) tdec(8) adec(8) se noaster noparen nolabel
+>             addstat("Ppast", `p_past') `apprep';
+ 12.   };
+(dropping yrdums1 because it does not vary within category)
+(dropping yrdums2 because it does not vary within category)
+(dropping yrdums3 because it does not vary within category)
+(dropping yrdums4 because it does not vary within category)
+(dropping yrdums5 because it does not vary within category)
+(dropping yrdums6 because it does not vary within category)
+(dropping yrdums7 because it does not vary within category)
+(dropping yrdums8 because it does not vary within category)
+(dropping yrdums20 because it does not vary within category)
+
+Linear regression, absorbing indicators                Number of obs =    6970
+                                                       F( 46,   616) =   32.69
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.7362
+                                                       Adj R-squared =  0.6813
+                                                       Root MSE      =  1201.3
+
+                             (Std. Err. adjusted for 617 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+ totalexp_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  -349.6832   67.71449    -5.16   0.000    -482.6624    -216.704
+    yrdums11 |  -215.4486   94.05379    -2.29   0.022    -400.1535   -30.74362
+    yrdums12 |   20.77798   100.0037     0.21   0.835    -175.6116    217.1675
+    yrdums13 |  -265.0383   101.8877    -2.60   0.010    -465.1277   -64.94883
+    yrdums14 |   96.97687   124.5797     0.78   0.437    -147.6756    341.6293
+    yrdums15 |   377.9376   126.5426     2.99   0.003     129.4303    626.4449
+    yrdums16 |   376.5146   125.6406     3.00   0.003     129.7787    623.2505
+    yrdums17 |   140.2143   107.5633     1.30   0.193    -71.02087    351.4495
+    yrdums18 |   54.40449   91.41747     0.60   0.552    -125.1232    233.9322
+    yrdums19 |  (dropped)
+    yrdums20 |  (dropped)
+     dydums1 |  -402.2085   5317.569    -0.08   0.940    -10844.97    10040.55
+     dydums2 |  -151.3567   5319.306    -0.03   0.977    -10597.53    10294.82
+     dydums3 |  -20.92762   5313.506    -0.00   0.997    -10455.71    10413.86
+     dydums4 |  (dropped)
+     dydums5 |  -4847.414   5289.113    -0.92   0.360    -15234.29    5539.466
+     dydums6 |  -5674.359   8021.785    -0.71   0.480    -21427.72       10079
+     dydums7 |   4282.991   10281.48     0.42   0.677    -15908.01       24474
+     dydums8 |   6323.058    10899.2     0.58   0.562    -15081.04    27727.16
+     dydums9 |  (dropped)
+       win_1 |   335.3373   177.2371     1.89   0.059     -12.7249    683.3994
+       win_2 |   936.1248   216.3892     4.33   0.000     511.1749    1361.075
+       win_3 |   1271.244   273.0583     4.66   0.000     735.0058    1807.482
+       win_4 |   961.3419   305.3171     3.15   0.002     361.7532    1560.931
+       win_5 |   200.1692   316.4157     0.63   0.527    -421.2152    821.5535
+       win_6 |  -332.9408   335.1962    -0.99   0.321    -991.2067    325.3251
+       req_1 |   10.91776   12.17195     0.90   0.370     -12.9858    34.82131
+       req_2 |   22.77095   17.58141     1.30   0.196    -11.75582    57.29772
+       req_3 |   51.32804   22.74051     2.26   0.024     6.669721    95.98636
+       req_4 |   41.58537   30.57666     1.36   0.174    -18.46176    101.6325
+       req_5 |   98.20012   31.17034     3.15   0.002      36.9871    159.4131
+       req_6 |   200.0229   159.6678     1.25   0.211    -113.5364    513.5822
+   percent_1 |  -35.88249   247.3683    -0.15   0.885    -521.6699    449.9049
+   percent_2 |   187.1066   304.5879     0.61   0.539      -411.05    785.2633
+   percent_3 |   233.7909   416.8587     0.56   0.575    -584.8456    1052.427
+   percent_4 |  -255.1327    487.299    -0.52   0.601    -1212.101     701.836
+   percent_5 |  -595.0595   524.5637    -1.13   0.257    -1625.209    435.0905
+   percent_6 |  -594.6743   534.2561    -1.11   0.266    -1643.858    454.5098
+  percent2_1 |   .5412277   3.983978     0.14   0.892    -7.282598    8.365053
+  percent2_2 |  -3.063504   4.966828    -0.62   0.538    -12.81747    6.690465
+  percent2_3 |  -4.848756   6.763885    -0.72   0.474    -18.13183    8.434314
+  percent2_4 |   3.499477   7.910876     0.44   0.658    -12.03608    19.03503
+  percent2_5 |   9.805722   8.504653     1.15   0.249    -6.895908    26.50735
+  percent2_6 |    9.38043   8.784341     1.07   0.286    -7.870457    26.63132
+  percent3_1 |  -.0023356   .0206632    -0.11   0.910    -.0429145    .0382432
+  percent3_2 |   .0164565   .0261855     0.63   0.530    -.0349673    .0678803
+  percent3_3 |   .0305135   .0356293     0.86   0.392    -.0394562    .1004831
+  percent3_4 |  -.0146802   .0414298    -0.35   0.723    -.0960411    .0666806
+  percent3_5 |  -.0504342   .0445499    -1.13   0.258    -.1379223    .0370539
+  percent3_6 |   -.044517   .0468746    -0.95   0.343    -.1365704    .0475363
+       _cons |   6743.222   5316.212     1.27   0.205    -3696.875    17183.32
+-------------+----------------------------------------------------------------
+       refid |   absorbed                                    (1155 categories)
+
+ ( 1)  win_1 = 0
+ ( 2)  win_2 = 0
+ ( 3)  win_3 = 0
+ ( 4)  win_4 = 0
+ ( 5)  win_5 = 0
+ ( 6)  win_6 = 0
+
+       F(  6,   616) =    7.32
+            Prob > F =    0.0000
+(note: file fiscaltab_rf.txt not found)
+(dropping yrdums1 because it does not vary within category)
+(dropping yrdums2 because it does not vary within category)
+(dropping yrdums3 because it does not vary within category)
+(dropping yrdums4 because it does not vary within category)
+(dropping yrdums5 because it does not vary within category)
+(dropping yrdums6 because it does not vary within category)
+(dropping yrdums7 because it does not vary within category)
+(dropping yrdums8 because it does not vary within category)
+(dropping yrdums20 because it does not vary within category)
+
+Linear regression, absorbing indicators                Number of obs =    6970
+                                                       F( 46,   616) =   14.18
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.4708
+                                                       Adj R-squared =  0.3607
+                                                       Root MSE      =    1030
+
+                             (Std. Err. adjusted for 617 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+  tcapout_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  -202.3423   47.86042    -4.23   0.000    -296.3316   -108.3529
+    yrdums11 |   14.60126   77.91056     0.19   0.851    -138.4013    167.6038
+    yrdums12 |   92.70493   80.79365     1.15   0.252    -65.95945    251.3693
+    yrdums13 |  -43.86651   83.32957    -0.53   0.599     -207.511     119.778
+    yrdums14 |   132.3592   105.5113     1.25   0.210     -74.8464    339.5647
+    yrdums15 |   124.0767   107.6997     1.15   0.250    -87.42633    335.5797
+    yrdums16 |  -42.38351   106.4265    -0.40   0.691    -251.3863    166.6193
+    yrdums17 |  -188.3261   95.47684    -1.97   0.049    -375.8257   -.8265085
+    yrdums18 |   47.38516   82.90127     0.57   0.568    -115.4182    210.1885
+    yrdums19 |  (dropped)
+    yrdums20 |  (dropped)
+     dydums1 |   71.25465   4382.241     0.02   0.987    -8534.688    8677.198
+     dydums2 |   161.3741   4384.858     0.04   0.971     -8449.71    8772.458
+     dydums3 |   108.7764   4381.526     0.02   0.980    -8495.763    8713.316
+     dydums4 |  (dropped)
+     dydums5 |  -5714.237   4979.458    -1.15   0.252    -15493.01    4064.535
+     dydums6 |  -7556.868   6433.454    -1.17   0.241    -20191.03    5077.293
+     dydums7 |   318.8218   7798.988     0.04   0.967    -14997.01    15634.65
+     dydums8 |   175.4665   7701.828     0.02   0.982    -14949.56    15300.49
+     dydums9 |  (dropped)
+       win_1 |   254.7041   150.8671     1.69   0.092    -41.57208    550.9803
+       win_2 |   801.5091    190.853     4.20   0.000     426.7077     1176.31
+       win_3 |    1121.41     243.79     4.60   0.000     642.6498     1600.17
+       win_4 |   841.2793   276.6976     3.04   0.002     297.8943    1384.664
+       win_5 |   219.0092   275.6308     0.79   0.427    -322.2807    760.2991
+       win_6 |  -359.5929   279.0075    -1.29   0.198    -907.5141    188.3284
+       req_1 |   9.487793   9.860992     0.96   0.336    -9.877445    28.85303
+       req_2 |   20.14037   14.80459     1.36   0.174    -8.933219    49.21396
+       req_3 |   46.81133   20.05312     2.33   0.020     7.430562    86.19209
+       req_4 |   30.27332   28.84194     1.05   0.294    -26.36714    86.91377
+       req_5 |   88.01175   25.32879     3.47   0.001     38.27049     137.753
+       req_6 |   96.11714   110.5122     0.87   0.385    -120.9092    313.1435
+   percent_1 |  -49.55399   205.0925    -0.24   0.809    -452.3193    353.2114
+   percent_2 |   223.5418   260.1007     0.86   0.390    -287.2499    734.3334
+   percent_3 |   266.7723   309.6352     0.86   0.389    -341.2963    874.8408
+   percent_4 |  -95.66108   349.1857    -0.27   0.784    -781.3998    590.0777
+   percent_5 |  -333.7791   361.6872    -0.92   0.356    -1044.069    376.5104
+   percent_6 |  -323.2415   360.0755    -0.90   0.370    -1030.366    383.8829
+  percent2_1 |   1.050829   3.330822     0.32   0.752    -5.490315    7.591973
+  percent2_2 |  -3.527817   4.296762    -0.82   0.412     -11.9659    4.910261
+  percent2_3 |  -4.544229   5.138798    -0.88   0.377    -14.63592    5.547458
+  percent2_4 |   1.685697    5.76358     0.29   0.770    -9.632952    13.00435
+  percent2_5 |    6.32741   5.941466     1.06   0.287    -5.340575    17.99539
+  percent2_6 |   5.596939   5.931431     0.94   0.346     -6.05134    17.24522
+  percent3_1 |  -.0064675   .0173531    -0.37   0.709    -.0405459    .0276108
+  percent3_2 |   .0180909   .0228453     0.79   0.429    -.0267731    .0629549
+  percent3_3 |   .0246698    .027415     0.90   0.369    -.0291683    .0785079
+  percent3_4 |  -.0092758    .030339    -0.31   0.760    -.0688563    .0503047
+  percent3_5 |  -.0366837   .0312811    -1.17   0.241    -.0981143    .0247469
+  percent3_6 |   -.028671   .0315605    -0.91   0.364    -.0906502    .0333082
+       _cons |   578.1912    4383.27     0.13   0.895    -8029.772    9186.155
+-------------+----------------------------------------------------------------
+       refid |   absorbed                                    (1155 categories)
+
+ ( 1)  win_1 = 0
+ ( 2)  win_2 = 0
+ ( 3)  win_3 = 0
+ ( 4)  win_4 = 0
+ ( 5)  win_5 = 0
+ ( 6)  win_6 = 0
+
+       F(  6,   616) =    7.80
+            Prob > F =    0.0000
+(dropping yrdums1 because it does not vary within category)
+(dropping yrdums2 because it does not vary within category)
+(dropping yrdums3 because it does not vary within category)
+(dropping yrdums4 because it does not vary within category)
+(dropping yrdums5 because it does not vary within category)
+(dropping yrdums6 because it does not vary within category)
+(dropping yrdums7 because it does not vary within category)
+(dropping yrdums8 because it does not vary within category)
+(dropping yrdums20 because it does not vary within category)
+
+Linear regression, absorbing indicators                Number of obs =    6970
+                                                       F( 46,   616) =   72.38
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.9012
+                                                       Adj R-squared =  0.8807
+                                                       Root MSE      =  235.81
+
+                             (Std. Err. adjusted for 617 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+ tcurinst_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  -80.49271   22.76517    -3.54   0.000    -125.1995   -35.78597
+    yrdums11 |  -115.6681   14.77337    -7.83   0.000    -144.6804   -86.65584
+    yrdums12 |   8.484317   18.59063     0.46   0.648    -28.02438    44.99302
+    yrdums13 |  -92.14456    17.7784    -5.18   0.000    -127.0582   -57.23094
+    yrdums14 |   47.35022   19.11169     2.48   0.013     9.818261    84.88218
+    yrdums15 |     218.78   21.10116    10.37   0.000     177.3411     260.219
+    yrdums16 |    315.508   21.63596    14.58   0.000     273.0188    357.9972
+    yrdums17 |   199.8182   19.05303    10.49   0.000     162.4014     237.235
+    yrdums18 |   4.897038   17.07325     0.29   0.774     -28.6318    38.42588
+    yrdums19 |  (dropped)
+    yrdums20 |  (dropped)
+     dydums1 |   1183.855   1078.394     1.10   0.273    -933.9189     3301.63
+     dydums2 |   1276.131   1079.154     1.18   0.237    -843.1365    3395.398
+     dydums3 |   1380.024    1078.22     1.28   0.201    -737.4096    3497.457
+     dydums4 |  (dropped)
+     dydums5 |  -242.3927   1073.019    -0.23   0.821    -2349.611    1864.826
+     dydums6 |   132.0275    1955.15     0.07   0.946    -3707.539    3971.594
+     dydums7 |   145.5785    2693.28     0.05   0.957    -5143.544    5434.701
+     dydums8 |   1033.061   2782.819     0.37   0.711    -4431.903    6498.024
+     dydums9 |  (dropped)
+       win_1 |   34.61828   39.39412     0.88   0.380    -42.74479    111.9813
+       win_2 |   8.200009   43.18393     0.19   0.849    -76.60557    93.00559
+       win_3 |   2.902663   45.46868     0.06   0.949    -86.38976    92.19509
+       win_4 |   -25.9114   55.73109    -0.46   0.642    -135.3574    83.53457
+       win_5 |   -20.0425   71.23728    -0.28   0.779    -159.9399    119.8549
+       win_6 |  -19.35528   74.19297    -0.26   0.794    -165.0571    126.3465
+       req_1 |   2.785179    2.35469     1.18   0.237    -1.839015    7.409372
+       req_2 |   3.855167   3.550659     1.09   0.278    -3.117697    10.82803
+       req_3 |   4.315902   4.158455     1.04   0.300    -3.850567    12.48237
+       req_4 |   7.375594   4.949291     1.49   0.137    -2.343936    17.09512
+       req_5 |   5.313227   5.405697     0.98   0.326    -5.302604    15.92906
+       req_6 |   21.52081   41.14256     0.52   0.601    -59.27588    102.3175
+   percent_1 |   60.37097   51.23927     1.18   0.239    -40.25386    160.9958
+   percent_2 |   68.63242   64.30265     1.07   0.286    -57.64659    194.9114
+   percent_3 |   76.25757   98.82877     0.77   0.441    -117.8246    270.3397
+   percent_4 |   65.57386   144.1367     0.45   0.649    -217.4851    348.6328
+   percent_5 |   38.76456   145.8921     0.27   0.791    -247.7415    325.2707
+   percent_6 |   26.94613   149.1344     0.18   0.857    -265.9274    319.8197
+  percent2_1 |  -.9566305    .829642    -1.15   0.249      -2.5859    .6726392
+  percent2_2 |  -1.017952   1.044538    -0.97   0.330    -3.069238    1.033335
+  percent2_3 |  -1.438397   1.569674    -0.92   0.360    -4.520957    1.644164
+  percent2_4 |  -1.257012   2.333359    -0.54   0.590    -5.839315    3.325291
+  percent2_5 |  -.8925737   2.342316    -0.38   0.703    -5.492466    3.707319
+  percent2_6 |  -.5338356   2.420923    -0.22   0.826    -5.288098    4.220427
+  percent3_1 |   .0050591   .0043464     1.16   0.245    -.0034765    .0135947
+  percent3_2 |   .0051342    .005471     0.94   0.348    -.0056099    .0158782
+  percent3_3 |   .0086581   .0080983     1.07   0.285    -.0072456    .0245617
+  percent3_4 |   .0079172   .0123241     0.64   0.521    -.0162851    .0321195
+  percent3_5 |   .0062406   .0122922     0.51   0.612    -.0178991    .0303802
+  percent3_6 |   .0036517   .0128698     0.28   0.777    -.0216223    .0289257
+       _cons |   2227.444   1077.545     2.07   0.039     111.3365    4343.552
+-------------+----------------------------------------------------------------
+       refid |   absorbed                                    (1155 categories)
+
+ ( 1)  win_1 = 0
+ ( 2)  win_2 = 0
+ ( 3)  win_3 = 0
+ ( 4)  win_4 = 0
+ ( 5)  win_5 = 0
+ ( 6)  win_6 = 0
+
+       F(  6,   616) =    0.25
+            Prob > F =    0.9600
+(dropping yrdums1 because it does not vary within category)
+(dropping yrdums2 because it does not vary within category)
+(dropping yrdums3 because it does not vary within category)
+(dropping yrdums4 because it does not vary within category)
+(dropping yrdums5 because it does not vary within category)
+(dropping yrdums6 because it does not vary within category)
+(dropping yrdums7 because it does not vary within category)
+(dropping yrdums8 because it does not vary within category)
+(dropping yrdums20 because it does not vary within category)
+
+Linear regression, absorbing indicators                Number of obs =    6970
+                                                       F( 46,   616) =   33.11
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.8047
+                                                       Adj R-squared =  0.7641
+                                                       Root MSE      =  750.22
+
+                             (Std. Err. adjusted for 617 clusters in newleaid)
+------------------------------------------------------------------------------
+             |               Robust
+tstfedrev_pp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     yrdums1 |  (dropped)
+     yrdums2 |  (dropped)
+     yrdums3 |  (dropped)
+     yrdums4 |  (dropped)
+     yrdums5 |  (dropped)
+     yrdums6 |  (dropped)
+     yrdums7 |  (dropped)
+     yrdums8 |  (dropped)
+     yrdums9 |  (dropped)
+    yrdums10 |  -69.53097   36.24745    -1.92   0.056    -140.7145    1.652587
+    yrdums11 |   329.7189   45.73507     7.21   0.000     239.9033    419.5344
+    yrdums12 |   383.9858   46.69653     8.22   0.000     292.2821    475.6894
+    yrdums13 |   127.6852    48.5121     2.63   0.009     32.41605    222.9544
+    yrdums14 |   294.4557   60.43067     4.87   0.000     175.7806    413.1308
+    yrdums15 |   703.4575    75.2748     9.35   0.000     555.6311    851.2838
+    yrdums16 |   182.0785   68.35143     2.66   0.008     47.84839    316.3086
+    yrdums17 |   344.5054    78.2569     4.40   0.000     190.8227    498.1881
+    yrdums18 |   -161.285   82.19337    -1.96   0.050    -322.6982    .1282427
+    yrdums19 |  (dropped)
+    yrdums20 |  (dropped)
+     dydums1 |  -5311.835   4521.237    -1.17   0.241    -14190.74    3567.071
+     dydums2 |  -5149.154   4519.164    -1.14   0.255    -14023.99    3725.682
+     dydums3 |  -5036.981   4520.653    -1.11   0.266    -13914.74    3840.778
+     dydums4 |  (dropped)
+     dydums5 |  -9969.359   6035.511    -1.65   0.099    -21822.03    1883.313
+     dydums6 |   -6252.04   5565.079    -1.12   0.262    -17180.87    4676.787
+     dydums7 |  -6947.674   6837.014    -1.02   0.310    -20374.36    6479.009
+     dydums8 |  -9503.186   7600.195    -1.25   0.212    -24428.62    5422.247
+     dydums9 |  (dropped)
+       win_1 |   99.51706   129.3923     0.77   0.442    -154.5865    353.6207
+       win_2 |   40.88061   148.8197     0.27   0.784    -251.3748     333.136
+       win_3 |  -97.86354   177.2023    -0.55   0.581    -445.8575    250.1304
+       win_4 |   78.78691   174.7409     0.45   0.652    -264.3733    421.9471
+       win_5 |   156.9348   174.5275     0.90   0.369    -185.8063    499.6758
+       win_6 |  -13.08909   192.6026    -0.07   0.946    -391.3263    365.1482
+       req_1 |   9.118927   7.931641     1.15   0.251    -6.457408    24.69526
+       req_2 |   1.302757   11.26859     0.12   0.908    -20.82676    23.43228
+       req_3 |   7.055528    13.3655     0.53   0.598    -19.19194      33.303
+       req_4 |   24.62589   14.75358     1.67   0.096    -4.347528     53.5993
+       req_5 |   29.50876   26.34322     1.12   0.263    -22.22465    81.24218
+       req_6 |  -105.5782   110.2507    -0.96   0.339     -322.091    110.9345
+   percent_1 |  -278.7211    215.428    -1.29   0.196    -701.7835    144.3414
+   percent_2 |    235.943   205.2488     1.15   0.251    -167.1293    639.0153
+   percent_3 |   50.46294   259.4988     0.19   0.846    -459.1467    560.0726
+   percent_4 |  -17.62292   254.2395    -0.07   0.945    -516.9042    481.6584
+   percent_5 |   150.4495   291.9245     0.52   0.606    -422.8385    723.7375
+   percent_6 |    99.2498   300.8832     0.33   0.742    -491.6313    690.1309
+  percent2_1 |   4.546925   3.472793     1.31   0.191    -2.273024    11.36687
+  percent2_2 |   -3.41978   3.412888    -1.00   0.317    -10.12209    3.282528
+  percent2_3 |  -.5970131   4.329239    -0.14   0.890     -9.09887    7.904844
+  percent2_4 |   1.219134   4.078769     0.30   0.765    -6.790845    9.229113
+  percent2_5 |  -2.096028   4.743993    -0.44   0.659    -11.41239    7.220333
+  percent2_6 |  -.9195977   4.981098    -0.18   0.854    -10.70159    8.862395
+  percent3_1 |  -.0240157   .0181258    -1.32   0.186    -.0596117    .0115802
+  percent3_2 |   .0161263   .0181548     0.89   0.375    -.0195266    .0517791
+  percent3_3 |   .0026298   .0232422     0.11   0.910    -.0430137    .0482732
+  percent3_4 |  -.0105234   .0211358    -0.50   0.619    -.0520304    .0309836
+  percent3_5 |   .0091167   .0250577     0.36   0.716    -.0400923    .0583256
+  percent3_6 |   .0021555   .0266642     0.08   0.936    -.0502082    .0545192
+       _cons |   8770.752   4517.222     1.94   0.053    -100.2697    17641.77
+-------------+----------------------------------------------------------------
+       refid |   absorbed                                    (1155 categories)
+
+ ( 1)  win_1 = 0
+ ( 2)  win_2 = 0
+ ( 3)  win_3 = 0
+ ( 4)  win_4 = 0
+ ( 5)  win_5 = 0
+ ( 6)  win_6 = 0
+
+       F(  6,   616) =    0.47
+            Prob > F =    0.8300
+
+. log close;
+       log:  C:\Documents and Settings\Jesse Rothstein\My Documents\projects\caelections\archive\fiscaltab_rf.log
+  log type:  text
+ closed on:   2 Mar 2010, 09:24:42
+-------------------------------------------------------------------------------------------------------------------------

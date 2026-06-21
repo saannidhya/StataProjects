@@ -1,0 +1,57 @@
+Close-renewal reduced form: failure on lagged housing outcomes, t+2 to t+5
+
+                             log_median_sale_amount_post_avg_p2_p5
+Dependent Var.:              log_median_sale_amount_post_avg_p2_p5
+                                                                  
+Constant                                         9.782*** (0.5587)
+failed_levy                                       0.4647. (0.2461)
+margin_against                                     0.0079 (0.0669)
+pop_election                                    -1.17e-5 (1.41e-5)
+medfamy_election                               2.88e-5** (8.56e-6)
+poverty_election                                     1.383 (1.116)
+unemprate_election                                  -1.317 (1.348)
+pctown_election                                   -0.0537 (0.7833)
+failed_levy x margin_against                     -0.2105* (0.0928)
+____________________________        ______________________________
+S.E.: Clustered                                         by: county
+Observations                                                    25
+R2                                                         0.76009
+Adj. R2                                                    0.64014
+
+                             log_median_sale_amount_diff_p2_p5_vs_pre
+Dependent Var.:              log_median_sale_amount_diff_p2_p5_vs_pre
+                                                                     
+Constant                                             -0.3394 (0.4579)
+failed_levy                                          0.3587. (0.1828)
+margin_against                                       -0.0396 (0.0422)
+pop_election                                        4.62e-6 (1.09e-5)
+medfamy_election                                    -5.68e-6 (5.9e-6)
+poverty_election                                      0.3100 (0.7484)
+unemprate_election                                   -1.601. (0.8021)
+pctown_election                                       0.8518 (0.7019)
+failed_levy x margin_against                         -0.0555 (0.0561)
+____________________________           ______________________________
+S.E.: Clustered                                            by: county
+Observations                                                       25
+R2                                                            0.36089
+Adj. R2                                                       0.04134
+
+                             n_sales_post_avg_p2_p5 n_sales_diff_p2_p5_vs_pre
+Dependent Var.:              n_sales_post_avg_p2_p5 n_sales_diff_p2_p5_vs_pre
+                                                                             
+Constant                            -152.1* (54.15)             154.4 (96.76)
+failed_levy                           14.25 (19.49)           -72.99. (38.65)
+margin_against                       -5.048 (5.288)             9.632 (7.391)
+pop_election                     0.0155*** (0.0015)         -0.0052. (0.0026)
+medfamy_election                   0.0018. (0.0009)         -0.0031* (0.0014)
+poverty_election                      123.9 (118.9)             45.31 (170.1)
+unemprate_election                    137.0 (114.4)            -139.5 (227.8)
+pctown_election                     -0.5419 (62.50)             105.4 (116.5)
+failed_levy x margin_against          7.369 (7.899)            -1.724 (10.39)
+____________________________ ______________________ _________________________
+S.E.: Clustered                          by: county                by: county
+Observations                                     25                        25
+R2                                          0.95367                   0.70565
+Adj. R2                                     0.93051                   0.55847
+---
+Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1

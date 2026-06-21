@@ -1,0 +1,63 @@
+\subsection{State-Level Estimate Tables}
+
+\input{tables/state_firststage.tex}
+
+\input{tables/state_meaneffects_test_scores.tex}
+
+\input{tables/state_meaneffects_hpi.tex}
+
+\clearpage
+
+\subsection{State Sample Audit}
+
+\inputifexists{../biasi2025/tables/eer/state_sample_audit.tex}{State sample audit not generated in this build. Run the EER state sample audit script.}
+
+\clearpage
+
+\subsection{Vote-Margin Robustness Checks}
+
+\inputifexists{../biasi2025/tables/eer/bandwidth_sensitivity.tex}{Bandwidth sensitivity table not generated in this build. Run the EER bandwidth script.}
+
+\inputifexists{../biasi2025/tables/eer/bandwidth_sample_counts.tex}{Bandwidth sample-count table not generated in this build. Run the EER bandwidth script.}
+
+% Bandwidth-sensitivity coefficient-path figures moved to the main text
+% (Figure~\ref{fig:bandwidth_sensitivity_fig}, Section~\ref{sec:bandwidth}).
+
+\clearpage
+
+\subsection{Descriptive Mechanism Evidence}
+
+\begin{figure}[htbp]
+    \centering
+    \renewcommand{\thesubfigure}{\Alph{subfigure}}
+    \begin{subfigure}{0.56\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../biasi2025/figures/eer/state_effects_by_project_mix.pdf}
+        \caption{Core facility project share}
+        \label{fig:state_project_mix}
+    \end{subfigure}
+
+    \vspace{0.4em}
+    \begin{subfigure}{0.56\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../biasi2025/figures/eer/state_effects_by_capital_stock.pdf}
+        \caption{Baseline capital stock}
+        \label{fig:state_capstock}
+    \end{subfigure}
+
+    \vspace{0.4em}
+    \begin{subfigure}{0.56\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../biasi2025/figures/eer/state_effects_by_student_composition.pdf}
+        \caption{Baseline FRPL share}
+        \label{fig:state_frpl}
+    \end{subfigure}
+    \caption{State-Level Medium-Run Test-Score Effects and Candidate Mechanisms}
+    \label{fig:state_mech}
+    \captionsetup{font=footnotesize}
+    \caption*{\footnotesize\textit{Notes:} Each panel plots state-specific medium-run test-score effects (vertical axis) against a state-level mechanism summary (horizontal axis), with a fitted bivariate regression line. The associations are descriptive, not causal.}
+\end{figure}
+
+\inputifexists{../biasi2025/tables/eer/state_mechanism_summary.tex}{State mechanism summary not generated in this build. Run the EER state mechanisms script.}
+
+\inputifexists{../biasi2025/tables/eer/state_mechanism_correlations.tex}{State mechanism correlation table not generated in this build. Run the EER state mechanisms script.}

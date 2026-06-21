@@ -1,0 +1,111 @@
+Close-renewal first stage: failure on lagged crash outcomes
+
+                             fatal_crashes_per_10k_p1 fatal_crashes_per_10k_p2
+Dependent Var.:              fatal_crashes_per_10k_p1 fatal_crashes_per_10k_p2
+                                                                              
+Constant                                10.67 (7.677)           0.5479 (1.832)
+failed_levy                           -0.0717 (1.614)          -0.4635 (1.115)
+margin_against                        0.1001 (0.2582)          0.1783 (0.1451)
+pop_election                       -4.27e-5. (2.4e-5)        -9.6e-6 (1.53e-5)
+medfamy_election                    -8.09e-5 (9.4e-5)       2.67e-5. (1.57e-5)
+poverty_election                       -22.20 (16.67)           0.0935 (2.910)
+unemprate_election                     -2.753 (7.385)            3.184 (3.763)
+pctown_election                        -1.275 (3.807)           -1.063 (1.907)
+failed_levy x margin_against          0.0266 (0.7350)         -0.1061 (0.4536)
+____________________________ ________________________ ________________________
+S.E.: Clustered                            by: county               by: county
+Observations                                       77                       77
+R2                                            0.11071                  0.04440
+Adj. R2                                       0.00609                 -0.06802
+
+                             fatal_crashes_per_10k_p3
+Dependent Var.:              fatal_crashes_per_10k_p3
+                                                     
+Constant                              -5.988. (3.503)
+failed_levy                            0.4282 (1.313)
+margin_against                        0.0440 (0.3320)
+pop_election                       -3.75e-5 (2.96e-5)
+medfamy_election                    5.75e-5 (4.14e-5)
+poverty_election                       8.447. (4.694)
+unemprate_election                    -0.0834 (5.457)
+pctown_election                         4.093 (3.208)
+failed_levy x margin_against         -0.0433 (0.5141)
+____________________________ ________________________
+S.E.: Clustered                            by: county
+Observations                                       77
+R2                                            0.13496
+Adj. R2                                       0.03318
+
+                             fatal_crashes_per_10k_post_avg_p1_p3
+Dependent Var.:              fatal_crashes_per_10k_post_avg_p1_p3
+                                                                 
+Constant                                            1.742 (3.050)
+failed_levy                                      -0.0357 (0.9687)
+margin_against                                    0.1074 (0.1718)
+pop_election                                  -2.99e-5. (1.52e-5)
+medfamy_election                                1.08e-6 (3.67e-5)
+poverty_election                                   -4.552 (6.092)
+unemprate_election                                 0.1156 (3.551)
+pctown_election                                    0.5850 (2.157)
+failed_levy x margin_against                     -0.0410 (0.3901)
+____________________________       ______________________________
+S.E.: Clustered                                        by: county
+Observations                                                   77
+R2                                                        0.06981
+Adj. R2                                                  -0.03962
+
+                             fatal_crashes_per_10k_diff_p1_p3_vs_pre
+Dependent Var.:              fatal_crashes_per_10k_diff_p1_p3_vs_pre
+                                                                    
+Constant                                              0.5528 (2.367)
+failed_levy                                          0.4676 (0.9078)
+margin_against                                       0.2552 (0.2253)
+pop_election                                      -2.06e-5 (1.91e-5)
+medfamy_election                                 7.08e-5** (2.41e-5)
+poverty_election                                       1.402 (4.578)
+unemprate_election                                     4.332 (4.699)
+pctown_election                                     -6.038** (2.049)
+failed_levy x margin_against                        -0.4587 (0.4037)
+____________________________          ______________________________
+S.E.: Clustered                                           by: county
+Observations                                                      77
+R2                                                           0.18728
+Adj. R2                                                      0.09167
+
+                             fatalities_per_10k_post_avg_p1_p3
+Dependent Var.:              fatalities_per_10k_post_avg_p1_p3
+                                                              
+Constant                                        0.5545 (3.305)
+failed_levy                                    -0.1433 (1.149)
+margin_against                                 0.1811 (0.2042)
+pop_election                                -3.12e-5 (1.93e-5)
+medfamy_election                             1.24e-5 (4.12e-5)
+poverty_election                                -3.667 (6.365)
+unemprate_election                               2.454 (4.037)
+pctown_election                                  1.320 (2.308)
+failed_levy x margin_against                  -0.1530 (0.4173)
+____________________________    ______________________________
+S.E.: Clustered                                     by: county
+Observations                                                77
+R2                                                     0.07906
+Adj. R2                                               -0.02928
+
+                             any_fatal_crash_post_avg_p1_p3
+Dependent Var.:              any_fatal_crash_post_avg_p1_p3
+                                                           
+Constant                                    0.1704 (0.4865)
+failed_levy                                -0.0650 (0.1862)
+margin_against                              0.0318 (0.0310)
+pop_election                            1.29e-5** (4.24e-6)
+medfamy_election                          5.38e-6 (4.21e-6)
+poverty_election                            0.1111 (0.5983)
+unemprate_election                          0.1276 (0.7814)
+pctown_election                            -0.2110 (0.4969)
+failed_levy x margin_against               -0.0295 (0.0633)
+____________________________ ______________________________
+S.E.: Clustered                                  by: county
+Observations                                             77
+R2                                                  0.16644
+Adj. R2                                             0.06838
+---
+Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1

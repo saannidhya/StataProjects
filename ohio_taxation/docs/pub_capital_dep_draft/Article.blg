@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Article.aux
+Reallocating 'name_of_file' (item size: 1) to 4 items.
+The style file: aea.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+Warning--there's a number but no volume in hilber2011economic
+You've used 51 entries,
+            2695 wiz_defined-function locations,
+            898 strings with 12728 characters,
+and the built_in function-call counts, 329097 in all, are:
+= -- 55437
+> -- 3255
+< -- 0
++ -- 26939
+- -- 1017
+* -- 29532
+:= -- 63980
+add.period$ -- 360
+call.type$ -- 51
+change.case$ -- 663
+chr.to.int$ -- 51
+cite$ -- 52
+duplicate$ -- 743
+empty$ -- 1969
+format.name$ -- 1041
+if$ -- 59122
+int.to.chr$ -- 5
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 160
+num.names$ -- 561
+pop$ -- 51
+preamble$ -- 1
+purify$ -- 765
+quote$ -- 0
+skip$ -- 609
+stack$ -- 0
+substring$ -- 79997
+swap$ -- 304
+text.length$ -- 714
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 200
+warning$ -- 1
+while$ -- 1259
+width$ -- 0
+write$ -- 258
+(There was 1 warning)

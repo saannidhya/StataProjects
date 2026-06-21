@@ -1,0 +1,114 @@
+\documentclass[12pt]{article}
+
+\usepackage{amssymb,amsmath,amsfonts,eurosym,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,natbib,pdflscape,subfigure,array}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks   = true,
+  urlcolor     = blue,
+  linkcolor    = black,
+  citecolor    = blue
+}
+\usepackage{xcolor}
+\definecolor{lightblue}{RGB}{100,149,237}
+\usepackage{longtable}
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amsfonts, amssymb, float, placeins, tabularx, array, longtable, booktabs, listings}
+\usepackage{natbib}
+\usepackage{threeparttable}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{multirow}
+\normalem
+
+% Fall back to the JMP_draft images folder so figures resolve without a local
+% copy. Source files reference images via "images/..." paths; we search the
+% local folder first, then the JMP_draft folder.
+\graphicspath{{./}{../JMP_draft/}}
+
+\onehalfspacing
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}{Proposition}
+\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newtheorem{hyp}{Hypothesis}
+\newtheorem{subhyp}{Hypothesis}[hyp]
+\renewcommand{\thesubhyp}{\thehyp\alph{subhyp}}
+
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+\geometry{left=1.0in,right=1.0in,top=1.0in,bottom=1.0in}
+
+\begin{document}
+
+\begin{titlepage}
+\title{How Do Housing Markets Price Public Capital Depreciation?\\
+Evidence from Local Infrastructure Tax Cuts%
+\thanks{Acknowledgements: We are grateful for comments from CK Tang, Guoyang Yang, Dan Boles, Eunjee Kwon, Gary Painter, Olivier Parent, Jeffrey Mills, Nayoung Lee, Matias Cattaneo, and Chris Bollinger, to CoreLogic\textregistered\ for leasing us the housing dataset, to Albert Saiz, Lu Han, Siqi Zheng, David Albouy, Chao Liu, Tony Yezer and other attendees at the AREUEA-ASSA Conference, AREUEA National Conference and UEA North American Meeting for their insightful comments. We thank John Schroeder, Public Service Director of Beavercreek township, Ohio, for his insights on funding and maintenance of local roads in Ohio. No external funding was received for this project.}}
+\author{Saannidhya Rawat \thanks{PhD Candidate, University of Cincinnati. Corresponding author: rawatsa@mail.uc.edu} \and David Brasington \thanks{Kautz Chair in Political Economy, University of Cincinnati}}
+\date{\today}
+\maketitle
+
+\vspace{-2em}
+
+\begin{abstract}
+\input{abstract.tex}
+\bigskip
+\end{abstract}
+\setcounter{page}{0}
+\thispagestyle{empty}
+\end{titlepage}
+\pagebreak \newpage
+
+\doublespacing
+
+\section{Introduction} \label{sec:introduction}
+\input{intro.tex}
+
+\input{lit_review.tex}
+
+\section{Background \& Data} \label{sec:data}
+\input{data.tex}
+
+\section{Empirical Strategy} \label{sec:empirical}
+\input{emp_strategy.tex}
+
+\section{Results} \label{sec:result}
+\input{results.tex}
+
+\section{Capitalization under Rational Expectations: The Empirical Wedge} \label{sec:fiscal_illusion}
+\input{fiscal_illusion.tex}
+
+\section{Mechanisms: A Dynamic Equilibrium Model with Belief Updating} \label{sec:mech}
+\input{model.tex}
+
+\input{welfare.tex}
+
+\section{Conclusion} \label{sec:conclusion}
+\input{conclusion.tex}
+
+\singlespacing
+\setlength\bibsep{12pt}
+\bibliographystyle{aea}
+\bibliography{references}
+
+\clearpage
+
+\appendix
+\section*{Appendix} \label{sec:appendix}
+\input{appendix.tex}
+
+\clearpage
+
+\end{document}

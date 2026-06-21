@@ -1,0 +1,10 @@
+Renewal-only lagged design summary
+
+Total road renewals, 2006-2021: 1788
+Close-5 finite-duration renewals: 188
+Close-5 failures: 64
+Close-5 passes: 124
+Recommended crash sample: 77
+Recommended downstream sample: 59
+Recommended downstream long sample: 25
+Counties in close-5 sample: 56
